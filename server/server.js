@@ -73,18 +73,8 @@ app.use(helmet({
 }));
 
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (server-to-server, curl, mobile apps)
-        if (!origin) return callback(null, true);
-        if (config.security.allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-        return callback(new Error('CORS: origin not allowed'));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    maxAge: 86400, // preflight cache 24 hours
+origin: true, // دي بتخلي السيرفر يوافق على الـ origin اللي باعت الطلب أياً كان (للتجربة)
+    credentials: true
 }));
 
 // ── Body Parsing ──
