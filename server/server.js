@@ -71,12 +71,7 @@ app.use(helmet({
         },
     },
 }));
-
-app.use(cors({
-origin: true, // دي بتخلي السيرفر يوافق على الـ origin اللي باعت الطلب أياً كان (للتجربة)
-    credentials: true
-}));
-
+app.use(cors());
 // ── Body Parsing ──
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
