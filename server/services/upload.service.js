@@ -19,9 +19,19 @@ if (config.cloudinary.cloudName && config.cloudinary.apiKey) {
 }
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+// ── Fix for Vercel Read-Only File System ──
+const os = require('os');
+const uploadsDir = process.env.VERCEL 
+    ? path.join(os.tmpdir(), 'uploads') 
+    : path.join(__dirname, '..', '..', 'uploads');
+
+// Create directory only if we are NOT on Vercel or if we really need it
+try {
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+} catch (err) {
+    console.warn('⚠️ Directory creation skipped or failed:', err.message);
 }
 
 // ── Multer Config ──
