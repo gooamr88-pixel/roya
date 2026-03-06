@@ -127,10 +127,18 @@ const setAuthCookies = (res, accessToken, refreshToken, rememberMe = false) => {
 
 /**
  * Clear auth cookies (logout)
+ * BUG FIX #8: Must pass the same options used when setting the cookie.
+ * Browsers silently ignore clearCookie calls if options don't match.
  */
 const clearAuthCookies = (res) => {
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token', { path: '/api/auth/refresh' });
+    const cookieOptions = {
+        httpOnly: true,
+        secure: !config.isDev,
+        sameSite: 'strict',
+        domain: config.isDev ? undefined : config.security.cookieDomain,
+    };
+    res.clearCookie('access_token', cookieOptions);
+    res.clearCookie('refresh_token', { ...cookieOptions, path: '/api/auth/refresh' });
 };
 
 module.exports = {

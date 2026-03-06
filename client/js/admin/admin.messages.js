@@ -36,10 +36,10 @@ async function loadAdminMessages(page = 1) {
                                 </div>
                             ` : ''}
 
-                            ${m.internal_note ? `
+                            ${/* BUG FIX #5: was m.internal_note (wrong), DB column is internal_notes (plural) */ m.internal_notes ? `
                                 <div class="internal-note">
                                     <div class="internal-note-label"><i class="fas fa-sticky-note"></i> Internal Note</div>
-                                    ${esc(m.internal_note)}
+                                    ${esc(m.internal_notes)}
                                 </div>
                             ` : ''}
 
@@ -62,7 +62,8 @@ async function sendAdminReply(messageId) {
     const reply = input?.value?.trim();
     if (!reply) { Toast.warning('Please enter a reply.'); return; }
     try {
-        await API.put(`/admin/messages/${messageId}/reply`, { reply });
+        // BUG FIX #2: API expects { reply_message }, was incorrectly sending { reply }
+        await API.put(`/admin/messages/${messageId}/reply`, { reply_message: reply });
         Toast.success('Reply sent successfully!');
         loadAdminMessages();
     } catch (err) { Toast.error(err.message); }
@@ -73,7 +74,8 @@ async function saveInternalNote(messageId) {
     const note = input?.value?.trim();
     if (!note) { Toast.warning('Please enter a note.'); return; }
     try {
-        await API.put(`/admin/messages/${messageId}/note`, { note });
+        // BUG FIX #4: API expects { internal_notes }, was incorrectly sending { note }
+        await API.put(`/admin/messages/${messageId}/note`, { internal_notes: note });
         Toast.success('Internal note saved!');
         loadAdminMessages();
     } catch (err) { Toast.error(err.message); }

@@ -48,7 +48,9 @@ const forgotPasswordValidation = [
 ];
 
 const resetPasswordValidation = [
-    body('token').notEmpty().withMessage('Reset token is required'),
+    // BUG FIX #3: Controller reads req.body.otp — was incorrectly validating 'token' field
+    body('email').trim().isEmail().normalizeEmail().withMessage('Valid email is required'),
+    body('otp').trim().isLength({ min: 6, max: 6 }).isNumeric().withMessage('Valid 6-digit OTP required'),
     body('password')
         .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
         .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter')

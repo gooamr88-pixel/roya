@@ -29,10 +29,10 @@
     </ul>
 
     <div class="nav-actions">
-      {# Language Toggle #}
+      {# Language Toggle — margin-inline-end flips automatically in RTL #}
       <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect={{ currentPath or '/' }}"
          class="lang-toggle" title="{{ langToggle.text }}"
-         style="margin-{{ 'left' if isRTL else 'right' }}: 8px;">
+         style="margin-inline-end: 8px;">
         <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}">
       </a>
 

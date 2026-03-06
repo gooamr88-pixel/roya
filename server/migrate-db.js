@@ -66,6 +66,7 @@ const migrations = [
             otp_expires_at TIMESTAMP,
             reset_token VARCHAR(255),
             reset_token_expires_at TIMESTAMP,
+            refresh_token_hash TEXT DEFAULT NULL,
             failed_login_attempts INTEGER DEFAULT 0,
             locked_until TIMESTAMP,
             last_login TIMESTAMP,
@@ -84,6 +85,11 @@ const migrations = [
     {
         name: 'Add ban_expires_at to users (if missing)',
         sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_expires_at TIMESTAMP DEFAULT NULL`
+    },
+    {
+        // BUG FIX #1: refresh_token_hash was used in token.service.js but never created in any migration
+        name: 'Add refresh_token_hash to users (if missing)',
+        sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS refresh_token_hash TEXT DEFAULT NULL`
     },
 
     // ══════════════════════════════════════════

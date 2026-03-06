@@ -64,11 +64,21 @@ const getUsers = async (req, res, next) => {
         const offset = (page - 1) * limit;
         const search = req.query.search;
 
+        // BUG FIX #6: Build independent param arrays for main and count queries.
+        // Previously, the count query received params.slice(2) which contained the
+        // search term but the WHERE clause referenced $3 — a guaranteed Postgres error.
         let where = '';
-        const params = [limit, offset];
+        let countWhere = '';
+        const mainParams = [limit, offset];   // $1=limit, $2=offset
+        const countParams = [];               // independently positioned
+
         if (search) {
+            // main query: search term is $3 (after limit and offset)
             where = `WHERE u.name ILIKE $3 OR u.email ILIKE $3`;
-            params.push(`%${search}%`);
+            mainParams.push(`%${search}%`);
+            // count query: search term is $1 (no limit/offset needed)
+            countWhere = `WHERE u.name ILIKE $1 OR u.email ILIKE $1`;
+            countParams.push(`%${search}%`);
         }
 
         const [users, countResult] = await Promise.all([
@@ -77,9 +87,9 @@ const getUsers = async (req, res, next) => {
                 u.last_login, u.created_at, r.name as role, r.id as role_id
          FROM users u LEFT JOIN roles r ON u.role_id = r.id
          ${where} ORDER BY u.created_at DESC LIMIT $1 OFFSET $2`,
-                params
+                mainParams
             ),
-            query(`SELECT COUNT(*) FROM users u ${where}`, params.slice(2)),
+            query(`SELECT COUNT(*) FROM users u ${countWhere}`, countParams),
         ]);
 
         res.json({
@@ -91,6 +101,7 @@ const getUsers = async (req, res, next) => {
         });
     } catch (err) { next(err); }
 };
+
 
 /**
  * PUT /api/admin/users/:id — Update user (role, ban/unban)

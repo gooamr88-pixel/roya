@@ -53,17 +53,33 @@ async function loadAdminUsers(page = 1) {
     }, 300);
 }
 
+/**
+ * highlightText(text, query)
+ * XSS-safe: escapes text first, then wraps matched substring.
+ * Returns raw HTML string — only inject with innerHTML.
+ */
+function highlightText(text, query) {
+    const escaped = esc(String(text ?? ''));
+    if (!query || !query.trim()) return escaped;
+    const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return escaped.replace(
+        new RegExp(`(${safeQuery})`, 'gi'),
+        '<mark class="search-highlight">$1</mark>'
+    );
+}
+
 function buildUserRow(u, roles) {
     const initials = (u.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     const canEdit = adminUser.role === 'super_admin' || adminUser.role === 'admin';
+    const searchQuery = (document.getElementById('userSearch')?.value || '').trim();
     return `<tr>
         <td data-label="User">
             <div style="display:flex;align-items:center;gap:10px">
                 <div style="width:32px;height:32px;border-radius:50%;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:var(--accent-primary);border:1px solid var(--border-color)">${initials}</div>
-                <div><div style="font-weight:600">${esc(u.name)}</div><div style="font-size:0.7rem;color:var(--text-muted)">ID: ${u.id}</div></div>
+                <div><div style="font-weight:600">${highlightText(u.name, searchQuery)}</div><div style="font-size:0.7rem;color:var(--text-muted)">ID: ${u.id}</div></div>
             </div>
         </td>
-        <td data-label="Email" style="font-size:0.85rem">${esc(u.email)}</td>
+        <td data-label="Email" style="font-size:0.85rem">${highlightText(u.email, searchQuery)}</td>
         <td data-label="Phone" style="font-size:0.85rem">${esc(u.phone || '—')}</td>
         <td data-label="Role">
             <select class="role-select" onchange="changeUserRole(${u.id}, this.value)" ${!canEdit ? 'disabled' : ''}>
@@ -101,7 +117,13 @@ async function toggleUserBan(userId, isCurrentlyActive) {
     );
     if (!confirmed) return;
     try {
-        await API.put(`/admin/users/${userId}`, { is_active: !isCurrentlyActive });
+        // BUG FIX #9: Also send ban_type so auth middleware can distinguish ban reason.
+        // When banning: set ban_type='permanent', is_active=false
+        // When unbanning: clear ban_type=null, is_active=true
+        const payload = isCurrentlyActive
+            ? { is_active: false, ban_type: 'permanent' }
+            : { is_active: true, ban_type: null };
+        await API.put(`/admin/users/${userId}`, payload);
         Toast.success(`User ${action}ned successfully.`);
         loadAdminUsers();
     } catch (err) { Toast.error(err.message); }

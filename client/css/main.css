@@ -115,6 +115,12 @@ body {
   overflow-x: hidden;
 }
 
+/* Rule 2/4: Arabic body automatically uses Cairo, no Nunjucks conditional needed */
+[dir="rtl"] body,
+[dir="rtl"] {
+  font-family: var(--font-arabic);
+}
+
 a {
   color: var(--accent-primary);
   text-decoration: none;
@@ -394,7 +400,8 @@ p {
 .data-table th {
   background: var(--bg-card);
   padding: 14px 16px;
-  text-align: left;
+  /* Logical property: auto-flips to end in RTL */
+  text-align: start;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
@@ -746,4 +753,29 @@ p {
   .container {
     padding: 0 16px;
   }
+}
+
+/* ══════════════════════════════════════════════
+   RTL LOGICAL PROPERTY UTILITIES
+   Rule 2: These allow icon/layout elements to
+   flip automatically when dir="rtl" is active.
+   ══════════════════════════════════════════════ */
+
+/* Back-arrow icon: points left in LTR, right in RTL */
+.back-arrow-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+[dir="rtl"] .back-arrow-icon {
+  transform: scaleX(-1);
+}
+
+/* Toast container: anchors to inline-end (right in LTR, left in RTL) */
+.toast-container {
+  inset-inline-end: 20px;
+  inset-block-start: 20px;
+  left: auto;
+  /* override the physical left if set elsewhere */
+  right: auto;
 }

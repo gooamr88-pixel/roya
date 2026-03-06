@@ -71,7 +71,21 @@ app.use(helmet({
         },
     },
 }));
-app.use(cors());
+// BUG FIX #7: cors() with no options allows ALL origins — replaced with allowlist
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (server-to-server, curl, mobile apps)
+        if (!origin) return callback(null, true);
+        if (config.security.allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS: Origin ${origin} not allowed`), false);
+    },
+    credentials: true,          // Required: allow cookies (access_token / refresh_token)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 // ── Body Parsing ──
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

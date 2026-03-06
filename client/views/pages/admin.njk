@@ -35,14 +35,16 @@
     .featured-star:hover { transform:scale(1.2); }
     .featured-star.active { color:#f59e0b; }
     .featured-star.inactive { color:var(--text-3); }
-    .charts-section { display:grid;grid-template-columns:1fr 380px;gap:22px;margin-bottom:28px; }
+    /* ── Responsive chart grid: collapses to 1 col on tablet/mobile ── */
+    .charts-section { display:grid;grid-template-columns:1fr min(380px, 100%);gap:22px;margin-bottom:28px; }
+    @media (max-width:900px) { .charts-section { grid-template-columns:1fr; } }
+    /* Charts card styles preserved from inline original */
     .chart-card { background:#0e0e14;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:border-color 0.3s; }
     .chart-card:hover { border-color:rgba(212,175,55,0.22); }
     .chart-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
     .chart-card-header h3 { font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.82); }
     .chart-card-header .chart-subtitle { font-size:0.76rem;color:rgba(255,255,255,0.3);margin-top:2px; }
     #revenueChart,#distributionChart { min-height:260px; }
-    @media (max-width:900px) { .charts-section { grid-template-columns:1fr; } }
     .internal-note { background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:0.82rem;color:var(--text-2); }
     .internal-note-label { font-size:0.7rem;font-weight:700;text-transform:uppercase;color:#3b82f6;margin-bottom:4px; }
   </style>
@@ -157,7 +159,7 @@
       <div class="breadcrumb-strip" id="adminBreadcrumb">
         <a href="/"><i class="fas fa-home"></i></a>
         <span class="separator">/</span>
-        <a href="/admin">Admin</a>
+        <a href="/admin">{{ t.admin.commandCenter }}</a>
         <span class="separator">/</span>
         <span class="current" id="adminBreadcrumbCurrent">{{ t.admin.executiveInsights }}</span>
       </div>
@@ -222,11 +224,11 @@
 
           <div class="charts-section">
             <div class="chart-card">
-              <div class="chart-card-header"><div><h3><i class="fas fa-chart-area" style="color:#d4af37;margin-{{ 'left' if isRTL else 'right' }}:8px"></i> {{ t.admin.ordersPerformance }}</h3><div class="chart-subtitle">{{ t.admin.revenueBreakdown }}</div></div></div>
+              <div class="chart-card-header"><div><h3><i class="fas fa-chart-area" style="color:#d4af37;margin-inline-end:8px"></i> {{ t.admin.ordersPerformance }}</h3><div class="chart-subtitle">{{ t.admin.revenueBreakdown }}</div></div></div>
               <div id="revenueChart"></div>
             </div>
             <div class="chart-card">
-              <div class="chart-card-header"><div><h3><i class="fas fa-chart-pie" style="color:#10b981;margin-{{ 'left' if isRTL else 'right' }}:8px"></i> {{ t.admin.contentMix }}</h3><div class="chart-subtitle">{{ t.admin.contentMixSubtitle }}</div></div></div>
+              <div class="chart-card-header"><div><h3><i class="fas fa-chart-pie" style="color:#10b981;margin-inline-end:8px"></i> {{ t.admin.contentMix }}</h3><div class="chart-subtitle">{{ t.admin.contentMixSubtitle }}</div></div></div>
               <div id="distributionChart"></div>
             </div>
           </div>
@@ -253,7 +255,7 @@
               <option value="completed">{{ t.admin.completedLabel }}</option>
               <option value="cancelled">{{ t.admin.cancelledLabel }}</option>
             </select>
-            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminOrdersTable', 'orders')"><i class="fas fa-download"></i> Export CSV</button>
+            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminOrdersTable', 'orders')"><i class="fas fa-download"></i> {{ t.admin.exportCsv }}</button>
           </div>
           <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thInvoice }}</th><th>{{ t.admin.thClient }}</th><th>{{ t.admin.thService }}</th><th>{{ t.admin.thAmount }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thDate }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminOrdersTable"></tbody></table></div>
           <div class="pagination" id="adminOrdersPagination"></div>
@@ -270,9 +272,9 @@
 
         {# ── EXHIBITIONS ── #}
         <div class="view-section" id="view-exhibitions">
-          <div style="display:flex;justify-content:flex-end;margin-bottom:20px;gap:8px">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:20px;gap:8px">
             <button class="btn btn-primary btn-sm" onclick="openExhibitionModal()">
-              <i class="fas fa-plus"></i> Add Exhibition
+              <i class="fas fa-plus"></i> {{ t.admin.addExhibition }}
             </button>
           </div>
           <div class="exhibition-admin-grid" id="adminExhibitionsGrid">
@@ -287,7 +289,7 @@
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <span style="font-size:0.85rem;color:var(--text-2)" id="propBulkInfo"></span>
             <div style="display:flex;gap:8px">
-              <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminPropertiesTable', 'properties')"><i class="fas fa-download"></i> Export</button>
+              <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminPropertiesTable', 'properties')"><i class="fas fa-download"></i> {{ t.admin.exportCsv }}</button>
               <button class="btn btn-primary btn-sm" onclick="openPropertyModal()"><i class="fas fa-plus"></i> {{ t.admin.addProperty }}</button>
             </div>
           </div>
@@ -311,7 +313,7 @@
         <div class="view-section" id="view-users">
           <div class="filters-bar">
             <input class="form-input search-input" type="text" id="userSearch" placeholder="{{ t.admin.userSearchPlaceholder }}" onkeyup="loadAdminUsers()">
-            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminUsersTable', 'users')"><i class="fas fa-download"></i> Export</button>
+            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminUsersTable', 'users')"><i class="fas fa-download"></i> {{ t.admin.exportCsv }}</button>
           </div>
           <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thUser }}</th><th>{{ t.admin.thEmail }}</th><th>{{ t.admin.thPhone }}</th><th>{{ t.admin.thRole }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thVerified }}</th><th>{{ t.admin.thLastLogin }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminUsersTable"></tbody></table></div>
           <div class="pagination" id="adminUsersPagination"></div>
@@ -336,11 +338,11 @@
   <div class="modal-overlay" id="confirmModal">
     <div class="confirm-dialog">
       <div class="confirm-icon warning" id="confirmIcon"><i class="fas fa-exclamation-triangle"></i></div>
-      <h3 id="confirmTitle">Are you sure?</h3>
-      <p id="confirmMessage">This action cannot be undone.</p>
+      <h3 id="confirmTitle">{{ t.admin.confirmTitle }}</h3>
+      <p id="confirmMessage">{{ t.admin.confirmMessage }}</p>
       <div class="confirm-actions">
-        <button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
-        <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+        <button class="btn btn-outline" onclick="closeConfirmModal()">{{ t.admin.cancelBtn }}</button>
+        <button class="btn btn-danger" id="confirmActionBtn">{{ t.admin.confirmBtn }}</button>
       </div>
     </div>
   </div>
@@ -348,12 +350,12 @@
   {# ══════ COMMAND PALETTE ══════ #}
   <div class="command-palette-overlay" id="commandPalette">
     <div class="command-palette">
-      <input type="text" class="command-palette-input" id="cmdInput" placeholder="Type a command or search…" autocomplete="off">
+      <input type="text" class="command-palette-input" id="cmdInput" placeholder="{{ t.admin.cmdPlaceholder }}" autocomplete="off">
       <div class="command-palette-results" id="cmdResults"></div>
       <div class="command-palette-footer">
-        <span><kbd>↑↓</kbd> Navigate</span>
-        <span><kbd>↵</kbd> Select</span>
-        <span><kbd>Esc</kbd> Close</span>
+        <span><kbd>↑↓</kbd> {{ t.admin.cmdNavigate }}</span>
+        <span><kbd>↵</kbd> {{ t.admin.cmdSelect }}</span>
+        <span><kbd>Esc</kbd> {{ t.admin.cmdClose }}</span>
       </div>
     </div>
   </div>
@@ -371,10 +373,10 @@
         {# ── Tabs ── #}
         <div class="form-tabs">
           <button type="button" class="form-tab-btn active" id="svcTabGeneral" data-tab="svcPaneGeneral" onclick="switchFormTab('svcTabGeneral','serviceForm')">
-            <i class="fas fa-info-circle tab-icon"></i> General Info
+            <i class="fas fa-info-circle tab-icon"></i> {{ t.admin.tabGeneralInfo }}
           </button>
           <button type="button" class="form-tab-btn" id="svcTabMedia" data-tab="svcPaneMedia" onclick="switchFormTab('svcTabMedia','serviceForm')">
-            <i class="fas fa-images tab-icon"></i> Media
+            <i class="fas fa-images tab-icon"></i> {{ t.admin.tabMedia }}
           </button>
         </div>
 
@@ -382,13 +384,14 @@
         <div class="form-tab-pane active" id="svcPaneGeneral">
           <div class="form-group">
             <label class="form-label">{{ t.admin.thTitle }} *</label>
-            <input class="form-input" type="text" id="svcTitle" required maxlength="200" placeholder="e.g. Digital Advertising">
+            <input class="form-input" type="text" id="svcTitle" required maxlength="200" placeholder="{{ t.admin.svcTitlePlaceholder }}">
           </div>
           <div class="form-group">
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="svcDescription" rows="3" placeholder="{{ t.admin.serviceDescPlaceholder }}"></textarea>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          {# Responsive 2-col grid — collapses on mobile #}
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
               <label class="form-label">{{ t.admin.thPrice }} ($)</label>
               <input class="form-input" type="number" id="svcPrice" min="0" step="0.01" placeholder="0.00">
@@ -396,17 +399,18 @@
             <div class="form-group">
               <label class="form-label">{{ t.admin.thCategory }}</label>
               <select class="form-select" id="svcCategory">
-                <option value="general">General</option>
-                <option value="advertising">Advertising</option>
-                <option value="marketing">Marketing</option>
-                <option value="exhibitions">Exhibitions</option>
-                <option value="real_estate">Real Estate</option>
+            <option value="general">{{ t.admin.catGeneral }}</option>
+                <option value="advertising">{{ t.admin.catAdvertising }}</option>
+                <option value="marketing">{{ t.admin.catMarketing }}</option>
+                <option value="exhibitions">{{ t.admin.catExhibitions }}</option>
+                <option value="real_estate">{{ t.admin.catRealEstate }}</option>
               </select>
             </div>
           </div>
+          {# Checkbox row: use flex-row so it doesn't stack vertically on mobile #}
           <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
             <input type="checkbox" id="svcActive" checked style="width:16px;height:16px;cursor:pointer">
-            <label class="form-label" for="svcActive" style="margin:0;cursor:pointer">Active / Visible to users</label>
+            <label class="form-label" for="svcActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
 
@@ -442,13 +446,13 @@
         {# ── Tabs ── #}
         <div class="form-tabs">
           <button type="button" class="form-tab-btn active" id="propTabGeneral" data-tab="propPaneGeneral" onclick="switchFormTab('propTabGeneral','propertyForm')">
-            <i class="fas fa-info-circle tab-icon"></i> General
+            <i class="fas fa-info-circle tab-icon"></i> {{ t.admin.tabGeneral }}
           </button>
           <button type="button" class="form-tab-btn" id="propTabDetails" data-tab="propPaneDetails" onclick="switchFormTab('propTabDetails','propertyForm')">
-            <i class="fas fa-list tab-icon"></i> Details
+            <i class="fas fa-list tab-icon"></i> {{ t.admin.tabDetails }}
           </button>
           <button type="button" class="form-tab-btn" id="propTabMedia" data-tab="propPaneMedia" onclick="switchFormTab('propTabMedia','propertyForm')">
-            <i class="fas fa-images tab-icon"></i> Media
+            <i class="fas fa-images tab-icon"></i> {{ t.admin.tabMedia }}
           </button>
         </div>
 
@@ -462,7 +466,8 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="propDescription" rows="3" placeholder="{{ t.admin.propertyDescPlaceholder }}"></textarea>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          {# Responsive 2-col grid — collapses on mobile #}
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
               <label class="form-label">{{ t.admin.thPrice }} ($)</label>
               <input class="form-input" type="number" id="propPrice" min="0" step="0.01" placeholder="0.00">
@@ -474,13 +479,14 @@
           </div>
           <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
             <input type="checkbox" id="propActive" checked style="width:16px;height:16px;cursor:pointer">
-            <label class="form-label" for="propActive" style="margin:0;cursor:pointer">Active / Visible to users</label>
+            <label class="form-label" for="propActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
 
         {# Details Pane #}
         <div class="form-tab-pane" id="propPaneDetails">
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          {# Responsive 3-col grid — collapses to 1-col on small screens #}
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px">
             <div class="form-group">
               <label class="form-label">{{ t.admin.areaLabel }}</label>
               <input class="form-input" type="number" id="propArea" min="0" placeholder="450">
@@ -497,10 +503,10 @@
           <div class="form-group">
             <label class="form-label">{{ t.admin.propertyType }}</label>
             <select class="form-select" id="propType">
-              <option value="residential">Residential</option>
-              <option value="commercial">Commercial</option>
-              <option value="land">Land</option>
-              <option value="industrial">Industrial</option>
+            <option value="residential">{{ t.admin.propTypeResidential }}</option>
+              <option value="commercial">{{ t.admin.propTypeCommercial }}</option>
+              <option value="land">{{ t.admin.propTypeLand }}</option>
+              <option value="industrial">{{ t.admin.propTypeIndustrial }}</option>
             </select>
           </div>
         </div>
@@ -510,9 +516,9 @@
           <div class="drop-zone" id="propDropZone">
             <input type="file" id="propImagesInput" accept="image/*" multiple>
             <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-            <div class="drop-zone-title">Drag & Drop Images Here</div>
-            <div class="drop-zone-sub">or click to browse your files</div>
-            <span class="drop-zone-hint">JPG, PNG, WebP • Max 10MB each</span>
+            <div class="drop-zone-title">{{ t.admin.dropZoneTitle }}</div>
+            <div class="drop-zone-sub">{{ t.admin.dropZoneSub }}</div>
+            <span class="drop-zone-hint">{{ t.admin.dropZoneHint }}</span>
           </div>
           <div class="image-preview-grid" id="propPreviewGrid"></div>
         </div>
@@ -528,47 +534,48 @@
   <div class="modal-overlay" id="exhibitionModal" style="display:none">
     <div class="modal-content modal-lg" style="max-height:90vh;overflow-y:auto">
       <div class="modal-header">
-        <h3 id="exhibitionModalTitle">Add Exhibition</h3>
+        <h3 id="exhibitionModalTitle">{{ t.admin.addExhibition }}</h3>
         <button class="modal-close" onclick="closeExhibitionModal()"><i class="fas fa-times"></i></button>
       </div>
       <form id="exhibitionForm" onsubmit="saveExhibition(event)">
         {# ── Tabs ── #}
         <div class="form-tabs">
           <button type="button" class="form-tab-btn active" id="exhTabGeneral" data-tab="exhPaneGeneral" onclick="switchFormTab('exhTabGeneral','exhibitionForm')">
-            <i class="fas fa-info-circle tab-icon"></i> General Info
+            <i class="fas fa-info-circle tab-icon"></i> {{ t.admin.tabGeneralInfo }}
           </button>
           <button type="button" class="form-tab-btn" id="exhTabMedia" data-tab="exhPaneMedia" onclick="switchFormTab('exhTabMedia','exhibitionForm')">
-            <i class="fas fa-images tab-icon"></i> Media
+            <i class="fas fa-images tab-icon"></i> {{ t.admin.tabMedia }}
           </button>
         </div>
 
         {# General Info Pane #}
         <div class="form-tab-pane active" id="exhPaneGeneral">
           <div class="form-group">
-            <label class="form-label">Title *</label>
-            <input class="form-input" type="text" id="exhTitle" required placeholder="e.g. International Real Estate Expo 2026">
+            <label class="form-label">{{ t.admin.thTitle }} *</label>
+            <input class="form-input" type="text" id="exhTitle" required placeholder="{{ t.admin.exhTitlePlaceholder }}">
           </div>
           <div class="form-group">
-            <label class="form-label">Location</label>
-            <input class="form-input" type="text" id="exhLocation" placeholder="e.g. Riyadh Exhibition Center">
+            <label class="form-label">{{ t.admin.thLocation }}</label>
+            <input class="form-input" type="text" id="exhLocation" placeholder="{{ t.admin.exhLocationPlaceholder }}">
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          {# Responsive 2-col grid — collapses on mobile #}
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
-              <label class="form-label">Start Date</label>
+              <label class="form-label">{{ t.admin.startDate }}</label>
               <input class="form-input" type="date" id="exhStartDate">
             </div>
             <div class="form-group">
-              <label class="form-label">End Date</label>
+              <label class="form-label">{{ t.admin.endDate }}</label>
               <input class="form-input" type="date" id="exhEndDate">
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea class="form-textarea" id="exhDesc" rows="3" placeholder="Describe the exhibition..."></textarea>
+            <label class="form-label">{{ t.admin.thDescription }}</label>
+            <textarea class="form-textarea" id="exhDesc" rows="3" placeholder="{{ t.admin.exhDescPlaceholder }}"></textarea>
           </div>
           <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
             <input type="checkbox" id="exhActive" checked style="width:16px;height:16px;cursor:pointer">
-            <label class="form-label" for="exhActive" style="margin:0;cursor:pointer">Active / Visible to users</label>
+            <label class="form-label" for="exhActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
 
@@ -577,15 +584,15 @@
           <div class="drop-zone" id="exhDropZone">
             <input type="file" id="exhImagesInput" accept="image/*" multiple>
             <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-            <div class="drop-zone-title">Drag & Drop Images Here</div>
-            <div class="drop-zone-sub">or click to browse your files</div>
-            <span class="drop-zone-hint">JPG, PNG, WebP • Max 10MB each</span>
+            <div class="drop-zone-title">{{ t.admin.dropZoneTitle }}</div>
+            <div class="drop-zone-sub">{{ t.admin.dropZoneSub }}</div>
+            <span class="drop-zone-hint">{{ t.admin.dropZoneHint }}</span>
           </div>
           <div class="image-preview-grid" id="exhibitionPreviewGrid"></div>
         </div>
 
         <button type="submit" class="btn btn-primary w-full" id="saveExhibitionBtn" style="margin-top:20px">
-          <i class="fas fa-save"></i> Save Exhibition
+          <i class="fas fa-save"></i> {{ t.admin.saveExhibition }}
         </button>
       </form>
     </div>
@@ -597,11 +604,11 @@
       <div class="glass-modal-icon warning" id="glassConfirmIcon">
         <i class="fas fa-exclamation-triangle" id="glassConfirmIconInner"></i>
       </div>
-      <h3 id="glassConfirmTitle">Confirm Action</h3>
-      <p id="glassConfirmMessage">Are you sure you want to proceed?</p>
+      <h3 id="glassConfirmTitle">{{ t.admin.confirmTitle }}</h3>
+      <p id="glassConfirmMessage">{{ t.admin.confirmMessage }}</p>
       <div class="glass-modal-actions">
-        <button class="btn btn-secondary" id="glassConfirmCancel">Cancel</button>
-        <button class="btn btn-danger" id="glassConfirmOk">Confirm</button>
+        <button class="btn btn-secondary" id="glassConfirmCancel">{{ t.admin.cancelBtn }}</button>
+        <button class="btn btn-danger" id="glassConfirmOk">{{ t.admin.confirmBtn }}</button>
       </div>
     </div>
   </div>
