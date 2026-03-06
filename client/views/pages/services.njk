@@ -1,0 +1,111 @@
+{# ═══════════════════════════════════════════════ #}
+{# Services Listing Page (loads from API)           #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/landing.njk" %}
+
+{% set pageTitle = t.servicesPage.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/landing.css">
+{% endblock %}
+
+{% block content %}
+  {# ════════════ PAGE HEADER ════════════ #}
+  <section style="padding: 120px 0 40px;">
+    <div class="container text-center">
+      <span class="section-label">{{ t.servicesPage.label }}</span>
+      <h1 class="section-title" style="font-size: 2.2rem;">{{ t.servicesPage.headingBefore }} <span class="text-gradient">{{ t.servicesPage.headingHighlight }}</span></h1>
+      <p class="section-desc" style="margin: 0 auto;">{{ t.servicesPage.desc }}</p>
+    </div>
+  </section>
+
+  {# ════════════ SERVICES LISTING ════════════ #}
+  <section class="services-section" style="padding-top: 0;">
+    <div class="container">
+      <div class="services-grid" id="servicesGrid">
+        <div class="empty-state" id="servicesLoading">
+          <div class="icon"><i class="fas fa-spinner fa-spin"></i></div>
+          <h3>{{ t.servicesPage.loading }}</h3>
+        </div>
+      </div>
+      <div class="text-center" style="margin-top: 36px;" id="servicesPagination"></div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/landing.js" defer></script>
+  <script defer>
+    {# Use svcI18n (not i18n) to avoid shadowing the global i18n from api.js #}
+    window.svcI18n = {
+      viewDetails:     '{{ t.servicesPage.viewDetails }}',
+      noServices:      '{{ t.servicesPage.noServices }}',
+      requestService:  '{{ t.servicesPage.requestService }}',
+      failedLoad:      '{{ t.servicesPage.failedLoad }}'
+    };
+
+    let currentPage = 1;
+    const PAGE_LIMIT = 12;
+
+    document.addEventListener('DOMContentLoaded', () => { loadServicesPage(1); });
+
+    async function loadServicesPage(page) {
+      currentPage = page;
+      const grid  = document.getElementById('servicesGrid');
+      const pagEl = document.getElementById('servicesPagination');
+      try {
+        const res  = await fetch(`/api/services?page=${page}&limit=${PAGE_LIMIT}`);
+        const data = await res.json();
+        if (!res.ok || !data.data?.services?.length) {
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-concierge-bell"></i></div><h3>' + svcI18n.noServices + '</h3></div>';
+          return;
+        }
+        const services   = data.data.services;
+        const pagination = data.data.pagination;
+        window.__landingServices = window.__landingServices || {};
+        grid.innerHTML = services.map(s => {
+          window.__landingServices[s.id] = s;
+          const img = getImageUrl(s.images, 'https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=800&q=80');
+          return `
+            <div class="service-card pro-card fade-in visible" data-service-id="${s.id}" style="cursor:pointer;">
+              <div class="pro-card-image">
+                <img src="${esc(img)}" alt="${esc(s.title)}" loading="lazy">
+                <div class="pro-card-overlay"><span class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> ${svcI18n.viewDetails}</span></div>
+                <span class="pro-price-badge">${fmtPrice(s.price)}</span>
+              </div>
+              <div class="pro-card-body">
+                <h3>${esc(s.title)}</h3>
+                <p>${esc(s.description || '')}</p>
+                <div class="pro-card-footer">
+                  <span class="pro-category"><i class="fas fa-tag"></i> ${esc(s.category || 'General')}</span>
+                  <span class="btn btn-outline btn-sm" style="pointer-events:none;">${svcI18n.requestService}</span>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        {# Attach click listeners after render — no inline onclick needed #}
+        grid.querySelectorAll('[data-service-id]').forEach(card => {
+          card.addEventListener('click', () => {
+            const id = card.dataset.serviceId;
+            handleServiceClick(window.__landingServices[id]);
+          });
+        });
+
+        if (pagination && pagination.totalPages > 1) {
+          let btns = '';
+          for (let i = 1; i <= pagination.totalPages; i++) {
+            btns += `<button class="btn ${i === page ? 'btn-primary' : 'btn-outline'} btn-sm" style="margin: 0 4px;" data-page="${i}">${i}</button>`;
+          }
+          pagEl.innerHTML = btns;
+          pagEl.querySelectorAll('[data-page]').forEach(btn => {
+            btn.addEventListener('click', () => loadServicesPage(parseInt(btn.dataset.page)));
+          });
+        } else { pagEl.innerHTML = ''; }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-exclamation-triangle"></i></div><h3>' + svcI18n.failedLoad + '</h3></div>';
+      }
+    }
+  </script>
+{% endblock %}

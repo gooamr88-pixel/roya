@@ -1,0 +1,100 @@
+{# ═══════════════════════════════════════════════ #}
+{# Exhibitions Listing Page (loads from API)        #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/landing.njk" %}
+
+{% set pageTitle = t.exhibitionsPage.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/landing.css">
+{% endblock %}
+
+{% block content %}
+  {# ════════════ PAGE HEADER ════════════ #}
+  <section style="padding: 120px 0 40px;">
+    <div class="container text-center">
+      <span class="section-label">{{ t.exhibitionsPage.label }}</span>
+      <h1 class="section-title" style="font-size: 2.2rem;">{{ t.exhibitionsPage.headingBefore }} <span class="text-gradient">{{ t.exhibitionsPage.headingHighlight }}</span></h1>
+      <p class="section-desc" style="margin: 0 auto;">{{ t.exhibitionsPage.desc }}</p>
+    </div>
+  </section>
+
+  {# ════════════ EXHIBITIONS LISTING ════════════ #}
+  <section class="exhibitions-section" style="padding-top: 0;">
+    <div class="container">
+      <div class="exhibitions-grid" id="exhibitionsGrid">
+        <div class="empty-state">
+          <div class="icon"><i class="fas fa-spinner fa-spin"></i></div>
+          <h3>{{ t.exhibitionsPage.loading }}</h3>
+        </div>
+      </div>
+      <div class="text-center" style="margin-top: 36px;" id="exhibitionsPagination"></div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/landing.js" defer></script>
+  <script defer>
+    {# Use exhI18n (not i18n) to avoid shadowing the global i18n from api.js #}
+    window.exhI18n = {
+      noExhibitions: '{{ t.exhibitionsPage.noExhibitions }}',
+      checkBack:     '{{ t.exhibitionsPage.checkBack }}',
+      failedLoad:    '{{ t.exhibitionsPage.failedLoad }}'
+    };
+
+    const exhEmojis = ['🏢', '🏗️', '📱', '🎯', '🌍', '💼', '🎪', '📊', '🏆', '🤝', '🎤', '🔬'];
+    let currentPage  = 1;
+    const PAGE_LIMIT = 12;
+
+    document.addEventListener('DOMContentLoaded', () => { loadExhibitionsPage(1); });
+
+    async function loadExhibitionsPage(page) {
+      currentPage = page;
+      const grid  = document.getElementById('exhibitionsGrid');
+      const pagEl = document.getElementById('exhibitionsPagination');
+      try {
+        const res  = await fetch(`/api/exhibitions?page=${page}&limit=${PAGE_LIMIT}`);
+        const data = await res.json();
+        if (!res.ok || !data.data?.exhibitions?.length) {
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-times"></i></div><h3>' + exhI18n.noExhibitions + '</h3><p>' + exhI18n.checkBack + '</p></div>';
+          return;
+        }
+        const exhibitions = data.data.exhibitions;
+        const pagination  = data.data.pagination;
+
+        grid.innerHTML = exhibitions.map((ex, idx) => {
+          const emoji     = exhEmojis[idx % exhEmojis.length];
+          const startDate = ex.start_date
+            ? new Date(ex.start_date).toLocaleDateString('{{ lang }}', { month: 'short', year: 'numeric' })
+            : 'TBA';
+          return `
+            <div class="exhibition-card fade-in visible">
+              <div class="emoji">${emoji}</div>
+              <h3>${esc(ex.title)}</h3>
+              <p>${esc(ex.description || '')}</p>
+              <div class="meta">
+                <span><i class="fas fa-map-marker-alt"></i> ${esc(ex.location || 'Location TBA')}</span>
+                <span><i class="fas fa-calendar"></i> ${startDate}</span>
+              </div>
+            </div>`;
+        }).join('');
+
+        if (pagination && pagination.totalPages > 1) {
+          let btns = '';
+          for (let i = 1; i <= pagination.totalPages; i++) {
+            btns += `<button class="btn ${i === page ? 'btn-primary' : 'btn-outline'} btn-sm" style="margin: 0 4px;" data-page="${i}">${i}</button>`;
+          }
+          pagEl.innerHTML = btns;
+          {# Event delegation — no inline onclick #}
+          pagEl.querySelectorAll('[data-page]').forEach(btn => {
+            btn.addEventListener('click', () => loadExhibitionsPage(parseInt(btn.dataset.page)));
+          });
+        } else { pagEl.innerHTML = ''; }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-exclamation-triangle"></i></div><h3>' + exhI18n.failedLoad + '</h3></div>';
+      }
+    }
+  </script>
+{% endblock %}

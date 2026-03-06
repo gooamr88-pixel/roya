@@ -1,0 +1,157 @@
+// ═══════════════════════════════════════════════
+// Admin V2.0 — Services CRUD + Live Preview + Featured + Bulk
+// Depends on: api.js, utils.js, admin.init.js (selectedSvc)
+// ═══════════════════════════════════════════════
+
+async function loadAdminServices(page = 1) {
+    try {
+        const data = await API.get(`/services?page=${page}&limit=20`);
+        const services = data.data.services;
+        const tbody = document.getElementById('adminServicesTable');
+        selectedSvc.clear();
+        updateBulkInfo('svc');
+
+        if (services.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:40px;color:var(--text-muted)">No services yet</td></tr>';
+        } else {
+            tbody.innerHTML = services.map(s => `
+                <tr>
+                    <td><input type="checkbox" class="svc-checkbox" value="${s.id}" onchange="toggleBulkSelect('svc', '${s.id}', this.checked)"></td>
+                    <td data-label="Title" style="font-weight:600">${esc(s.title)}</td>
+                    <td data-label="Price">${Utils.formatCurrency(s.price)}</td>
+                    <td data-label="Featured">
+                        <i class="fas fa-star featured-star ${s.is_featured ? 'active' : 'inactive'}" 
+                           onclick="toggleFeatured('services', '${s.id}', ${!s.is_featured})" 
+                           title="${s.is_featured ? 'Remove from featured' : 'Add to featured'}"></i>
+                    </td>
+                    <td data-label="Status"><span class="badge badge-${s.is_active !== false ? 'success' : 'danger'}">${s.is_active !== false ? 'Active' : 'Inactive'}</span></td>
+                    <td data-label="Created">${Utils.formatDate(s.created_at)}</td>
+                    <td data-label="Actions">
+                        <button class="btn btn-ghost btn-sm" onclick="editService(${s.id})" data-tooltip="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-ghost btn-sm" onclick="deleteService(${s.id})" data-tooltip="Deactivate"><i class="fas fa-trash" style="color:var(--danger)"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (err) { Toast.error('Failed to load services.'); }
+}
+
+// ── Live Preview ──
+function updateServicePreview() {
+    const preview = document.getElementById('svcLivePreview');
+    if (!preview) return;
+    const title = document.getElementById('svcTitle').value || 'Service Title';
+    const desc = document.getElementById('svcDescription').value || 'Description will appear here...';
+    const price = parseFloat(document.getElementById('svcPrice').value) || 0;
+    preview.innerHTML = `
+        <strong style="font-size:1.05rem">${esc(title)}</strong>
+        <p style="color:var(--text-muted);margin:6px 0;font-size:0.85rem">${esc(desc)}</p>
+        <span style="background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;font-size:1.1rem">${Utils.formatCurrency(price)}</span>
+    `;
+}
+
+let serviceDropFiles = [];
+
+function openServiceModal(editData = null) {
+    const modal = document.getElementById('serviceModal');
+    const form = document.getElementById('serviceForm');
+    document.getElementById('serviceModalTitle').textContent = editData ? 'Edit Service' : 'Add New Service';
+    form.reset();
+    serviceDropFiles = [];
+    document.getElementById('serviceEditId').value = editData ? editData.id : '';
+    document.getElementById('svcPreviewGrid').innerHTML = '';
+
+    if (editData) {
+        document.getElementById('svcTitle').value = editData.title || '';
+        document.getElementById('svcDescription').value = editData.description || '';
+        document.getElementById('svcPrice').value = editData.price || '';
+        document.getElementById('svcCategory').value = editData.category || 'general';
+        document.getElementById('svcActive').checked = editData.is_active !== false;
+
+        const images = Array.isArray(editData.images) ? editData.images : (typeof editData.images === 'string' ? (() => { try { return JSON.parse(editData.images); } catch { return []; } })() : []);
+        if (images.length > 0) renderServicePreviews(images);
+    }
+    switchFormTab('svcTabGeneral', 'serviceForm');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+}
+function closeServiceModal() {
+    const modal = document.getElementById('serviceModal');
+    if (modal) { modal.classList.remove('show'); modal.style.display = 'none'; }
+    serviceDropFiles = [];
+}
+
+function initServiceDropZone() {
+    const zone = document.getElementById('svcDropZone');
+    const input = document.getElementById('svcImagesInput');
+    if (!zone || !input) return;
+
+    ['dragenter', 'dragover'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('drag-over'); }));
+    ['dragleave', 'drop'].forEach(e => zone.addEventListener(e, () => zone.classList.remove('drag-over')));
+    zone.addEventListener('drop', ev => { ev.preventDefault(); handleServiceFiles(ev.dataTransfer.files); });
+    input.addEventListener('change', () => handleServiceFiles(input.files));
+}
+
+function handleServiceFiles(files) {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    Array.from(files).forEach(file => {
+        if (!allowed.includes(file.type)) return;
+        serviceDropFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = (e) => renderServicePreviews([e.target.result]);
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderServicePreviews(sources) {
+    const grid = document.getElementById('svcPreviewGrid');
+    if (!grid) return;
+    sources.forEach((src) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'img-thumb';
+        thumb.innerHTML = `<img src="${src}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
+        grid.appendChild(thumb);
+    });
+}
+
+async function saveAdminService(e) {
+    e.preventDefault();
+    const btn = document.getElementById('svcSubmitBtn');
+    const editId = document.getElementById('serviceEditId').value;
+
+    const formData = new FormData();
+    formData.append('title', document.getElementById('svcTitle').value.trim());
+    formData.append('description', document.getElementById('svcDescription').value.trim());
+    formData.append('price', document.getElementById('svcPrice').value);
+    formData.append('category', document.getElementById('svcCategory').value);
+    formData.append('is_active', document.getElementById('svcActive').checked);
+
+    serviceDropFiles.forEach(file => formData.append('images', file));
+
+    setLoading(btn, true, 'Saving...');
+    try {
+        if (editId) {
+            await API.putForm(`/services/${editId}`, formData);
+            Toast.success('Service updated!');
+        } else {
+            await API.postForm('/services', formData);
+            Toast.success('Service created!');
+        }
+        closeServiceModal();
+        loadAdminServices();
+    } catch (err) { Toast.error(err.message || 'Failed to save service.'); }
+    finally { setLoading(btn, false); }
+}
+
+async function editService(id) {
+    try { const data = await API.get(`/services/${id}`); openServiceModal(data.data.service); }
+    catch (err) { Toast.error(err.message); }
+}
+async function deleteService(id) {
+    const confirmed = await glassConfirm('Deactivate Service', 'Are you sure you want to deactivate this service?', 'danger');
+    if (!confirmed) return;
+    try { await API.delete(`/services/${id}`); Toast.success('Service deactivated.'); loadAdminServices(); }
+    catch (err) { Toast.error(err.message); }
+}
+
+document.addEventListener('DOMContentLoaded', initServiceDropZone);

@@ -1,0 +1,341 @@
+{# ═══════════════════════════════════════════════ #}
+{# Dashboard V2.0 — User Control Center           #}
+{# Uses base layout (own sidebar, no shared navbar) #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/base.njk" %}
+
+{% set pageTitle = t.dashboard.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/dashboard.css">
+{% endblock %}
+
+{% block body %}
+  <div class="dashboard-layout">
+
+    {# ════════════ SIDEBAR ════════════ #}
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-logo">
+          <span class="brand-text">Roya</span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">{{ t.dashboard.navMain }}</div>
+        <button class="sidebar-link active" data-view="overview">
+          <span class="icon"><i class="fas fa-th-large"></i></span> {{ t.dashboard.overview }}
+          <span class="kbd-hint">1</span>
+        </button>
+        <button class="sidebar-link" data-view="orders">
+          <span class="icon"><i class="fas fa-shopping-bag"></i></span> {{ t.dashboard.myOrders }}
+          <span class="badge-count hidden" id="ordersCount">0</span>
+          <span class="kbd-hint">2</span>
+        </button>
+        <button class="sidebar-link" data-view="services">
+          <span class="icon"><i class="fas fa-concierge-bell"></i></span> {{ t.dashboard.browseServices }}
+          <span class="kbd-hint">3</span>
+        </button>
+        <button class="sidebar-link" data-view="exhibitions">
+          <span class="icon" style="display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path>
+              <path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path>
+            </svg>
+          </span>
+          {{ t.nav.exhibitions | default('Exhibitions') }}
+          <span class="kbd-hint">4</span>
+        </button>
+
+        <div class="nav-section">{{ t.dashboard.navAccount }}</div>
+        <button class="sidebar-link" data-view="notifications">
+          <span class="icon"><i class="fas fa-bell"></i></span> {{ t.dashboard.notifications }}
+          <span class="badge-count hidden" id="notifCount">0</span>
+          <span class="kbd-hint">5</span>
+        </button>
+        <button class="sidebar-link" data-view="invoices">
+          <span class="icon"><i class="fas fa-file-invoice-dollar"></i></span> {{ t.dashboard.myInvoices }}
+          <span class="kbd-hint">6</span>
+        </button>
+        <button class="sidebar-link" data-view="profile">
+          <span class="icon"><i class="fas fa-user-cog"></i></span> {{ t.dashboard.profile }}
+          <span class="kbd-hint">7</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="userAvatar">U</div>
+          <div>
+            <div class="name" id="userName">{{ t.dashboard.userDefault }}</div>
+            <div class="role" id="userRole">{{ t.dashboard.roleDefault }}</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    {# ════════════ MAIN CONTENT ════════════ #}
+    <div class="main-content">
+      {# Top Bar #}
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+          <div class="topbar-title">
+            <h2 id="viewTitle">{{ t.dashboard.controlCenter }}</h2>
+            <span id="viewSubtitle">{{ t.dashboard.welcomeBack }}</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect=/dashboard" class="topbar-btn" title="{{ langToggle.text }}" data-tooltip="{{ langToggle.text }}">
+            <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}" style="width:18px;height:auto;border-radius:2px;">
+          </a>
+          <button class="topbar-btn" id="themeToggle" title="{{ t.nav.toggleTheme }}" data-tooltip="{{ t.nav.toggleTheme }}">
+            <i class="fas fa-sun"></i>
+          </button>
+          <button class="topbar-btn" title="{{ t.dashboard.notifications }}" data-view="notifications" data-tooltip="{{ t.dashboard.notifications }}">
+            <i class="fas fa-bell"></i>
+            <span class="notif-dot hidden" id="notifDot"></span>
+          </button>
+          <a href="/admin" class="topbar-btn" id="adminLink" style="display:none" title="{{ t.dashboard.adminPanel }}" data-tooltip="{{ t.dashboard.adminPanel }}">
+            <i class="fas fa-shield-halved"></i>
+          </a>
+          <button class="topbar-btn" title="{{ t.dashboard.logout }}" id="logoutBtn" data-tooltip="{{ t.dashboard.logout }}"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+      </div>
+
+      {# Breadcrumb #}
+      <div class="breadcrumb-strip" id="breadcrumb">
+        <a href="/"><i class="fas fa-home"></i></a>
+        <span class="separator">/</span>
+        <span class="current" id="breadcrumbCurrent">{{ t.dashboard.overview }}</span>
+      </div>
+
+      {# Content Area #}
+      <div class="content-area">
+
+        {# ── OVERVIEW ── #}
+        <div class="view-section active" id="view-overview">
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon purple"><i class="fas fa-shopping-bag"></i></div>
+                <div class="stat-label">{{ t.dashboard.activeOrders }}</div>
+              </div>
+              <div class="stat-value" id="statOrders"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-label">{{ t.dashboard.completed }}</div>
+              </div>
+              <div class="stat-value" id="statCompleted"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon orange"><i class="fas fa-wallet"></i></div>
+                <div class="stat-label">{{ t.dashboard.totalSpent }}</div>
+              </div>
+              <div class="stat-value" id="statSpent"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon blue"><i class="fas fa-bell"></i></div>
+                <div class="stat-label">{{ t.dashboard.notifications }}</div>
+              </div>
+              <div class="stat-value" id="statNotifications"><div class="skeleton skeleton-value"></div></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" data-view="services">
+              <i class="fas fa-plus"></i> {{ t.dashboard.newOrder }}
+            </button>
+            <button class="btn btn-outline btn-sm" data-view="invoices">
+              <i class="fas fa-file-invoice"></i> {{ t.dashboard.myInvoices }}
+            </button>
+            <button class="btn btn-outline btn-sm" data-view="notifications">
+              <i class="fas fa-bell"></i> {{ t.dashboard.notifications }}
+            </button>
+          </div>
+
+          <div class="dashboard-card full-width" style="margin-bottom:32px">
+            <div class="card-header">
+              <h3><i class="fas fa-route"></i> {{ t.dashboard.activeOrderProgress }}</h3>
+            </div>
+            <div id="orderTimeline">
+              <div style="padding:32px;text-align:center;color:var(--text-muted)">
+                <i class="fas fa-clock" style="font-size:2rem;display:block;margin-bottom:10px"></i>
+                {{ t.dashboard.noActiveOrders }}
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card full-width">
+            <div class="card-header">
+              <h3><i class="fas fa-history"></i> {{ t.dashboard.recentOrders }}</h3>
+              <button class="btn btn-outline btn-sm" data-view="orders">{{ t.dashboard.viewAll }}</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>{{ t.dashboard.thInvoice }}</th>
+                    <th>{{ t.dashboard.thService }}</th>
+                    <th>{{ t.dashboard.thAmount }}</th>
+                    <th>{{ t.dashboard.thStatus }}</th>
+                    <th>{{ t.dashboard.thDate }}</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersTable">
+                  <tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+                  <tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+                  <tr><td colspan="5"><div class="skeleton skeleton-row"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="view-section" id="view-orders">
+          <div class="filters-bar">
+            <select class="form-select" id="orderStatusFilter">
+              <option value="">{{ t.dashboard.allStatuses }}</option>
+              <option value="pending">{{ t.dashboard.pending }}</option>
+              <option value="in_progress">{{ t.dashboard.inProgress }}</option>
+              <option value="completed">{{ t.dashboard.completedStatus }}</option>
+              <option value="cancelled">{{ t.dashboard.cancelled }}</option>
+            </select>
+          </div>
+          <div class="order-cards-grid" id="ordersTable"></div>
+          <div class="pagination" id="ordersPagination"></div>
+        </div>
+
+        {# ── SERVICES ── #}
+        <div class="view-section" id="view-services">
+          <div class="services-grid" id="dashServicesGrid">
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+          </div>
+        </div>
+
+        {# ── EXHIBITIONS ── #}
+        <div class="view-section" id="view-exhibitions">
+          <div class="exhibitions-grid" id="dashExhibitionsGrid">
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+          </div>
+        </div>
+
+        {# ── NOTIFICATIONS ── #}
+        <div class="view-section" id="view-notifications">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+            <button class="btn btn-ghost btn-sm" id="markAllReadBtn"><i class="fas fa-check-double"></i> {{ t.dashboard.markAllRead }}</button>
+          </div>
+          <div id="notificationsList"></div>
+          <div class="pagination" id="notifPagination"></div>
+        </div>
+
+        {# ── INVOICES ── #}
+        <div class="view-section" id="view-invoices">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>{{ t.dashboard.thInvoice }}</th>
+                  <th>{{ t.dashboard.thService }}</th>
+                  <th>{{ t.dashboard.thTotal }}</th>
+                  <th>{{ t.dashboard.thStatus }}</th>
+                  <th>{{ t.dashboard.thDate }}</th>
+                  <th>{{ t.dashboard.thActions }}</th>
+                </tr>
+              </thead>
+              <tbody id="invoicesTable"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="invoicesPagination"></div>
+        </div>
+
+        {# ── PROFILE ── #}
+        <div class="view-section" id="view-profile">
+          <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">U</div>
+            <div class="profile-info">
+              <h2 id="profileName">{{ t.dashboard.userDefault }}</h2>
+              <p class="email" id="profileEmail">user@example.com</p>
+            </div>
+          </div>
+
+          <div class="dashboard-grid" style="margin-top:24px">
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3><i class="fas fa-user-edit"></i> {{ t.dashboard.personalInfo }}</h3>
+              </div>
+              <form id="profileForm">
+                <div class="profile-form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="profileNameInput">{{ t.dashboard.fullName }}</label>
+                    <input class="form-input" type="text" id="profileNameInput">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="profilePhoneInput">{{ t.dashboard.phone }}</label>
+                    <input class="form-input" type="tel" id="profilePhoneInput">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-save"></i> {{ t.dashboard.saveChanges }}</button>
+              </form>
+            </div>
+
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3><i class="fas fa-lock"></i> {{ t.dashboard.changePassword }}</h3>
+              </div>
+              <form id="changePasswordForm">
+                <div class="form-group">
+                  <label class="form-label" for="currentPass">{{ t.dashboard.currentPassword }}</label>
+                  <input class="form-input" type="password" id="currentPass" placeholder="{{ t.dashboard.currentPasswordPlaceholder }}" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="newPass">{{ t.dashboard.newPassword }}</label>
+                  <input class="form-input" type="password" id="newPass" placeholder="{{ t.dashboard.newPasswordPlaceholder }}" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="confirmNewPass">{{ t.dashboard.confirmNewPassword }}</label>
+                  <input class="form-input" type="password" id="confirmNewPass" placeholder="{{ t.dashboard.confirmNewPasswordPlaceholder }}" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-key"></i> {{ t.dashboard.updatePassword }}</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/dashboard.js" defer></script>
+{% endblock %}
+
+{# ═════ FROSTED GLASS CONFIRMATION MODAL ═════ #}
+{% block pageModals %}
+<div class="glass-modal-overlay" id="glassConfirmOverlay" role="dialog" aria-modal="true">
+  <div class="glass-modal" id="glassConfirmModal">
+    <div class="glass-modal-icon warning" id="glassConfirmIcon">
+      <i class="fas fa-exclamation-triangle" id="glassConfirmIconInner"></i>
+    </div>
+    <h3 id="glassConfirmTitle">Confirm Action</h3>
+    <p id="glassConfirmMessage">Are you sure you want to proceed?</p>
+    <div class="glass-modal-actions">
+      <button class="btn btn-secondary" id="glassConfirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="glassConfirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,271 @@
+{# ═══════════════════════════════════════════════ #}
+{# Home Page (index)                                #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/landing.njk" %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/landing.css">
+{% endblock %}
+
+{% block content %}
+  {# ════════════ HERO ════════════ #}
+  <section class="hero" id="home">
+    <div class="hero-slideshow">
+      <div class="hero-slide active">
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
+          alt="Corporate Office">
+      </div>
+      <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80"
+          alt="Modern Architecture">
+      </div>
+      <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1920&q=80"
+          alt="Business Meeting">
+      </div>
+      <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=80"
+          alt="Conference Hall">
+      </div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          <span data-i18n="hero.badge">{{ t.hero.badge }}</span>
+        </div>
+
+        <h1><span data-i18n="hero.title_before">{{ t.hero.title_before }}</span> <span class="text-gradient" data-i18n="hero.title_highlight">{{ t.hero.title_highlight }}</span> <span data-i18n="hero.title_after">{{ t.hero.title_after }}</span></h1>
+
+        <p data-i18n="hero.subtitle">{{ t.hero.subtitle }}</p>
+
+        <div class="hero-buttons">
+          <a href="#services" class="btn btn-primary btn-lg">
+            <i class="fas fa-rocket"></i> <span data-i18n="hero.cta_services">{{ t.hero.cta_services }}</span>
+          </a>
+          <a href="#contact" class="btn btn-outline btn-lg">
+            <i class="fas fa-phone"></i> <span data-i18n="hero.cta_contact">{{ t.hero.cta_contact }}</span>
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="number" data-count="500">0</div>
+            <div class="label" data-i18n="hero.stat_projects">{{ t.hero.stat_projects }}</div>
+          </div>
+          <div class="hero-stat">
+            <div class="number" data-count="120">0</div>
+            <div class="label" data-i18n="hero.stat_clients">{{ t.hero.stat_clients }}</div>
+          </div>
+          <div class="hero-stat">
+            <div class="number" data-count="15">0</div>
+            <div class="label" data-i18n="hero.stat_years">{{ t.hero.stat_years }}</div>
+          </div>
+          <div class="hero-stat">
+            <div class="number" data-count="25">0</div>
+            <div class="label" data-i18n="hero.stat_team">{{ t.hero.stat_team }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ════════════ ABOUT ════════════ #}
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual fade-in-left">
+          <div class="about-image-frame">
+            <div class="inner">
+              <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"
+                alt="{{ t.about.officeAlt }}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-in-right">
+          <span class="section-label" data-i18n="about.label">{{ t.about.label }}</span>
+          <h2 class="section-title"><span data-i18n="about.title_before">{{ t.about.title_before }}</span> <span class="text-gradient" data-i18n="about.title_highlight">{{ t.about.title_highlight }}</span></h2>
+          <p class="section-desc" data-i18n="about.desc">{{ t.about.desc }}</p>
+
+          <div class="about-features">
+            <div class="about-feature">
+              <div class="icon"><i class="fas fa-bullhorn"></i></div>
+              <span data-i18n="about.advertising">{{ t.about.advertising }}</span>
+            </div>
+            <div class="about-feature">
+              <div class="icon"><i class="fas fa-chart-line"></i></div>
+              <span data-i18n="about.marketing">{{ t.about.marketing }}</span>
+            </div>
+            <div class="about-feature">
+              <div class="icon"><i class="fas fa-building"></i></div>
+              <span data-i18n="about.realEstate">{{ t.about.realEstate }}</span>
+            </div>
+            <div class="about-feature">
+              <div class="icon" style="display:flex;align-items:center;justify-content:center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path>
+                  <path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path>
+                </svg>
+              </div>
+              <span data-i18n="about.exhibitions">{{ t.about.exhibitions }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ════════════ SERVICES ════════════ #}
+  <section class="services-section" id="services">
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label" data-i18n="services.label">{{ t.services.label }}</span>
+        <h2 class="section-title"><span data-i18n="services.title_before">{{ t.services.title_before }}</span> <span class="text-gradient" data-i18n="services.title_highlight">{{ t.services.title_highlight }}</span></h2>
+        <p class="section-desc" style="margin: 0 auto;" data-i18n="services.desc">{{ t.services.desc }}</p>
+      </div>
+
+      <div class="services-grid" id="servicesGrid">
+        {% for svc in t.services.items %}
+        <div class="service-card fade-in">
+          <div class="service-card-image">
+            <img src="{{ svc.image }}" alt="{{ svc.title }}">
+          </div>
+          <div class="service-card-body">
+            <h3>{{ svc.title }}</h3>
+            <p>{{ svc.desc }}</p>
+            <div class="service-card-footer">
+              <span class="service-price">{{ svc.price }} <span>{{ svc.unit }}</span></span>
+              <a href="/register" class="btn btn-outline btn-sm" data-i18n="services.request">{{ t.services.request }}</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="text-center" style="margin-top: 36px;">
+        <a href="/services" class="btn btn-outline" style="padding: 12px 32px; font-size: 0.95rem;">
+          <span data-i18n="services.seeMore">{{ t.services.seeMore }}</span> <i class="fas fa-arrow-{{ 'left' if isRTL else 'right' }}" style="margin-{{ 'right' if isRTL else 'left' }}: 8px;"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {# ════════════ EXHIBITIONS ════════════ #}
+  <section class="exhibitions-section" id="exhibitions">
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label" data-i18n="exhibitions.label">{{ t.exhibitions.label }}</span>
+        <h2 class="section-title"><span data-i18n="exhibitions.title_before">{{ t.exhibitions.title_before }}</span> <span class="text-gradient" data-i18n="exhibitions.title_highlight">{{ t.exhibitions.title_highlight }}</span></h2>
+        <p class="section-desc" style="margin: 0 auto;" data-i18n="exhibitions.desc">{{ t.exhibitions.desc }}</p>
+      </div>
+
+      <div class="exhibitions-grid" id="exhibitionsGrid">
+        <!-- Injected dynamically by landing.js -->
+      </div>
+
+      <div class="text-center" style="margin-top: 36px;">
+        <a href="/exhibitions" class="btn btn-outline" style="padding: 12px 32px; font-size: 0.95rem;">
+          <span data-i18n="exhibitions.seeMore">{{ t.exhibitions.seeMore }}</span> <i class="fas fa-arrow-{{ 'left' if isRTL else 'right' }}" style="margin-{{ 'right' if isRTL else 'left' }}: 8px;"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {# ════════════ PROPERTIES ════════════ #}
+  <section class="properties-section" id="properties">
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label" data-i18n="properties.label">{{ t.properties.label }}</span>
+        <h2 class="section-title"><span data-i18n="properties.title_before">{{ t.properties.title_before }}</span> <span class="text-gradient" data-i18n="properties.title_highlight">{{ t.properties.title_highlight }}</span></h2>
+        <p class="section-desc" style="margin: 0 auto;" data-i18n="properties.desc">{{ t.properties.desc }}</p>
+      </div>
+
+      <div class="properties-grid" id="propertiesGrid">
+        <!-- Injected dynamically by landing.js -->
+      </div>
+
+      <div class="text-center" style="margin-top: 36px;">
+        <a href="/properties" class="btn btn-outline" style="padding: 12px 32px; font-size: 0.95rem;">
+          <span data-i18n="properties.seeMore">{{ t.properties.seeMore }}</span> <i class="fas fa-arrow-{{ 'left' if isRTL else 'right' }}" style="margin-{{ 'right' if isRTL else 'left' }}: 8px;"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {# ════════════ CONTACT ════════════ #}
+  <section class="contact-section" id="contact">
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label" data-i18n="contact.label">{{ t.contact.label }}</span>
+        <h2 class="section-title"><span data-i18n="contact.title_before">{{ t.contact.title_before }}</span> <span class="text-gradient" data-i18n="contact.title_highlight">{{ t.contact.title_highlight }}</span></h2>
+        <p class="section-desc" style="margin: 0 auto;" data-i18n="contact.desc">{{ t.contact.desc }}</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-info fade-in-left">
+          <div class="contact-info-item">
+            <div class="icon"><i class="fas fa-envelope"></i></div>
+            <div>
+              <h4 data-i18n="contact.emailLabel">{{ t.contact.emailLabel }}</h4>
+              <p>mohamedmahomoud809@gmail.com</p>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="icon"><i class="fas fa-phone"></i></div>
+            <div>
+              <h4 data-i18n="contact.phoneLabel">{{ t.contact.phoneLabel }}</h4>
+              <p>+20 1025474922</p>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="icon"><i class="fab fa-whatsapp"></i></div>
+            <div>
+              <h4 data-i18n="contact.whatsappLabel">{{ t.contact.whatsappLabel }}</h4>
+              <p>+966 548 171 795</p>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="icon"><i class="fas fa-location-dot"></i></div>
+            <div>
+              <h4 data-i18n="contact.visitLabel">{{ t.contact.visitLabel }}</h4>
+              <p data-i18n="contact.address">{{ t.contact.address }}</p>
+            </div>
+          </div>
+        </div>
+
+        <form class="contact-form fade-in-right" id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="contactName" data-i18n="contact.form_name">{{ t.contact.form_name }}</label>
+              <input class="form-input" type="text" id="contactName" placeholder="{{ t.contact.form_name_placeholder }}" data-i18n="contact.form_name_placeholder" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contactEmail" data-i18n="contact.form_email">{{ t.contact.form_email }}</label>
+              <input class="form-input" type="email" id="contactEmail" placeholder="{{ t.contact.form_email_placeholder }}" data-i18n="contact.form_email_placeholder" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contactSubject" data-i18n="contact.form_subject">{{ t.contact.form_subject }}</label>
+            <input class="form-input" type="text" id="contactSubject" placeholder="{{ t.contact.form_subject_placeholder }}" data-i18n="contact.form_subject_placeholder">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contactMessage" data-i18n="contact.form_message">{{ t.contact.form_message }}</label>
+            <textarea class="form-textarea" id="contactMessage" placeholder="{{ t.contact.form_message_placeholder }}" data-i18n="contact.form_message_placeholder" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full">
+            <i class="fas fa-paper-plane"></i> <span data-i18n="contact.form_submit">{{ t.contact.form_submit }}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/landing.js" defer></script>
+{% endblock %}

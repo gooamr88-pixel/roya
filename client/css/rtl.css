@@ -1,0 +1,428 @@
+/* ═══════════════════════════════════════════════
+   RTL STYLES — For Arabic Language
+   Loaded ONLY on Arabic pages via <link> in HTML.
+   ═══════════════════════════════════════════════ */
+
+/* ── Base ── */
+body {
+    direction: rtl;
+    text-align: right;
+    font-family: var(--font-arabic), sans-serif;
+}
+
+:root {
+    --font-primary: 'Cairo', sans-serif !important;
+}
+
+/* ── Hero ── */
+.hero,
+.hero-content,
+.hero-stats {
+    text-align: center !important;
+}
+
+.hero::before {
+    right: auto;
+    left: -20%;
+}
+
+.hero::after {
+    left: auto;
+    right: -10%;
+}
+
+.hero-stats {
+    flex-direction: row-reverse;
+}
+
+.hero-buttons {
+    flex-direction: row-reverse;
+}
+
+/* ── Navbar ── */
+.navbar {
+    direction: rtl;
+}
+
+.nav-links {
+    margin: 0 auto;
+    padding-right: 24px;
+    padding-left: 24px;
+}
+
+.nav-links a::after {
+    left: 50%;
+    right: auto;
+    transform: translateX(50%);
+}
+
+.nav-logo {
+    margin-left: 0;
+}
+
+.nav-actions {
+    margin-right: 0;
+    gap: 12px;
+}
+
+/* ── Mobile Menu ── */
+.mobile-menu .close-btn {
+    left: 24px;
+    right: auto;
+}
+
+/* ── Gradient Text RTL Fix ── */
+.text-gradient {
+    direction: ltr;
+    display: inline-block;
+}
+
+/* ── About ── */
+.about-image-frame {
+    transform: scaleX(-1);
+}
+
+.about-image-frame .inner {
+    transform: scaleX(-1);
+}
+
+.about-feature .icon {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* ── Services ── */
+.service-card:hover {
+    transform: translateY(-6px);
+}
+
+.service-card-footer {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+/* ── Property Card Image Fixes ── */
+.property-card-image .badge {
+    left: auto;
+    right: 12px;
+}
+
+/* ── Contact ── */
+.contact-info-item .icon {
+    margin-left: 16px;
+}
+
+.contact-form .form-row {
+    column-gap: 16px;
+}
+
+/* ── Language Toggle ── */
+.lang-toggle {
+    margin-right: 8px;
+    margin-left: 0 !important;
+}
+
+
+/* ── Animations Direction Fix ── */
+.fade-in-left {
+    transform: translateX(30px);
+}
+
+.fade-in-right {
+    transform: translateX(-30px);
+}
+
+/* ── Toast Notifications ── */
+.toast-container {
+    right: auto;
+    left: 20px;
+}
+
+.toast-success {
+    border-left: none;
+    border-right: 3px solid var(--success);
+}
+
+.toast-error {
+    border-left: none;
+    border-right: 3px solid var(--danger);
+}
+
+.toast-warning {
+    border-left: none;
+    border-right: 3px solid var(--warning);
+}
+
+.toast-info {
+    border-left: none;
+    border-right: 3px solid var(--info);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+/* ── Auth Pages RTL ── */
+.auth-page {
+    direction: rtl;
+}
+
+.auth-form-wrapper .back-link {
+    flex-direction: row-reverse;
+}
+
+.auth-form-wrapper .back-link i {
+    transform: scaleX(-1);
+}
+
+.password-toggle .toggle-btn {
+    right: auto;
+    left: 14px;
+}
+
+/* ── Auth Brand ── */
+.auth-brand::before {
+    right: auto;
+    left: -20%;
+}
+
+.auth-brand::after {
+    left: auto;
+    right: -10%;
+}
+
+
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD & ADMIN — RTL OVERRIDES
+   ═══════════════════════════════════════════════ */
+
+/* ── Sidebar RTL ── */
+[dir="rtl"] .sidebar {
+    left: auto;
+    right: 0;
+    border-right: none;
+    border-left: 1px solid #1F2937;
+    border-radius: 0;
+}
+
+[dir="rtl"] .sidebar::before,
+[dir="rtl"] .sidebar::after {
+    display: none;
+}
+
+[dir="rtl"] .main-content {
+    margin-left: 0;
+    margin-right: var(--sidebar-width, 260px);
+}
+
+[dir="rtl"] .sidebar-link {
+    text-align: right;
+    flex-direction: row-reverse;
+}
+
+/* Flip active indicator bar to right edge */
+[dir="rtl"] .sidebar-link.active::before {
+    left: auto;
+    right: -12px;
+    border-radius: 3px 0 0 3px;
+}
+
+[dir="rtl"] .sidebar-link .badge-count {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+[dir="rtl"] .sidebar-link .icon {
+    margin-left: 0;
+}
+
+[dir="rtl"] .sidebar-nav .nav-section {
+    text-align: right;
+    letter-spacing: 0.5px;
+}
+
+[dir="rtl"] .sidebar-user {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+/* ── Topbar RTL ── */
+[dir="rtl"] .topbar {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .topbar-left {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .topbar-right {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .topbar-title {
+    text-align: right;
+}
+
+[dir="rtl"] .topbar-btn .notif-dot {
+    right: auto;
+    left: 6px;
+}
+
+/* ── Stats Grid RTL ── */
+[dir="rtl"] .stat-card {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+/* ── Tables RTL ── */
+[dir="rtl"] table {
+    direction: rtl;
+}
+
+[dir="rtl"] table th,
+[dir="rtl"] table td {
+    text-align: right;
+    padding: 12px 16px;
+    white-space: nowrap;
+}
+
+[dir="rtl"] table td {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 250px;
+}
+
+/* ── Filters Bar RTL ── */
+[dir="rtl"] .filters-bar {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .filters-bar .form-select,
+[dir="rtl"] .filters-bar .search-input {
+    text-align: right;
+}
+
+/* ── Dashboard Cards RTL ── */
+[dir="rtl"] .dashboard-card .card-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .card-header h3 {
+    text-align: right;
+}
+
+/* ── Profile RTL ── */
+[dir="rtl"] .profile-header {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+/* ── Modal RTL ── */
+[dir="rtl"] .modal-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-header h3 {
+    text-align: right;
+}
+
+/* ── Form Elements RTL ── */
+[dir="rtl"] .form-group label {
+    text-align: right;
+    display: block;
+}
+
+[dir="rtl"] .form-select {
+    text-align: right;
+    padding-right: 14px;
+    padding-left: 32px;
+    background-position: left 12px center;
+}
+
+/* ── Chart Bars RTL ── */
+[dir="rtl"] .chart-bar-label {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .chart-bar-fill {
+    float: right;
+}
+
+/* ── Order Timeline RTL ── */
+[dir="rtl"] .order-timeline-track {
+    flex-direction: row-reverse;
+}
+
+/* ── Typography Polish ── */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6 {
+    font-family: 'Cairo', sans-serif;
+    letter-spacing: 0;
+    line-height: 1.6;
+}
+
+[dir="rtl"] p,
+[dir="rtl"] span,
+[dir="rtl"] label,
+[dir="rtl"] td,
+[dir="rtl"] th {
+    font-family: 'Cairo', sans-serif;
+    line-height: 1.8;
+}
+
+/* ── Empty State RTL ── */
+[dir="rtl"] .empty-state {
+    text-align: center;
+}
+
+/* ── Badge / Status RTL ── */
+[dir="rtl"] .badge {
+    direction: rtl;
+}
+
+/* ── Responsive RTL ── */
+@media (max-width: 768px) {
+    [dir="rtl"] .sidebar {
+        transform: translateX(100%);
+        left: auto;
+        right: 0;
+    }
+
+    [dir="rtl"] .sidebar.open {
+        transform: translateX(0);
+    }
+
+    [dir="rtl"] .main-content {
+        margin-right: 0;
+    }
+
+    [dir="rtl"] .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+}

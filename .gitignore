@@ -1,0 +1,11 @@
+node_modules/
+.env
+*.log
+uploads/
+backups/
+dist/
+*.bak
+*.backup
+*.orig
+test-*.js
+_validate.js

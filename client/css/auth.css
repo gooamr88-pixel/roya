@@ -1,0 +1,461 @@
+/* ═══════════════════════════════════════════════
+   AUTH PAGES STYLES
+   ═══════════════════════════════════════════════ */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+}
+
+.auth-brand {
+    flex: 1;
+    background: linear-gradient(135deg, #020202 0%, #111111 50%, #050505 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-brand::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.auth-brand::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(241, 208, 110, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.auth-brand-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 400px;
+}
+
+.auth-brand-logo {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 24px;
+}
+
+.auth-brand h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
+
+.auth-brand p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.auth-brand-features {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-brand-features .feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.auth-brand-features .feature i {
+    color: var(--accent-primary);
+    width: 20px;
+    text-align: center;
+}
+
+/* Form Side */
+.auth-form-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: var(--bg-primary);
+}
+
+.auth-form-wrapper {
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-form-wrapper .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 32px;
+}
+
+.auth-form-wrapper .back-link:hover {
+    color: var(--accent-primary);
+}
+
+.auth-form-wrapper h1 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.auth-form-wrapper .subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+}
+
+.auth-form-wrapper .form-group {
+    margin-bottom: 20px;
+}
+
+.auth-form-wrapper .form-input {
+    padding: 14px 16px;
+}
+
+.password-toggle {
+    position: relative;
+}
+
+.password-toggle .toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.form-helpers {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    font-size: 0.85rem;
+}
+
+.form-helpers label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.form-helpers a {
+    color: var(--accent-primary);
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+/* OTP Input */
+.otp-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 32px 0;
+}
+
+.otp-input {
+    width: 52px;
+    height: 56px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+.otp-input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.otp-timer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 16px;
+}
+
+.otp-timer strong {
+    color: var(--accent-primary);
+}
+
+/* Steps */
+.auth-steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.auth-step {
+    width: 80px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--border-color);
+    transition: var(--transition);
+}
+
+.auth-step.active {
+    background: var(--accent-gradient-btn);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-page {
+        flex-direction: column;
+    }
+
+    .auth-brand {
+        min-height: 200px;
+        padding: 30px;
+    }
+
+    .auth-brand-features {
+        display: none;
+    }
+
+    .auth-form-side {
+        padding: 24px;
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   Intl-Tel-Input — Premium Dark Theme
+   ═══════════════════════════════════════════════ */
+
+/* Make the wrapper a true Flexbox container */
+.iti {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    position: relative;
+    direction: ltr;
+    /* Force LTR at container level to maintain flag-left logic */
+}
+
+/* Override ITI's absolute positioning so it flows naturally in flex */
+.iti__flag-container {
+    position: static !important;
+    display: flex;
+}
+
+/* The composite container (flag button + input) */
+.iti--separate-dial-code .iti__selected-flag {
+    background: var(--bg-primary) !important;
+    border-radius: var(--btn-radius) 0 0 var(--btn-radius) !important;
+    border: 1.5px solid var(--border-color);
+    border-right: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 0 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    min-width: max-content;
+}
+
+.iti--separate-dial-code .iti__selected-flag:hover {
+    background: rgba(212, 175, 55, 0.1) !important;
+    border-color: rgba(212, 175, 55, 0.5);
+}
+
+/* The phone text input */
+.iti .iti__tel-input,
+.iti input[type="tel"] {
+    flex: 1;
+    /* Take remaining space */
+    width: 100%;
+    padding: 14px 16px !important;
+    background-color: var(--bg-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-left: none !important;
+    border-radius: 0 var(--btn-radius) var(--btn-radius) 0 !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-primary) !important;
+    font-size: 0.95rem !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none !important;
+    height: 52px !important;
+    box-sizing: border-box !important;
+    text-align: left;
+    /* Keep text left aligned to pair with dial code */
+}
+
+/* Adjust text alignment for RTL languages if needed */
+[dir="rtl"] .iti .iti__tel-input,
+[dir="rtl"] .iti input[type="tel"] {
+    text-align: right;
+}
+
+.iti .iti__tel-input:focus,
+.iti input[type="tel"]:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+.iti .iti__tel-input::placeholder,
+.iti input[type="tel"]::placeholder {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Flag sprite box — ensure correct clip */
+.iti__flag {
+    width: 20px;
+    height: 15px;
+    background-repeat: no-repeat;
+    background-size: auto;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* Dial code text (e.g., +966) */
+.iti__selected-dial-code {
+    color: var(--accent-primary);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+/* Dropdown arrow */
+.iti__arrow {
+    border-top-color: var(--text-muted) !important;
+    margin-left: 6px;
+    transition: transform 0.2s ease;
+}
+
+.iti--open .iti__arrow {
+    border-top-color: var(--accent-primary) !important;
+    transform: rotate(180deg);
+}
+
+/* ── Dropdown Panel (v17 uses .iti__country-list as the wrapper) ── */
+.iti__country-list {
+    background-color: var(--bg-primary) !important;
+    border: 1px solid rgba(212, 175, 55, 0.3) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212, 175, 55, 0.08);
+    /* Glow + shadow */
+    overflow-y: auto;
+    overflow-x: hidden;
+    backdrop-filter: blur(12px);
+    list-style: none;
+    padding: 4px 0 !important;
+    margin: 0 !important;
+    max-height: 220px !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+}
+
+.iti__country-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.iti__country-list::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+}
+
+/* Individual country row */
+.iti__country {
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.iti__country:hover,
+.iti__country.iti__highlight {
+    background: rgba(212, 175, 55, 0.1) !important;
+}
+
+.iti__country-name {
+    color: var(--text-primary) !important;
+    font-size: 0.88rem;
+}
+
+.iti__dial-code {
+    color: var(--accent-primary) !important;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+/* Divider line between preferred and all countries */
+.iti__divider {
+    border-top: 1px solid var(--border-color);
+    margin: 4px 0;
+}
+
+/* Phone error message */
+.phone-error {
+    display: none;
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-top: 6px;
+}

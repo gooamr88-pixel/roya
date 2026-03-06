@@ -1,0 +1,620 @@
+{# ═══════════════════════════════════════════════ #}
+{# Admin Command Center V2.0                       #}
+{# Uses base layout (own sidebar, no shared navbar) #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/base.njk" %}
+
+{% set pageTitle = t.admin.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/dashboard.css">
+{% endblock %}
+
+{% block headExtra %}
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
+  <style>
+    /* ── Executive Metric Cards (inline for admin-only) ── */
+    .exec-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px; }
+    .exec-card { background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:var(--transition); }
+    .exec-card:hover { transform:translateY(-4px);box-shadow:var(--shadow-glow);border-color:rgba(212,175,55,0.2); }
+    .exec-card .exec-icon { width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:16px; }
+    .exec-card .exec-icon.revenue { background:rgba(16,185,129,0.1);color:#10b981; }
+    .exec-card .exec-icon.conversion { background:rgba(59,130,246,0.1);color:#3b82f6; }
+    .exec-card .exec-icon.content { background:rgba(168,85,247,0.1);color:#a855f7; }
+    .exec-card .exec-icon.support { background:rgba(245,158,11,0.1);color:#f59e0b; }
+    .exec-card .exec-value { font-size:1.8rem;font-weight:800;margin-bottom:4px; }
+    .exec-card .exec-label { font-size:0.85rem;color:var(--text-2); }
+    .exec-card .exec-bar { height:4px;background:var(--body-bg);border-radius:4px;margin-top:12px;overflow:hidden; }
+    .exec-card .exec-bar-fill { height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .exec-bar-fill.green { background:linear-gradient(90deg,#10b981,#34d399); }
+    .exec-bar-fill.blue { background:linear-gradient(90deg,#3b82f6,#60a5fa); }
+    .exec-bar-fill.purple { background:linear-gradient(90deg,#a855f7,#c084fc); }
+    .exec-bar-fill.amber { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+    .role-select { width:auto;padding:3px 8px;font-size:0.78rem;border-radius:6px;background:var(--body-bg);border:1px solid var(--border);color:var(--text-1); }
+    .featured-star { cursor:pointer;font-size:1rem;transition:color 0.2s,transform 0.2s; }
+    .featured-star:hover { transform:scale(1.2); }
+    .featured-star.active { color:#f59e0b; }
+    .featured-star.inactive { color:var(--text-3); }
+    .charts-section { display:grid;grid-template-columns:1fr 380px;gap:22px;margin-bottom:28px; }
+    .chart-card { background:#0e0e14;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:border-color 0.3s; }
+    .chart-card:hover { border-color:rgba(212,175,55,0.22); }
+    .chart-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
+    .chart-card-header h3 { font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.82); }
+    .chart-card-header .chart-subtitle { font-size:0.76rem;color:rgba(255,255,255,0.3);margin-top:2px; }
+    #revenueChart,#distributionChart { min-height:260px; }
+    @media (max-width:900px) { .charts-section { grid-template-columns:1fr; } }
+    .internal-note { background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:0.82rem;color:var(--text-2); }
+    .internal-note-label { font-size:0.7rem;font-weight:700;text-transform:uppercase;color:#3b82f6;margin-bottom:4px; }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="dashboard-layout">
+
+    {# ════════════ SIDEBAR ════════════ #}
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-logo">
+          <img src="{{ logoSrc }}" alt="{{ logoAlt }}" style="height:28px;width:auto;">
+        </a>
+        <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">{{ t.admin.commandCenter }}</div>
+        <button class="sidebar-link active" data-view="stats">
+          <span class="icon"><i class="fas fa-chart-line"></i></span> {{ t.admin.executiveInsights }}
+          <span class="kbd-hint">1</span>
+        </button>
+        <button class="sidebar-link" data-view="orders">
+          <span class="icon"><i class="fas fa-shopping-bag"></i></span> {{ t.admin.orders }}
+          <span class="kbd-hint">2</span>
+        </button>
+
+        <div class="nav-section">{{ t.admin.contentSection }}</div>
+        <button class="sidebar-link" data-view="services">
+          <span class="icon"><i class="fas fa-concierge-bell"></i></span> {{ t.admin.services }}
+          <span class="kbd-hint">3</span>
+        </button>
+        <button class="sidebar-link" data-view="exhibitions">
+          <span class="icon" style="display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="premium-icon">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path>
+              <path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path>
+            </svg>
+          </span> 
+          {{ t.admin.exhibitions }}
+          <span class="kbd-hint">4</span>
+        </button>
+        <button class="sidebar-link" data-view="properties">
+          <span class="icon"><i class="fas fa-building"></i></span> {{ t.admin.propertiesNav }}
+          <span class="kbd-hint">5</span>
+        </button>
+
+        <div class="nav-section">{{ t.admin.supportSection }}</div>
+        <button class="sidebar-link" data-view="messages">
+          <span class="icon"><i class="fas fa-headset"></i></span> {{ t.admin.ticketCenter }}
+          <span class="badge-count hidden" id="unreadMsgCount">0</span>
+          <span class="kbd-hint">6</span>
+        </button>
+
+        <div class="nav-section">{{ t.admin.administration }}</div>
+        <button class="sidebar-link" data-view="users">
+          <span class="icon"><i class="fas fa-users-cog"></i></span> {{ t.admin.users }}
+          <span class="kbd-hint">7</span>
+        </button>
+        <button class="sidebar-link" data-view="roles">
+          <span class="icon"><i class="fas fa-shield-halved"></i></span> {{ t.admin.roles }}
+          <span class="kbd-hint">8</span>
+        </button>
+        <button class="sidebar-link" data-view="logs">
+          <span class="icon"><i class="fas fa-file-lines"></i></span> {{ t.admin.loginLogs }}
+          <span class="kbd-hint">9</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="adminAvatar">A</div>
+          <div>
+            <div class="name" id="adminName">{{ t.admin.adminDefault }}</div>
+            <div class="role" id="adminRole">{{ t.admin.superAdmin }}</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    {# ════════════ MAIN ════════════ #}
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+          <div class="topbar-title">
+            <h2 id="viewTitle">{{ t.admin.executiveInsights }}</h2>
+            <span>{{ t.admin.commandCenter }}</span>
+          </div>
+        </div>
+        <div class="topbar-right" style="display:flex;align-items:center;gap:12px;">
+          <div class="global-search">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="globalSearchInput" placeholder="{{ t.admin.searchPlaceholder }}" autocomplete="off">
+            <div class="search-results" id="searchResults"></div>
+          </div>
+          <span class="live-clock" id="liveClock"></span>
+          <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect=/admin" class="topbar-btn" title="{{ langToggle.text }}" data-tooltip="{{ langToggle.text }}">
+            <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}" style="width:18px;height:auto;border-radius:2px;">
+          </a>
+          <a href="/dashboard" class="btn btn-ghost btn-sm" data-tooltip="Switch to Client View"><i class="fas fa-exchange-alt"></i> {{ t.admin.clientView }}</a>
+          <button class="topbar-btn" title="{{ t.admin.logoutBtn }}" id="logoutBtn" data-tooltip="{{ t.admin.logoutBtn }}"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+      </div>
+
+      {# Breadcrumb #}
+      <div class="breadcrumb-strip" id="adminBreadcrumb">
+        <a href="/"><i class="fas fa-home"></i></a>
+        <span class="separator">/</span>
+        <a href="/admin">Admin</a>
+        <span class="separator">/</span>
+        <span class="current" id="adminBreadcrumbCurrent">{{ t.admin.executiveInsights }}</span>
+      </div>
+
+      <div class="content-area">
+
+        {# ── EXECUTIVE INSIGHTS ── #}
+        <div class="view-section active" id="view-stats">
+          <div class="exec-grid" id="execGrid">
+            <div class="exec-card">
+              <div class="exec-icon revenue"><i class="fas fa-dollar-sign"></i></div>
+              <div class="exec-label">{{ t.admin.totalRevenue }}</div>
+              <div class="exec-value" id="execRevenue"><div class="skeleton skeleton-value"></div></div>
+              <div class="exec-bar"><div class="exec-bar-fill green" id="execRevenueBar" style="width:0%"></div></div>
+            </div>
+            <div class="exec-card">
+              <div class="exec-icon conversion"><i class="fas fa-chart-pie"></i></div>
+              <div class="exec-label">{{ t.admin.conversionRate }}</div>
+              <div class="exec-value" id="execConversion"><div class="skeleton skeleton-value"></div></div>
+              <div class="exec-bar"><div class="exec-bar-fill blue" id="execConversionBar" style="width:0%"></div></div>
+            </div>
+            <div class="exec-card">
+              <div class="exec-icon content"><i class="fas fa-layer-group"></i></div>
+              <div class="exec-label">{{ t.admin.activeContent }}</div>
+              <div class="exec-value" id="execContent"><div class="skeleton skeleton-value"></div></div>
+              <div class="exec-bar"><div class="exec-bar-fill purple" id="execContentBar" style="width:0%"></div></div>
+            </div>
+            <div class="exec-card">
+              <div class="exec-icon support"><i class="fas fa-envelope-open-text"></i></div>
+              <div class="exec-label">{{ t.admin.supportLoad }}</div>
+              <div class="exec-value" id="execSupport"><div class="skeleton skeleton-value"></div></div>
+              <div class="exec-bar"><div class="exec-bar-fill amber" id="execSupportBar" style="width:0%"></div></div>
+            </div>
+          </div>
+
+          <div class="stats-grid" id="adminStatsGrid">
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon purple"><i class="fas fa-users"></i></div><div class="stat-label">{{ t.admin.totalUsers }}</div></div>
+              <div class="stat-value" id="aStatUsers"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon blue"><i class="fas fa-shopping-bag"></i></div><div class="stat-label">{{ t.admin.totalOrders }}</div></div>
+              <div class="stat-value" id="aStatOrders"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon orange"><i class="fas fa-clock"></i></div><div class="stat-label">{{ t.admin.pendingLabel }}</div></div>
+              <div class="stat-value" id="aStatPending"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon cyan"><i class="fas fa-concierge-bell"></i></div><div class="stat-label">{{ t.admin.services }}</div></div>
+              <div class="stat-value" id="aStatServices"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon red"><i class="fas fa-building"></i></div><div class="stat-label">{{ t.admin.propertiesNav }}</div></div>
+              <div class="stat-value" id="aStatProperties"><div class="skeleton skeleton-value"></div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon green"><i class="fas fa-calendar-star"></i></div><div class="stat-label">{{ t.admin.exhibitions }}</div></div>
+              <div class="stat-value" id="aStatExhibitions"><div class="skeleton skeleton-value"></div></div>
+            </div>
+          </div>
+
+          <div class="charts-section">
+            <div class="chart-card">
+              <div class="chart-card-header"><div><h3><i class="fas fa-chart-area" style="color:#d4af37;margin-{{ 'left' if isRTL else 'right' }}:8px"></i> {{ t.admin.ordersPerformance }}</h3><div class="chart-subtitle">{{ t.admin.revenueBreakdown }}</div></div></div>
+              <div id="revenueChart"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-header"><div><h3><i class="fas fa-chart-pie" style="color:#10b981;margin-{{ 'left' if isRTL else 'right' }}:8px"></i> {{ t.admin.contentMix }}</h3><div class="chart-subtitle">{{ t.admin.contentMixSubtitle }}</div></div></div>
+              <div id="distributionChart"></div>
+            </div>
+          </div>
+          <div id="adminStatsChart" style="display:none"></div>
+
+          <div class="dashboard-card full-width">
+            <div class="card-header"><h3><i class="fas fa-history"></i> {{ t.admin.recentOrders }}</h3></div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead><tr><th>{{ t.admin.thInvoice }}</th><th>{{ t.admin.thClient }}</th><th>{{ t.admin.thService }}</th><th>{{ t.admin.thAmount }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thDate }}</th></tr></thead>
+                <tbody id="adminRecentOrders"><tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr><tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr><tr><td colspan="6"><div class="skeleton skeleton-row"></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {# ── ORDERS ── #}
+        <div class="view-section" id="view-orders">
+          <div class="filters-bar">
+            <select class="form-select" id="adminOrderStatus" onchange="loadAdminOrders()">
+              <option value="">{{ t.admin.allFilter }}</option>
+              <option value="pending">{{ t.admin.pendingLabel }}</option>
+              <option value="in_progress">{{ t.admin.inProgressLabel }}</option>
+              <option value="completed">{{ t.admin.completedLabel }}</option>
+              <option value="cancelled">{{ t.admin.cancelledLabel }}</option>
+            </select>
+            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminOrdersTable', 'orders')"><i class="fas fa-download"></i> Export CSV</button>
+          </div>
+          <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thInvoice }}</th><th>{{ t.admin.thClient }}</th><th>{{ t.admin.thService }}</th><th>{{ t.admin.thAmount }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thDate }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminOrdersTable"></tbody></table></div>
+          <div class="pagination" id="adminOrdersPagination"></div>
+        </div>
+
+        {# ── SERVICES ── #}
+        <div class="view-section" id="view-services">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="font-size:0.85rem;color:var(--text-2)" id="svcBulkInfo"></span></div>
+            <button class="btn btn-primary btn-sm" onclick="openServiceModal()"><i class="fas fa-plus"></i> {{ t.admin.addService }}</button>
+          </div>
+          <div class="table-container"><table class="data-table"><thead><tr><th style="width:30px"><input type="checkbox" id="svcSelectAll" onchange="toggleAllCheckboxes('svc')"></th><th>{{ t.admin.thTitle }}</th><th>{{ t.admin.thPrice }}</th><th>{{ t.admin.thFeatured }}</th><th>{{ t.admin.thActive }}</th><th>{{ t.admin.thCreated }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminServicesTable"></tbody></table></div>
+        </div>
+
+        {# ── EXHIBITIONS ── #}
+        <div class="view-section" id="view-exhibitions">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:20px;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="openExhibitionModal()">
+              <i class="fas fa-plus"></i> Add Exhibition
+            </button>
+          </div>
+          <div class="exhibition-admin-grid" id="adminExhibitionsGrid">
+            <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-3)">
+              <i class="fas fa-spin fa-spinner" style="font-size:1.5rem"></i>
+            </div>
+          </div>
+        </div>
+
+        {# ── PROPERTIES ── #}
+        <div class="view-section" id="view-properties">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <span style="font-size:0.85rem;color:var(--text-2)" id="propBulkInfo"></span>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminPropertiesTable', 'properties')"><i class="fas fa-download"></i> Export</button>
+              <button class="btn btn-primary btn-sm" onclick="openPropertyModal()"><i class="fas fa-plus"></i> {{ t.admin.addProperty }}</button>
+            </div>
+          </div>
+          <div class="table-container"><table class="data-table"><thead><tr><th style="width:30px"><input type="checkbox" id="propSelectAll" onchange="toggleAllCheckboxes('prop')"></th><th>{{ t.admin.thTitle }}</th><th>{{ t.admin.thLocation }}</th><th>{{ t.admin.thPrice }}</th><th>{{ t.admin.thType }}</th><th>{{ t.admin.thFeatured }}</th><th>{{ t.admin.thActive }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminPropertiesTable"></tbody></table></div>
+        </div>
+
+        {# ── TICKET CENTER ── #}
+        <div class="view-section" id="view-messages">
+          <div class="filters-bar">
+            <select class="form-select" id="msgStatusFilter" onchange="loadAdminMessages()">
+              <option value="">{{ t.admin.allMessages }}</option>
+              <option value="new">{{ t.admin.newFilter }}</option>
+              <option value="replied">{{ t.admin.repliedFilter }}</option>
+            </select>
+          </div>
+          <div id="adminMessagesContainer"><div class="empty-state"><div class="icon"><i class="fas fa-inbox"></i></div><h3>{{ t.admin.loading }}</h3></div></div>
+          <div class="pagination" id="adminMsgPagination"></div>
+        </div>
+
+        {# ── USERS ── #}
+        <div class="view-section" id="view-users">
+          <div class="filters-bar">
+            <input class="form-input search-input" type="text" id="userSearch" placeholder="{{ t.admin.userSearchPlaceholder }}" onkeyup="loadAdminUsers()">
+            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminUsersTable', 'users')"><i class="fas fa-download"></i> Export</button>
+          </div>
+          <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thUser }}</th><th>{{ t.admin.thEmail }}</th><th>{{ t.admin.thPhone }}</th><th>{{ t.admin.thRole }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thVerified }}</th><th>{{ t.admin.thLastLogin }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminUsersTable"></tbody></table></div>
+          <div class="pagination" id="adminUsersPagination"></div>
+        </div>
+
+        {# ── ROLES ── #}
+        <div class="view-section" id="view-roles">
+          <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thRole }}</th><th>{{ t.admin.thDescription }}</th><th>{{ t.admin.thPermissions }}</th></tr></thead><tbody id="adminRolesTable"></tbody></table></div>
+        </div>
+
+        {# ── LOGS ── #}
+        <div class="view-section" id="view-logs">
+          <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thUser }}</th><th>{{ t.admin.thEmail }}</th><th>{{ t.admin.thIP }}</th><th>{{ t.admin.thBrowser }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thTime }}</th></tr></thead><tbody id="adminLogsTable"></tbody></table></div>
+          <div class="pagination" id="adminLogsPagination"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {# ══════ CONFIRMATION DIALOG ══════ #}
+  <div class="modal-overlay" id="confirmModal">
+    <div class="confirm-dialog">
+      <div class="confirm-icon warning" id="confirmIcon"><i class="fas fa-exclamation-triangle"></i></div>
+      <h3 id="confirmTitle">Are you sure?</h3>
+      <p id="confirmMessage">This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
+        <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  {# ══════ COMMAND PALETTE ══════ #}
+  <div class="command-palette-overlay" id="commandPalette">
+    <div class="command-palette">
+      <input type="text" class="command-palette-input" id="cmdInput" placeholder="Type a command or search…" autocomplete="off">
+      <div class="command-palette-results" id="cmdResults"></div>
+      <div class="command-palette-footer">
+        <span><kbd>↑↓</kbd> Navigate</span>
+        <span><kbd>↵</kbd> Select</span>
+        <span><kbd>Esc</kbd> Close</span>
+      </div>
+    </div>
+  </div>
+
+  {# ══════ SERVICE MODAL ══════ #}
+  <div class="modal-overlay" id="serviceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="serviceModalTitle">{{ t.admin.addService }}</h3>
+        <button class="modal-close" onclick="closeServiceModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="serviceForm" onsubmit="saveAdminService(event)">
+        <input type="hidden" id="serviceEditId">
+        
+        {# ── Tabs ── #}
+        <div class="form-tabs">
+          <button type="button" class="form-tab-btn active" id="svcTabGeneral" data-tab="svcPaneGeneral" onclick="switchFormTab('svcTabGeneral','serviceForm')">
+            <i class="fas fa-info-circle tab-icon"></i> General Info
+          </button>
+          <button type="button" class="form-tab-btn" id="svcTabMedia" data-tab="svcPaneMedia" onclick="switchFormTab('svcTabMedia','serviceForm')">
+            <i class="fas fa-images tab-icon"></i> Media
+          </button>
+        </div>
+
+        {# General Info Pane #}
+        <div class="form-tab-pane active" id="svcPaneGeneral">
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thTitle }} *</label>
+            <input class="form-input" type="text" id="svcTitle" required maxlength="200" placeholder="e.g. Digital Advertising">
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thDescription }}</label>
+            <textarea class="form-textarea" id="svcDescription" rows="3" placeholder="{{ t.admin.serviceDescPlaceholder }}"></textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.thPrice }} ($)</label>
+              <input class="form-input" type="number" id="svcPrice" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.thCategory }}</label>
+              <select class="form-select" id="svcCategory">
+                <option value="general">General</option>
+                <option value="advertising">Advertising</option>
+                <option value="marketing">Marketing</option>
+                <option value="exhibitions">Exhibitions</option>
+                <option value="real_estate">Real Estate</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="svcActive" checked style="width:16px;height:16px;cursor:pointer">
+            <label class="form-label" for="svcActive" style="margin:0;cursor:pointer">Active / Visible to users</label>
+          </div>
+        </div>
+
+        {# Media Pane #}
+        <div class="form-tab-pane" id="svcPaneMedia">
+          <div class="drop-zone" id="svcDropZone">
+            <input type="file" id="svcImagesInput" accept="image/*" multiple>
+            <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="drop-zone-title">Drag & Drop Images Here</div>
+            <div class="drop-zone-sub">or click to browse your files</div>
+            <span class="drop-zone-hint">JPG, PNG, WebP • Max 10MB each</span>
+          </div>
+          <div class="image-preview-grid" id="svcPreviewGrid"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" id="svcSubmitBtn" style="margin-top:20px">
+          <i class="fas fa-save"></i> {{ t.admin.saveService }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {# ══════ PROPERTY MODAL ══════ #}
+  <div class="modal-overlay" id="propertyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="propertyModalTitle">{{ t.admin.addProperty }}</h3>
+        <button class="modal-close" onclick="closePropertyModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="propertyForm" onsubmit="saveAdminProperty(event)">
+        <input type="hidden" id="propEditId">
+        
+        {# ── Tabs ── #}
+        <div class="form-tabs">
+          <button type="button" class="form-tab-btn active" id="propTabGeneral" data-tab="propPaneGeneral" onclick="switchFormTab('propTabGeneral','propertyForm')">
+            <i class="fas fa-info-circle tab-icon"></i> General
+          </button>
+          <button type="button" class="form-tab-btn" id="propTabDetails" data-tab="propPaneDetails" onclick="switchFormTab('propTabDetails','propertyForm')">
+            <i class="fas fa-list tab-icon"></i> Details
+          </button>
+          <button type="button" class="form-tab-btn" id="propTabMedia" data-tab="propPaneMedia" onclick="switchFormTab('propTabMedia','propertyForm')">
+            <i class="fas fa-images tab-icon"></i> Media
+          </button>
+        </div>
+
+        {# General Info Pane #}
+        <div class="form-tab-pane active" id="propPaneGeneral">
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thTitle }} *</label>
+            <input class="form-input" type="text" id="propTitle" required maxlength="200" placeholder="e.g. Luxury Villa — Al Olaya">
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thDescription }}</label>
+            <textarea class="form-textarea" id="propDescription" rows="3" placeholder="{{ t.admin.propertyDescPlaceholder }}"></textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.thPrice }} ($)</label>
+              <input class="form-input" type="number" id="propPrice" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.thLocation }}</label>
+              <input class="form-input" type="text" id="propLocation" placeholder="e.g. Riyadh, KSA">
+            </div>
+          </div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="propActive" checked style="width:16px;height:16px;cursor:pointer">
+            <label class="form-label" for="propActive" style="margin:0;cursor:pointer">Active / Visible to users</label>
+          </div>
+        </div>
+
+        {# Details Pane #}
+        <div class="form-tab-pane" id="propPaneDetails">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.areaLabel }}</label>
+              <input class="form-input" type="number" id="propArea" min="0" placeholder="450">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.bedroomsLabel }}</label>
+              <input class="form-input" type="number" id="propBedrooms" min="0" placeholder="3">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.bathroomsLabel }}</label>
+              <input class="form-input" type="number" id="propBathrooms" min="0" placeholder="2">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.propertyType }}</label>
+            <select class="form-select" id="propType">
+              <option value="residential">Residential</option>
+              <option value="commercial">Commercial</option>
+              <option value="land">Land</option>
+              <option value="industrial">Industrial</option>
+            </select>
+          </div>
+        </div>
+
+        {# Media Pane #}
+        <div class="form-tab-pane" id="propPaneMedia">
+          <div class="drop-zone" id="propDropZone">
+            <input type="file" id="propImagesInput" accept="image/*" multiple>
+            <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="drop-zone-title">Drag & Drop Images Here</div>
+            <div class="drop-zone-sub">or click to browse your files</div>
+            <span class="drop-zone-hint">JPG, PNG, WebP • Max 10MB each</span>
+          </div>
+          <div class="image-preview-grid" id="propPreviewGrid"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" id="propSubmitBtn" style="margin-top:20px">
+          <i class="fas fa-save"></i> {{ t.admin.saveProperty }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {# ══════ EXHIBITION MODAL ══════ #}
+  <div class="modal-overlay" id="exhibitionModal" style="display:none">
+    <div class="modal-content modal-lg" style="max-height:90vh;overflow-y:auto">
+      <div class="modal-header">
+        <h3 id="exhibitionModalTitle">Add Exhibition</h3>
+        <button class="modal-close" onclick="closeExhibitionModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="exhibitionForm" onsubmit="saveExhibition(event)">
+        {# ── Tabs ── #}
+        <div class="form-tabs">
+          <button type="button" class="form-tab-btn active" id="exhTabGeneral" data-tab="exhPaneGeneral" onclick="switchFormTab('exhTabGeneral','exhibitionForm')">
+            <i class="fas fa-info-circle tab-icon"></i> General Info
+          </button>
+          <button type="button" class="form-tab-btn" id="exhTabMedia" data-tab="exhPaneMedia" onclick="switchFormTab('exhTabMedia','exhibitionForm')">
+            <i class="fas fa-images tab-icon"></i> Media
+          </button>
+        </div>
+
+        {# General Info Pane #}
+        <div class="form-tab-pane active" id="exhPaneGeneral">
+          <div class="form-group">
+            <label class="form-label">Title *</label>
+            <input class="form-input" type="text" id="exhTitle" required placeholder="e.g. International Real Estate Expo 2026">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input class="form-input" type="text" id="exhLocation" placeholder="e.g. Riyadh Exhibition Center">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">Start Date</label>
+              <input class="form-input" type="date" id="exhStartDate">
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Date</label>
+              <input class="form-input" type="date" id="exhEndDate">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" id="exhDesc" rows="3" placeholder="Describe the exhibition..."></textarea>
+          </div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="exhActive" checked style="width:16px;height:16px;cursor:pointer">
+            <label class="form-label" for="exhActive" style="margin:0;cursor:pointer">Active / Visible to users</label>
+          </div>
+        </div>
+
+        {# Media Pane #}
+        <div class="form-tab-pane" id="exhPaneMedia">
+          <div class="drop-zone" id="exhDropZone">
+            <input type="file" id="exhImagesInput" accept="image/*" multiple>
+            <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="drop-zone-title">Drag & Drop Images Here</div>
+            <div class="drop-zone-sub">or click to browse your files</div>
+            <span class="drop-zone-hint">JPG, PNG, WebP • Max 10MB each</span>
+          </div>
+          <div class="image-preview-grid" id="exhibitionPreviewGrid"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" id="saveExhibitionBtn" style="margin-top:20px">
+          <i class="fas fa-save"></i> Save Exhibition
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {# ══════ FROSTED GLASS CONFIRMATION MODAL ══════ #}
+  <div class="glass-modal-overlay" id="glassConfirmOverlay" role="dialog" aria-modal="true">
+    <div class="glass-modal" id="glassConfirmModal">
+      <div class="glass-modal-icon warning" id="glassConfirmIcon">
+        <i class="fas fa-exclamation-triangle" id="glassConfirmIconInner"></i>
+      </div>
+      <h3 id="glassConfirmTitle">Confirm Action</h3>
+      <p id="glassConfirmMessage">Are you sure you want to proceed?</p>
+      <div class="glass-modal-actions">
+        <button class="btn btn-secondary" id="glassConfirmCancel">Cancel</button>
+        <button class="btn btn-danger" id="glassConfirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/admin/admin.init.js" defer></script>
+  <script src="/js/admin/admin.stats.js" defer></script>
+  <script src="/js/admin/admin.orders.js" defer></script>
+  <script src="/js/admin/admin.services.js" defer></script>
+  <script src="/js/admin/admin.properties.js" defer></script>
+  <script src="/js/admin/admin.messages.js" defer></script>
+  <script src="/js/admin/admin.users.js" defer></script>
+  <script src="/js/admin/admin.exhibitions.js" defer></script>
+{% endblock %}

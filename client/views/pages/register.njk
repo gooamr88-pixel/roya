@@ -1,0 +1,150 @@
+{# ═══════════════════════════════════════════════ #}
+{# Register Page                                    #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/base.njk" %}
+
+{% set pageTitle = t.register.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+  <style>
+    /* Force correct absolute CDN path for flag sprites (v17) */
+    .iti__flag {
+      background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags.png") !important;
+    }
+    @media (min-resolution: 2x), (-webkit-min-device-pixel-ratio: 2) {
+      .iti__flag {
+        background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags@2x.png") !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/css/auth.css">
+{% endblock %}
+
+{% block headExtra %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+{% endblock %}
+
+{% block body %}
+  <div class="auth-page">
+    {# ── Brand Side ── #}
+    <div class="auth-brand">
+      <div class="auth-brand-content">
+        <div class="auth-brand-logo">
+          <img src="{{ logoSrc }}" alt="{{ logoAlt }}" style="height:48px;">
+        </div>
+        <h2 data-i18n="register.welcome">{{ t.register.welcome }}</h2>
+        <p data-i18n="register.welcomeDesc">{{ t.register.welcomeDesc }}</p>
+        <div class="auth-brand-features">
+          <div class="feature"><i class="fas fa-envelope-circle-check"></i> <span data-i18n="register.feature_otp">{{ t.register.feature_otp }}</span></div>
+          <div class="feature"><i class="fas fa-lock"></i> <span data-i18n="register.feature_security">{{ t.register.feature_security }}</span></div>
+          <div class="feature"><i class="fas fa-headset"></i> <span data-i18n="register.feature_support">{{ t.register.feature_support }}</span></div>
+          <div class="feature"><i class="fas fa-chart-pie"></i> <span data-i18n="register.feature_dashboard">{{ t.register.feature_dashboard }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Form Side ── #}
+    <div class="auth-form-side">
+      <div class="auth-form-wrapper">
+        <a href="/" class="back-link"><i class="fas fa-arrow-{{ 'right' if isRTL else 'left' }}"></i> <span data-i18n="register.backToHome">{{ t.register.backToHome }}</span></a>
+
+        {# Steps indicator #}
+        <div class="auth-steps" id="authSteps">
+          <div class="auth-step active"></div>
+          <div class="auth-step"></div>
+        </div>
+
+        {# Step 1: Registration Form #}
+        <div id="step1">
+          <h1 data-i18n="register.heading">{{ t.register.heading }}</h1>
+          <p class="subtitle" data-i18n="register.subtitle">{{ t.register.subtitle }}</p>
+
+          <form id="registerForm">
+            <div class="form-group">
+              <label class="form-label" for="name" data-i18n="register.nameLabel">{{ t.register.nameLabel }}</label>
+              <input class="form-input" type="text" id="name" placeholder="{{ t.register.namePlaceholder }}" data-i18n="register.namePlaceholder" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email" data-i18n="register.emailLabel">{{ t.register.emailLabel }}</label>
+              <input class="form-input" type="email" id="email" placeholder="{{ t.register.emailPlaceholder }}" data-i18n="register.emailPlaceholder" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="phone"><span data-i18n="register.phoneLabel">{{ t.register.phoneLabel }}</span> <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" type="tel" id="phone" required>
+              <div class="phone-error" id="phoneError" data-i18n="register.phoneError">{{ t.register.phoneError }}</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="password" data-i18n="register.passwordLabel">{{ t.register.passwordLabel }}</label>
+              <div class="password-toggle">
+                <input class="form-input" type="password" id="password" placeholder="{{ t.register.passwordPlaceholder }}" data-i18n="register.passwordPlaceholder" required>
+                <button type="button" class="toggle-btn" onclick="togglePassword('password', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword" data-i18n="register.confirmLabel">{{ t.register.confirmLabel }}</label>
+              <div class="password-toggle">
+                <input class="form-input" type="password" id="confirmPassword" placeholder="{{ t.register.confirmPlaceholder }}" data-i18n="register.confirmPlaceholder" required>
+                <button type="button" class="toggle-btn" onclick="togglePassword('confirmPassword', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-full" id="registerBtn">
+              <i class="fas fa-user-plus"></i> <span data-i18n="register.submitBtn">{{ t.register.submitBtn }}</span>
+            </button>
+          </form>
+        </div>
+
+        {# Step 2: OTP Verification #}
+        <div id="step2" class="hidden">
+          <h1 data-i18n="register.otpHeading">{{ t.register.otpHeading }}</h1>
+          <p class="subtitle"><span data-i18n="register.otpSubtitle">{{ t.register.otpSubtitle }}</span> <strong id="otpEmail"></strong></p>
+
+          <form id="otpForm">
+            <div class="otp-container" id="otpContainer">
+              <input class="otp-input" type="text" maxlength="1" data-index="0" autocomplete="off">
+              <input class="otp-input" type="text" maxlength="1" data-index="1" autocomplete="off">
+              <input class="otp-input" type="text" maxlength="1" data-index="2" autocomplete="off">
+              <input class="otp-input" type="text" maxlength="1" data-index="3" autocomplete="off">
+              <input class="otp-input" type="text" maxlength="1" data-index="4" autocomplete="off">
+              <input class="otp-input" type="text" maxlength="1" data-index="5" autocomplete="off">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-full" id="verifyBtn">
+              <i class="fas fa-check-circle"></i> <span data-i18n="register.verifyBtn">{{ t.register.verifyBtn }}</span>
+            </button>
+          </form>
+
+          <div class="otp-timer">
+            <span data-i18n="register.noCode">{{ t.register.noCode }}</span> <button class="btn btn-ghost btn-sm" id="resendBtn" disabled><span data-i18n="register.resendIn">{{ t.register.resendIn }}</span>
+              <strong id="timer">60</strong>s</button>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 12px;">
+          <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect=/register" class="lang-toggle"
+             title="{{ langToggle.text }}" style="display:inline-block;">
+            <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}">
+          </a>
+        </div>
+
+        <p class="auth-footer">
+          <span data-i18n="register.hasAccount">{{ t.register.hasAccount }}</span> <a href="/login" data-i18n="register.signIn">{{ t.register.signIn }}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.3.3/js/intlTelInput.min.js" defer></script>
+  <script src="/js/auth.js" defer></script>
+{% endblock %}

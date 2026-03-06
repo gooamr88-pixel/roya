@@ -1,0 +1,102 @@
+{% extends "layouts/base.njk" %}
+
+{% block pageCss %}
+<link rel="stylesheet" href="/css/main.css">
+<style>
+    .not-found-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--bg-primary, #0f172a);
+    }
+    .not-found-code {
+        font-size: clamp(6rem, 20vw, 12rem);
+        font-weight: 800;
+        line-height: 1;
+        background: linear-gradient(135deg, var(--accent-primary, #6366f1), var(--accent-secondary, #8b5cf6));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 16px;
+    }
+    .not-found-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary, #f1f5f9);
+        margin-bottom: 12px;
+    }
+    .not-found-message {
+        font-size: 1rem;
+        color: var(--text-muted, #94a3b8);
+        max-width: 420px;
+        margin: 0 auto 36px;
+        line-height: 1.7;
+    }
+    .not-found-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-home {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: opacity 0.2s;
+    }
+    .btn-home:hover { opacity: 0.9; }
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        background: var(--bg-card, rgba(255,255,255,0.06));
+        color: var(--text-primary, #f1f5f9);
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+        transition: background 0.2s;
+    }
+    .btn-back:hover { background: var(--bg-hover, rgba(255,255,255,0.1)); }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="not-found-section">
+    <div>
+        <div class="not-found-code">404</div>
+        <h1 class="not-found-title">
+            {% if isRTL %}الصفحة غير موجودة{% else %}Page Not Found{% endif %}
+        </h1>
+        <p class="not-found-message">
+            {% if isRTL %}
+                عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.
+            {% else %}
+                Sorry, the page you're looking for doesn't exist or has been moved.
+            {% endif %}
+        </p>
+        <div class="not-found-actions">
+            <a href="/" class="btn-home">
+                <i class="fas fa-home"></i>
+                {% if isRTL %}الرئيسية{% else %}Go Home{% endif %}
+            </a>
+            <a href="javascript:history.back()" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                {% if isRTL %}العودة{% else %}Go Back{% endif %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

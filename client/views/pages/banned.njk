@@ -1,0 +1,90 @@
+{# ═══════════════════════════════════════════════ #}
+{# Banned User Page — Account Suspended            #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/base.njk" %}
+
+{% set pageTitle = "Account Suspended" %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/auth.css">
+  <style>
+    .banned-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: var(--body-bg, #0a0a0f);
+    }
+    .banned-card {
+      max-width: 520px;
+      width: 100%;
+      background: var(--card-bg, #12121a);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(239, 68, 68, 0.08);
+    }
+    .banned-icon {
+      width: 80px; height: 80px;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+    .banned-card h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ef4444;
+      margin: 0 0 12px;
+    }
+    .banned-card p {
+      font-size: 1rem;
+      color: var(--text-2, #94a3b8);
+      line-height: 1.7;
+      margin: 0 0 24px;
+    }
+    .banned-card .support-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 12px;
+      background: rgba(239,68,68,0.1);
+      color: #ef4444;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      border: 1px solid rgba(239,68,68,0.2);
+    }
+    .banned-card .support-link:hover {
+      background: rgba(239,68,68,0.2);
+      transform: translateY(-2px);
+    }
+    .banned-card .home-link {
+      display: block;
+      margin-top: 20px;
+      color: var(--text-3, #64748b);
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+    .banned-card .home-link:hover { color: var(--text-1, #e2e8f0); }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="banned-container">
+    <div class="banned-card">
+      <div class="banned-icon">🚫</div>
+      <h1>Account Suspended</h1>
+      <p>Your account has been suspended and you cannot access the platform at this time. If you believe this is a mistake, please reach out to our support team.</p>
+      <a href="mailto:support@roya.com" class="support-link">
+        <i class="fas fa-envelope"></i> Contact Support
+      </a>
+      <a href="/" class="home-link">← Back to Home</a>
+    </div>
+  </div>
+{% endblock %}

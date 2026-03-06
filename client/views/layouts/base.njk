@@ -1,0 +1,106 @@
+{# ═══════════════════════════════════════════════ #}
+{# Base Layout — Shared by ALL pages              #}
+{# Variables injected by i18n middleware:          #}
+{#   lang, dir, isRTL, t, logoSrc, logoAlt,       #}
+{#   langToggle, baseUrl                           #}
+{# Each page sets: pageTitle, pageDescription,     #}
+{#   pageImage, pageCss, pageScripts               #}
+{# ═══════════════════════════════════════════════ #}
+<!DOCTYPE html>
+<html lang="{{ lang }}" {% if isRTL %}dir="rtl"{% endif %}>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ pageTitle or t.meta.title }}</title>
+  <meta name="description" content="{{ pageDescription or t.meta.description }}">
+  <meta name="keywords" content="{{ t.meta.keywords }}">
+  <link rel="icon" type="image/svg+xml" href="{{ logoSrc }}">
+
+  {# ── Canonical & hreflang (bilingual SEO) ── #}
+  <link rel="canonical" href="{{ baseUrl }}{{ currentPath }}">
+  <link rel="alternate" hreflang="en" href="{{ baseUrl }}{{ currentPath }}">
+  <link rel="alternate" hreflang="ar" href="{{ baseUrl }}{{ currentPath }}">
+  <link rel="alternate" hreflang="x-default" href="{{ baseUrl }}{{ currentPath }}">
+
+  {# ── OpenGraph (Facebook, LinkedIn, WhatsApp) ── #}
+  <meta property="og:site_name" content="ROYA Advertising">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="{{ 'ar_SA' if isRTL else 'en_US' }}">
+  <meta property="og:locale:alternate" content="{{ 'en_US' if isRTL else 'ar_SA' }}">
+  <meta property="og:title" content="{{ pageTitle or t.meta.title }}">
+  <meta property="og:description" content="{{ pageDescription or t.meta.description }}">
+  <meta property="og:url" content="{{ baseUrl }}{{ currentPath }}">
+  <meta property="og:image" content="{{ pageImage or (baseUrl + '/images/og-default.jpg') }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  {# ── Twitter Card ── #}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ pageTitle or t.meta.title }}">
+  <meta name="twitter:description" content="{{ pageDescription or t.meta.description }}">
+  <meta name="twitter:image" content="{{ pageImage or (baseUrl + '/images/og-default.jpg') }}">
+
+  {# ── JSON-LD Structured Data ── #}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "ROYA Advertising",
+    "url": "{{ baseUrl }}",
+    "logo": "{{ baseUrl }}/images/logo.svg",
+    "description": "{{ t.meta.description }}",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Badr City",
+      "addressRegion": "Cairo Governorate",
+      "addressCountry": "EG"
+    },
+    "areaServed": ["EG", "SA", "AE"],
+    "serviceType": ["Advertising", "Marketing", "Real Estate", "Exhibition Management"],
+    "sameAs": []
+  }
+  </script>
+
+  {# ── Fonts ── #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  {% if isRTL %}
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  {% endif %}
+
+  {# ── Icons ── #}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  {# ── Core Styles ── #}
+  <link rel="stylesheet" href="/css/main.css">
+
+  {# ── Page-specific CSS ── #}
+  {% block pageCss %}{% endblock %}
+
+  {# ── RTL Styles (auto-loaded for Arabic) ── #}
+  {% if isRTL %}
+  <link rel="stylesheet" href="/css/rtl.css">
+  {% endif %}
+
+  {# ── Extra head content ── #}
+  {% block headExtra %}{% endblock %}
+</head>
+
+<body>
+  {# ── Page Content ── #}
+  {% block body %}{% endblock %}
+
+  {# ── Toast Container ── #}
+  <div class="toast-container" id="toastContainer"></div>
+
+  {# ── Core Scripts ── #}
+  <script src="/js/api.js" defer></script>
+  <script src="/js/utils.js" defer></script>
+  <script src="/js/i18n-switcher.js" defer></script>
+
+  {# ── Page-specific Scripts ── #}
+  {% block pageScripts %}{% endblock %}
+</body>
+
+</html>

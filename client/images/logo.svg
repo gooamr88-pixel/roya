@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50">
+  <defs>
+    <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37"/>
+      <stop offset="100%" style="stop-color:#f5e6a3"/>
+    </linearGradient>
+    <linearGradient id="lightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a365d"/>
+      <stop offset="100%" style="stop-color:#2d4a7a"/>
+    </linearGradient>
+  </defs>
+  <!-- Dark mode version (default) -->
+  <g class="logo-dark">
+    <text x="0" y="38" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" letter-spacing="6" fill="url(#darkGrad)">ROYA</text>
+  </g>
+</svg>

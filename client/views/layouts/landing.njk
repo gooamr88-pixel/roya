@@ -1,0 +1,21 @@
+{# ═══════════════════════════════════════════════ #}
+{# Landing Page Layout — Extends base, adds       #}
+{# navbar + floating contact + footer              #}
+{# Used by: index, services, properties,           #}
+{#          exhibitions pages                       #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/base.njk" %}
+
+{% block body %}
+  {# ── Navbar ── #}
+  {% include "partials/navbar.njk" %}
+
+  {# ── Floating Contact Button ── #}
+  {% include "partials/floating-contact.njk" %}
+
+  {# ── Main Page Content ── #}
+  {% block content %}{% endblock %}
+
+  {# ── Footer ── #}
+  {% include "partials/footer.njk" %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{# ═══════════════════════════════════════════════ #}
+{# Login Page                                       #}
+{# Uses base layout directly (no navbar/footer)     #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/base.njk" %}
+
+{% set pageTitle = t.login.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/auth.css">
+{% endblock %}
+
+{% block body %}
+  <div class="auth-page">
+    {# ── Brand Side ── #}
+    <div class="auth-brand">
+      <div class="auth-brand-content">
+        <div class="auth-brand-logo">
+          <img src="{{ logoSrc }}" alt="{{ logoAlt }}" style="height:48px;">
+        </div>
+        <h2 data-i18n="login.welcome">{{ t.login.welcome }}</h2>
+        <p data-i18n="login.welcomeDesc">{{ t.login.welcomeDesc }}</p>
+        <div class="auth-brand-features">
+          <div class="feature"><i class="fas fa-shield-halved"></i> <span data-i18n="login.feature_secure">{{ t.login.feature_secure }}</span></div>
+          <div class="feature"><i class="fas fa-bolt"></i> <span data-i18n="login.feature_dashboard">{{ t.login.feature_dashboard }}</span></div>
+          <div class="feature"><i class="fas fa-bell"></i> <span data-i18n="login.feature_notifications">{{ t.login.feature_notifications }}</span></div>
+          <div class="feature"><i class="fas fa-file-invoice"></i> <span data-i18n="login.feature_invoices">{{ t.login.feature_invoices }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Form Side ── #}
+    <div class="auth-form-side">
+      <div class="auth-form-wrapper">
+        <a href="/" class="back-link"><i class="fas fa-arrow-{{ 'right' if isRTL else 'left' }}"></i> <span data-i18n="login.backToHome">{{ t.login.backToHome }}</span></a>
+
+        <h1 data-i18n="login.heading">{{ t.login.heading }}</h1>
+        <p class="subtitle" data-i18n="login.subtitle">{{ t.login.subtitle }}</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="email" data-i18n="login.emailLabel">{{ t.login.emailLabel }}</label>
+            <input class="form-input" type="email" id="email" placeholder="{{ t.login.emailPlaceholder }}" data-i18n="login.emailPlaceholder" required autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password" data-i18n="login.passwordLabel">{{ t.login.passwordLabel }}</label>
+            <div class="password-toggle">
+              <input class="form-input" type="password" id="password" placeholder="{{ t.login.passwordPlaceholder }}" data-i18n="login.passwordPlaceholder" required autocomplete="current-password">
+              <button type="button" class="toggle-btn" onclick="togglePassword('password', this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-helpers">
+            <label><input type="checkbox" id="remember"> <span data-i18n="login.rememberMe">{{ t.login.rememberMe }}</span></label>
+            <a href="/reset-password" data-i18n="login.forgotPassword">{{ t.login.forgotPassword }}</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg w-full" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> <span data-i18n="login.submitBtn">{{ t.login.submitBtn }}</span>
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 12px;">
+          <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect=/login" class="lang-toggle"
+             title="{{ langToggle.text }}" style="display:inline-block;">
+            <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}">
+          </a>
+        </div>
+
+        <p class="auth-footer">
+          <span data-i18n="login.noAccount">{{ t.login.noAccount }}</span> <a href="/register" data-i18n="login.createOne">{{ t.login.createOne }}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/auth.js" defer></script>
+  <script>
+    // Show redirect message from content lock
+    const msg = sessionStorage.getItem('loginMessage');
+    if (msg) { sessionStorage.removeItem('loginMessage'); document.addEventListener('DOMContentLoaded', () => setTimeout(() => Toast.info(msg), 600)); }
+  </script>
+{% endblock %}

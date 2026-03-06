@@ -1,0 +1,209 @@
+{# ═══════════════════════════════════════════════ #}
+{# Properties Listing Page (loads from API)         #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/landing.njk" %}
+
+{% set pageTitle = t.propertiesPage.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/landing.css">
+{% endblock %}
+
+{% block content %}
+  {# ════════════ PAGE HEADER ════════════ #}
+  <section style="padding: 120px 0 40px;">
+    <div class="container text-center">
+      <span class="section-label">{{ t.propertiesPage.label }}</span>
+      <h1 class="section-title" style="font-size: 2.2rem;">{{ t.propertiesPage.headingBefore }} <span class="text-gradient">{{ t.propertiesPage.headingHighlight }}</span></h1>
+      <p class="section-desc" style="margin: 0 auto;">{{ t.propertiesPage.desc }}</p>
+    </div>
+  </section>
+
+  {# ════════════ PROPERTIES LISTING ════════════ #}
+  <section class="properties-section" style="padding-top: 0;">
+    <div class="container">
+      <div class="properties-grid" id="propertiesGrid">
+        <div class="empty-state">
+          <div class="icon"><i class="fas fa-spinner fa-spin"></i></div>
+          <h3>{{ t.propertiesPage.loading }}</h3>
+        </div>
+      </div>
+      <div class="text-center" style="margin-top: 36px;" id="propertiesPagination"></div>
+    </div>
+  </section>
+
+  {# ══ Property Inquiry Modal ══ #}
+  <div id="propInquiryModal" class="glass-modal-overlay" style="display:none;">
+    <div class="glass-modal-backdrop" id="propModalBackdrop"></div>
+    <div class="glass-modal-content" style="max-width:480px;">
+      <button class="glass-modal-close" id="propModalClose"><i class="fas fa-times"></i></button>
+      <div class="glass-modal-body" style="padding-top:24px;">
+        <h2 id="propModalTitle" style="margin-bottom:16px;"></h2>
+        <p style="color:var(--text-muted);margin-bottom:20px;">{{ t.propertiesPage.inquireDesc }}</p>
+        <form id="propInquiryForm">
+          <div style="margin-bottom:14px;">
+            <input type="text" id="propInquiryName" class="form-input" placeholder="{{ t.propertiesPage.yourName }}" required style="width:100%;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <input type="email" id="propInquiryEmail" class="form-input" placeholder="{{ t.propertiesPage.yourEmail }}" required style="width:100%;">
+          </div>
+          <div style="margin-bottom:20px;">
+            <textarea id="propInquiryMessage" class="form-input" rows="4" placeholder="{{ t.propertiesPage.yourMessage }}" style="width:100%;resize:vertical;"></textarea>
+          </div>
+          <div class="glass-modal-actions">
+            <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-paper-plane"></i> {{ t.propertiesPage.sendInquiry }}</button>
+            <button type="button" class="btn btn-ghost" id="propModalCancel">{{ t.propertiesPage.cancel }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/landing.js" defer></script>
+  <script defer>
+    {# Use propI18n (not i18n) to avoid shadowing the global i18n from api.js #}
+    window.propI18n = {
+      noProperties: '{{ t.propertiesPage.noProperties }}',
+      checkBack:    '{{ t.propertiesPage.checkBack }}',
+      inquire:      '{{ t.propertiesPage.inquire }}',
+      failedLoad:   '{{ t.propertiesPage.failedLoad }}'
+    };
+
+    let currentPage = 1;
+    const PAGE_LIMIT = 12;
+
+    const typeColors = { residential: 'primary', commercial: 'info', land: 'success', industrial: 'warning' };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPropertiesPage(1);
+      initPropModal();
+    });
+
+    function initPropModal() {
+      const modal    = document.getElementById('propInquiryModal');
+      const backdrop = document.getElementById('propModalBackdrop');
+      const closeBtn = document.getElementById('propModalClose');
+      const cancelBtn= document.getElementById('propModalCancel');
+      const form     = document.getElementById('propInquiryForm');
+
+      [backdrop, closeBtn, cancelBtn].forEach(el => {
+        el?.addEventListener('click', closePropModal);
+      });
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name    = document.getElementById('propInquiryName').value.trim();
+        const email   = document.getElementById('propInquiryEmail').value.trim();
+        const message = document.getElementById('propInquiryMessage').value.trim();
+        const title   = document.getElementById('propModalTitle').textContent;
+        if (!name || !email) { Toast.warning(i18n.t('Please fill in your name and email.', 'يرجى ملء الاسم والبريد الإلكتروني.')); return; }
+        const btn = form.querySelector('[type="submit"]');
+        btn.disabled = true;
+        try {
+          await API.post('/contact', {
+            name, email,
+            subject: `Property Inquiry: ${title}`,
+            message: message || `I am interested in the property: ${title}`,
+          });
+          Toast.success(i18n.t('Inquiry sent! We\'ll contact you soon.', 'تم إرسال الاستفسار! سنتواصل معك قريباً.'));
+          closePropModal();
+          form.reset();
+        } catch (err) {
+          Toast.error(err.message || i18n.t('Failed to send inquiry.', 'فشل إرسال الاستفسار.'));
+        } finally { btn.disabled = false; }
+      });
+    }
+
+    function openPropModal(title) {
+      const modal = document.getElementById('propInquiryModal');
+      document.getElementById('propModalTitle').textContent = title;
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => modal.classList.add('show'));
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePropModal() {
+      const modal = document.getElementById('propInquiryModal');
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+      setTimeout(() => { modal.style.display = 'none'; }, 350);
+    }
+
+    function handleInquireClick(propTitle) {
+      {# If user is logged in (landingUser set by landing.js checkLandingAuth), open modal. #}
+      {# If not, redirect to login with a message. #}
+      if (typeof landingUser !== 'undefined' && landingUser) {
+        openPropModal(propTitle);
+      } else {
+        sessionStorage.setItem('loginMessage', i18n.t('Please login to inquire about this property.', 'يرجى تسجيل الدخول للاستفسار عن هذا العقار.'));
+        window.location.href = '/login';
+      }
+    }
+
+    async function loadPropertiesPage(page) {
+      currentPage = page;
+      const grid  = document.getElementById('propertiesGrid');
+      const pagEl = document.getElementById('propertiesPagination');
+      try {
+        const res  = await fetch(`/api/properties?page=${page}&limit=${PAGE_LIMIT}`);
+        const data = await res.json();
+        if (!res.ok || !data.data?.properties?.length) {
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-building"></i></div><h3>' + propI18n.noProperties + '</h3><p>' + propI18n.checkBack + '</p></div>';
+          return;
+        }
+        const properties = data.data.properties;
+        const pagination = data.data.pagination;
+
+        grid.innerHTML = properties.map(p => {
+          const img   = getImageUrl(p.images, 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80');
+          const badge = typeColors[p.property_type] || 'primary';
+          {# Inquire button uses data-prop-title — no inline onclick, avoids CSP #}
+          return `
+            <div class="property-card fade-in visible">
+              <div class="property-card-image">
+                <span class="badge badge-${badge}">${esc(p.property_type || 'Residential')}</span>
+                <img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+              </div>
+              <div class="property-card-body">
+                <h3>${esc(p.title)}</h3>
+                <div class="location"><i class="fas fa-map-marker-alt"></i> ${esc(p.location || 'Location N/A')}</div>
+                <div class="property-specs">
+                  ${p.bedrooms  ? `<div class="property-spec"><i class="fas fa-bed"></i> <strong>${p.bedrooms}</strong> {{ t.properties.beds }}</div>`   : ''}
+                  ${p.bathrooms ? `<div class="property-spec"><i class="fas fa-bath"></i> <strong>${p.bathrooms}</strong> {{ t.properties.baths }}</div>` : ''}
+                  ${p.area_sqm  ? `<div class="property-spec"><i class="fas fa-ruler-combined"></i> <strong>${Number(p.area_sqm).toLocaleString()}</strong> m²</div>` : ''}
+                </div>
+                <div class="price-row">
+                  <span class="price">${fmtPrice(p.price)}</span>
+                  <button class="btn btn-outline btn-sm" data-prop-title="${esc(p.title)}">${propI18n.inquire}</button>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        {# Event delegation for all Inquire buttons — no inline onclick #}
+        grid.querySelectorAll('[data-prop-title]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleInquireClick(btn.dataset.propTitle);
+          });
+        });
+
+        if (pagination && pagination.totalPages > 1) {
+          let btns = '';
+          for (let i = 1; i <= pagination.totalPages; i++) {
+            btns += `<button class="btn ${i === page ? 'btn-primary' : 'btn-outline'} btn-sm" style="margin: 0 4px;" data-page="${i}">${i}</button>`;
+          }
+          pagEl.innerHTML = btns;
+          pagEl.querySelectorAll('[data-page]').forEach(btn => {
+            btn.addEventListener('click', () => loadPropertiesPage(parseInt(btn.dataset.page)));
+          });
+        } else { pagEl.innerHTML = ''; }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-exclamation-triangle"></i></div><h3>' + propI18n.failedLoad + '</h3></div>';
+      }
+    }
+  </script>
+{% endblock %}
