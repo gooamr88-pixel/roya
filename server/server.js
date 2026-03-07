@@ -257,16 +257,17 @@ const seo = (path, descKey) => (req, res) => {
 
     // Resolve description from translation files or fallback to default
     const desc = descKey.split('.').reduce((o, k) => o?.[k], t) || t.meta.description;
-    
+
     // Dynamic SEO matching user request
-    const pageTitle = lang === 'ar' 
-        ? 'منصة رؤيا | للحلول الرقمية والعقارات' 
+    const pageTitle = lang === 'ar'
+        ? 'منصة رؤيا | للحلول الرقمية والعقارات'
         : 'Roya Platform | Digital & Real Estate Solutions';
 
-    const pageImage = '/opengraph-image.png';
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const pageImage = `${baseUrl}/opengraph-image.png`;
 
-    res.render(`pages/${path}`, { 
-        currentPath: `/${path === 'index' ? '' : path}`, 
+    res.render(`pages/${path}`, {
+        currentPath: `/${path === 'index' ? '' : path}`,
         pageDescription: desc,
         pageTitle,
         pageImage
