@@ -7,7 +7,7 @@
 {% set pageTitle = t.login.title %}
 
 {% block pageCss %}
-  <link rel="stylesheet" href="/css/auth.css">
+  <link rel="stylesheet" href="/css/auth.css?v=2">
 {% endblock %}
 
 {% block body %}
@@ -80,7 +80,7 @@
 {% endblock %}
 
 {% block pageScripts %}
-  <script src="/js/auth.js" defer></script>
+  <script src="/js/auth.js?v=2" defer></script>
   <script>
     // Show redirect message from content lock
     const msg = sessionStorage.getItem('loginMessage');

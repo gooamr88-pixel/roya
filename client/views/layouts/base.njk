@@ -75,14 +75,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   {# ── Core Styles ── #}
-  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/main.css?v=2">
 
   {# ── Page-specific CSS ── #}
   {% block pageCss %}{% endblock %}
 
   {# ── RTL Styles (auto-loaded for Arabic) ── #}
   {% if isRTL %}
-  <link rel="stylesheet" href="/css/rtl.css">
+  <link rel="stylesheet" href="/css/rtl.css?v=2">
   {% endif %}
 
   {# ── Extra head content ── #}
@@ -97,9 +97,9 @@
   <div class="toast-container" id="toastContainer"></div>
 
   {# ── Core Scripts ── #}
-  <script src="/js/api.js" defer></script>
-  <script src="/js/utils.js" defer></script>
-  <script src="/js/i18n-switcher.js" defer></script>
+  <script src="/js/api.js?v=2" defer></script>
+  <script src="/js/utils.js?v=2" defer></script>
+  <script src="/js/i18n-switcher.js?v=2" defer></script>
 
   {# ── Page-specific Scripts ── #}
   {% block pageScripts %}{% endblock %}

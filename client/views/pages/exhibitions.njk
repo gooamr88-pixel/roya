@@ -6,7 +6,7 @@
 {% set pageTitle = t.exhibitionsPage.title %}
 
 {% block pageCss %}
-  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/landing.css?v=2">
 {% endblock %}
 
 {% block content %}
@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block pageScripts %}
-  <script src="/js/landing.js" defer></script>
+  <script src="/js/landing.js?v=2" defer></script>
   <script defer>
     {# Use exhI18n (not i18n) to avoid shadowing the global i18n from api.js #}
     window.exhI18n = {
@@ -57,7 +57,8 @@
         const res  = await fetch(`/api/exhibitions?page=${page}&limit=${PAGE_LIMIT}`);
         const data = await res.json();
         if (!res.ok || !data.data?.exhibitions?.length) {
-          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-times"></i></div><h3>' + exhI18n.noExhibitions + '</h3><p>' + exhI18n.checkBack + '</p></div>';
+          const noExhText = typeof i18n !== 'undefined' ? i18n.t('No exhibitions available at the moment.', 'لا توجد معارض متاحة في الوقت الحالي') : exhI18n.noExhibitions;
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-times"></i></div><h3>' + noExhText + '</h3><p>' + exhI18n.checkBack + '</p></div>';
           return;
         }
         const exhibitions = data.data.exhibitions;

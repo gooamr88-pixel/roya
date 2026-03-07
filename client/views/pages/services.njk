@@ -6,7 +6,7 @@
 {% set pageTitle = t.servicesPage.title %}
 
 {% block pageCss %}
-  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/landing.css?v=2">
 {% endblock %}
 
 {% block content %}
@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block pageScripts %}
-  <script src="/js/landing.js" defer></script>
+  <script src="/js/landing.js?v=2" defer></script>
   <script defer>
     {# Use svcI18n (not i18n) to avoid shadowing the global i18n from api.js #}
     window.svcI18n = {
@@ -57,7 +57,8 @@
         const res  = await fetch(`/api/services?page=${page}&limit=${PAGE_LIMIT}`);
         const data = await res.json();
         if (!res.ok || !data.data?.services?.length) {
-          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-concierge-bell"></i></div><h3>' + svcI18n.noServices + '</h3></div>';
+          const noServicesText = typeof i18n !== 'undefined' ? i18n.t('No services available at the moment.', 'لا توجد خدمات متاحة في الوقت الحالي') : svcI18n.noServices;
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-concierge-bell"></i></div><h3>' + noServicesText + '</h3></div>';
           return;
         }
         const services   = data.data.services;

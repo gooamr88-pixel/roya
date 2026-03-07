@@ -6,7 +6,7 @@
 {% set pageTitle = t.propertiesPage.title %}
 
 {% block pageCss %}
-  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/landing.css?v=2">
 {% endblock %}
 
 {% block content %}
@@ -61,7 +61,7 @@
 {% endblock %}
 
 {% block pageScripts %}
-  <script src="/js/landing.js" defer></script>
+  <script src="/js/landing.js?v=2" defer></script>
   <script defer>
     {# Use propI18n (not i18n) to avoid shadowing the global i18n from api.js #}
     window.propI18n = {
@@ -150,7 +150,8 @@
         const res  = await fetch(`/api/properties?page=${page}&limit=${PAGE_LIMIT}`);
         const data = await res.json();
         if (!res.ok || !data.data?.properties?.length) {
-          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-building"></i></div><h3>' + propI18n.noProperties + '</h3><p>' + propI18n.checkBack + '</p></div>';
+          const noPropsText = typeof i18n !== 'undefined' ? i18n.t('No properties available at the moment.', 'لا توجد عقارات متاحة في الوقت الحالي') : propI18n.noProperties;
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-building"></i></div><h3>' + noPropsText + '</h3><p>' + propI18n.checkBack + '</p></div>';
           return;
         }
         const properties = data.data.properties;

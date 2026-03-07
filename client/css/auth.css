@@ -362,15 +362,7 @@
     font-size: 0.9rem;
 }
 
-/* Flag sprite box — ensure correct clip */
-.iti__flag {
-    width: 20px;
-    height: 15px;
-    background-repeat: no-repeat;
-    background-size: auto;
-    display: inline-block;
-    flex-shrink: 0;
-}
+/* Flag removed to allow native library rendering */
 
 /* Dial code text (e.g., +966) */
 .iti__selected-dial-code {

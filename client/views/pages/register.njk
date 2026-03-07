@@ -7,18 +7,7 @@
 
 {% block pageCss %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
-  <style>
-    /* Force correct absolute CDN path for flag sprites (v17) */
-    .iti__flag {
-      background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags.png") !important;
-    }
-    @media (min-resolution: 2x), (-webkit-min-device-pixel-ratio: 2) {
-      .iti__flag {
-        background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags@2x.png") !important;
-      }
-    }
-  </style>
-  <link rel="stylesheet" href="/css/auth.css">
+  <link rel="stylesheet" href="/css/auth.css?v=2">
 {% endblock %}
 
 {% block headExtra %}
@@ -147,5 +136,5 @@
 
 {% block pageScripts %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js" defer></script>
-  <script src="/js/auth.js" defer></script>
+  <script src="/js/auth.js?v=2" defer></script>
 {% endblock %}
