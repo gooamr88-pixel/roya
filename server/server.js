@@ -81,7 +81,8 @@ app.use(helmet({
 const allowedOrigins = [
     'http://localhost:3000', // عشان لو بتجرب على جهازك
     'http://localhost:5000',
-'roya-advertising.com' // اللينك بتاع الإنتاج (Production)
+    // اللينك بتاع الإنتاج (Production)
+    'https://roya-advertising.com'
 ];
 
 // لو عندك لينك تاني في الـ env ضيفه برضه
