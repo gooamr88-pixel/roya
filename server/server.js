@@ -253,8 +253,24 @@ app.get('/sitemap.xml', (req, res) => {
 // ═══════════════════════════════════════════════
 const seo = (path, descKey) => (req, res) => {
     const t = res.locals.t;
+    const lang = res.locals.lang;
+
+    // Resolve description from translation files or fallback to default
     const desc = descKey.split('.').reduce((o, k) => o?.[k], t) || t.meta.description;
-    res.render(`pages/${path}`, { currentPath: `/${path === 'index' ? '' : path}`, pageDescription: desc });
+    
+    // Dynamic SEO matching user request
+    const pageTitle = lang === 'ar' 
+        ? 'منصة رؤيا | للحلول الرقمية والعقارات' 
+        : 'Roya Platform | Digital & Real Estate Solutions';
+
+    const pageImage = '/opengraph-image.png';
+
+    res.render(`pages/${path}`, { 
+        currentPath: `/${path === 'index' ? '' : path}`, 
+        pageDescription: desc,
+        pageTitle,
+        pageImage
+    });
 };
 
 app.get('/', seo('index', 'meta.description'));
