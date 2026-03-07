@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
     initMobileMenu();
     initSlideshow();
+    initContactMenu();
     initScrollAnimations();
     initCounterAnimation();
     initContactForm();
@@ -84,13 +85,34 @@ function initMobileMenu() {
     const menu = document.getElementById('mobileMenu');
     const close = document.getElementById('mobileClose');
     if (toggle && menu) {
-        toggle.addEventListener('click', () => menu.classList.add('active'));
+        toggle.addEventListener('click', () => menu.classList.toggle('active'));
         close?.addEventListener('click', () => menu.classList.remove('active'));
         menu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => menu.classList.remove('active'));
         });
     }
 }
+
+// ── Contact Menu Toggle (Mobile Friendly) ──
+function initContactMenu() {
+    const toggle = document.querySelector('.contact-toggle');
+    const container = document.querySelector('.floating-contact');
+    if (toggle && container) {
+        // Toggle menu explicitly on click
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            container.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target)) {
+                container.classList.remove('active');
+            }
+        });
+    }
+}
+
 
 // ── Scroll Animations ──
 function initScrollAnimations() {
@@ -274,7 +296,10 @@ async function loadLandingServices() {
         const response = await fetch('/api/services?limit=6');
         const data = await response.json();
         if (!response.ok || !data.data?.services?.length) {
-            grid.innerHTML = `<div class="empty-state-wrapper"><span>${typeof i18n !== 'undefined' ? i18n.t('No services available at the moment.', 'لا توجد خدمات متاحة حالياً.') : 'No services available.'}</span></div>`;
+            grid.innerHTML = `<div class="empty-state-wrapper">
+            <i class="fas fa-briefcase" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
+            ${typeof i18n !== 'undefined' ? i18n.t('No services available at the moment.', 'لا توجد خدمات متاحة في الوقت الحالي') : 'No services available.'}
+        </div>`;
             return;
         }
 
@@ -327,7 +352,10 @@ async function loadLandingProperties() {
         const response = await fetch('/api/properties?limit=6');
         const data = await response.json();
         if (!response.ok || !data.data?.properties?.length) {
-            grid.innerHTML = `<div class="empty-state-wrapper"><span>${typeof i18n !== 'undefined' ? i18n.t('No properties available at the moment.', 'لا توجد عقارات متاحة حالياً.') : 'No properties available.'}</span></div>`;
+            grid.innerHTML = `<div class="empty-state-wrapper">
+            <i class="fas fa-home" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
+            ${typeof i18n !== 'undefined' ? i18n.t('No properties available at the moment.', 'لا توجد عقارات متاحة في الوقت الحالي') : 'No properties available.'}
+        </div>`;
             return;
         }
 
@@ -411,7 +439,10 @@ async function loadLandingExhibitions() {
         const response = await fetch('/api/exhibitions?limit=6');
         const data = await response.json();
         if (!response.ok || !data.data?.exhibitions?.length) {
-            grid.innerHTML = `<div class="empty-state-wrapper"><span>${typeof i18n !== 'undefined' ? i18n.t('No exhibitions available at the moment.', 'لا توجد معارض متاحة حالياً.') : 'No exhibitions available.'}</span></div>`;
+            grid.innerHTML = `<div class="empty-state-wrapper">
+            <i class="fas fa-calendar-alt" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
+            ${typeof i18n !== 'undefined' ? i18n.t('No exhibitions available at the moment.', 'لا توجد معارض متاحة في الوقت الحالي') : 'No exhibitions available.'}
+        </div>`;
             return;
         }
 

@@ -4,7 +4,7 @@
 
 // ── i18n Helper — detect page language for bilingual messages ──
 const i18n = {
-    isAr: document.documentElement.lang === 'ar',
+    get isAr() { return document.documentElement.lang === 'ar'; },
     t(en, ar) { return this.isAr ? ar : en; },
 
     // API Interceptor mapping

@@ -149,7 +149,14 @@
     display: none;
   }
 
-  .nav-actions a.btn {
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-actions a.btn-primary,
+  .nav-actions a.btn-outline {
     display: none;
     /* Hide primary buttons from navbar top, they move to mobile menu */
   }
@@ -238,7 +245,8 @@
   padding-bottom: 10px;
 }
 
-.floating-contact:hover .contact-menu {
+.floating-contact:hover .contact-menu,
+.floating-contact.active .contact-menu {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
