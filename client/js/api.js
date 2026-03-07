@@ -5,7 +5,30 @@
 // ── i18n Helper — detect page language for bilingual messages ──
 const i18n = {
     isAr: document.documentElement.lang === 'ar',
-    t(en, ar) { return this.isAr ? ar : en; }
+    t(en, ar) { return this.isAr ? ar : en; },
+
+    // API Interceptor mapping
+    backendMessages: {
+        "User created successfully": "تم إنشاء الحساب بنجاح",
+        "Username already exists": "اسم المستخدم موجود بالفعل",
+        "Email already in use": "البريد الإلكتروني مستخدم بالفعل",
+        "Invalid credentials": "بيانات الاعتماد غير صالحة",
+        "Invalid token": "رمز غير صالح",
+        "No token provided": "لم يتم توفير رمز",
+        "Service requested successfully": "تم طلب الخدمة بنجاح",
+        "Internal Server Error": "خطأ في الخادم الداخلي",
+        "Property not found": "العقار غير موجود",
+        "Service not found": "الخدمة غير موجودة",
+        "Exhibition not found": "المعرض غير موجود",
+        "Please provide all required fields": "الرجاء توفير جميع الحقول الإلزامية"
+    },
+
+    translateApiMessage(msg) {
+        if (this.isAr && this.backendMessages[msg]) {
+            return this.backendMessages[msg];
+        }
+        return msg;
+    }
 };
 
 const API = {
@@ -41,12 +64,13 @@ const API = {
 
             const data = await response.json();
             if (!response.ok) {
-                throw new Error(data.error?.message || data.message || 'Something went wrong');
+                const message = data.error?.message || data.message || 'Something went wrong';
+                throw new Error(i18n.translateApiMessage(message));
             }
             return data;
         } catch (err) {
             if (err.message === 'Failed to fetch') {
-                throw new Error('Network error. Please check your connection.');
+                throw new Error(i18n.translateApiMessage('Network error. Please check your connection.'));
             }
             throw err;
         }

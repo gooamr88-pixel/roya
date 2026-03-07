@@ -6,7 +6,7 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <img src="{{ logoSrc }}" alt="{{ logoAlt }}" style="height: 80px; margin-bottom: 16px;">
-        <p>{{ t.footer.brand_desc }}</p>
+        <p data-i18n="footer.brand_desc">{{ t.footer.brand_desc }}</p>
         <div style="margin-top: 16px; font-size: 0.9rem; color: var(--text-muted);">
           <p><i class="fas fa-phone" style="margin-{{ 'left' if isRTL else 'right' }}: 8px;"></i> +20 1025474922</p>
           <p><i class="fab fa-whatsapp" style="margin-{{ 'left' if isRTL else 'right' }}: 8px;"></i> +966 548 171 795</p>
@@ -14,37 +14,37 @@
       </div>
 
       <div>
-        <h4>{{ t.footer.quickLinks }}</h4>
+        <h4 data-i18n="footer.quickLinks">{{ t.footer.quickLinks }}</h4>
         <ul class="footer-links">
-          <li><a href="#about">{{ t.nav.about }}</a></li>
-          <li><a href="#services">{{ t.nav.services }}</a></li>
-          <li><a href="#properties">{{ t.nav.properties }}</a></li>
-          <li><a href="#contact">{{ t.nav.contact }}</a></li>
+          <li><a href="#about" data-i18n="nav.about">{{ t.nav.about }}</a></li>
+          <li><a href="#services" data-i18n="nav.services">{{ t.nav.services }}</a></li>
+          <li><a href="#properties" data-i18n="nav.properties">{{ t.nav.properties }}</a></li>
+          <li><a href="#contact" data-i18n="nav.contact">{{ t.nav.contact }}</a></li>
         </ul>
       </div>
 
       <div>
-        <h4>{{ t.footer.servicesTitle }}</h4>
+        <h4 data-i18n="footer.servicesTitle">{{ t.footer.servicesTitle }}</h4>
         <ul class="footer-links">
-          <li><a href="#services">{{ t.about.advertising }}</a></li>
-          <li><a href="#services">{{ t.about.marketing }}</a></li>
-          <li><a href="#services">{{ t.about.realEstate }}</a></li>
-          <li><a href="#services">{{ t.about.exhibitions }}</a></li>
+          <li><a href="#services" data-i18n="about.advertising">{{ t.about.advertising }}</a></li>
+          <li><a href="#services" data-i18n="about.marketing">{{ t.about.marketing }}</a></li>
+          <li><a href="#services" data-i18n="about.realEstate">{{ t.about.realEstate }}</a></li>
+          <li><a href="#services" data-i18n="about.exhibitions">{{ t.about.exhibitions }}</a></li>
         </ul>
       </div>
 
       <div>
-        <h4>{{ t.footer.account }}</h4>
+        <h4 data-i18n="footer.account">{{ t.footer.account }}</h4>
         <ul class="footer-links">
-          <li><a href="/login">{{ t.footer.signIn }}</a></li>
-          <li><a href="/register">{{ t.footer.register }}</a></li>
-          <li><a href="/dashboard">{{ t.footer.dashboard }}</a></li>
+          <li><a href="/login" data-i18n="footer.signIn">{{ t.footer.signIn }}</a></li>
+          <li><a href="/register" data-i18n="footer.register">{{ t.footer.register }}</a></li>
+          <li><a href="/dashboard" data-i18n="footer.dashboard">{{ t.footer.dashboard }}</a></li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <span>{{ t.footer.copyright }}</span>
+      <span data-i18n="footer.copyright">{{ t.footer.copyright }}</span>
       <div class="footer-social">
         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>

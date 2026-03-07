@@ -1965,7 +1965,8 @@ h6,
     color: var(--text-2);
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    line-clamp: 2;           /* standard property — lint fix a688d1f0 */
+    line-clamp: 2;
+    /* standard property — lint fix a688d1f0 */
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin-bottom: 16px;
@@ -1983,7 +1984,8 @@ h6,
     font-weight: 700;
     background: linear-gradient(135deg, var(--gold), #f5d98a);
     -webkit-background-clip: text;
-    background-clip: text;          /* standard property — lint fix 84720b30 */
+    background-clip: text;
+    /* standard property — lint fix 84720b30 */
     -webkit-text-fill-color: transparent;
 }
 
@@ -1995,6 +1997,7 @@ mark.search-highlight {
     padding: 0 2px;
     font-weight: 700;
 }
+
 [data-theme="light"] mark.search-highlight {
     background: #FDE68A;
     color: #78350F;
@@ -3652,4 +3655,70 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 [data-theme="light"] h6,
 [data-theme="light"] .text-primary {
     color: var(--text-1);
+}
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVENESS
+   ══════════════════════════════════════ */
+@media (max-width: 900px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform var(--transition);
+        width: 280px;
+    }
+
+    [dir="rtl"] .sidebar {
+        transform: translateX(100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0) !important;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar-toggle,
+    .sidebar-close {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    [dir="rtl"] .main-content {
+        margin-right: 0;
+    }
+
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .content-area {
+        padding: 16px;
+    }
+
+    .dashboard-grid,
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+
+    .profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .table-container {
+        border-right: 1px solid var(--border);
+        /* Better scrolling hint */
+    }
 }
