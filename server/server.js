@@ -81,7 +81,7 @@ app.use(helmet({
 const allowedOrigins = [
     'http://localhost:3000', // عشان لو بتجرب على جهازك
     'http://localhost:5000',
-    'https://roya-two.vercel.app' // اللينك بتاع الإنتاج (Production)
+'roya-advertising.com' // اللينك بتاع الإنتاج (Production)
 ];
 
 // لو عندك لينك تاني في الـ env ضيفه برضه
