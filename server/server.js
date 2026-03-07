@@ -71,20 +71,42 @@ app.use(helmet({
         },
     },
 }));
-// BUG FIX #7: cors() with no options allows ALL origins — replaced with allowlist
-app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (server-to-server, curl, mobile apps)
-        if (!origin) return callback(null, true);
-        if (config.security.allowedOrigins.includes(origin)) {
-            return callback(null, true);
+
+
+
+
+
+
+// قائمة الروابط المسموح ليها تكلم السيرفر
+const allowedOrigins = [
+    'http://localhost:3000', // عشان لو بتجرب على جهازك
+    'http://localhost:5000',
+    'https://roya-two.vercel.app' // اللينك بتاع الإنتاج (Production)
+];
+
+// لو عندك لينك تاني في الـ env ضيفه برضه
+if (process.env.CLIENT_URL) {
+    allowedOrigins.push(process.env.CLIENT_URL);
+}
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        // بنسمح للروابط اللي في القائمة، أو الطلبات اللي من غير Origin (زي البوستمان)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS Error: Origin not allowed'));
         }
-        return callback(new Error(`CORS: Origin ${origin} not allowed`), false);
     },
-    credentials: true,          // Required: allow cookies (access_token / refresh_token)
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+    credentials: true, // مهمة جداً عشان الـ Cookies والـ Login يشتغلوا
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+
+
 
 // ── Body Parsing ──
 app.use(express.json({ limit: '10mb' }));
