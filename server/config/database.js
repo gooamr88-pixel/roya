@@ -10,9 +10,10 @@ const pool = new Pool({
     database: config.db.name,
     user: config.db.user,
     password: config.db.password,
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+    max: 2, // Serverless Best Practice: Restrict max connections to prevent exhaustion (1 or 2 max per lambda/Vercel instance)
+    idleTimeoutMillis: 1000, // Serverless Best Practice: close idle clients quickly (1 second) to free up connections
+    connectionTimeoutMillis: 5000, // Fail fast if unable to connect
+    allowExitOnIdle: true, // Prevents Node event loop from hanging in serverless environments
     ssl: config.db.host !== 'localhost' ? { rejectUnauthorized: false } : false,
 });
 
