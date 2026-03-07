@@ -263,7 +263,12 @@ const seo = (path, descKey) => (req, res) => {
         ? 'منصة رؤيا | للحلول الرقمية والعقارات'
         : 'Roya Platform | Digital & Real Estate Solutions';
 
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    // Vercel sits behind a reverse proxy, so req.protocol is 'http' by default.
+    // We must read the x-forwarded proto/host headers to generate a valid https:// absolute URL.
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    const baseUrl = `${protocol}://${host}`;
+
     const pageImage = `${baseUrl}/opengraph-image.png`;
 
     res.render(`pages/${path}`, {
