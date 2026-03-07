@@ -58,7 +58,7 @@
         const data = await res.json();
         if (!res.ok || !data.data?.exhibitions?.length) {
           const noExhText = typeof i18n !== 'undefined' ? i18n.t('No exhibitions available at the moment.', 'لا توجد معارض متاحة في الوقت الحالي') : exhI18n.noExhibitions;
-          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-times"></i></div><h3>' + noExhText + '</h3><p>' + exhI18n.checkBack + '</p></div>';
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-times"></i></div><h3 data-i18n="exhibitionsPage.noExhibitions">' + noExhText + '</h3><p data-i18n="exhibitionsPage.checkBack">' + exhI18n.checkBack + '</p></div>';
           return;
         }
         const exhibitions = data.data.exhibitions;

@@ -58,7 +58,7 @@
         const data = await res.json();
         if (!res.ok || !data.data?.services?.length) {
           const noServicesText = typeof i18n !== 'undefined' ? i18n.t('No services available at the moment.', 'لا توجد خدمات متاحة في الوقت الحالي') : svcI18n.noServices;
-          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-concierge-bell"></i></div><h3>' + noServicesText + '</h3></div>';
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-concierge-bell"></i></div><h3 data-i18n="servicesPage.noServices">' + noServicesText + '</h3></div>';
           return;
         }
         const services   = data.data.services;

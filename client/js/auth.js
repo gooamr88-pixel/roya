@@ -79,7 +79,6 @@ function initRegisterForm() {
             autoInsertDialCode: true,
             formatOnDisplay: true
         });
-        // Flag sprite override is handled by the <style> block in register.njk
     }
 
     // Register form handler

@@ -298,7 +298,7 @@ async function loadLandingServices() {
         if (!response.ok || !data.data?.services?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
             <i class="fas fa-briefcase" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
-            ${typeof i18n !== 'undefined' ? i18n.t('No services available at the moment.', 'لا توجد خدمات متاحة في الوقت الحالي') : 'No services available.'}
+            <span data-i18n="servicesPage.noServices">${i18n.t('No services available at the moment.', 'لا توجد خدمات متاحة في الوقت الحالي')}</span>
         </div>`;
             return;
         }
@@ -354,7 +354,7 @@ async function loadLandingProperties() {
         if (!response.ok || !data.data?.properties?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
             <i class="fas fa-home" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
-            ${typeof i18n !== 'undefined' ? i18n.t('No properties available at the moment.', 'لا توجد عقارات متاحة في الوقت الحالي') : 'No properties available.'}
+            <span data-i18n="propertiesPage.noProperties">${i18n.t('No properties available at the moment.', 'لا توجد عقارات متاحة في الوقت الحالي')}</span>
         </div>`;
             return;
         }
@@ -441,7 +441,7 @@ async function loadLandingExhibitions() {
         if (!response.ok || !data.data?.exhibitions?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
             <i class="fas fa-calendar-alt" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
-            ${typeof i18n !== 'undefined' ? i18n.t('No exhibitions available at the moment.', 'لا توجد معارض متاحة في الوقت الحالي') : 'No exhibitions available.'}
+            <span data-i18n="exhibitionsPage.noExhibitions">${i18n.t('No exhibitions available at the moment.', 'لا توجد معارض متاحة في الوقت الحالي')}</span>
         </div>`;
             return;
         }

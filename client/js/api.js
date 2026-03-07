@@ -12,7 +12,13 @@ const i18n = {
         "User created successfully": "تم إنشاء الحساب بنجاح",
         "Username already exists": "اسم المستخدم موجود بالفعل",
         "Email already in use": "البريد الإلكتروني مستخدم بالفعل",
+        "Email is already registered.": "البريد الإلكتروني مسجل بالفعل.",
         "Invalid credentials": "بيانات الاعتماد غير صالحة",
+        "Invalid email or password.": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+        "User not found.": "المستخدم غير موجود.",
+        "Invalid OTP code.": "رمز التحقق غير صحيح.",
+        "OTP has expired. Please request a new one.": "انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.",
+        "Please verify your email before logging in.": "يرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول.",
         "Invalid token": "رمز غير صالح",
         "No token provided": "لم يتم توفير رمز",
         "Service requested successfully": "تم طلب الخدمة بنجاح",
@@ -20,13 +26,40 @@ const i18n = {
         "Property not found": "العقار غير موجود",
         "Service not found": "الخدمة غير موجودة",
         "Exhibition not found": "المعرض غير موجود",
-        "Please provide all required fields": "الرجاء توفير جميع الحقول الإلزامية"
+        "Please provide all required fields": "الرجاء توفير جميع الحقول الإلزامية",
+        "Invalid refresh token. Please log in again.": "رمز التجديد غير صالح. يرجى تسجيل الدخول مرة أخرى.",
+        "Refresh token expired. Please log in again.": "انتهت صلاحية رمز التجديد. يرجى تسجيل الدخول مرة أخرى.",
+        "If an account exists, a reset code has been sent.": "تم إرسال رمز إعادة التعيين إذا كان الحساب موجوداً.",
+        "Invalid or expired reset code.": "رمز إعادة التعيين غير صالح أو منتهي الصلاحية.",
+        "Name is required": "الاسم مطلوب",
+        "Valid email is required": "يجب إدخال بريد إلكتروني صالح",
+        "Phone number is required": "رقم الهاتف مطلوب",
+        "Valid phone number required (8-15 digits)": "رقم الهاتف مطلوب (8-15 رقم)",
+        "Password must be at least 8 characters": "كلمة المرور 8 أحرف على الأقل",
+        "Password must contain an uppercase letter": "يجب أن تحتوي على حرف كبير",
+        "Password must contain a lowercase letter": "يجب أن تحتوي على حرف صغير",
+        "Password must contain a number": "يجب أن تحتوي على رقم",
+        "Password must contain a special character": "يجب أن تحتوي على رمز خاص",
+        "Password is required": "كلمة المرور مطلوبة",
+        "Valid 6-digit OTP required": "رمز التحقق يجب أن يكون 6 أرقام",
+        "Please fill in all fields.": "يرجى ملء جميع الحقول.",
+        "Please fill all required fields": "يرجى ملء جميع الحقول المطلوبة",
+        "Passwords do not match": "كلمات المرور غير متطابقة"
     },
 
     translateApiMessage(msg) {
-        if (this.isAr && this.backendMessages[msg]) {
+        if (!this.isAr) return msg;
+
+        // Exact match check
+        if (this.backendMessages[msg]) {
             return this.backendMessages[msg];
         }
+
+        // Commas joined validation messages catch
+        if (msg.includes(', ')) {
+            return msg.split(', ').map(m => this.backendMessages[m] || m).join('، ');
+        }
+
         return msg;
     }
 };

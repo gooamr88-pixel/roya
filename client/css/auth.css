@@ -284,70 +284,31 @@
    Intl-Tel-Input — Premium Dark Theme
    ═══════════════════════════════════════════════ */
 
-/* Make the wrapper a true Flexbox container */
+/* Make the wrapper robust without breaking the library's absolute positioning */
 .iti {
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    position: relative;
     direction: ltr;
-    /* Force LTR at container level to maintain flag-left logic */
 }
 
-/* Override ITI's absolute positioning so it flows naturally in flex */
-.iti__flag-container {
-    position: static !important;
-    display: flex;
-}
-
-/* The composite container (flag button + input) */
-.iti--separate-dial-code .iti__selected-flag {
-    background: var(--bg-primary) !important;
-    border-radius: var(--btn-radius) 0 0 var(--btn-radius) !important;
-    border: 1.5px solid var(--border-color);
-    border-right: 1px solid rgba(212, 175, 55, 0.25);
-    padding: 0 16px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s ease, border-color 0.2s ease;
-    cursor: pointer;
-    min-width: max-content;
-}
-
-.iti--separate-dial-code .iti__selected-flag:hover {
-    background: rgba(212, 175, 55, 0.1) !important;
-    border-color: rgba(212, 175, 55, 0.5);
-}
-
-/* The phone text input */
+/* ── The phone text input ── */
+/* NOTE: We don't set padding-left because the library calculates it dynamically! */
 .iti .iti__tel-input,
 .iti input[type="tel"] {
-    flex: 1;
-    /* Take remaining space */
     width: 100%;
-    padding: 14px 16px !important;
-    background-color: var(--bg-primary) !important;
-    border: 1.5px solid var(--border-color) !important;
-    border-left: none !important;
-    border-radius: 0 var(--btn-radius) var(--btn-radius) 0 !important;
-    color: var(--text-primary) !important;
-    font-family: var(--font-primary) !important;
-    font-size: 0.95rem !important;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-right: 16px;
+    background-color: var(--bg-primary);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--btn-radius);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    outline: none !important;
-    height: 52px !important;
-    box-sizing: border-box !important;
+    outline: none;
+    height: 52px;
+    box-sizing: border-box;
     text-align: left;
-    /* Keep text left aligned to pair with dial code */
-}
-
-/* Adjust text alignment for RTL languages if needed */
-[dir="rtl"] .iti .iti__tel-input,
-[dir="rtl"] .iti input[type="tel"] {
-    text-align: right;
 }
 
 .iti .iti__tel-input:focus,
@@ -360,6 +321,16 @@
 .iti input[type="tel"]::placeholder {
     color: var(--text-muted);
     font-size: 0.9rem;
+}
+
+/* ── Flag Button Container ── */
+.iti__selected-flag {
+    padding: 0 12px;
+    border-radius: var(--btn-radius) 0 0 var(--btn-radius) !important;
+}
+
+.iti--separate-dial-code .iti__selected-flag {
+    background: transparent;
 }
 
 /* Flag removed to allow native library rendering */

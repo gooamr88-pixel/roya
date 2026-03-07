@@ -151,7 +151,7 @@
         const data = await res.json();
         if (!res.ok || !data.data?.properties?.length) {
           const noPropsText = typeof i18n !== 'undefined' ? i18n.t('No properties available at the moment.', 'لا توجد عقارات متاحة في الوقت الحالي') : propI18n.noProperties;
-          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-building"></i></div><h3>' + noPropsText + '</h3><p>' + propI18n.checkBack + '</p></div>';
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-building"></i></div><h3 data-i18n="propertiesPage.noProperties">' + noPropsText + '</h3><p data-i18n="propertiesPage.checkBack">' + propI18n.checkBack + '</p></div>';
           return;
         }
         const properties = data.data.properties;
