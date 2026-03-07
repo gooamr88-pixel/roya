@@ -37,15 +37,15 @@
       </a>
 
       {# Theme Toggle #}
-      <button class="btn btn-ghost btn-sm" id="themeToggle" title="{{ t.nav.toggleTheme }}" style="padding: 8px 12px;">
-        <i class="fas fa-moon"></i>
+      <button type="button" class="btn btn-ghost btn-sm" id="themeToggle" title="{{ t.nav.toggleTheme }}" aria-label="{{ t.nav.toggleTheme }}" style="padding: 8px 12px;">
+        <i class="fas fa-moon" aria-hidden="true"></i>
       </button>
 
       <a href="/login" class="btn btn-outline btn-sm" data-i18n="nav.signIn">{{ t.nav.signIn }}</a>
       <a href="/register" class="btn btn-primary btn-sm" data-i18n="nav.getStarted">{{ t.nav.getStarted }}</a>
 
-      <button class="nav-toggle" id="navToggle" aria-label="{{ t.nav.toggleMenu }}">
-        <i class="fas fa-bars"></i>
+      <button type="button" class="nav-toggle" id="navToggle" aria-label="{{ t.nav.toggleMenu }}">
+        <i class="fas fa-bars" aria-hidden="true"></i>
       </button>
     </div>
   </div>
@@ -53,7 +53,7 @@
 
 {# ── Mobile Menu ── #}
 <div class="mobile-menu" id="mobileMenu">
-  <button class="close-btn" id="mobileClose"><i class="fas fa-times"></i></button>
+  <button type="button" class="close-btn" id="mobileClose" aria-label="Close mobile menu"><i class="fas fa-times" aria-hidden="true"></i></button>
   <a href="#home" data-i18n="nav.home">{{ t.nav.home }}</a>
   <a href="#about" data-i18n="nav.about">{{ t.nav.about }}</a>
   <a href="#services" data-i18n="nav.services">{{ t.nav.services }}</a>

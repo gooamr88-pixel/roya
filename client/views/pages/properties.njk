@@ -36,7 +36,7 @@
   <div id="propInquiryModal" class="glass-modal-overlay" style="display:none;">
     <div class="glass-modal-backdrop" id="propModalBackdrop"></div>
     <div class="glass-modal-content" style="max-width:480px;">
-      <button class="glass-modal-close" id="propModalClose"><i class="fas fa-times"></i></button>
+      <button type="button" class="glass-modal-close" id="propModalClose" aria-label="Close property inquiry modal"><i class="fas fa-times" aria-hidden="true"></i></button>
       <div class="glass-modal-body" style="padding-top:24px;">
         <h2 id="propModalTitle" style="margin-bottom:16px;"></h2>
         <p style="color:var(--text-muted);margin-bottom:20px;">{{ t.propertiesPage.inquireDesc }}</p>
@@ -158,14 +158,14 @@
         const pagination = data.data.pagination;
 
         grid.innerHTML = properties.map(p => {
-          const img   = getImageUrl(p.images, 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80');
+          const img   = getImageUrl(p.images, 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=60');
           const badge = typeColors[p.property_type] || 'primary';
           {# Inquire button uses data-prop-title — no inline onclick, avoids CSP #}
           return `
             <div class="property-card fade-in visible">
               <div class="property-card-image">
                 <span class="badge badge-${badge}">${esc(p.property_type || 'Residential')}</span>
-                <img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+                <img src="${esc(img)}" alt="${esc(p.title)}" width="800" height="600" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
               </div>
               <div class="property-card-body">
                 <h3>${esc(p.title)}</h3>

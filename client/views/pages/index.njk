@@ -12,20 +12,20 @@
   <section class="hero" id="home">
     <div class="hero-slideshow">
       <div class="hero-slide active">
-        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
-          alt="Corporate Office">
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=75"
+          alt="Corporate Office" width="1920" height="1080" fetchpriority="high" loading="eager" decoding="sync">
       </div>
       <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80"
-          alt="Modern Architecture">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=75"
+          alt="Modern Architecture" width="1920" height="1080" loading="lazy" decoding="async">
       </div>
       <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1920&q=80"
-          alt="Business Meeting">
+        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1920&q=75"
+          alt="Business Meeting" width="1920" height="1080" loading="lazy" decoding="async">
       </div>
       <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=80"
-          alt="Conference Hall">
+        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=75"
+          alt="Conference Hall" width="1920" height="1080" loading="lazy" decoding="async">
       </div>
     </div>
     <div class="container">
@@ -77,8 +77,8 @@
         <div class="about-visual fade-in-left">
           <div class="about-image-frame">
             <div class="inner">
-              <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"
-                alt="{{ t.about.officeAlt }}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+              <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=60"
+                alt="{{ t.about.officeAlt }}" width="800" height="600" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@
         {% for svc in t.services.items %}
         <div class="service-card fade-in">
           <div class="service-card-image">
-            <img src="{{ svc.image }}" alt="{{ svc.title }}">
+            <img src="{{ svc.image }}" alt="{{ svc.title }}" width="600" height="400" loading="lazy" decoding="async">
           </div>
           <div class="service-card-body">
             <h3>{{ svc.title }}</h3>
@@ -211,28 +211,28 @@
           <div class="contact-info-item">
             <div class="icon"><i class="fas fa-envelope"></i></div>
             <div>
-              <h4 data-i18n="contact.emailLabel">{{ t.contact.emailLabel }}</h4>
+              <h3 data-i18n="contact.emailLabel" style="font-size:1.1rem;margin-bottom:4px">{{ t.contact.emailLabel }}</h3>
               <p>mohamedmahomoud809@gmail.com</p>
             </div>
           </div>
           <div class="contact-info-item">
             <div class="icon"><i class="fas fa-phone"></i></div>
             <div>
-              <h4 data-i18n="contact.phoneLabel">{{ t.contact.phoneLabel }}</h4>
+              <h3 data-i18n="contact.phoneLabel" style="font-size:1.1rem;margin-bottom:4px">{{ t.contact.phoneLabel }}</h3>
               <p>+20 1025474922</p>
             </div>
           </div>
           <div class="contact-info-item">
             <div class="icon"><i class="fab fa-whatsapp"></i></div>
             <div>
-              <h4 data-i18n="contact.whatsappLabel">{{ t.contact.whatsappLabel }}</h4>
+              <h3 data-i18n="contact.whatsappLabel" style="font-size:1.1rem;margin-bottom:4px">{{ t.contact.whatsappLabel }}</h3>
               <p>+966 548 171 795</p>
             </div>
           </div>
           <div class="contact-info-item">
             <div class="icon"><i class="fas fa-location-dot"></i></div>
             <div>
-              <h4 data-i18n="contact.visitLabel">{{ t.contact.visitLabel }}</h4>
+              <h3 data-i18n="contact.visitLabel" style="font-size:1.1rem;margin-bottom:4px">{{ t.contact.visitLabel }}</h3>
               <p data-i18n="contact.address">{{ t.contact.address }}</p>
             </div>
           </div>
