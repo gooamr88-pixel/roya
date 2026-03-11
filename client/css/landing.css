@@ -10,8 +10,10 @@
 .landing-view {
   display: none;
   animation: fadeInView 0.5s ease-out;
-  min-height: calc(100vh - 80px); /* Fill screen below navbar */
-  padding-top: 100px; /* Account for fixed navbar */
+  min-height: calc(100vh - 80px);
+  /* Fill screen below navbar */
+  padding-top: 100px;
+  /* Account for fixed navbar */
   padding-bottom: 60px;
 }
 
@@ -20,8 +22,15 @@
 }
 
 @keyframes fadeInView {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Navbar Options ── */
@@ -81,7 +90,7 @@
 }
 
 .nav-links a {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.85) !important;
   font-size: 0.9rem;
   font-weight: 500;
   position: relative;
@@ -104,7 +113,7 @@
 }
 
 .nav-links a:hover {
-  color: var(--text-primary);
+  color: #ffffff !important;
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
@@ -210,6 +219,7 @@
   text-align: center;
   min-height: 100vh;
 }
+
 .landing-view#home.active {
   display: flex;
 }
@@ -408,6 +418,7 @@
 .hero h1 {
   margin-bottom: 24px;
   letter-spacing: -1px;
+  color: #ffffff !important;
   animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 
