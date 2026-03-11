@@ -222,7 +222,7 @@ body {
     left: auto;
     right: 0;
     border-right: none;
-    border-left: 1px solid #1F2937;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 0;
 }
 
@@ -231,11 +231,13 @@ body {
     display: none;
 }
 
+/* Main content shifts right instead of left */
 [dir="rtl"] .main-content {
     margin-left: 0;
     margin-right: var(--sidebar-width, 260px);
 }
 
+/* Sidebar header: logo on right, close button on left */
 [dir="rtl"] .sidebar-header {
     flex-direction: row-reverse;
 }
@@ -245,39 +247,45 @@ body {
     margin-left: 0;
 }
 
+/* ── Sidebar navigation links ── */
 [dir="rtl"] .sidebar-link {
+    /* CRITICAL: dashboard.css hard-codes text-align:left — override it */
     text-align: right;
     flex-direction: row-reverse;
 }
 
-/* Flip active indicator bar to right edge */
+/* Active indicator bar flipped to right edge */
 [dir="rtl"] .sidebar-link.active::before {
     left: auto;
     right: -12px;
     border-radius: 3px 0 0 3px;
 }
 
+/* Badge count pushed to left in RTL (was margin-left:auto which pushed it right) */
 [dir="rtl"] .sidebar-link .badge-count {
     margin-left: 0;
     margin-right: auto;
-    position: relative;
-    right: auto;
-    left: auto;
 }
 
+/* Icon already has fixed width; just make sure its gap gap direction is correct */
 [dir="rtl"] .sidebar-link .icon {
     margin-left: 0;
+    margin-right: 0;
 }
 
+/* Section labels (e.g. "MAIN", "ADMIN") right-aligned */
 [dir="rtl"] .sidebar-nav .nav-section {
     text-align: right;
     letter-spacing: 0.5px;
 }
 
+/* Sidebar user row: avatar on right */
 [dir="rtl"] .sidebar-user {
     flex-direction: row-reverse;
     text-align: right;
 }
+
+
 
 /* ── Topbar RTL ── */
 [dir="rtl"] .topbar {
