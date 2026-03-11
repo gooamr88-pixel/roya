@@ -5,7 +5,7 @@
   <div class="container">
     <a href="/" class="nav-logo" aria-label="ROYA Home" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
       <img src="{{ logoSrc }}" alt="{{ logoAlt }}" width="50" height="50" style="width: 50px; height: 50px; object-fit: contain; display: block;" fetchpriority="high">
-      <span style="font-size: 1.6rem; font-weight: 800; color: var(--text-color); line-height: 1;">Roya</span>
+      <span style="font-size: 1.6rem; font-weight: 800; color: var(--text-color); line-height: 1;">Roya رؤيا</span>
     </a>
 
     <ul class="nav-links" id="navLinks">
@@ -39,8 +39,7 @@
 
       {# Theme Toggle #}
       <button type="button" class="btn btn-ghost btn-sm" id="themeToggle" title="{{ t.nav.toggleTheme }}" aria-label="{{ t.nav.toggleTheme }}" style="padding: 8px 12px; font-size: 1.2rem;">
-        <span class="theme-icon-light" style="display: none;">☀️</span>
-        <span class="theme-icon-dark">🌙</span>
+        <i class="fas fa-moon"></i>
       </button>
 
       <a href="/login" class="btn btn-outline btn-sm" data-i18n="nav.signIn">{{ t.nav.signIn }}</a>
