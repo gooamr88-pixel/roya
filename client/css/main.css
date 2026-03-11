@@ -776,6 +776,29 @@ p {
   inset-inline-end: 20px;
   inset-block-start: 20px;
   left: auto;
-  /* override the physical left if set elsewhere */
   right: auto;
+}
+
+/* ══════════════════════════════════════════════
+   TEXT CONTRAST UTILITIES
+   ══════════════════════════════════════════════ */
+.text-gray-900 {
+  color: #111827 !important;
+}
+
+.text-slate-800 {
+  color: #1e293b !important;
+}
+
+[data-theme="dark"] .dark\:text-gray-300 {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .dark\:text-gray-200 {
+  color: #e5e7eb !important;
+}
+
+/* Apply high contrast strictly if they only use class selectors without theme */
+[data-theme="light"] .text-gray-900 {
+  color: #111827 !important;
 }
