@@ -34,6 +34,9 @@ const i18nMiddleware = (req, res, next) => {
     res.locals.logoSrc = isRTL ? '/images/logo-ar.svg' : '/images/logo.svg';
     res.locals.logoAlt = isRTL ? 'رؤيا' : 'ROYA';
 
+    // New: Handle the separated text logo alongside the emblem
+    res.locals.brandTextSrc = isRTL ? '/images/brand-text.png' : '/images/logo.svg';
+
     // 5. Language toggle data (switch to the OTHER language)
     res.locals.langToggle = languages[lang].langToggle;
 

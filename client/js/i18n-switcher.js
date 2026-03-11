@@ -46,8 +46,14 @@ async function switchLanguageSeamlessly(targetLang) {
         // 5. Update Logos
         const logos = document.querySelectorAll('img[src*="/images/logo"]');
         logos.forEach(logo => {
-            logo.src = isRtl ? '/images/logo-ar.svg' : '/images/logo.svg';
-            logo.alt = isRtl ? 'رؤيا' : 'ROYA';
+            logo.src = isRTL ? '/images/logo-ar.svg' : '/images/logo.svg';
+            logo.alt = isRTL ? 'رؤيا' : 'ROYA';
+        });
+
+        const brandTextImgs = document.querySelectorAll('.brand-text-img');
+        brandTextImgs.forEach(img => {
+            img.src = isRtl ? '/images/brand-text.png' : '/images/logo.svg';
+            img.alt = isRtl ? 'رؤيا' : 'ROYA';
         });
 
         // 6. Inject RTL CSS or disable it
