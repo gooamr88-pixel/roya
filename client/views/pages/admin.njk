@@ -59,106 +59,91 @@
     .internal-note-label { font-size:.7rem;font-weight:700;text-transform:uppercase;color:#3b82f6;margin-bottom:4px; }
 
     /* ═══════════════════════════════════════════════
-       ADMIN RTL OVERRIDES (inline fallback — mirrors rtl.css)
-       Using clean Flexbox. NO position hacks.
+       ADMIN RTL OVERRIDES  — loaded on every locale
+       (rtl.css is only loaded for Arabic; these
+       duplicate the most critical rules so the page
+       never breaks regardless of load order.)
        ═══════════════════════════════════════════════ */
-
-    /* Reverse the flex row so sidebar is on the RIGHT, content on LEFT */
-    [dir="rtl"] .dashboard-layout { flex-direction: row-reverse; }
-
-    /* Sidebar anchored to right edge on desktop */
     [dir="rtl"] .sidebar {
-      left: auto; right: 0;
-      border-right: none;
-      border-left: 1px solid var(--border);
+      left:auto; right:0;
+      border-right:none;
+      border-left:1px solid var(--border);
     }
     [dir="rtl"] .main-content {
-      margin-left: 0;
-      margin-right: var(--sidebar-width, 250px);
+      margin-left:0;
+      margin-right:var(--sidebar-width,250px);
     }
-    [dir="rtl"] .sidebar-header  { flex-direction: row-reverse; }
-    [dir="rtl"] .sidebar-nav .nav-section { text-align: right; padding-right:8px; }
-
-    /*
-     * SIDEBAR LINKS — Icon on RIGHT, text on LEFT.
-     * flex-direction:row-reverse flips DOM order visually.
-     * margin-inline-start on .icon creates the gap between icon and text.
-     */
-    [dir="rtl"] .sidebar-link {
-      flex-direction: row-reverse;
-      text-align: right;
-    }
-    /* Gap between icon (right) and text (left) — margin-inline-start = margin-right in RTL */
-    [dir="rtl"] .sidebar-link .icon {
-      margin-inline-start: 12px;
-      margin-left: 0;
-      margin-right: 0;
-    }
-    /* kbd hint / badge count floats to the far LEFT */
+    [dir="rtl"] .sidebar-header  { flex-direction:row-reverse; }
+    [dir="rtl"] .sidebar-link    { flex-direction:row-reverse; text-align:right; }
     [dir="rtl"] .sidebar-link .kbd-hint,
-    [dir="rtl"] .sidebar-link .badge-count { margin-right: auto; margin-left: 0; }
-    /* Active bar moves from left edge to right edge */
-    [dir="rtl"] .sidebar-link.active::before { left: auto; right: -12px; border-radius: 3px 0 0 3px; }
-    [dir="rtl"] .sidebar-user { flex-direction: row-reverse; text-align: right; }
+    [dir="rtl"] .sidebar-link .badge-count { margin-right:auto; margin-left:0; }
+    [dir="rtl"] .sidebar-user    { flex-direction:row-reverse; text-align:right; }
+    [dir="rtl"] .sidebar-nav .nav-section { text-align:right; }
+    [dir="rtl"] .sidebar-link.active::before { left:auto; right:-12px; border-radius:3px 0 0 3px; }
 
     /* Topbar */
-    [dir="rtl"] .topbar       { flex-direction: row-reverse; }
-    [dir="rtl"] .topbar-left  { flex-direction: row-reverse; }
-    [dir="rtl"] .topbar-right { flex-direction: row-reverse; }
-    [dir="rtl"] .topbar-title { text-align: right; }
-    [dir="rtl"] .breadcrumb-strip { flex-direction: row-reverse; }
+    [dir="rtl"] .topbar       { flex-direction:row-reverse; }
+    [dir="rtl"] .topbar-left  { flex-direction:row-reverse; }
+    [dir="rtl"] .topbar-right { flex-direction:row-reverse; }
+    [dir="rtl"] .topbar-title { text-align:right; }
+    [dir="rtl"] .breadcrumb-strip { flex-direction:row-reverse; }
 
     /* Tables */
-    [dir="rtl"] table                { direction: rtl; }
-    [dir="rtl"] .data-table thead th { text-align: right; }
-    [dir="rtl"] .data-table tbody td { text-align: right; }
-    [dir="rtl"] .table-container     { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    [dir="rtl"] .filters-bar         { flex-direction: row-reverse; }
+    [dir="rtl"] table                  { direction:rtl; }
+    [dir="rtl"] .data-table thead th   { text-align:right; }
+    [dir="rtl"] .data-table tbody td   { text-align:right; }
+    [dir="rtl"] .table-container       { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 
-    /* Modal — title RIGHT, close × far LEFT */
-    [dir="rtl"] .modal-content           { direction: rtl; text-align: right; }
-    [dir="rtl"] .modal-header            { flex-direction: row-reverse; }
-    [dir="rtl"] .modal-header h3         { text-align: right; flex: 1; }
-    [dir="rtl"] .modal-header .modal-close { margin-inline-end: auto; order: -1; }
-    [dir="rtl"] .form-label              { text-align: right; display: block; }
+    /* Filters */
+    [dir="rtl"] .filters-bar           { flex-direction:row-reverse; }
+
+    /* Modal — title right, close (×) pushed to far LEFT */
+    [dir="rtl"] .modal-header          { flex-direction:row-reverse; }
+    [dir="rtl"] .modal-header h3       { text-align:right; flex:1; }
+    [dir="rtl"] .modal-header .modal-close { margin-right:auto; margin-left:0; order:-1; }
+    [dir="rtl"] .modal-content         { direction:rtl; text-align:right; }
+    [dir="rtl"] .form-label            { text-align:right; display:block; }
     [dir="rtl"] .form-input,
-    [dir="rtl"] .form-textarea           { text-align: right; direction: rtl; }
-    [dir="rtl"] .form-select             { direction: rtl; text-align: right; padding-right: 14px; padding-left: 36px; background-position: left 12px center; }
-    [dir="rtl"] input[type="date"]       { direction: ltr; text-align: right; }
-    [dir="rtl"] .form-tabs              { flex-direction: row-reverse; }
-    [dir="rtl"] .view-toolbar           { flex-direction: row-reverse; }
-    [dir="rtl"] .form-group.checkbox-row { flex-direction: row-reverse; justify-content: flex-end; }
+    [dir="rtl"] .form-textarea         { text-align:right; direction:rtl; }
+    [dir="rtl"] .form-select           { direction:rtl; text-align:right; padding-right:14px; padding-left:36px; background-position:left 12px center; }
+    [dir="rtl"] .form-tabs             { flex-direction:row-reverse; }
 
     /* Premium Badges */
-    .badge-success { background: rgba(16,185,129,.13); color: #34d399; border: 1px solid rgba(16,185,129,.28); }
-    .badge-danger  { background: rgba(239,68,68,.13);  color: #f87171; border: 1px solid rgba(239,68,68,.28);  }
-    .badge-warning { background: rgba(245,158,11,.13); color: #fbbf24; border: 1px solid rgba(245,158,11,.28); }
-    .badge-info    { background: rgba(59,130,246,.13); color: #60a5fa; border: 1px solid rgba(59,130,246,.28); }
+    [dir="rtl"] .badge-success,
+    .badge-success { background:rgba(16,185,129,.13);color:#34d399;border:1px solid rgba(16,185,129,.28);box-shadow:0 0 10px rgba(52,211,153,.08); }
+    [dir="rtl"] .badge-danger,
+    .badge-danger  { background:rgba(239,68,68,.13);color:#f87171;border:1px solid rgba(239,68,68,.28);box-shadow:0 0 10px rgba(248,113,113,.08); }
+    [dir="rtl"] .badge-warning,
+    .badge-warning { background:rgba(245,158,11,.13);color:#fbbf24;border:1px solid rgba(245,158,11,.28); }
+    [dir="rtl"] .badge-info,
+    .badge-info    { background:rgba(59,130,246,.13);color:#60a5fa;border:1px solid rgba(59,130,246,.28); }
 
-    /* Cards */
-    [dir="rtl"] .dashboard-card .card-header { flex-direction: row-reverse; }
-    [dir="rtl"] .card-header h3              { text-align: right; }
-    [dir="rtl"] .stat-card .stat-header      { flex-direction: row-reverse; text-align: right; }
+    /* Card header direction for RTL */
+    [dir="rtl"] .dashboard-card .card-header { flex-direction:row-reverse; }
+    [dir="rtl"] .card-header h3 { text-align:right; }
+    [dir="rtl"] .stat-card .stat-header { flex-direction:row-reverse; text-align:right; }
+
+    /* Confirm / Glass modals */
     [dir="rtl"] .glass-modal-actions,
-    [dir="rtl"] .confirm-actions             { flex-direction: row-reverse; }
-    [dir="rtl"] .command-palette-input       { direction: rtl; text-align: right; }
-    [dir="rtl"] .command-palette-item        { flex-direction: row-reverse; }
-    [dir="rtl"] .exhibition-admin-actions    { flex-direction: row-reverse; gap: 8px; }
-    [dir="rtl"] .pagination                  { flex-direction: row-reverse; }
+    [dir="rtl"] .confirm-actions { flex-direction:row-reverse; }
+
+    /* Command palette */
+    [dir="rtl"] .command-palette-input  { direction:rtl; text-align:right; }
+    [dir="rtl"] .command-palette-item   { flex-direction:row-reverse; }
+    [dir="rtl"] .command-palette-footer { flex-direction:row-reverse; }
 
     /* Mobile RTL */
-    @media (max-width: 768px) {
-      [dir="rtl"] .sidebar { transform: translateX(100%); left: auto; right: 0; border-left: none; transition: transform 0.3s ease; }
-      [dir="rtl"] .sidebar.open { transform: translateX(0); }
-      [dir="rtl"] .main-content { margin-right: 0; }
-      [dir="rtl"] .sidebar-toggle { display: flex; }
-      [dir="rtl"] .sidebar-close  { display: flex; }
-      [dir="rtl"] .content-area   { padding: 16px; }
+    @media (max-width:768px) {
+      [dir="rtl"] .sidebar { transform:translateX(100%); left:auto; right:0; border-left:none; }
+      [dir="rtl"] .sidebar.open { transform:translateX(0); }
+      [dir="rtl"] .main-content { margin-right:0; }
+      [dir="rtl"] .sidebar-toggle { display:flex; }
+      [dir="rtl"] .sidebar-close  { display:flex; }
     }
-    @media (min-width: 769px) {
-      [dir="rtl"] .sidebar        { transform: none !important; }
-      [dir="rtl"] .sidebar-toggle { display: none; }
-      [dir="rtl"] .sidebar-close  { display: none; }
+    @media (min-width:769px) {
+      [dir="rtl"] .sidebar { transform:none !important; }
+      [dir="rtl"] .sidebar-toggle { display:none; }
+      [dir="rtl"] .sidebar-close  { display:none; }
     }
   </style>
 {% endblock %}
@@ -376,7 +361,7 @@
 
         {# ── SERVICES ── #}
         <div class="view-section" id="view-services">
-          <div class="view-toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="font-size:0.85rem;color:var(--text-2)" id="svcBulkInfo"></span></div>
             <button class="btn btn-primary btn-sm" onclick="openServiceModal()"><i class="fas fa-plus"></i> {{ t.admin.addService }}</button>
           </div>
@@ -385,7 +370,7 @@
 
         {# ── EXHIBITIONS ── #}
         <div class="view-section" id="view-exhibitions">
-          <div class="view-toolbar" style="display:flex;justify-content:flex-start;margin-bottom:20px;gap:8px">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:20px;gap:8px">
             <button class="btn btn-primary btn-sm" onclick="openExhibitionModal()">
               <i class="fas fa-plus"></i> {{ t.admin.addExhibition }}
             </button>
@@ -399,7 +384,7 @@
 
         {# ── PROPERTIES ── #}
         <div class="view-section" id="view-properties">
-          <div class="view-toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <span style="font-size:0.85rem;color:var(--text-2)" id="propBulkInfo"></span>
             <div style="display:flex;gap:8px">
               <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminPropertiesTable', 'properties')"><i class="fas fa-download"></i> {{ t.admin.exportCsv }}</button>
@@ -524,8 +509,8 @@
             </div>
           </div>
           {# Checkbox row: use flex-row so it doesn't stack vertically on mobile #}
-          <div class="form-group checkbox-row" style="flex-direction:row;align-items:center;gap:10px">
-            <input type="checkbox" id="svcActive" checked style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="svcActive" checked style="width:16px;height:16px;cursor:pointer">
             <label class="form-label" for="svcActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
@@ -593,8 +578,8 @@
               <input class="form-input" type="text" id="propLocation" placeholder="e.g. Riyadh, KSA">
             </div>
           </div>
-          <div class="form-group checkbox-row" style="flex-direction:row;align-items:center;gap:10px">
-            <input type="checkbox" id="propActive" checked style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="propActive" checked style="width:16px;height:16px;cursor:pointer">
             <label class="form-label" for="propActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
@@ -689,8 +674,8 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="exhDesc" rows="3" placeholder="{{ t.admin.exhDescPlaceholder }}"></textarea>
           </div>
-          <div class="form-group checkbox-row" style="flex-direction:row;align-items:center;gap:10px">
-            <input type="checkbox" id="exhActive" checked style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="exhActive" checked style="width:16px;height:16px;cursor:pointer">
             <label class="form-label" for="exhActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
