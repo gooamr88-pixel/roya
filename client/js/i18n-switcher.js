@@ -76,7 +76,7 @@ async function switchLanguageSeamlessly(targetLang) {
             toggle.setAttribute('data-target-lang', nextLang);
             const img = toggle.querySelector('img');
             if (img) {
-                img.src = targetLang === 'ar' ? 'https://flagcdn.com/w40/gb.png' : 'https://flagcdn.com/w40/sa.png';
+                img.src = targetLang === 'ar' ? 'https://flagcdn.com/w40/us.png' : 'https://flagcdn.com/w40/sa.png';
                 img.alt = targetLang === 'ar' ? 'English' : 'العربية';
             }
             toggle.title = targetLang === 'ar' ? 'English' : 'العربية';

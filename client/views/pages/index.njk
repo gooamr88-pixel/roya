@@ -4,7 +4,7 @@
 {% extends "layouts/landing.njk" %}
 
 {% block pageCss %}
-  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/landing.css?v=4">
 {% endblock %}
 
 {% block content %}
@@ -217,14 +217,14 @@
             <div class="icon"><i class="fas fa-phone"></i></div>
             <div>
               <h3 data-i18n="contact.phoneLabel" style="font-size:1.1rem;margin-bottom:4px">{{ t.contact.phoneLabel }}</h3>
-              <p>+20 1025474922</p>
+              <p><span dir="ltr" style="display: inline-block;">+20 1025474922</span></p>
             </div>
           </div>
           <div class="contact-info-item">
             <div class="icon"><i class="fab fa-whatsapp"></i></div>
             <div>
               <h3 data-i18n="contact.whatsappLabel" style="font-size:1.1rem;margin-bottom:4px">{{ t.contact.whatsappLabel }}</h3>
-              <p>+966 548 171 795</p>
+              <p><span dir="ltr" style="display: inline-block;">+966 548 171 795</span></p>
             </div>
           </div>
           <div class="contact-info-item">
@@ -266,5 +266,5 @@
 {% endblock %}
 
 {% block pageScripts %}
-  <script src="/js/landing.js" defer></script>
+  <script src="/js/landing.js?v=4" defer></script>
 {% endblock %}
