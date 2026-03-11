@@ -132,9 +132,13 @@
   display: none;
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: #ffffff !important;
   font-size: 1.5rem;
   cursor: pointer;
+}
+
+#themeToggle {
+  color: #ffffff !important;
 }
 
 
@@ -421,6 +425,13 @@
   letter-spacing: -1px;
   color: #ffffff !important;
   animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.hero .text-gradient {
+  background: linear-gradient(135deg, #d4af37, #f3e5ab, #d4af37) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
 }
 
 .hero p {
