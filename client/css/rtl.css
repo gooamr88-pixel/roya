@@ -1,156 +1,241 @@
-/* ═══════════════════════════════════════════════════════════
-   RTL.CSS — ARABIC LAYOUT OVERRIDES v3.0
-   Loaded ONLY when dir="rtl" (Arabic language).
-   Scope: ALL pages + Admin Dashboard deep overrides.
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   RTL STYLES — For Arabic Language
+   Loaded ONLY on Arabic pages via <link> in HTML.
+   ═══════════════════════════════════════════════ */
 
-/* ════════════════════════════════════════
-   SECTION 1 — BASE BODY & TYPOGRAPHY
-   ════════════════════════════════════════ */
+/* ── Base ── */
 body {
     direction: rtl;
     text-align: right;
+    font-family: var(--font-arabic), sans-serif;
 }
 
 :root {
-    --font-primary: 'Cairo', sans-serif;
+    --font-primary: 'Cairo', sans-serif !important;
 }
 
-[dir="rtl"] body,
-[dir="rtl"] * {
-    font-family: 'Cairo', sans-serif !important;
-    letter-spacing: 0 !important;
-}
-
-[dir="rtl"] h1,
-[dir="rtl"] h2,
-[dir="rtl"] h3,
-[dir="rtl"] h4,
-[dir="rtl"] h5,
-[dir="rtl"] h6 {
-    font-family: 'Cairo', sans-serif !important;
-    line-height: 1.6;
-    letter-spacing: 0;
-}
-
-[dir="rtl"] p,
-[dir="rtl"] span,
-[dir="rtl"] label,
-[dir="rtl"] td,
-[dir="rtl"] th,
-[dir="rtl"] button,
-[dir="rtl"] input,
-[dir="rtl"] textarea,
-[dir="rtl"] select {
-    font-family: 'Cairo', sans-serif !important;
-    line-height: 1.8;
-}
-
-/* ════════════════════════════════════════
-   SECTION 2 — LANDING PAGE / MARKETING
-   ════════════════════════════════════════ */
+/* ── Hero ── */
 .hero,
 .hero-content,
 .hero-stats {
     text-align: center !important;
 }
-.hero::before  { right: auto;  left: -20%; }
-.hero::after   { left: auto;   right: -10%; }
-.hero-stats    { flex-direction: row-reverse; }
-.hero-buttons  { flex-direction: row-reverse; }
 
-.navbar        { direction: rtl; }
-.nav-links     { padding-right: 24px; padding-left: 24px; }
+.hero::before {
+    right: auto;
+    left: -20%;
+}
+
+.hero::after {
+    left: auto;
+    right: -10%;
+}
+
+.hero-stats {
+    flex-direction: row-reverse;
+}
+
+.hero-buttons {
+    flex-direction: row-reverse;
+}
+
+/* ── Navbar ── */
+.navbar {
+    direction: rtl;
+}
+
+.nav-links {
+    margin: 0 auto;
+    padding-right: 24px;
+    padding-left: 24px;
+}
+
 .nav-links a::after {
     left: 50%;
     right: auto;
     transform: translateX(50%);
 }
-.nav-logo      { margin-left: 0; }
-.nav-actions   { margin-right: 0; gap: 12px; }
 
-.mobile-menu .close-btn { left: 24px; right: auto; }
+.nav-logo {
+    margin-left: 0;
+}
 
-/* Gradient text won't flip in RTL — force LTR direction on the text node */
-.text-gradient { direction: ltr; display: inline-block; }
+.nav-actions {
+    margin-right: 0;
+    gap: 12px;
+}
 
-/* About section */
-.about-image-frame       { transform: scaleX(-1); }
-.about-image-frame .inner { transform: scaleX(-1); }
-.about-feature .icon     { margin-left: 10px; margin-right: 0; }
+/* ── Mobile Menu ── */
+.mobile-menu .close-btn {
+    left: 24px;
+    right: auto;
+}
 
-/* Services public page */
-.service-card:hover { transform: translateY(-6px); }
-.service-card-footer { flex-direction: row-reverse; justify-content: space-between; }
+/* ── Gradient Text RTL Fix ── */
+.text-gradient {
+    direction: ltr;
+    display: inline-block;
+}
 
-/* Property card badge position */
-.property-card-image .badge { left: auto; right: 12px; }
+/* ── About ── */
+.about-image-frame {
+    transform: scaleX(-1);
+}
 
-/* Contact page */
-.contact-info-item .icon { margin-left: 16px; }
-.contact-form .form-row  { column-gap: 16px; }
+.about-image-frame .inner {
+    transform: scaleX(-1);
+}
 
-/* Language toggle */
-.lang-toggle { margin-right: 8px; margin-left: 0 !important; }
+.about-feature .icon {
+    margin-left: 10px;
+    margin-right: 0;
+}
 
-/* Auth pages */
-.auth-page { direction: rtl; }
-.auth-form-wrapper .back-link   { flex-direction: row-reverse; }
-.auth-form-wrapper .back-link i { transform: scaleX(-1); }
-.password-toggle .toggle-btn    { right: auto; left: 14px; }
-.auth-brand::before              { right: auto; left: -20%; }
-.auth-brand::after               { left: auto;  right: -10%; }
+/* ── Services ── */
+.service-card:hover {
+    transform: translateY(-6px);
+}
 
-/* Animation direction fixes */
-.fade-in-left  { transform: translateX(30px); }
-.fade-in-right { transform: translateX(-30px); }
+.service-card-footer {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
 
-/* ════════════════════════════════════════
-   SECTION 3 — TOAST NOTIFICATIONS
-   ════════════════════════════════════════ */
-[dir="rtl"] .toast-container {
+/* ── Property Card Image Fixes ── */
+.property-card-image .badge {
+    left: auto;
+    right: 12px;
+}
+
+/* ── Contact ── */
+.contact-info-item .icon {
+    margin-left: 16px;
+}
+
+.contact-form .form-row {
+    column-gap: 16px;
+}
+
+/* ── Language Toggle ── */
+.lang-toggle {
+    margin-right: 8px;
+    margin-left: 0 !important;
+}
+
+
+/* ── Animations Direction Fix ── */
+.fade-in-left {
+    transform: translateX(30px);
+}
+
+.fade-in-right {
+    transform: translateX(-30px);
+}
+
+/* ── Toast Notifications ── */
+.toast-container {
     right: auto;
     left: 20px;
-    bottom: 20px;
 }
 
-[dir="rtl"] .toast-success { border-left: none; border-right: 3px solid var(--success, #10b981); }
-[dir="rtl"] .toast-error   { border-left: none; border-right: 3px solid var(--danger, #ef4444); }
-[dir="rtl"] .toast-warning { border-left: none; border-right: 3px solid var(--warning, #f59e0b); }
-[dir="rtl"] .toast-info    { border-left: none; border-right: 3px solid var(--info, #3b82f6); }
+.toast-success {
+    border-left: none;
+    border-right: 3px solid var(--success);
+}
+
+.toast-error {
+    border-left: none;
+    border-right: 3px solid var(--danger);
+}
+
+.toast-warning {
+    border-left: none;
+    border-right: 3px solid var(--warning);
+}
+
+.toast-info {
+    border-left: none;
+    border-right: 3px solid var(--info);
+}
 
 @keyframes slideIn {
-    from { transform: translateX(-120%); opacity: 0; }
-    to   { transform: translateX(0);     opacity: 1; }
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
+
 @keyframes slideOut {
-    from { transform: translateX(0);     opacity: 1; }
-    to   { transform: translateX(-120%); opacity: 0; }
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 4 — ADMIN DASHBOARD — SIDEBAR (RTL = RIGHT SIDE)
-   ════════════════════════════════════════════════════════════ */
+/* ── Auth Pages RTL ── */
+.auth-page {
+    direction: rtl;
+}
 
-/*
- * Core Sidebar Position Fix:
- * In LTR: sidebar is fixed left:0, main-content has margin-left.
- * In RTL:  sidebar is fixed right:0, main-content has margin-right.
- */
+.auth-form-wrapper .back-link {
+    flex-direction: row-reverse;
+}
+
+.auth-form-wrapper .back-link i {
+    transform: scaleX(-1);
+}
+
+.password-toggle .toggle-btn {
+    right: auto;
+    left: 14px;
+}
+
+/* ── Auth Brand ── */
+.auth-brand::before {
+    right: auto;
+    left: -20%;
+}
+
+.auth-brand::after {
+    left: auto;
+    right: -10%;
+}
+
+
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD & ADMIN — RTL OVERRIDES
+   ═══════════════════════════════════════════════ */
+
+/* ── Sidebar RTL ── */
 [dir="rtl"] .sidebar {
     left: auto;
     right: 0;
     border-right: none;
-    border-left: 1px solid var(--border, rgba(255,255,255,0.08));
+    border-left: 1px solid #1F2937;
     border-radius: 0;
+}
+
+[dir="rtl"] .sidebar::before,
+[dir="rtl"] .sidebar::after {
+    display: none;
 }
 
 [dir="rtl"] .main-content {
     margin-left: 0;
-    margin-right: var(--sidebar-width, 250px);
+    margin-right: var(--sidebar-width, 260px);
 }
 
-/* Sidebar Header: logo on right, close-btn on left */
 [dir="rtl"] .sidebar-header {
     flex-direction: row-reverse;
 }
@@ -160,566 +245,200 @@ body {
     margin-left: 0;
 }
 
-/* Sidebar section labels */
-[dir="rtl"] .sidebar-nav .nav-section {
-    text-align: right;
-    padding-right: 8px;
-    padding-left: 0;
-}
-
-/*
- * Sidebar Navigation Links:
- * Icon is FIRST in DOM → in RTL flex-direction:row-reverse it ends up on the RIGHT.
- * Text flows naturally to the LEFT of the icon.
- * kbd-hint (number) goes to the far LEFT using margin-inline-start:auto.
- */
 [dir="rtl"] .sidebar-link {
-    flex-direction: row-reverse;
     text-align: right;
+    flex-direction: row-reverse;
 }
 
-/* Icon stays on the RIGHT edge — inherits flex item order from row-reverse */
-[dir="rtl"] .sidebar-link .icon {
-    margin-left: 0;
-    margin-right: 0;
-    /* Icon is the first element, row-reverse puts it right */
-}
-
-/* kbd number hint floats to the far LEFT of the link */
-[dir="rtl"] .sidebar-link .kbd-hint,
-[dir="rtl"] .sidebar-link .badge-count {
-    margin-right: auto;
-    margin-left: 0;
-}
-
-/* Active indicator bar: LTR uses left:-12px, RTL uses right:-12px */
+/* Flip active indicator bar to right edge */
 [dir="rtl"] .sidebar-link.active::before {
     left: auto;
     right: -12px;
     border-radius: 3px 0 0 3px;
 }
 
-/* Sidebar user footer: avatar on right, name on left */
+[dir="rtl"] .sidebar-link .badge-count {
+    margin-left: 0;
+    margin-right: auto;
+    position: relative;
+    right: auto;
+    left: auto;
+}
+
+[dir="rtl"] .sidebar-link .icon {
+    margin-left: 0;
+}
+
+[dir="rtl"] .sidebar-nav .nav-section {
+    text-align: right;
+    letter-spacing: 0.5px;
+}
+
 [dir="rtl"] .sidebar-user {
     flex-direction: row-reverse;
     text-align: right;
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 5 — ADMIN DASHBOARD — TOPBAR
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .topbar        { flex-direction: row-reverse; }
-[dir="rtl"] .topbar-left   { flex-direction: row-reverse; }
-[dir="rtl"] .topbar-right  { flex-direction: row-reverse; }
-[dir="rtl"] .topbar-title  { text-align: right; }
-
-/* Notification dot: LTR=right:8px → RTL=left:8px */
-[dir="rtl"] .topbar-btn .notif-dot { right: auto; left: 6px; }
-
-/* Breadcrumb strip */
-[dir="rtl"] .breadcrumb-strip {
+/* ── Topbar RTL ── */
+[dir="rtl"] .topbar {
     flex-direction: row-reverse;
-    justify-content: flex-end;
-}
-[dir="rtl"] .breadcrumb-strip .separator {
-    transform: scaleX(-1);
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 6 — ADMIN DASHBOARD — DATA TABLES
-   ════════════════════════════════════════════════════════════ */
-
-/* table-container already has overflow-x:auto from dashboard.css.
-   RTL needs to ensure text-align is right everywhere. */
-[dir="rtl"] .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+[dir="rtl"] .topbar-left {
+    flex-direction: row-reverse;
 }
 
+[dir="rtl"] .topbar-right {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .topbar-title {
+    text-align: right;
+}
+
+[dir="rtl"] .topbar-btn .notif-dot {
+    right: auto;
+    left: 6px;
+}
+
+/* ── Stats Grid RTL ── */
+[dir="rtl"] .stat-card {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+/* ── Tables RTL ── */
 [dir="rtl"] table {
     direction: rtl;
 }
 
-[dir="rtl"] .data-table thead th {
+[dir="rtl"] table th,
+[dir="rtl"] table td {
     text-align: right;
     padding: 12px 16px;
     white-space: nowrap;
 }
 
-[dir="rtl"] .data-table tbody td {
-    text-align: right;
-    padding: 14px 16px;
+[dir="rtl"] table td {
     white-space: normal;
     word-break: break-word;
+    max-width: 250px;
 }
 
-/* Action buttons in tables: keep horizontal, add a proper gap */
-[dir="rtl"] .data-table td:last-child {
-    text-align: right;
-}
-
-[dir="rtl"] .data-table td:last-child .btn,
-[dir="rtl"] .data-table td:last-child button {
-    margin-inline-start: 4px;
-}
-
-/* First highlighted column adjusts for RTL */
-[dir="rtl"] .data-table td:first-child,
-[dir="rtl"] .data-table td strong {
-    color: var(--text-1);
-}
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 7 — PREMIUM BADGES (Active / Inactive)
-   ════════════════════════════════════════════════════════════ */
-
-/* Override the base badge with crisper, more premium styling */
-[dir="rtl"] .badge,
-[dir="rtl"] [class^="badge-"],
-[dir="rtl"] [class*=" badge-"] {
-    direction: rtl;
-    font-family: 'Cairo', sans-serif !important;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 9999px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-    letter-spacing: 0;
-    /* Soft inner glow for premium look */
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-}
-
-/* Active / Success badge — rich green */
-[dir="rtl"] .badge-success {
-    background: rgba(16, 185, 129, 0.12);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    text-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
-}
-
-/* Inactive / Danger badge — rich red */
-[dir="rtl"] .badge-danger {
-    background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.25);
-    text-shadow: 0 0 12px rgba(248, 113, 113, 0.4);
-}
-
-/* Warning badge — amber */
-[dir="rtl"] .badge-warning {
-    background: rgba(245, 158, 11, 0.12);
-    color: #fbbf24;
-    border: 1px solid rgba(245, 158, 11, 0.25);
-}
-
-/* Info badge — blue */
-[dir="rtl"] .badge-info {
-    background: rgba(59, 130, 246, 0.12);
-    color: #60a5fa;
-    border: 1px solid rgba(59, 130, 246, 0.25);
-}
-
-/* Primary / Gold badge */
-[dir="rtl"] .badge-primary {
-    background: rgba(229, 193, 88, 0.12);
-    color: #E5C158;
-    border: 1px solid rgba(229, 193, 88, 0.25);
-}
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 8 — MODALS & FORMS (RTL)
-   ════════════════════════════════════════════════════════════ */
-
-/*
- * Modal header: title on the RIGHT, close button (×) on the LEFT.
- * flex-direction: row-reverse flips the DOM order visually.
- */
-[dir="rtl"] .modal-content {
-    direction: rtl;
-    text-align: right;
-}
-
-[dir="rtl"] .modal-header {
-    flex-direction: row-reverse;
-    align-items: center;
-}
-
-[dir="rtl"] .modal-header h3 {
-    text-align: right;
-    flex: 1;
-}
-
-/* Close button (×) is pushed to the far LEFT in RTL */
-[dir="rtl"] .modal-header .modal-close {
-    margin-right: auto;
-    margin-left: 0;
-    order: -1; /* visually leftmost in row-reverse context */
-}
-
-/* Form groups & labels */
-[dir="rtl"] .form-group {
-    text-align: right;
-}
-
-[dir="rtl"] .form-label {
-    text-align: right;
-    display: block;
-}
-
-/* Text inputs start typing from the right */
-[dir="rtl"] .form-input,
-[dir="rtl"] .form-textarea {
-    text-align: right;
-    direction: rtl;
-}
-
-/* Select dropdown: arrow on LEFT side in RTL */
-[dir="rtl"] .form-select {
-    text-align: right;
-    direction: rtl;
-    padding-right: 14px;
-    padding-left: 36px;
-    background-position: left 12px center;
-}
-
-/* Checkboxes: flip group direction for RTL */
-[dir="rtl"] .form-group[style*="row"] {
-    flex-direction: row-reverse;
-}
-
-/* Modal tabs: flip tab order */
-[dir="rtl"] .form-tabs {
-    flex-direction: row-reverse;
-}
-
-/* Form tab buttons */
-[dir="rtl"] .form-tab-btn {
-    flex-direction: row-reverse;
-}
-
-/* Drop zone */
-[dir="rtl"] .drop-zone {
-    text-align: center;
-}
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 9 — EXECUTIVE METRIC CARDS
-   ════════════════════════════════════════════════════════════ */
-
-/* Exec cards: text right, icon on the right side */
-[dir="rtl"] .exec-card {
-    text-align: right;
-}
-
-/* Progress bar fills from right in RTL */
-[dir="rtl"] .exec-bar-fill.green,
-[dir="rtl"] .exec-bar-fill.blue,
-[dir="rtl"] .exec-bar-fill.purple,
-[dir="rtl"] .exec-bar-fill.amber {
-    margin-left: auto;
-    margin-right: 0;
-    float: right;
-}
-
-/* stat-card header: icon left of label in RTL (reversed) */
-[dir="rtl"] .stat-card .stat-header {
-    flex-direction: row-reverse;
-    text-align: right;
-}
-
-[dir="rtl"] .stat-card .stat-value {
-    text-align: right;
-    /* Numbers always display LTR regardless of page direction */
-    direction: ltr;
-    display: block;
-}
-
-/* Premium shadow for metric cards */
-[dir="rtl"] .exec-card,
-[dir="rtl"] .stat-card {
-    box-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.5),
-        0 4px 20px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-[dir="rtl"] .exec-card:hover,
-[dir="rtl"] .stat-card:hover {
-    border-color: rgba(229, 193, 88, 0.18);
-    box-shadow:
-        0 0 0 1px rgba(229, 193, 88, 0.12),
-        0 8px 32px rgba(229, 193, 88, 0.06),
-        0 4px 16px rgba(0, 0, 0, 0.4);
-    transform: translateY(-2px);
-}
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 10 — CHART CARDS & DASHBOARD SECTIONS
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .dashboard-card .card-header {
-    flex-direction: row-reverse;
-}
-[dir="rtl"] .card-header h3 {
-    text-align: right;
-}
-
-[dir="rtl"] .chart-bar-label { flex-direction: row-reverse; }
-[dir="rtl"] .chart-bar-fill  { float: right; }
-
-[dir="rtl"] .order-timeline-track { flex-direction: row-reverse; }
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 11 — FILTERS BAR & SEARCH
-   ════════════════════════════════════════════════════════════ */
+/* ── Filters Bar RTL ── */
 [dir="rtl"] .filters-bar {
     flex-direction: row-reverse;
 }
+
 [dir="rtl"] .filters-bar .form-select,
 [dir="rtl"] .filters-bar .search-input {
     text-align: right;
 }
 
-/* Global search in topbar */
-[dir="rtl"] .global-search {
-    direction: rtl;
-}
-[dir="rtl"] .global-search .search-icon {
-    left: auto;
-    right: 12px;
-}
-[dir="rtl"] #globalSearchInput {
-    padding-left: 12px;
-    padding-right: 36px;
-    text-align: right;
-}
-[dir="rtl"] .search-results {
-    text-align: right;
-}
-[dir="rtl"] .search-result-item {
+/* ── Dashboard Cards RTL ── */
+[dir="rtl"] .dashboard-card .card-header {
     flex-direction: row-reverse;
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 12 — PROFILE SECTION
-   ════════════════════════════════════════════════════════════ */
+[dir="rtl"] .card-header h3 {
+    text-align: right;
+}
+
+/* ── Profile RTL ── */
 [dir="rtl"] .profile-header {
     flex-direction: row-reverse;
     text-align: right;
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 13 — CONFIRM / GLASS MODALS
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .confirm-dialog,
-[dir="rtl"] .glass-modal {
-    text-align: center;
-    direction: rtl;
-}
-
-[dir="rtl"] .confirm-actions,
-[dir="rtl"] .glass-modal-actions {
+/* ── Modal RTL ── */
+[dir="rtl"] .modal-header {
     flex-direction: row-reverse;
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 14 — COMMAND PALETTE
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .command-palette-input {
-    direction: rtl;
-    text-align: right;
-    padding-right: 16px;
-    padding-left: 48px;
-}
-[dir="rtl"] .command-palette-item {
-    flex-direction: row-reverse;
-    text-align: right;
-}
-[dir="rtl"] .cmd-shortcut {
-    margin-left: 0;
-    margin-right: auto;
-}
-[dir="rtl"] .command-palette-footer {
-    flex-direction: row-reverse;
-}
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 15 — EXHIBITION GRID CARDS & MESSAGES
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .exhibition-admin-card {
-    text-align: right;
-}
-[dir="rtl"] .exhibition-admin-body {
-    text-align: right;
-}
-[dir="rtl"] .exhibition-admin-meta {
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-}
-[dir="rtl"] .exhibition-admin-actions {
-    flex-direction: row-reverse;
-}
-
-/* Message cards */
-[dir="rtl"] .message-card {
-    text-align: right;
-}
-[dir="rtl"] .message-meta {
-    flex-direction: row-reverse;
-}
-[dir="rtl"] .message-actions {
-    flex-direction: row-reverse;
-}
-
-/* Empty state — always centered */
-[dir="rtl"] .empty-state { text-align: center; }
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 16 — PAGINATION
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .pagination {
-    flex-direction: row-reverse;
-}
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 17 — FEATURED STAR & ROLE SELECT
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .featured-star {
-    /* Star is inline — no direction change needed */
-}
-[dir="rtl"] .role-select {
-    direction: rtl;
+[dir="rtl"] .modal-header h3 {
     text-align: right;
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 18 — INTERNAL NOTES
-   ════════════════════════════════════════════════════════════ */
-[dir="rtl"] .internal-note {
+/* ── Form Elements RTL ── */
+[dir="rtl"] .form-group label {
     text-align: right;
-    border-right: 3px solid rgba(59,130,246,0.4);
-    border-left: none;
+    display: block;
+}
+
+[dir="rtl"] .form-select {
+    text-align: right;
     padding-right: 14px;
-    padding-left: 10px;
+    padding-left: 32px;
+    background-position: left 12px center;
 }
 
-/* ════════════════════════════════════════════════════════════
-   SECTION 19 — RESPONSIVE: MOBILE (≤ 768px)
-   ════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+/* ── Chart Bars RTL ── */
+[dir="rtl"] .chart-bar-label {
+    flex-direction: row-reverse;
+}
 
-    /* Sidebar slides in from the RIGHT on mobile Arabic. */
+[dir="rtl"] .chart-bar-fill {
+    float: right;
+}
+
+/* ── Order Timeline RTL ── */
+[dir="rtl"] .order-timeline-track {
+    flex-direction: row-reverse;
+}
+
+/* ── Typography Polish ── */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6 {
+    font-family: 'Cairo', sans-serif;
+    letter-spacing: 0;
+    line-height: 1.6;
+}
+
+[dir="rtl"] p,
+[dir="rtl"] span,
+[dir="rtl"] label,
+[dir="rtl"] td,
+[dir="rtl"] th {
+    font-family: 'Cairo', sans-serif;
+    line-height: 1.8;
+}
+
+/* ── Empty State RTL ── */
+[dir="rtl"] .empty-state {
+    text-align: center;
+}
+
+/* ── Badge / Status RTL ── */
+[dir="rtl"] .badge {
+    direction: rtl;
+}
+
+/* ── Responsive RTL ── */
+@media (max-width: 768px) {
     [dir="rtl"] .sidebar {
+        transform: translateX(100%);
         left: auto;
         right: 0;
-        transform: translateX(100%);  /* hidden off-screen to the right */
         border-left: none;
-        width: 280px;
-        z-index: 200;
-        /* Smooth slide from right */
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* No border for mobile full width or drawer */
     }
 
-    /* When .open class is added by JS, slide fully into view */
     [dir="rtl"] .sidebar.open {
         transform: translateX(0);
     }
 
-    /* Sidebar toggle button shown on mobile */
-    [dir="rtl"] .sidebar-toggle {
-        display: flex;
-    }
-
-    /* Sidebar close button visible on mobile */
-    [dir="rtl"] .sidebar-close {
-        display: flex;
-    }
-
-    /* Main content: no margin in mobile — full-width */
     [dir="rtl"] .main-content {
         margin-right: 0;
         margin-left: 0;
         width: 100%;
     }
 
-    /* Table containers scroll horizontally without breaking layout */
-    [dir="rtl"] .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        width: 100%;
-        max-width: 100vw;
-    }
-
-    /* Topbar: toggle on right, actions on left */
-    [dir="rtl"] .topbar {
-        padding: 0 16px;
-    }
-
-    /* Filters bar stacks vertically on mobile */
-    [dir="rtl"] .filters-bar {
-        flex-wrap: wrap;
-    }
-
-    /* Content area padding reduced on mobile */
-    [dir="rtl"] .content-area {
-        padding: 16px;
-    }
-
-    /* Profile stacks vertically */
     [dir="rtl"] .profile-header {
         flex-direction: column;
         text-align: center;
-    }
-
-    /* Modal close button always accessible */
-    [dir="rtl"] .modal-header .modal-close {
-        order: -1;
-    }
-
-    /* exec-grid: single column */
-    [dir="rtl"] .exec-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    /* Action buttons in tables: keep on one line */
-    [dir="rtl"] .data-table td:last-child {
-        white-space: nowrap;
-        min-width: 80px;
-    }
-}
-
-@media (max-width: 480px) {
-    [dir="rtl"] .exec-grid {
-        grid-template-columns: 1fr;
-    }
-
-    [dir="rtl"] .modal-content {
-        margin: 8px;
-        max-height: 95vh;
-    }
-}
-
-/* ════════════════════════════════════════════════════════════
-   SECTION 20 — DESKTOP REFINEMENTS (≥ 769px)
-   ════════════════════════════════════════════════════════════ */
-@media (min-width: 769px) {
-
-    /* Sidebar always visible and anchored right */
-    [dir="rtl"] .sidebar {
-        transform: none !important;
-    }
-
-    /* Sidebar toggle hidden on desktop */
-    [dir="rtl"] .sidebar-toggle {
-        display: none;
-    }
-
-    /* Sidebar close btn hidden on desktop */
-    [dir="rtl"] .sidebar-close {
-        display: none;
     }
 }
