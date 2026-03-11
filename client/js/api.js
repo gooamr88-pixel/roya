@@ -278,7 +278,7 @@ const Settings = {
     if (themeBtn) {
       const icon = themeBtn.querySelector('i');
       if (icon) {
-        icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
       }
     }
   },
