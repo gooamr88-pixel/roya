@@ -277,8 +277,11 @@ const Settings = {
     document.querySelectorAll('#themeToggle, .theme-toggle').forEach(btn => {
       const icon = btn.querySelector('i');
       if (icon) {
-        // Light mode needs a SUN. Dark mode needs a MOON. No gears.
+        // Enforce the SUN icon physically visible while IN light mode.
         icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        btn.style.background = 'transparent';
+        btn.style.boxShadow = 'none';
+        btn.style.outline = 'none';
       }
     });
   },
