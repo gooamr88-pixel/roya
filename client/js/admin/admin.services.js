@@ -119,12 +119,20 @@ async function saveAdminService(e) {
     const btn = document.getElementById('svcSubmitBtn');
     const editId = document.getElementById('serviceEditId').value;
 
+    // Validate required fields on the frontend first
+    const title = document.getElementById('svcTitle').value.trim();
+    if (!title) {
+        Toast.error('Title is required.');
+        return;
+    }
+
     const formData = new FormData();
-    formData.append('title', document.getElementById('svcTitle').value.trim());
+    formData.append('title', title);
     formData.append('description', document.getElementById('svcDescription').value.trim());
-    formData.append('price', document.getElementById('svcPrice').value);
+    formData.append('price', document.getElementById('svcPrice').value || '0');
     formData.append('category', document.getElementById('svcCategory').value);
-    formData.append('is_active', document.getElementById('svcActive').checked);
+    // B2 Fix: FormData converts booleans to strings — use '1'/'0' and parse on backend
+    formData.append('is_active', document.getElementById('svcActive').checked ? '1' : '0');
 
     serviceDropFiles.forEach(file => formData.append('images', file));
 
@@ -139,8 +147,11 @@ async function saveAdminService(e) {
         }
         closeServiceModal();
         loadAdminServices();
-    } catch (err) { Toast.error(err.message || 'Failed to save service.'); }
-    finally { setLoading(btn, false); }
+    } catch (err) {
+        Toast.error(err.message || 'Failed to save service.');
+    } finally {
+        setLoading(btn, false);
+    }
 }
 
 async function editService(id) {

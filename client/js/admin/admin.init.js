@@ -4,6 +4,21 @@
 // Depends on: api.js, utils.js
 // ═══════════════════════════════════════════════
 
+/**
+ * esc() — HTML-escape a value so it is safe to inject into innerHTML.
+ * This was called throughout admin JS files but never defined — causing
+ * ReferenceError on every table render. Now defined globally here.
+ */
+function esc(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 let adminUser = null;
 let selectedSvc = new Set();
 let selectedProp = new Set();
@@ -44,8 +59,14 @@ function updateAdminUI() {
     const initials = (adminUser.name || 'A').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     const el = (id) => document.getElementById(id);
     if (el('adminAvatar')) el('adminAvatar').textContent = initials;
-    if (el('adminName')) el('adminName').textContent = adminUser.name;
-    if (el('adminRole')) el('adminRole').textContent = adminUser.role.replace(/_/g, ' ');
+    if (el('adminName'))  el('adminName').textContent  = adminUser.name || 'Admin';
+    if (el('adminRole'))  el('adminRole').textContent  = (adminUser.role || '').replace(/_/g, ' ');
+
+    // B6 Fix: show "Clear All Logs" button only for super_admin
+    const clearLogsBtn = document.getElementById('clearLogsBtn');
+    if (clearLogsBtn && adminUser.role === 'super_admin') {
+        clearLogsBtn.style.removeProperty('display');
+    }
 }
 
 // ══════════════════════════════════════════

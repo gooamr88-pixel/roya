@@ -124,16 +124,24 @@ async function saveAdminProperty(e) {
     const btn = document.getElementById('propSubmitBtn');
     const editId = document.getElementById('propEditId').value;
 
+    // Validate required fields on the frontend first
+    const title = document.getElementById('propTitle').value.trim();
+    if (!title) {
+        Toast.error('Title is required.');
+        return;
+    }
+
     const formData = new FormData();
-    formData.append('title', document.getElementById('propTitle').value.trim());
+    formData.append('title', title);
     formData.append('description', document.getElementById('propDescription').value.trim());
-    formData.append('price', document.getElementById('propPrice').value);
+    formData.append('price', document.getElementById('propPrice').value || '0');
     formData.append('location', document.getElementById('propLocation').value.trim());
     formData.append('area_sqm', document.getElementById('propArea').value);
     formData.append('bedrooms', document.getElementById('propBedrooms').value);
     formData.append('bathrooms', document.getElementById('propBathrooms').value);
     formData.append('property_type', document.getElementById('propType').value);
-    formData.append('is_active', document.getElementById('propActive').checked);
+    // B2 Fix: FormData converts booleans to strings — use '1'/'0' and parse on backend
+    formData.append('is_active', document.getElementById('propActive').checked ? '1' : '0');
 
     propertyDropFiles.forEach(file => formData.append('images', file));
 
@@ -148,8 +156,11 @@ async function saveAdminProperty(e) {
         }
         closePropertyModal();
         loadAdminProperties();
-    } catch (err) { Toast.error(err.message || 'Failed to save property.'); }
-    finally { setLoading(btn, false); }
+    } catch (err) {
+        Toast.error(err.message || 'Failed to save property.');
+    } finally {
+        setLoading(btn, false);
+    }
 }
 
 async function editProperty(id) {
@@ -168,13 +179,19 @@ document.addEventListener('DOMContentLoaded', initPropertyDropZone);
 // ══════════════════════════════════════════
 //  FEATURED TOGGLE + BULK ACTIONS
 // ══════════════════════════════════════════
+// B3 Fix: toggleFeatured sends a lean JSON body PUT.
+// The PUT routes have upload.array() middleware which only activates when
+// Content-Type is multipart/form-data, so a JSON body bypasses Multer cleanly.
 async function toggleFeatured(type, id, featured) {
     try {
+        // API.put() sends JSON body — no FormData, no Multer interference
         await API.put(`/${type}/${id}`, { is_featured: featured });
         Toast.success(featured ? 'Marked as featured!' : 'Removed from featured.');
         if (type === 'services') loadAdminServices();
         else loadAdminProperties();
-    } catch (err) { Toast.error(err.message); }
+    } catch (err) {
+        Toast.error(err.message || 'Failed to update featured status.');
+    }
 }
 
 function toggleBulkSelect(prefix, id, checked) {

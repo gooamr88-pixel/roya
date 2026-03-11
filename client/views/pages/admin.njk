@@ -10,43 +10,166 @@
   <link rel="stylesheet" href="/css/dashboard.css">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
   <style>
-    /* ── Topbar theme btn for Admin layout if added ── */
-  </style>
-  <style>
-    /* ── Executive Metric Cards (inline for admin-only) ── */
+    /* ── Executive Metric Cards ── */
     .exec-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px; }
-    .exec-card { background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:var(--transition); }
-    .exec-card:hover { transform:translateY(-4px);box-shadow:var(--shadow-glow);border-color:rgba(212,175,55,0.2); }
+    .exec-card { background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:var(--transition);
+      box-shadow:0 1px 3px rgba(0,0,0,.45),0 4px 20px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.04); }
+    .exec-card:hover { transform:translateY(-3px);box-shadow:0 0 0 1px rgba(229,193,88,.18),0 8px 32px rgba(229,193,88,.08); border-color:rgba(212,175,55,0.22); }
     .exec-card .exec-icon { width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:16px; }
-    .exec-card .exec-icon.revenue { background:rgba(16,185,129,0.1);color:#10b981; }
+    .exec-card .exec-icon.revenue    { background:rgba(16,185,129,0.1);color:#10b981; }
     .exec-card .exec-icon.conversion { background:rgba(59,130,246,0.1);color:#3b82f6; }
-    .exec-card .exec-icon.content { background:rgba(168,85,247,0.1);color:#a855f7; }
-    .exec-card .exec-icon.support { background:rgba(245,158,11,0.1);color:#f59e0b; }
+    .exec-card .exec-icon.content    { background:rgba(168,85,247,0.1);color:#a855f7; }
+    .exec-card .exec-icon.support    { background:rgba(245,158,11,0.1);color:#f59e0b; }
     .exec-card .exec-value { font-size:1.8rem;font-weight:800;margin-bottom:4px; }
     .exec-card .exec-label { font-size:0.85rem;color:var(--text-2); }
     .exec-card .exec-bar { height:4px;background:var(--body-bg);border-radius:4px;margin-top:12px;overflow:hidden; }
     .exec-card .exec-bar-fill { height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
-    .exec-bar-fill.green { background:linear-gradient(90deg,#10b981,#34d399); }
-    .exec-bar-fill.blue { background:linear-gradient(90deg,#3b82f6,#60a5fa); }
+    .exec-bar-fill.green  { background:linear-gradient(90deg,#10b981,#34d399); }
+    .exec-bar-fill.blue   { background:linear-gradient(90deg,#3b82f6,#60a5fa); }
     .exec-bar-fill.purple { background:linear-gradient(90deg,#a855f7,#c084fc); }
-    .exec-bar-fill.amber { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
-    .role-select { width:auto;padding:3px 8px;font-size:0.78rem;border-radius:6px;background:var(--body-bg);border:1px solid var(--border);color:var(--text-1); }
-    .featured-star { cursor:pointer;font-size:1rem;transition:color 0.2s,transform 0.2s; }
-    .featured-star:hover { transform:scale(1.2); }
-    .featured-star.active { color:#f59e0b; }
+    .exec-bar-fill.amber  { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+
+    /* Premium stat card enhancement */
+    .stat-card {
+      box-shadow:0 1px 3px rgba(0,0,0,.45),0 4px 20px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .stat-card:hover {
+      border-color:rgba(229,193,88,0.18);
+      box-shadow:0 0 0 1px rgba(229,193,88,.12),0 8px 32px rgba(229,193,88,.06);
+      transform:translateY(-2px);
+    }
+
+    /* ── Misc Admin Styles ── */
+    .role-select    { width:auto;padding:3px 8px;font-size:0.78rem;border-radius:6px;background:var(--body-bg);border:1px solid var(--border);color:var(--text-1); }
+    .featured-star  { cursor:pointer;font-size:1rem;transition:color .2s,transform .2s; }
+    .featured-star:hover  { transform:scale(1.2); }
+    .featured-star.active   { color:#f59e0b; }
     .featured-star.inactive { color:var(--text-3); }
-    /* ── Responsive chart grid: collapses to 1 col on tablet/mobile ── */
-    .charts-section { display:grid;grid-template-columns:1fr min(380px, 100%);gap:22px;margin-bottom:28px; }
+
+    /* ── Responsive chart grid ── */
+    .charts-section { display:grid;grid-template-columns:1fr min(380px,100%);gap:22px;margin-bottom:28px; }
     @media (max-width:900px) { .charts-section { grid-template-columns:1fr; } }
-    /* Charts card styles preserved from inline original */
-    .chart-card { background:#0e0e14;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:border-color 0.3s; }
+    .chart-card { background:#0e0e14;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:border-color .3s; }
     .chart-card:hover { border-color:rgba(212,175,55,0.22); }
     .chart-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
-    .chart-card-header h3 { font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.82); }
-    .chart-card-header .chart-subtitle { font-size:0.76rem;color:rgba(255,255,255,0.3);margin-top:2px; }
+    .chart-card-header h3 { font-size:.92rem;font-weight:700;color:rgba(255,255,255,.82); }
+    .chart-card-header .chart-subtitle { font-size:.76rem;color:rgba(255,255,255,.3);margin-top:2px; }
     #revenueChart,#distributionChart { min-height:260px; }
-    .internal-note { background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:0.82rem;color:var(--text-2); }
-    .internal-note-label { font-size:0.7rem;font-weight:700;text-transform:uppercase;color:#3b82f6;margin-bottom:4px; }
+    .internal-note { background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:.82rem;color:var(--text-2); }
+    .internal-note-label { font-size:.7rem;font-weight:700;text-transform:uppercase;color:#3b82f6;margin-bottom:4px; }
+
+    /* ═══════════════════════════════════════════════
+       ADMIN RTL OVERRIDES  — loaded on every locale
+       (rtl.css is only loaded for Arabic; these
+       duplicate the most critical rules so the page
+       never breaks regardless of load order.)
+       ═══════════════════════════════════════════════ */
+    [dir="rtl"] .sidebar {
+      left:auto; right:0;
+      border-right:none;
+      border-left:1px solid var(--border);
+    }
+    [dir="rtl"] .main-content {
+      margin-left:0;
+      margin-right:var(--sidebar-width,250px);
+    }
+    [dir="rtl"] .sidebar-header  { flex-direction:row-reverse; }
+    [dir="rtl"] .sidebar-link    { flex-direction:row-reverse; text-align:right; }
+    [dir="rtl"] .sidebar-link .kbd-hint,
+    [dir="rtl"] .sidebar-link .badge-count { margin-right:auto; margin-left:0; }
+    [dir="rtl"] .sidebar-user    { flex-direction:row-reverse; text-align:right; }
+    [dir="rtl"] .sidebar-nav .nav-section { text-align:right; }
+    [dir="rtl"] .sidebar-link.active::before { left:auto; right:-12px; border-radius:3px 0 0 3px; }
+
+    /* Topbar */
+    [dir="rtl"] .topbar       { flex-direction:row-reverse; }
+    [dir="rtl"] .topbar-left  { flex-direction:row-reverse; }
+    [dir="rtl"] .topbar-right { flex-direction:row-reverse; }
+    [dir="rtl"] .topbar-title { text-align:right; }
+    [dir="rtl"] .breadcrumb-strip { flex-direction:row-reverse; }
+
+    /* Tables */
+    [dir="rtl"] table                  { direction:rtl; }
+    [dir="rtl"] .data-table thead th   { text-align:right; }
+    [dir="rtl"] .data-table tbody td   { text-align:right; }
+    [dir="rtl"] .table-container       { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+    /* Filters */
+    [dir="rtl"] .filters-bar           { flex-direction:row-reverse; }
+
+    /* Modal — title right, close (×) pushed to far LEFT */
+    [dir="rtl"] .modal-header          { flex-direction:row-reverse; }
+    [dir="rtl"] .modal-header h3       { text-align:right; flex:1; }
+    [dir="rtl"] .modal-header .modal-close { margin-right:auto; margin-left:0; order:-1; }
+    [dir="rtl"] .modal-content         { direction:rtl; text-align:right; }
+    [dir="rtl"] .form-label            { text-align:right; display:block; }
+    [dir="rtl"] .form-input,
+    [dir="rtl"] .form-textarea         { text-align:right; direction:rtl; }
+    [dir="rtl"] .form-select           { direction:rtl; text-align:right; padding-right:14px; padding-left:36px; background-position:left 12px center; }
+    [dir="rtl"] .form-tabs             { flex-direction:row-reverse; }
+
+    /* Premium Badges */
+    [dir="rtl"] .badge-success,
+    .badge-success { background:rgba(16,185,129,.13);color:#34d399;border:1px solid rgba(16,185,129,.28);box-shadow:0 0 10px rgba(52,211,153,.08); }
+    [dir="rtl"] .badge-danger,
+    .badge-danger  { background:rgba(239,68,68,.13);color:#f87171;border:1px solid rgba(239,68,68,.28);box-shadow:0 0 10px rgba(248,113,113,.08); }
+    [dir="rtl"] .badge-warning,
+    .badge-warning { background:rgba(245,158,11,.13);color:#fbbf24;border:1px solid rgba(245,158,11,.28); }
+    [dir="rtl"] .badge-info,
+    .badge-info    { background:rgba(59,130,246,.13);color:#60a5fa;border:1px solid rgba(59,130,246,.28); }
+
+    /* Card header direction for RTL */
+    [dir="rtl"] .dashboard-card .card-header { flex-direction:row-reverse; }
+    [dir="rtl"] .card-header h3 { text-align:right; }
+    [dir="rtl"] .stat-card .stat-header { flex-direction:row-reverse; text-align:right; }
+
+    /* Confirm / Glass modals */
+    [dir="rtl"] .glass-modal-actions,
+    [dir="rtl"] .confirm-actions { flex-direction:row-reverse; }
+
+    /* Command palette */
+    [dir="rtl"] .command-palette-input  { direction:rtl; text-align:right; }
+    [dir="rtl"] .command-palette-item   { flex-direction:row-reverse; }
+    [dir="rtl"] .command-palette-footer { flex-direction:row-reverse; }
+
+    /* Mobile RTL */
+    @media (max-width:768px) {
+      [dir="rtl"] .sidebar { transform:translateX(100%); left:auto; right:0; border-left:none; }
+      [dir="rtl"] .sidebar.open { transform:translateX(0); }
+      [dir="rtl"] .main-content { margin-right:0; }
+      [dir="rtl"] .sidebar-toggle { display:flex; }
+      [dir="rtl"] .sidebar-close  { display:flex; }
+      [dir="rtl"] .content-area { padding:16px; }
+    }
+    @media (min-width:769px) {
+      [dir="rtl"] .sidebar { transform:none !important; }
+      [dir="rtl"] .sidebar-toggle { display:none; }
+      [dir="rtl"] .sidebar-close  { display:none; }
+    }
+
+    /* View action toolbars — flip for RTL so Add button goes to the LEFT visually */
+    [dir="rtl"] .view-toolbar { flex-direction:row-reverse; }
+    [dir="rtl"] .view-toolbar .btn { margin-inline-start:0; margin-inline-end:0; }
+
+    /* Checkbox + Active label row — keep horizontal, don't stack in RTL */
+    [dir="rtl"] .form-group.checkbox-row {
+      flex-direction:row-reverse;
+      justify-content:flex-end;
+    }
+
+    /* Date picker inputs need explicit LTR value display even in RTL layout */
+    [dir="rtl"] input[type="date"] {
+      direction:ltr;
+      text-align:right;
+    }
+
+    /* Pagination — flip for RTL */
+    [dir="rtl"] .pagination { flex-direction:row-reverse; }
+
+    /* Exhibition admin grid cards */
+    [dir="rtl"] .exhibition-admin-card { text-align:right; }
+    [dir="rtl"] .exhibition-admin-meta { flex-direction:row-reverse; }
+    [dir="rtl"] .exhibition-admin-actions { flex-direction:row-reverse; gap:8px; }
   </style>
 {% endblock %}
 
@@ -263,7 +386,7 @@
 
         {# ── SERVICES ── #}
         <div class="view-section" id="view-services">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div class="view-toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="font-size:0.85rem;color:var(--text-2)" id="svcBulkInfo"></span></div>
             <button class="btn btn-primary btn-sm" onclick="openServiceModal()"><i class="fas fa-plus"></i> {{ t.admin.addService }}</button>
           </div>
@@ -272,7 +395,7 @@
 
         {# ── EXHIBITIONS ── #}
         <div class="view-section" id="view-exhibitions">
-        <div style="display:flex;justify-content:flex-end;margin-bottom:20px;gap:8px">
+          <div class="view-toolbar" style="display:flex;justify-content:flex-start;margin-bottom:20px;gap:8px">
             <button class="btn btn-primary btn-sm" onclick="openExhibitionModal()">
               <i class="fas fa-plus"></i> {{ t.admin.addExhibition }}
             </button>
@@ -286,7 +409,7 @@
 
         {# ── PROPERTIES ── #}
         <div class="view-section" id="view-properties">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div class="view-toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <span style="font-size:0.85rem;color:var(--text-2)" id="propBulkInfo"></span>
             <div style="display:flex;gap:8px">
               <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminPropertiesTable', 'properties')"><i class="fas fa-download"></i> {{ t.admin.exportCsv }}</button>
@@ -411,8 +534,8 @@
             </div>
           </div>
           {# Checkbox row: use flex-row so it doesn't stack vertically on mobile #}
-          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
-            <input type="checkbox" id="svcActive" checked style="width:16px;height:16px;cursor:pointer">
+          <div class="form-group checkbox-row" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="svcActive" checked style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
             <label class="form-label" for="svcActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
@@ -480,8 +603,8 @@
               <input class="form-input" type="text" id="propLocation" placeholder="e.g. Riyadh, KSA">
             </div>
           </div>
-          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
-            <input type="checkbox" id="propActive" checked style="width:16px;height:16px;cursor:pointer">
+          <div class="form-group checkbox-row" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="propActive" checked style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
             <label class="form-label" for="propActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>
@@ -576,8 +699,8 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="exhDesc" rows="3" placeholder="{{ t.admin.exhDescPlaceholder }}"></textarea>
           </div>
-          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
-            <input type="checkbox" id="exhActive" checked style="width:16px;height:16px;cursor:pointer">
+          <div class="form-group checkbox-row" style="flex-direction:row;align-items:center;gap:10px">
+            <input type="checkbox" id="exhActive" checked style="width:16px;height:16px;cursor:pointer;flex-shrink:0">
             <label class="form-label" for="exhActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
           </div>
         </div>

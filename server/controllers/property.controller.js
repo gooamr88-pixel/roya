@@ -4,6 +4,17 @@
 const { query } = require('../config/database');
 const { AppError } = require('../middlewares/errorHandler');
 
+/**
+ * parseBool — safely coerce FormData / JSON boolean values.
+ * FormData sends booleans as strings ('true', 'false', '1', '0').
+ * JSON PUT sends real booleans. This handles both.
+ */
+function parseBool(val) {
+    if (typeof val === 'boolean') return val;
+    return val === '1' || val === 'true';
+}
+
+
 const getAll = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -64,11 +75,25 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     try {
-        const fields = ['title', 'description', 'price', 'location', 'area_sqm', 'bedrooms', 'bathrooms', 'property_type', 'is_active'];
+        // Regular string fields — passed through directly
+        const stringFields = ['title', 'description', 'location', 'property_type'];
+        // Numeric fields
+        const numericFields = ['price', 'area_sqm', 'bedrooms', 'bathrooms'];
+        // Boolean fields that need parseBool coercion (B2/B7 Fix)
+        const boolFields = ['is_active', 'is_featured'];
+
         const updates = []; const values = []; let i = 1;
-        for (const f of fields) {
+
+        for (const f of stringFields) {
             if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(req.body[f]); }
         }
+        for (const f of numericFields) {
+            if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(parseFloat(req.body[f]) || null); }
+        }
+        for (const f of boolFields) {
+            if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(parseBool(req.body[f])); }
+        }
+
         if (req.files && req.files.length > 0) {
             const { processAndUploadMultiple } = require('../services/upload.service');
             const uploaded = await processAndUploadMultiple(req.files, 'properties');

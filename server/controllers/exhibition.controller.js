@@ -4,18 +4,34 @@
 const { query } = require('../config/database');
 const { AppError } = require('../middlewares/errorHandler');
 
+/**
+ * parseBool — safely coerce FormData / JSON boolean values.
+ * FormData sends booleans as strings ('true', 'false', '1', '0').
+ * JSON PUT sends real booleans. This handles both.
+ */
+function parseBool(val) {
+    if (typeof val === 'boolean') return val;
+    return val === '1' || val === 'true';
+}
+
+
 const getAll = async (req, res, next) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 12;
+        const page   = parseInt(req.query.page)  || 1;
+        const limit  = parseInt(req.query.limit) || 12;
         const offset = (page - 1) * limit;
+        // B4 Fix: if showAll=true (admin panel requests), return all records
+        // regardless of is_active status so admins can manage inactive items.
+        const showAll  = req.query.showAll === 'true';
+        const whereClause     = showAll ? '' : 'WHERE is_active = TRUE';
+        const countWhere      = showAll ? '' : 'WHERE is_active = TRUE';
 
         const [exhibitions, countResult] = await Promise.all([
             query(
-                `SELECT * FROM exhibitions WHERE is_active = TRUE ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+                `SELECT * FROM exhibitions ${whereClause} ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
                 [limit, offset]
             ),
-            query(`SELECT COUNT(*) FROM exhibitions WHERE is_active = TRUE`),
+            query(`SELECT COUNT(*) FROM exhibitions ${countWhere}`),
         ]);
 
         res.json({
@@ -58,12 +74,13 @@ const update = async (req, res, next) => {
     try {
         const { title, description, location, start_date, end_date, is_active } = req.body;
         const updates = []; const values = []; let i = 1;
-        if (title !== undefined) { updates.push(`title = $${i++}`); values.push(title); }
+        if (title       !== undefined) { updates.push(`title = $${i++}`);       values.push(title); }
         if (description !== undefined) { updates.push(`description = $${i++}`); values.push(description); }
-        if (location !== undefined) { updates.push(`location = $${i++}`); values.push(location); }
-        if (start_date !== undefined) { updates.push(`start_date = $${i++}`); values.push(start_date); }
-        if (end_date !== undefined) { updates.push(`end_date = $${i++}`); values.push(end_date); }
-        if (is_active !== undefined) { updates.push(`is_active = $${i++}`); values.push(is_active); }
+        if (location    !== undefined) { updates.push(`location = $${i++}`);    values.push(location); }
+        if (start_date  !== undefined) { updates.push(`start_date = $${i++}`);  values.push(start_date || null); }
+        if (end_date    !== undefined) { updates.push(`end_date = $${i++}`);    values.push(end_date || null); }
+        // B2/B7 Fix: coerce string '1'/'0'/'true'/'false' or real boolean
+        if (is_active   !== undefined) { updates.push(`is_active = $${i++}`);   values.push(parseBool(is_active)); }
         if (req.files && req.files.length > 0) {
             const { processAndUploadMultiple } = require('../services/upload.service');
             const uploaded = await processAndUploadMultiple(req.files, 'exhibitions');

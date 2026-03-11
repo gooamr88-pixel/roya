@@ -5,6 +5,17 @@ const { query } = require('../config/database');
 const { AppError } = require('../middlewares/errorHandler');
 
 /**
+ * parseBool — safely coerce FormData / JSON boolean values.
+ * FormData sends booleans as strings ('true', 'false', '1', '0').
+ * JSON PUT sends real booleans. This handles both.
+ */
+function parseBool(val) {
+    if (typeof val === 'boolean') return val;
+    return val === '1' || val === 'true';
+}
+
+
+/**
  * GET /api/services — Public listing (paginated)
  */
 const getAll = async (req, res, next) => {
@@ -99,16 +110,18 @@ const create = async (req, res, next) => {
  */
 const update = async (req, res, next) => {
     try {
-        const { title, description, price, category, is_active } = req.body;
+        const { title, description, price, category, is_active, is_featured } = req.body;
         const updates = [];
         const values = [];
         let i = 1;
 
-        if (title !== undefined) { updates.push(`title = $${i++}`); values.push(title); }
+        if (title !== undefined)       { updates.push(`title = $${i++}`);       values.push(title); }
         if (description !== undefined) { updates.push(`description = $${i++}`); values.push(description); }
-        if (price !== undefined) { updates.push(`price = $${i++}`); values.push(parseFloat(price)); }
-        if (category !== undefined) { updates.push(`category = $${i++}`); values.push(category); }
-        if (is_active !== undefined) { updates.push(`is_active = $${i++}`); values.push(is_active); }
+        if (price !== undefined)       { updates.push(`price = $${i++}`);       values.push(parseFloat(price)); }
+        if (category !== undefined)    { updates.push(`category = $${i++}`);    values.push(category); }
+        // B2/B7 Fix: coerce string '1'/'0'/'true'/'false' or real boolean
+        if (is_active !== undefined)   { updates.push(`is_active = $${i++}`);   values.push(parseBool(is_active)); }
+        if (is_featured !== undefined) { updates.push(`is_featured = $${i++}`); values.push(parseBool(is_featured)); }
 
         // Handle new images
         if (req.files && req.files.length > 0) {
