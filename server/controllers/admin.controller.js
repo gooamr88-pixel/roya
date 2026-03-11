@@ -287,4 +287,27 @@ const updateMessageNote = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-module.exports = { getStats, getUsers, updateUser, getRoles, updateRole, getLogs, globalSearch, getMessages, replyMessage, updateMessageNote };
+/**
+ * DELETE /api/admin/messages/:id — Delete a message
+ */
+const deleteMessage = async (req, res, next) => {
+    try {
+        const result = await query('DELETE FROM contacts WHERE id = $1 RETURNING id', [req.params.id]);
+        if (result.rows.length === 0) {
+            throw new AppError('Message not found.', 404);
+        }
+        res.json({ success: true, message: 'Message deleted successfully.' });
+    } catch (err) { next(err); }
+};
+
+/**
+ * DELETE /api/admin/logs — Clear all login logs
+ */
+const clearLogs = async (req, res, next) => {
+    try {
+        await query('DELETE FROM login_logs');
+        res.json({ success: true, message: 'All login logs cleared successfully.' });
+    } catch (err) { next(err); }
+};
+
+module.exports = { getStats, getUsers, updateUser, getRoles, updateRole, getLogs, clearLogs, globalSearch, getMessages, replyMessage, updateMessageNote, deleteMessage };

@@ -8,8 +8,9 @@
 {% endblock %}
 
 {% block content %}
-  {# ════════════ HERO ════════════ #}
-  <section class="hero" id="home">
+    <div class="landing-views-container">
+      {# ════════════ HERO (HOME) ════════════ #}
+      <section class="landing-view active" id="home">
     <div class="hero-slideshow">
       <div class="hero-slide active">
         <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=60"
@@ -70,8 +71,8 @@
     </div>
   </section>
 
-  {# ════════════ ABOUT ════════════ #}
-  <section class="about" id="about">
+      {# ════════════ ABOUT ════════════ #}
+      <section class="landing-view" id="about">
     <div class="container">
       <div class="about-grid">
         <div class="about-visual fade-in-left">
@@ -120,8 +121,8 @@
     </div>
   </section>
 
-  {# ════════════ SERVICES ════════════ #}
-  <section class="services-section" id="services">
+      {# ════════════ SERVICES ════════════ #}
+      <section class="landing-view" id="services">
     <div class="container">
       <div class="text-center fade-in">
         <span class="section-label" data-i18n="services.label">{{ t.services.label }}</span>
@@ -155,8 +156,8 @@
     </div>
   </section>
 
-  {# ════════════ EXHIBITIONS ════════════ #}
-  <section class="exhibitions-section" id="exhibitions">
+      {# ════════════ EXHIBITIONS ════════════ #}
+      <section class="landing-view" id="exhibitions">
     <div class="container">
       <div class="text-center fade-in">
         <span class="section-label" data-i18n="exhibitions.label">{{ t.exhibitions.label }}</span>
@@ -176,8 +177,8 @@
     </div>
   </section>
 
-  {# ════════════ PROPERTIES ════════════ #}
-  <section class="properties-section" id="properties">
+      {# ════════════ PROPERTIES ════════════ #}
+      <section class="landing-view" id="properties">
     <div class="container">
       <div class="text-center fade-in">
         <span class="section-label" data-i18n="properties.label">{{ t.properties.label }}</span>
@@ -197,8 +198,8 @@
     </div>
   </section>
 
-  {# ════════════ CONTACT ════════════ #}
-  <section class="contact-section" id="contact">
+      {# ════════════ CONTACT ════════════ #}
+      <section class="landing-view" id="contact">
     <div class="container">
       <div class="text-center fade-in">
         <span class="section-label" data-i18n="contact.label">{{ t.contact.label }}</span>
@@ -263,7 +264,8 @@
         </form>
       </div>
     </div>
-  </section>
+      </section>
+    </div>
 {% endblock %}
 
 {% block pageScripts %}

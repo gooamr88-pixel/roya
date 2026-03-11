@@ -273,12 +273,27 @@ const Settings = {
     const { theme } = this.get();
 
     // Theme
-    document.documentElement.setAttribute("data-theme", theme);
-    const themeBtn = document.getElementById("themeToggle");
+    document.documentElement.setAttribute('data-theme', theme);
+    const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {
-      const icon = themeBtn.querySelector("i");
-      if (icon)
-        icon.className = theme === "light" ? "fas fa-moon" : "fas fa-sun";
+      const lightIcon = themeBtn.querySelector('.theme-icon-light');
+      const darkIcon = themeBtn.querySelector('.theme-icon-dark');
+
+      if (lightIcon && darkIcon) {
+        if (theme === 'light') {
+          lightIcon.style.display = 'none';
+          darkIcon.style.display = 'inline';
+        } else {
+          lightIcon.style.display = 'inline';
+          darkIcon.style.display = 'none';
+        }
+      } else {
+        // Fallback for dashboards that might still use fontawesome instead of emojis
+        const icon = themeBtn.querySelector('i');
+        if (icon) {
+          icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+      }
     }
   },
 

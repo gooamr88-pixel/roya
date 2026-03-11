@@ -10,8 +10,10 @@
   <link rel="stylesheet" href="/css/dashboard.css">
 {% endblock %}
 
-{% block headExtra %}
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
+  <style>
+    /* ── Topbar theme btn for Admin layout if added ── */
+  </style>
   <style>
     /* ── Executive Metric Cards (inline for admin-only) ── */
     .exec-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px; }
@@ -326,6 +328,9 @@
 
         {# ── LOGS ── #}
         <div class="view-section" id="view-logs">
+          <div class="filters-bar" style="justify-content: flex-end;">
+            <button class="btn btn-danger btn-sm" id="clearLogsBtn" onclick="clearAdminLogs()" style="display:none;"><i class="fas fa-trash-alt"></i> Clear All Logs</button>
+          </div>
           <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thUser }}</th><th>{{ t.admin.thEmail }}</th><th>{{ t.admin.thIP }}</th><th>{{ t.admin.thBrowser }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thTime }}</th></tr></thead><tbody id="adminLogsTable"></tbody></table></div>
           <div class="pagination" id="adminLogsPagination"></div>
         </div>

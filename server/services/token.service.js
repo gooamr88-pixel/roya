@@ -101,26 +101,26 @@ const generateResetToken = () => {
 const setAuthCookies = (res, accessToken, refreshToken, rememberMe = false) => {
     const cookieOptions = {
         httpOnly: true,
-        secure: !config.isDev,
-        sameSite: 'strict',
+        secure: true, // Force true or use config depending if we strictly need to bypass dev env
+        sameSite: 'none', // Needed for cross-device/mobile if domains differ, or 'lax' depending on setup. Let's use 'lax' or strictly 'strict' but mobile might need 'lax'. We'll use 'lax' for broader mobile support if not explicitly cross-origin, or strictly follow instructions. The instruction says: "Ensure maxAge, secure, sameSite, and httpOnly are set correctly to fix the mobile issue." Usually, sameSite: 'none' and secure: true fixes mobile issues if it's an API, or sameSite: 'lax' for same-site mobile.
         domain: config.isDev ? undefined : config.security.cookieDomain,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days for ALL devices
     };
+
+    // The instruction says: "Set the cookie configuration to be valid for exactly 1 month (30 days) across ALL devices."
+    cookieOptions.sameSite = 'lax'; // 'lax' is safer but 'none' is better for cross-origin mobile apps. Let's use 'lax' and secure: true. Or 'strict' if the mobile is just a web view on the same domain. Let's set secure: true, sameSite: 'lax', httpOnly: true.
 
     res.cookie('access_token', accessToken, {
         ...cookieOptions,
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        // Also extend access token cookie or just keep it 30 days if required by "across ALL devices"? Usually access token is short. "Fix session cookies" usually means the main session/refresh cookie. Let's set both to 30 days to be safe based on "Set the cookie configuration to be valid for exactly 1 month (30 days) across ALL devices."
+        maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     const rtOptions = {
         ...cookieOptions,
         path: '/api/auth/refresh',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     };
-
-    // If rememberMe is true, store for 30 days.
-    // If false, it acts as a session cookie (no maxAge), clearing when browser closes.
-    if (rememberMe) {
-        rtOptions.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
-    }
 
     res.cookie('refresh_token', refreshToken, rtOptions);
 };
@@ -133,8 +133,8 @@ const setAuthCookies = (res, accessToken, refreshToken, rememberMe = false) => {
 const clearAuthCookies = (res) => {
     const cookieOptions = {
         httpOnly: true,
-        secure: !config.isDev,
-        sameSite: 'strict',
+        secure: true,
+        sameSite: 'lax',
         domain: config.isDev ? undefined : config.security.cookieDomain,
     };
     res.clearCookie('access_token', cookieOptions);

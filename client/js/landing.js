@@ -15,8 +15,43 @@ document.addEventListener('DOMContentLoaded', () => {
     checkLandingAuth();
     loadLandingServices();
     loadLandingProperties();
+    loadLandingProperties();
     loadLandingExhibitions();
+    initViewSwitcher();
 });
+
+// ── View Switcher (Tabbed Landing Page) ──
+function initViewSwitcher() {
+    const navLinks = document.querySelectorAll('.nav-links a[href^="#"], .mobile-menu a[href^="#"], .hero-buttons a[href^="#"]');
+    const views = document.querySelectorAll('.landing-view');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const targetId = link.getAttribute('href').substring(1);
+            const targetView = document.getElementById(targetId);
+
+            if (targetView) {
+                e.preventDefault();
+
+                // Hide all views
+                views.forEach(v => v.classList.remove('active'));
+
+                // Show requested view
+                targetView.classList.add('active');
+
+                // Close mobile menu if open
+                document.getElementById('mobileMenu')?.classList.remove('active');
+
+                // Update active state on nav links
+                document.querySelectorAll('.nav-links a').forEach(nav => nav.classList.remove('active'));
+                document.querySelectorAll(`.nav-links a[href="#${targetId}"]`).forEach(nav => nav.classList.add('active'));
+
+                // Reset scroll
+                window.scrollTo(0, 0);
+            }
+        });
+    });
+}
 
 // ── Check if user is logged in (for content gatekeeping + navbar swap) ──
 async function checkLandingAuth() {
@@ -397,7 +432,12 @@ async function loadLandingProperties() {
                     const subjectInput = document.getElementById('contactSubject');
                     if (contactSection && subjectInput) {
                         subjectInput.value = subject;
-                        contactSection.scrollIntoView({ behavior: 'smooth' });
+                        // Trigger view switch instead of scroll
+                        document.querySelectorAll('.landing-view').forEach(v => v.classList.remove('active'));
+                        contactSection.classList.add('active');
+                        document.querySelectorAll('.nav-links a').forEach(nav => nav.classList.remove('active'));
+                        document.querySelector('.nav-links a[href="#contact"]')?.classList.add('active');
+                        window.scrollTo(0, 0);
                         document.getElementById('contactName')?.focus();
                     } else {
                         // Fallback to dashboard

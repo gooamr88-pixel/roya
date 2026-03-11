@@ -8,8 +8,8 @@
         "home": "Home",
         "about": "About",
         "services": "Services",
-        "exhibitions": "Exhibitions",
-        "properties": "Properties",
+        "exhibitions": "Events",
+        "properties": "Software",
         "contact": "Contact",
         "signIn": "Sign In",
         "getStarted": "Get Started",
@@ -19,8 +19,8 @@
     "hero": {
         "badge": "ROYA Platform",
         "title_before": "Professional",
-        "title_highlight": "Business Solutions",
-        "title_after": "for Your Success",
+        "title_highlight": "<span style=\"color: #FFD700;\">Business Solutions</span>",
+        "title_after": "<span style=\"color: #FFD700;\">for Your Success</span>",
         "subtitle": "Empowering businesses with comprehensive services in Advertising, Marketing, Real Estate, and Exhibition Management. Transform your vision into reality.",
         "cta_services": "Explore Services",
         "cta_contact": "Contact Us",
@@ -36,8 +36,8 @@
         "desc": "We are a leading corporate service company specializing in four key areas. Our integrated approach ensures every project receives the attention and expertise it deserves.",
         "advertising": "Advertising",
         "marketing": "Marketing",
-        "realEstate": "Real Estate",
-        "exhibitions": "Exhibitions",
+        "realEstate": "Software",
+        "exhibitions": "Events",
         "officeAlt": "Our Office"
     },
     "services": {
@@ -93,7 +93,7 @@
         ]
     },
     "exhibitions": {
-        "label": "Exhibitions",
+        "label": "Events",
         "title_before": "Upcoming",
         "title_highlight": "Events",
         "desc": "Join us at world-class exhibitions and trade shows.",
@@ -123,9 +123,9 @@
         ]
     },
     "properties": {
-        "label": "Real Estate",
+        "label": "Software",
         "title_before": "Featured",
-        "title_highlight": "Properties",
+        "title_highlight": "Software",
         "desc": "Discover premium properties through our curated portfolio.",
         "seeMore": "See More Properties",
         "inquire": "Inquire",
@@ -513,7 +513,7 @@
     },
     "langToggle": {
         "text": "العربية",
-        "flag": "https://flagcdn.com/w40/sa.png",
+        "flag": "https://flagcdn.com/w40/us.png",
         "switchTo": "ar"
     }
 }

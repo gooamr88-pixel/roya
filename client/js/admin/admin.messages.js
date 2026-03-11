@@ -45,8 +45,8 @@ async function loadAdminMessages(page = 1) {
 
                             <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
                                 <input type="text" class="form-input" id="reply-${m.id}" placeholder="Type your reply..." style="flex:1;min-width:200px;font-size:0.85rem;padding:8px 12px">
-                                <button class="btn btn-primary btn-sm" onclick="sendAdminReply(${m.id})"><i class="fas fa-paper-plane"></i> Reply</button>
                                 <button class="btn btn-outline btn-sm" onclick="saveInternalNote(${m.id})"><i class="fas fa-sticky-note"></i> Note</button>
+                                ${adminUser?.role === 'super_admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAdminMessage(${m.id})" style="margin-left:auto"><i class="fas fa-trash"></i> Delete</button>` : ''}
                             </div>
                         </div>
                     </div>
@@ -79,4 +79,18 @@ async function saveInternalNote(messageId) {
         Toast.success('Internal note saved!');
         loadAdminMessages();
     } catch (err) { Toast.error(err.message); }
+}
+
+async function deleteAdminMessage(messageId) {
+    const confirmed = await glassConfirm(
+        'Delete Message',
+        'Are you sure you want to permanently delete this contact message?',
+        'danger'
+    );
+    if (!confirmed) return;
+    try {
+        await API.delete(`/admin/messages/${messageId}`);
+        Toast.success('Message deleted successfully.');
+        loadAdminMessages();
+    } catch (err) { Toast.error(err.message || 'Failed to delete message.'); }
 }

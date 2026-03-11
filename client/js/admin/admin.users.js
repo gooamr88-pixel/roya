@@ -156,6 +156,12 @@ async function loadAdminLogs(page = 1) {
         const data = await API.get(`/admin/logs?page=${page}&limit=30`);
         const logs = data.data.logs;
         const tbody = document.getElementById('adminLogsTable');
+        const clearBtn = document.getElementById('clearLogsBtn');
+
+        if (clearBtn) {
+            clearBtn.style.display = adminUser?.role === 'super_admin' && logs.length > 0 ? 'inline-flex' : 'none';
+        }
+
         if (logs.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-muted)">No logs yet</td></tr>';
         } else {
@@ -182,4 +188,18 @@ function parseBrowser(ua) {
     if (ua.includes('Edg')) return 'Edge';
     if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
     return ua.substring(0, 20) + '...';
+}
+
+async function clearAdminLogs() {
+    const confirmed = await glassConfirm(
+        'Clear All Logs',
+        'Are you sure you want to permanently delete all login logs? This action cannot be undone.',
+        'danger'
+    );
+    if (!confirmed) return;
+    try {
+        await API.delete('/admin/logs');
+        Toast.success('All login logs have been cleared.');
+        loadAdminLogs();
+    } catch (err) { Toast.error(err.message || 'Failed to clear logs.'); }
 }

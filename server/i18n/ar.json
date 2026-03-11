@@ -8,8 +8,8 @@
         "home": "الرئيسية",
         "about": "من نحن",
         "services": "خدماتنا",
-        "exhibitions": "المعارض",
-        "properties": "العقارات",
+        "exhibitions": "الفعاليات",
+        "properties": "البرمجيات",
         "contact": "تواصل معنا",
         "signIn": "تسجيل الدخول",
         "getStarted": "ابدأ الآن",
@@ -18,9 +18,9 @@
     },
     "hero": {
         "badge": "منصة رؤيا",
-        "title_before": "حلول",
-        "title_highlight": "أعمال احترافية",
-        "title_after": "لنجاحك",
+        "title_before": "<span style=\"color: #FFD700;\">حلول</span>",
+        "title_highlight": "<span style=\"color: #FFD700;\">أعمال احترافية</span>",
+        "title_after": "<span style=\"color: #FFD700;\">لنجاحك</span>",
         "subtitle": "تمكين الشركات بخدمات شاملة في الإعلان، التسويق، العقارات، وإدارة المعارض. حول رؤيتك إلى واقع.",
         "cta_services": "استكشف خدماتنا",
         "cta_contact": "تواصل معنا",
@@ -36,8 +36,8 @@
         "desc": "نحن شركة خدمات مؤسسية رائدة نتخصص في أربعة مجالات رئيسية. يضمن نهجنا المتكامل أن يتلقى كل مشروع الاهتمام والخبرة التي يستحقها.",
         "advertising": "إعلان",
         "marketing": "تسويق",
-        "realEstate": "عقارات",
-        "exhibitions": "معارض",
+        "realEstate": "البرمجيات",
+        "exhibitions": "الفعاليات",
         "officeAlt": "مكتبنا"
     },
     "services": {
@@ -93,7 +93,7 @@
         ]
     },
     "exhibitions": {
-        "label": "المعارض",
+        "label": "الفعاليات",
         "title_before": "الفعاليات",
         "title_highlight": "القادمة",
         "desc": "انضم إلينا في معارض تجارية عالمية.",
@@ -123,8 +123,8 @@
         ]
     },
     "properties": {
-        "label": "العقارات",
-        "title_before": "عقارات",
+        "label": "البرمجيات",
+        "title_before": "برمجيات",
         "title_highlight": "مميزة",
         "desc": "اكتشف عقارات متميزة من خلال محفظتنا المختارة.",
         "seeMore": "عرض المزيد من العقارات",
@@ -214,10 +214,10 @@
         "title_before": "لنكن على",
         "title_highlight": "اتصال",
         "desc": "جاهز لبدء مشروعك القادم؟ تواصل معنا ولنناقش كيف يمكننا المساعدة.",
-        "emailLabel": "راسلنا",
+        "emailLabel": "تواصل معنا",
         "phoneLabel": "اتصل بنا",
         "whatsappLabel": "واتساب",
-        "visitLabel": "زرنا",
+        "visitLabel": "موقعنا",
         "address": "مصر، محافظة القاهرة، مدينة بدر",
         "form_name": "الاسم الكامل",
         "form_name_placeholder": "الاسم الخاص بك",
@@ -513,7 +513,7 @@
     },
     "langToggle": {
         "text": "English",
-        "flag": "https://flagcdn.com/w40/gb.png",
+        "flag": "https://flagcdn.com/w40/us.png",
         "switchTo": "en"
     }
 }

@@ -1,8 +1,30 @@
 /* ═══════════════════════════════════════════════
    LANDING PAGE STYLES
    ═══════════════════════════════════════════════ */
+/* ── Dynamic Tab Views ── */
+.landing-views-container {
+  width: 100%;
+  overflow-x: hidden;
+}
 
-/* ── Navbar ── */
+.landing-view {
+  display: none;
+  animation: fadeInView 0.5s ease-out;
+  min-height: calc(100vh - 80px); /* Fill screen below navbar */
+  padding-top: 100px; /* Account for fixed navbar */
+  padding-bottom: 60px;
+}
+
+.landing-view.active {
+  display: block;
+}
+
+@keyframes fadeInView {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Navbar Options ── */
 .navbar {
   position: fixed;
   top: 20px;
@@ -178,16 +200,18 @@
 }
 
 /* ── Hero Section ── */
-.hero {
-  min-height: 100vh;
-  display: flex;
+.landing-view#home {
+  display: none;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
   padding-top: 100px;
-  /* Reduced padding to center content vertically */
   text-align: center;
+  min-height: 100vh;
+}
+.landing-view#home.active {
+  display: flex;
 }
 
 .floating-contact {
