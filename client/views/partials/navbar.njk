@@ -3,9 +3,8 @@
 {# ═══════════════════════════════════════════════ #}
 <nav class="navbar" id="navbar">
   <div class="container">
-    <a href="/" class="nav-logo" aria-label="ROYA Home" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
-      <img src="{{ logoSrc }}" alt="{{ logoAlt }}" width="50" height="50" style="width: 50px; height: 50px; object-fit: contain; display: block;" fetchpriority="high">
-      <span style="font-size: 1.6rem; font-weight: 800; color: var(--text-color); line-height: 1;">Roya رؤيا</span>
+    <a href="/" class="nav-logo" aria-label="ROYA Home" style="display: flex; align-items: center; text-decoration: none;">
+      <img src="{{ logoSrc }}" alt="{{ logoAlt }}" width="50" height="50" style="height: 3rem; width: auto; object-fit: contain; display: block;" fetchpriority="high">
     </a>
 
     <ul class="nav-links" id="navLinks">
@@ -38,7 +37,7 @@
       </a>
 
       {# Theme Toggle #}
-      <button type="button" class="btn btn-ghost btn-sm" id="themeToggle" title="{{ t.nav.toggleTheme }}" aria-label="{{ t.nav.toggleTheme }}" style="padding: 8px 12px; font-size: 1.2rem;">
+      <button type="button" id="themeToggle" title="{{ t.nav.toggleTheme }}" aria-label="{{ t.nav.toggleTheme }}" style="background: transparent; border: none; box-shadow: none; outline: none; font-size: 1.2rem; cursor: pointer; padding: 4px;">
         <i class="fas fa-moon"></i>
       </button>
 
