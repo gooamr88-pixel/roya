@@ -108,6 +108,21 @@ h6,
     display: flex;
     align-items: center;
     gap: 8px;
+    text-decoration: none;
+}
+
+/* Brand name text next to logo image */
+.sidebar-brand-name {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #d4af37, #f3e5ab, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    font-family: 'Cairo', 'Inter', sans-serif;
+    user-select: none;
 }
 
 .sidebar-close {

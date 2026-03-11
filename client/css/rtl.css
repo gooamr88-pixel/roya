@@ -237,51 +237,45 @@ body {
     margin-right: var(--sidebar-width, 260px);
 }
 
-/* Sidebar header: logo on right, close button on left */
+/* Sidebar header: logo on RIGHT, close button on LEFT (natural RTL) */
 [dir="rtl"] .sidebar-header {
-    flex-direction: row-reverse;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
-[dir="rtl"] .sidebar-close {
-    margin-right: auto;
-    margin-left: 0;
-}
-
-/* ── Sidebar navigation links ── */
+/* ── Sidebar navigation links ──
+   ICONS STAY ON THE PHYSICAL LEFT (user request).
+   DO NOT use flex-direction: row-reverse — that moves icons to the right.
+   Instead keep the default flex row, override text-align, and push the
+   kbd-hint shortcut number to the far right using margin-inline-start:auto. */
 [dir="rtl"] .sidebar-link {
-    /* CRITICAL: dashboard.css hard-codes text-align:left — override it */
-    text-align: right;
-    flex-direction: row-reverse;
+    flex-direction: row;          /* icon LEFT · label · kbd-hint RIGHT */
+    text-align: right;            /* Arabic label text reads right-to-left */
 }
 
-/* Active indicator bar flipped to right edge */
-[dir="rtl"] .sidebar-link.active::before {
-    left: auto;
-    right: -12px;
-    border-radius: 3px 0 0 3px;
-}
-
-/* Badge count pushed to left in RTL (was margin-left:auto which pushed it right) */
-[dir="rtl"] .sidebar-link .badge-count {
-    margin-left: 0;
-    margin-right: auto;
-}
-
-/* Icon already has fixed width; just make sure its gap gap direction is correct */
-[dir="rtl"] .sidebar-link .icon {
-    margin-left: 0;
+/* kbd-hint shortcut numbers pushed to far right */
+[dir="rtl"] .sidebar-link .kbd-hint {
     margin-right: 0;
+    margin-left: 0;
+    margin-inline-start: auto;
 }
 
-/* Section labels (e.g. "MAIN", "ADMIN") right-aligned */
+/* Badge count (unread messages) pushed to far right */
+[dir="rtl"] .sidebar-link .badge-count {
+    margin-right: 0;
+    margin-left: 0;
+    margin-inline-start: auto;
+}
+
+/* Section group labels right-aligned */
 [dir="rtl"] .sidebar-nav .nav-section {
     text-align: right;
     letter-spacing: 0.5px;
 }
 
-/* Sidebar user row: avatar on right */
+/* Sidebar user row: keep natural LTR order (avatar · name) but text right */
 [dir="rtl"] .sidebar-user {
-    flex-direction: row-reverse;
+    flex-direction: row;
     text-align: right;
 }
 
