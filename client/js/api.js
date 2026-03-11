@@ -274,14 +274,13 @@ const Settings = {
 
     // Theme
     document.documentElement.setAttribute('data-theme', theme);
-    const themeBtn = document.getElementById('themeToggle');
-    if (themeBtn) {
-      const icon = themeBtn.querySelector('i');
+    document.querySelectorAll('#themeToggle, .theme-toggle').forEach(btn => {
+      const icon = btn.querySelector('i');
       if (icon) {
         // Light mode needs a SUN. Dark mode needs a MOON. No gears.
         icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
       }
-    }
+    });
   },
 
   toggleTheme() {
@@ -295,10 +294,9 @@ function syncSettings() {
   Settings.apply();
 
   // Bind theme toggle (any page)
-  const themeBtn = document.getElementById("themeToggle");
-  if (themeBtn) {
-    themeBtn.addEventListener("click", () => Settings.toggleTheme());
-  }
+  document.querySelectorAll('#themeToggle, .theme-toggle').forEach(btn => {
+    btn.addEventListener("click", () => Settings.toggleTheme());
+  });
   // Language toggle is now a plain <a> link — no JS needed
 }
 
