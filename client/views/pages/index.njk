@@ -174,22 +174,43 @@
     </div>
   </section>
 
-      {# ════════════ PROPERTIES ════════════ #}
-      <section class="landing-view" id="properties">
+      {# ════════════ JOBS ════════════ #}
+      <section class="landing-view" id="jobs">
     <div class="container">
       <div class="text-center fade-in">
-        <span class="section-label" data-i18n="properties.label">{{ t.properties.label }}</span>
-        <h2 class="section-title"><span data-i18n="properties.title_before">{{ t.properties.title_before | safe }}</span> <span class="text-gradient" data-i18n="properties.title_highlight">{{ t.properties.title_highlight | safe }}</span></h2>
-        <p class="section-desc text-gray-800 dark:text-gray-300" style="margin: 0 auto;" data-i18n="properties.desc">{{ t.properties.desc }}</p>
+        <span class="section-label" data-i18n="jobs.label">{{ t.jobs.label }}</span>
+        <h2 class="section-title"><span data-i18n="jobs.title_before">{{ t.jobs.title_before | safe }}</span> <span class="text-gradient" data-i18n="jobs.title_highlight">{{ t.jobs.title_highlight | safe }}</span></h2>
+        <p class="section-desc text-gray-800 dark:text-gray-300" style="margin: 0 auto;" data-i18n="jobs.desc">{{ t.jobs.desc }}</p>
       </div>
 
-      <div class="properties-grid" id="propertiesGrid">
+      <div class="properties-grid" id="jobsGrid">
         <!-- Injected dynamically by landing.js -->
       </div>
 
       <div class="text-center" style="margin-top: 36px;">
-        <a href="/properties" class="btn btn-outline" style="padding: 12px 32px; font-size: 0.95rem;">
-          <span data-i18n="properties.seeMore">{{ t.properties.seeMore }}</span> <i class="fas fa-arrow-right back-arrow-icon" style="margin-inline-start: 8px;"></i>
+        <a href="/jobs" class="btn btn-outline" style="padding: 12px 32px; font-size: 0.95rem;">
+          <span data-i18n="jobs.seeMore">{{ t.jobs.seeMore }}</span> <i class="fas fa-arrow-right back-arrow-icon" style="margin-inline-start: 8px;"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+      {# ════════════ PORTFOLIO ════════════ #}
+      <section class="landing-view" id="portfolio">
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label" data-i18n="portfolio.label">{{ t.portfolio.label }}</span>
+        <h2 class="section-title"><span data-i18n="portfolio.title_before">{{ t.portfolio.title_before | safe }}</span> <span class="text-gradient" data-i18n="portfolio.title_highlight">{{ t.portfolio.title_highlight | safe }}</span></h2>
+        <p class="section-desc text-gray-800 dark:text-gray-300" style="margin: 0 auto;" data-i18n="portfolio.desc">{{ t.portfolio.desc }}</p>
+      </div>
+
+      <div class="exhibitions-grid" id="portfolioGrid">
+        <!-- Injected dynamically by landing.js -->
+      </div>
+
+      <div class="text-center" style="margin-top: 36px;">
+        <a href="#contact" class="btn btn-outline" style="padding: 12px 32px; font-size: 0.95rem;">
+          <span data-i18n="portfolio.seeMore">{{ t.portfolio.seeMore }}</span> <i class="fas fa-arrow-right back-arrow-icon" style="margin-inline-start: 8px;"></i>
         </a>
       </div>
     </div>

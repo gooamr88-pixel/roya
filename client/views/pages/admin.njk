@@ -304,6 +304,47 @@
           <div class="table-container"><table class="data-table"><thead><tr><th style="width:30px"><input type="checkbox" id="propSelectAll" onchange="toggleAllCheckboxes('prop')"></th><th>{{ t.admin.thTitle }}</th><th>{{ t.admin.thLocation }}</th><th>{{ t.admin.thPrice }}</th><th>{{ t.admin.thType }}</th><th>{{ t.admin.thFeatured }}</th><th>{{ t.admin.thActive }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminPropertiesTable"></tbody></table></div>
         </div>
 
+        {# ── JOBS ── #}
+        <div class="view-section" id="view-jobs">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <span style="font-size:0.85rem;color:var(--text-2)">{{ t.admin.jobsNav }}</span>
+            <button class="btn btn-primary btn-sm" onclick="openJobModal()"><i class="fas fa-plus"></i> {{ t.admin.addJob }}</button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th>{{ t.admin.thTitle }}</th>
+                <th>{{ t.admin.jobCompany }}</th>
+                <th>{{ t.admin.jobLocation }}</th>
+                <th>{{ t.admin.jobType }}</th>
+                <th>{{ t.admin.thActive }}</th>
+                <th>{{ t.admin.thActions }}</th>
+              </tr></thead>
+              <tbody id="jobsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        {# ── PORTFOLIO ── #}
+        <div class="view-section" id="view-portfolio">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <span style="font-size:0.85rem;color:var(--text-2)">{{ t.admin.portfolioNav }}</span>
+            <button class="btn btn-primary btn-sm" onclick="openPortfolioModal()"><i class="fas fa-plus"></i> {{ t.admin.addPortfolio }}</button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th style="width:60px">{{ t.admin.thImage }}</th>
+                <th>{{ t.admin.thTitle }}</th>
+                <th>{{ t.admin.portfolioCategory }}</th>
+                <th>{{ t.admin.thActive }}</th>
+                <th>{{ t.admin.thActions }}</th>
+              </tr></thead>
+              <tbody id="portfolioTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
         {# ── TICKET CENTER ── #}
         <div class="view-section" id="view-messages">
           <div class="filters-bar">
@@ -335,7 +376,7 @@
         {# ── LOGS ── #}
         <div class="view-section" id="view-logs">
           <div class="filters-bar" style="justify-content: flex-end;">
-            <button class="btn btn-danger btn-sm" id="clearLogsBtn" onclick="clearAdminLogs()" style="display:none;"><i class="fas fa-trash-alt"></i> Clear All Logs</button>
+            <button class="btn btn-danger btn-sm" id="clearLogsBtn" onclick="clearAdminLogs()" style="display:none;"><i class="fas fa-trash-alt"></i> {{ t.admin.clearAllLogs }}</button>
           </div>
           <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thUser }}</th><th>{{ t.admin.thEmail }}</th><th>{{ t.admin.thIP }}</th><th>{{ t.admin.thBrowser }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thTime }}</th></tr></thead><tbody id="adminLogsTable"></tbody></table></div>
           <div class="pagination" id="adminLogsPagination"></div>
@@ -609,6 +650,94 @@
     </div>
   </div>
 
+  {# ══════ JOB MODAL ══════ #}
+  <div class="modal-overlay" id="jobModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="jobModalTitle">{{ t.admin.addJob }}</h3>
+        <button type="button" class="modal-close" onclick="closeJobModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+      </div>
+      <form onsubmit="event.preventDefault(); saveAdminJob();">
+        <div class="form-group">
+          <label class="form-label">{{ t.admin.thTitle }} *</label>
+          <input class="form-input" type="text" id="jobTitle" placeholder="{{ t.admin.svcTitlePlaceholder }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t.admin.thDescription }}</label>
+          <textarea class="form-textarea" id="jobDescription" rows="3" placeholder="{{ t.admin.svcDescPlaceholder }}"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.jobCompany }}</label>
+            <input class="form-input" type="text" id="jobCompany">
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.jobLocation }}</label>
+            <input class="form-input" type="text" id="jobLocation">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.jobType }}</label>
+            <select class="form-select" id="jobType">
+              <option value="full_time">{{ t.admin.jobTypeFull }}</option>
+              <option value="part_time">{{ t.admin.jobTypePart }}</option>
+              <option value="remote">{{ t.admin.jobTypeRemote }}</option>
+              <option value="contract">{{ t.admin.jobTypeContract }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.jobSalary }}</label>
+            <input class="form-input" type="text" id="jobSalary" placeholder="e.g. $3,000 – $5,000">
+          </div>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" id="jobIsActive" checked style="width:18px;height:18px;cursor:pointer">
+          <label for="jobIsActive" class="form-label" style="margin:0;cursor:pointer">{{ t.admin.activeStatus }}</label>
+        </div>
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:12px">
+          <i class="fas fa-save"></i> {{ t.admin.saveJob }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {# ══════ PORTFOLIO MODAL ══════ #}
+  <div class="modal-overlay" id="portfolioModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="portfolioModalTitle">{{ t.admin.addPortfolio }}</h3>
+        <button type="button" class="modal-close" onclick="closePortfolioModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+      </div>
+      <form onsubmit="event.preventDefault(); saveAdminPortfolio();">
+        <div class="form-group">
+          <label class="form-label">{{ t.admin.thTitle }} *</label>
+          <input class="form-input" type="text" id="portfolioTitle" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t.admin.thDescription }}</label>
+          <textarea class="form-textarea" id="portfolioDescription" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t.admin.portfolioCategory }}</label>
+          <input class="form-input" type="text" id="portfolioCategory" placeholder="e.g. branding, events, digital">
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t.admin.dropZoneTitle }}</label>
+          <input type="file" id="portfolioImages" accept="image/*" multiple class="form-input" style="padding:10px">
+          <div id="portfolioImgPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" id="portfolioIsActive" checked style="width:18px;height:18px;cursor:pointer">
+          <label for="portfolioIsActive" class="form-label" style="margin:0;cursor:pointer">{{ t.admin.activeStatus }}</label>
+        </div>
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:12px">
+          <i class="fas fa-save"></i> {{ t.admin.savePortfolio }}
+        </button>
+      </form>
+    </div>
+  </div>
+
   {# ══════ FROSTED GLASS CONFIRMATION MODAL ══════ #}
   <div class="glass-modal-overlay" id="glassConfirmOverlay" role="dialog" aria-modal="true">
     <div class="glass-modal" id="glassConfirmModal">
@@ -635,4 +764,6 @@
   <script src="/js/admin/admin.messages.js" defer></script>
   <script src="/js/admin/admin.users.js" defer></script>
   <script src="/js/admin/admin.exhibitions.js" defer></script>
+  <script src="/js/admin/admin.jobs.js" defer></script>
+  <script src="/js/admin/admin.portfolio.js" defer></script>
 {% endblock %}

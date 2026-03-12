@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     checkLandingAuth();
     loadLandingServices();
-    loadLandingProperties();
-    loadLandingProperties();
+    loadLandingJobs();
+    loadLandingPortfolio();
     loadLandingExhibitions();
     initViewSwitcher();
 });
@@ -374,95 +374,84 @@ async function loadLandingServices() {
 }
 
 // ══════════════════════════════════════════
-//  DYNAMIC PROPERTIES
+//  DYNAMIC JOBS
 // ══════════════════════════════════════════
-async function loadLandingProperties() {
-    const grid = document.getElementById('propertiesGrid');
+async function loadLandingJobs() {
+    const grid = document.getElementById('jobsGrid');
     if (!grid) return;
 
-    // Inject loading state
-    grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>${typeof i18n !== 'undefined' ? i18n.t('Loading properties...', 'جاري تحميل العقارات...') : 'Loading properties...'}</span></div>`;
+    grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>Loading jobs...</span></div>`;
 
     try {
-        const response = await fetch('/api/properties?limit=6');
+        const response = await fetch('/api/jobs?limit=6');
         const data = await response.json();
-        if (!response.ok || !data.data?.properties?.length) {
+        if (!response.ok || !data.data?.jobs?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
-            <i class="fas fa-home" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
-            <span data-i18n="propertiesPage.noProperties">${i18n.t('No properties available at the moment.', 'لا توجد عقارات متاحة في الوقت الحالي')}</span>
+            <i class="fas fa-briefcase" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
+            <span>No jobs available at the moment.</span>
         </div>`;
             return;
         }
 
-        const typeColors = { residential: 'primary', commercial: 'info', land: 'success', industrial: 'warning' };
+        const typeColors = { full_time: 'success', part_time: 'info', remote: 'primary', contract: 'warning' };
+        const isRtl = document.documentElement.dir === 'rtl';
 
-        grid.innerHTML = data.data.properties.map(p => {
-            const img = getImageUrl(p.images, 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80');
-            const badge = typeColors[p.property_type] || 'primary';
+        grid.innerHTML = data.data.jobs.map(j => {
+            const badge = typeColors[j.type] || 'primary';
+            const typeLabel = j.type?.replace('_', ' ') || 'Full-time';
             return `
         <div class="property-card fade-in visible">
-          <div class="property-card-image">
-            <span class="badge badge-${badge}">${esc(p.property_type || 'Residential')}</span>
-            <img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
-          </div>
-          <div class="property-card-body">
-            <h3>${esc(p.title)}</h3>
-            <div class="location"><i class="fas fa-map-marker-alt"></i> ${esc(p.location || 'Location N/A')}</div>
-            <div class="property-specs">
-              ${p.bedrooms ? `<div class="property-spec"><i class="fas fa-bed"></i> <strong>${p.bedrooms}</strong> Beds</div>` : ''}
-              ${p.bathrooms ? `<div class="property-spec"><i class="fas fa-bath"></i> <strong>${p.bathrooms}</strong> Baths</div>` : ''}
-              ${p.area_sqm ? `<div class="property-spec"><i class="fas fa-ruler-combined"></i> <strong>${Number(p.area_sqm).toLocaleString()}</strong> m²</div>` : ''}
+          <div class="property-card-body" style="padding:24px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:12px">
+              <h3 style="margin:0">${esc(j.title)}</h3>
+              <span class="badge badge-${badge}" style="white-space:nowrap">${esc(typeLabel)}</span>
             </div>
-            <div class="price-row">
-              <span class="price">${fmtPrice(p.price)}</span>
-              <button class="btn btn-outline btn-sm" data-prop-title="${esc(p.title)}">Inquire</button>
-            </div>
+            ${j.company ? `<div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:6px"><i class="fas fa-building" style="margin-inline-end:6px"></i>${esc(j.company)}</div>` : ''}
+            ${j.location ? `<div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:6px"><i class="fas fa-map-marker-alt" style="margin-inline-end:6px"></i>${esc(j.location)}</div>` : ''}
+            ${j.salary_range ? `<div style="color:var(--accent-primary);font-size:0.875rem;margin-bottom:12px"><i class="fas fa-coins" style="margin-inline-end:6px"></i>${esc(j.salary_range)}</div>` : ''}
+            <a href="/dashboard" class="btn btn-outline btn-sm" style="width:100%;margin-top:8px">
+              <i class="fas fa-paper-plane"></i> ${isRtl ? 'تقدّم الآن' : 'Apply Now'}
+            </a>
           </div>
         </div>`;
         }).join('');
+    } catch (err) { console.error('Jobs load error:', err); }
+}
 
-        // Event delegation for Inquire buttons — auth-aware, CSP-safe
-        grid.querySelectorAll('[data-prop-title]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (landingUser) {
-                    // Logged in: open the contact form pre-filled as an inquiry
-                    const subject = `Property Inquiry: ${btn.dataset.propTitle}`;
-                    const contactSection = document.getElementById('contact');
-                    const subjectInput = document.getElementById('contactSubject');
-                    if (contactSection && subjectInput) {
-                        subjectInput.value = subject;
-                        // Trigger view switch instead of scroll
-                        document.querySelectorAll('.landing-view').forEach(v => v.classList.remove('active'));
-                        contactSection.classList.add('active');
-                        document.querySelectorAll('.nav-links a').forEach(nav => nav.classList.remove('active'));
-                        document.querySelector('.nav-links a[href="#contact"]')?.classList.add('active');
-                        window.scrollTo(0, 0);
-                        document.getElementById('contactName')?.focus();
-                    } else {
-                        // Fallback to dashboard
-                        window.location.href = '/dashboard';
-                    }
-                } else {
-                    // Not logged in: redirect with session message
-                    sessionStorage.setItem('loginMessage', i18n.t('Please login to inquire about this property.', 'يرجى تسجيل الدخول للاستفسار عن هذا العقار.'));
-                    window.location.href = '/login';
-                }
-            });
-        });
+// ══════════════════════════════════════════
+//  DYNAMIC PORTFOLIO
+// ══════════════════════════════════════════
+async function loadLandingPortfolio() {
+    const grid = document.getElementById('portfolioGrid');
+    if (!grid) return;
 
-        // Re-observe animations for newly added elements
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-        grid.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>Loading portfolio...</span></div>`;
 
-    } catch (err) { console.error('Properties load error:', err); }
+    try {
+        const response = await fetch('/api/portfolio?limit=6');
+        const data = await response.json();
+        if (!response.ok || !data.data?.items?.length) {
+            grid.innerHTML = `<div class="empty-state-wrapper">
+            <i class="fas fa-images" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
+            <span>No portfolio items available yet.</span>
+        </div>`;
+            return;
+        }
+
+        grid.innerHTML = data.data.items.map(item => {
+            const images = Array.isArray(item.images) ? item.images : (JSON.parse(item.images || '[]'));
+            const img = images?.[0] || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80';
+            return `
+        <div class="exhibition-card fade-in">
+          <div style="width:100%;height:180px;border-radius:12px;overflow:hidden;margin-bottom:12px">
+            <img src="${esc(img)}" alt="${esc(item.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <h3 style="margin-bottom:6px">${esc(item.title)}</h3>
+          <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:8px">${esc(item.description || '')}</p>
+          ${item.category ? `<span class="badge badge-primary">${esc(item.category)}</span>` : ''}
+        </div>`;
+        }).join('');
+    } catch (err) { console.error('Portfolio load error:', err); }
 }
 
 // ══════════════════════════════════════════

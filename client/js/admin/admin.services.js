@@ -55,7 +55,9 @@ let serviceDropFiles = [];
 function openServiceModal(editData = null) {
     const modal = document.getElementById('serviceModal');
     const form = document.getElementById('serviceForm');
-    document.getElementById('serviceModalTitle').textContent = editData ? 'Edit Service' : 'Add New Service';
+    document.getElementById('serviceModalTitle').textContent = editData
+        ? (document.body.dataset.editService || 'Edit Service')
+        : (document.body.dataset.addService || 'Add New Service');
     form.reset();
     serviceDropFiles = [];
     document.getElementById('serviceEditId').value = editData ? editData.id : '';
