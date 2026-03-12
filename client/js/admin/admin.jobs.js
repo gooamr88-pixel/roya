@@ -1,0 +1,126 @@
+// ═══════════════════════════════════════════════
+// Admin Jobs — CRUD for Jobs Board
+// Depends on: api.js, utils.js, admin.init.js (esc, glassConfirm)
+// ═══════════════════════════════════════════════
+
+let editingJobId = null;
+
+async function loadAdminJobs() {
+    const tbody = document.getElementById('jobsTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px"><i class="fas fa-spinner fa-spin" style="color:var(--accent-primary);font-size:1.5rem"></i></td></tr>`;
+
+    try {
+        const data = await API.get('/jobs?limit=50');
+        const jobs = data.data.jobs;
+
+        if (!jobs.length) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3)"><i class="fas fa-briefcase" style="font-size:2rem;margin-bottom:8px;display:block;opacity:.4"></i> No jobs yet</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = jobs.map(j => `
+            <tr>
+                <td><strong>${esc(j.title)}</strong></td>
+                <td>${esc(j.company || '—')}</td>
+                <td>${esc(j.location || '—')}</td>
+                <td>${esc(j.type?.replace('_', ' ') || '—')}</td>
+                <td>
+                    <span class="badge ${j.is_active ? 'badge-success' : 'badge-danger'}">
+                        ${j.is_active ? '<i class="fas fa-check-circle"></i> Active' : '<i class="fas fa-times-circle"></i> Inactive'}
+                    </span>
+                </td>
+                <td>
+                    <div style="display:flex;gap:6px;">
+                        <button class="btn btn-ghost btn-sm" onclick="editJob(${j.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)"
+                            onclick="deleteJob(${j.id})" title="Deactivate">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        Toast.error('Failed to load jobs');
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger)">Failed to load jobs</td></tr>`;
+    }
+}
+
+function openJobModal(job = null) {
+    editingJobId = job ? job.id : null;
+    const modal = document.getElementById('jobModal');
+    const title = document.getElementById('jobModalTitle');
+    if (!modal) return;
+
+    title.textContent = job ? 'Edit Job' : 'Add New Job';
+    document.getElementById('jobTitle').value = job?.title || '';
+    document.getElementById('jobDescription').value = job?.description || '';
+    document.getElementById('jobCompany').value = job?.company || '';
+    document.getElementById('jobLocation').value = job?.location || '';
+    document.getElementById('jobType').value = job?.type || 'full_time';
+    document.getElementById('jobSalary').value = job?.salary_range || '';
+    document.getElementById('jobIsActive').checked = job ? !!job.is_active : true;
+
+    modal.classList.add('show');
+}
+
+function closeJobModal() {
+    document.getElementById('jobModal')?.classList.remove('show');
+    editingJobId = null;
+}
+
+async function editJob(id) {
+    try {
+        const data = await API.get(`/jobs/${id}`);
+        openJobModal(data.data.job);
+    } catch { Toast.error('Failed to load job'); }
+}
+
+async function saveAdminJob() {
+    const title = document.getElementById('jobTitle')?.value?.trim();
+    if (!title) { Toast.error('Title is required'); return; }
+
+    const payload = {
+        title,
+        description: document.getElementById('jobDescription')?.value?.trim(),
+        company: document.getElementById('jobCompany')?.value?.trim(),
+        location: document.getElementById('jobLocation')?.value?.trim(),
+        type: document.getElementById('jobType')?.value,
+        salary_range: document.getElementById('jobSalary')?.value?.trim(),
+        is_active: document.getElementById('jobIsActive')?.checked ? '1' : '0',
+    };
+
+    try {
+        if (editingJobId) {
+            await API.put(`/jobs/${editingJobId}`, payload);
+            Toast.success('Job updated successfully');
+        } else {
+            await API.post('/jobs', payload);
+            Toast.success('Job created successfully');
+        }
+        closeJobModal();
+        loadAdminJobs();
+    } catch (err) {
+        Toast.error(err.message || 'Failed to save job');
+    }
+}
+
+async function deleteJob(id) {
+    const ok = await glassConfirm('Deactivate Job', 'Are you sure you want to deactivate this job?', 'danger');
+    if (!ok) return;
+    try {
+        await API.delete(`/jobs/${id}`);
+        Toast.success('Job deactivated');
+        loadAdminJobs();
+    } catch { Toast.error('Failed to deactivate job'); }
+}
+
+// Wire up modal close on overlay click
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('jobModal')?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('jobModal')) closeJobModal();
+    });
+});

@@ -1,5 +1,8 @@
 // ═══════════════════════════════════════════════
-// i18n Seamless SPA Switcher
+// i18n Seamless SPA Switcher — FIXED v2.1
+// Root-cause fixes:
+//   1. isRTL → isRtl (was throwing ReferenceError)
+//   2. Removed fire-and-forget fetch race (cookie already set)
 // ═══════════════════════════════════════════════
 
 async function switchLanguageSeamlessly(targetLang) {
@@ -10,10 +13,8 @@ async function switchLanguageSeamlessly(targetLang) {
         const translations = await res.json();
 
         // 2. Set Cookie (persists choice for future SSR loads)
-        document.cookie = `roya_lang=${targetLang}; path=/; max-age=31536000; samesite=lax`;
-
-        // Ping backend to set session / httpOnly cookies if needed
-        fetch(`/api/set-lang?lang=${targetLang}`);
+        const secure = location.protocol === 'https:' ? ';secure' : '';
+        document.cookie = `roya_lang=${targetLang}; path=/; max-age=31536000; samesite=lax${secure}`;
 
         // 3. Update DOM DIR and Lang attributes
         const isRtl = targetLang === 'ar';
@@ -24,11 +25,11 @@ async function switchLanguageSeamlessly(targetLang) {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const keys = el.getAttribute('data-i18n').split('.');
             let val = translations;
-            keys.forEach(k => { val = val?.[k] });
+            keys.forEach(k => { val = val?.[k]; });
 
             if (val && typeof val === 'string') {
                 if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    if (el.placeholder) el.placeholder = val;
+                    if (el.placeholder !== undefined) el.placeholder = val;
                     else el.value = val;
                 } else {
                     if (el.hasAttribute('data-i18n-html')) {
@@ -37,17 +38,17 @@ async function switchLanguageSeamlessly(targetLang) {
                         const prefix = el.getAttribute('data-i18n-prefix');
                         el.innerHTML = prefix + val;
                     } else {
-                        el.innerHTML = val; // allows safe innerHTML like <span> or <i> replacing
+                        el.innerHTML = val;
                     }
                 }
             }
         });
 
-        // 5. Update Logos
+        // 5. Update Logos — FIXED: was using undefined 'isRTL' variable
         const logos = document.querySelectorAll('img[src*="/images/logo"]');
         logos.forEach(logo => {
-            logo.src = isRTL ? '/images/logo-ar.svg' : '/images/logo.svg';
-            logo.alt = isRTL ? 'رؤيا' : 'ROYA';
+            logo.src = isRtl ? '/images/logo-ar.svg' : '/images/logo.svg';
+            logo.alt = isRtl ? 'رؤيا' : 'ROYA';
         });
 
         const brandTextImgs = document.querySelectorAll('.brand-text-img');
@@ -88,15 +89,20 @@ async function switchLanguageSeamlessly(targetLang) {
             toggle.title = targetLang === 'ar' ? 'English' : 'العربية';
 
             // Re-write the native href as fallback
-            const oldHref = new URL(toggle.href, window.location.origin);
-            oldHref.searchParams.set('lang', nextLang);
-            toggle.href = oldHref.toString();
+            try {
+                const oldHref = new URL(toggle.href, window.location.origin);
+                oldHref.searchParams.set('lang', nextLang);
+                toggle.href = oldHref.toString();
+            } catch { /* ignore if href is not a valid URL */ }
         });
+
+        // 8. Notify backend to persist session cookie (fire-and-forget, after DOM is updated)
+        fetch(`/api/set-lang?lang=${targetLang}`).catch(() => {});
 
     } catch (err) {
         console.error('Failed to switch language seamlessly:', err);
         // Silently fallback to classic hard reload if the fetch failed
-        window.location.href = `/api/set-lang?lang=${targetLang}&redirect=${window.location.pathname}`;
+        window.location.href = `/api/set-lang?lang=${targetLang}&redirect=${encodeURIComponent(window.location.pathname)}`;
     }
 }
 

@@ -93,9 +93,13 @@
           {{ t.admin.exhibitions }}
           <span class="kbd-hint">4</span>
         </button>
-        <button class="sidebar-link" data-view="properties">
-          <span class="icon"><i class="fas fa-building"></i></span> {{ t.admin.propertiesNav }}
+        <button class="sidebar-link" data-view="jobs">
+          <span class="icon"><i class="fas fa-briefcase"></i></span> {{ t.admin.jobsNav }}
           <span class="kbd-hint">5</span>
+        </button>
+        <button class="sidebar-link" data-view="portfolio">
+          <span class="icon"><i class="fas fa-images"></i></span> {{ t.admin.portfolioNav }}
+          <span class="kbd-hint">6</span>
         </button>
 
         <div class="nav-section">{{ t.admin.supportSection }}</div>
@@ -214,14 +218,17 @@
               <div class="stat-value" id="aStatServices"><div class="skeleton skeleton-value"></div></div>
             </div>
             <div class="stat-card">
-              <div class="stat-header"><div class="stat-icon red"><i class="fas fa-building"></i></div><div class="stat-label">{{ t.admin.propertiesNav }}</div></div>
-              <div class="stat-value" id="aStatProperties"><div class="skeleton skeleton-value"></div></div>
+              <div class="stat-header"><div class="stat-icon gold"><i class="fas fa-briefcase"></i></div><div class="stat-label">{{ t.admin.jobsNav }}</div></div>
+              <div class="stat-value" id="aStatJobs"><div class="skeleton skeleton-value"></div></div>
             </div>
             <div class="stat-card">
               <div class="stat-header"><div class="stat-icon green"><i class="fas fa-calendar-star"></i></div><div class="stat-label">{{ t.admin.exhibitions }}</div></div>
               <div class="stat-value" id="aStatExhibitions"><div class="skeleton skeleton-value"></div></div>
             </div>
-          </div>
+            <div class="stat-card">
+              <div class="stat-header"><div class="stat-icon cyan"><i class="fas fa-images"></i></div><div class="stat-label">{{ t.admin.portfolioNav }}</div></div>
+              <div class="stat-value" id="aStatPortfolio"><div class="skeleton skeleton-value"></div></div>
+            </div>
 
           <div class="charts-section">
             <div class="chart-card">

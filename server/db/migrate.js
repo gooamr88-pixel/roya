@@ -191,6 +191,38 @@ const migrate = async () => {
       console.log('  ✅ is_featured & internal_notes columns');
     } catch (e) { console.log('  ⚠️ Column additions skipped (may already exist)'); }
 
+    // ── 11. Jobs ──
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS jobs (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(200) NOT NULL,
+        description TEXT,
+        company VARCHAR(200) DEFAULT NULL,
+        location VARCHAR(255) DEFAULT NULL,
+        type VARCHAR(50) DEFAULT 'full_time',
+        salary_range VARCHAR(100) DEFAULT NULL,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('  ✅ jobs');
+
+    // ── 12. Portfolio Items ──
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS portfolio_items (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(200) NOT NULL,
+        description TEXT,
+        images JSONB DEFAULT '[]',
+        category VARCHAR(100) DEFAULT 'general',
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('  ✅ portfolio_items');
+
     // ── Indexes ──
     console.log('\n🔄 Creating indexes...');
 
@@ -211,6 +243,9 @@ const migrate = async () => {
       'CREATE INDEX IF NOT EXISTS idx_login_logs_user_id ON login_logs(user_id)',
       'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)',
       'CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read)',
+      'CREATE INDEX IF NOT EXISTS idx_jobs_is_active ON jobs(is_active)',
+      'CREATE INDEX IF NOT EXISTS idx_jobs_type ON jobs(type)',
+      'CREATE INDEX IF NOT EXISTS idx_portfolio_is_active ON portfolio_items(is_active)',
     ];
 
     for (const idx of indexes) {

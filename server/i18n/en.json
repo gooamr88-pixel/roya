@@ -9,7 +9,7 @@
         "about": "About",
         "services": "Services",
         "exhibitions": "Events",
-        "properties": "Software",
+        "properties": "Jobs",,
         "contact": "Contact",
         "signIn": "Sign In",
         "getStarted": "Get Started",
@@ -36,7 +36,7 @@
         "desc": "We are a leading corporate service company specializing in four key areas. Our integrated approach ensures every project receives the attention and expertise it deserves.",
         "advertising": "Advertising",
         "marketing": "Marketing",
-        "realEstate": "Software",
+        "realEstate": "Jobs",
         "exhibitions": "Events",
         "officeAlt": "Our Office"
     },
@@ -122,92 +122,22 @@
             }
         ]
     },
-    "properties": {
-        "label": "Software",
-        "title_before": "Featured",
-        "title_highlight": "Software",
-        "desc": "Discover premium properties through our curated portfolio.",
-        "seeMore": "See More Properties",
-        "inquire": "Inquire",
-        "beds": "Beds",
-        "baths": "Baths",
-        "items": [
-            {
-                "title": "Luxury Villa — Al Olaya",
-                "badge": "Residential",
-                "badgeClass": "badge-primary",
-                "location": "Riyadh, Kingdom of Saudi Arabia",
-                "specs": [
-                    {
-                        "icon": "fas fa-bed",
-                        "value": "5",
-                        "label": "Beds"
-                    },
-                    {
-                        "icon": "fas fa-bath",
-                        "value": "4",
-                        "label": "Baths"
-                    },
-                    {
-                        "icon": "fas fa-ruler-combined",
-                        "value": "450",
-                        "label": "m²"
-                    }
-                ],
-                "price": "$850,000",
-                "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80"
-            },
-            {
-                "title": "Office Space — Business Bay",
-                "badge": "Commercial",
-                "badgeClass": "badge-info",
-                "location": "Dubai, UAE",
-                "specs": [
-                    {
-                        "icon": "fas fa-door-open",
-                        "value": "12",
-                        "label": "Offices"
-                    },
-                    {
-                        "icon": "fas fa-car",
-                        "value": "20",
-                        "label": "Parking"
-                    },
-                    {
-                        "icon": "fas fa-ruler-combined",
-                        "value": "800",
-                        "label": "m²"
-                    }
-                ],
-                "price": "$1,200,000",
-                "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80"
-            },
-            {
-                "title": "Development Land — North Coast",
-                "badge": "Land",
-                "badgeClass": "badge-success",
-                "location": "Alexandria, Egypt",
-                "specs": [
-                    {
-                        "icon": "fas fa-ruler-combined",
-                        "value": "2,000",
-                        "label": "m²"
-                    },
-                    {
-                        "icon": "fas fa-road",
-                        "value": "Main",
-                        "label": "Road"
-                    },
-                    {
-                        "icon": "fas fa-water",
-                        "value": "Sea",
-                        "label": "View"
-                    }
-                ],
-                "price": "$500,000",
-                "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80"
-            }
-        ]
+    "jobs": {
+        "label": "Jobs",
+        "title_before": "Career",
+        "title_highlight": "Opportunities",
+        "desc": "Discover the latest job openings available.",
+        "seeMore": "See More Jobs",
+        "apply": "Apply Now",
+        "items": []
+    },
+    "portfolio": {
+        "label": "Previous Works",
+        "title_before": "Our",
+        "title_highlight": "Portfolio",
+        "desc": "A curated showcase of our best completed projects and works.",
+        "seeMore": "See More",
+        "viewProject": "View Project"
     },
     "contact": {
         "label": "Get In Touch",
@@ -322,17 +252,17 @@
         "requestService": "Request Service",
         "failedLoad": "Failed to load"
     },
-    "propertiesPage": {
-        "title": "All Properties — ROYA Platform",
-        "label": "Real Estate",
+    "jobsPage": {
+        "title": "Jobs — ROYA Platform",
+        "label": "Career Opportunities",
         "headingBefore": "All",
-        "headingHighlight": "Properties",
-        "desc": "Discover premium properties through our curated real estate portfolio.",
-        "loading": "Loading properties...",
-        "noProperties": "No properties available",
+        "headingHighlight": "Jobs",
+        "desc": "Discover the latest job openings available.",
+        "loading": "Loading jobs...",
+        "noJobs": "No jobs available",
         "checkBack": "Check back soon!",
-        "inquire": "Inquire",
-        "failedLoad": "Failed to load properties"
+        "apply": "Apply Now",
+        "failedLoad": "Failed to load jobs"
     },
     "exhibitionsPage": {
         "title": "All Exhibitions — ROYA Platform",
@@ -404,7 +334,8 @@
         "contentSection": "Content",
         "services": "Services",
         "exhibitions": "Events",
-        "propertiesNav": "Properties",
+        "jobsNav": "Jobs",
+        "portfolioNav": "Portfolio",
         "supportSection": "Support",
         "ticketCenter": "Ticket Center",
         "administration": "Administration",
@@ -434,8 +365,12 @@
         "completedLabel": "Completed",
         "cancelledLabel": "Cancelled",
         "addService": "Add Service",
+        "addJob": "Add Job",
+        "addPortfolio": "Add Portfolio Item",
         "addProperty": "Add Property",
         "saveService": "Save Service",
+        "saveJob": "Save Job",
+        "savePortfolio": "Save Portfolio Item",
         "saveProperty": "Save Property",
         "allMessages": "All Messages",
         "newFilter": "New",
@@ -502,6 +437,28 @@
         "exhLocationPlaceholder": "e.g. Riyadh Exhibition Center",
         "exhDescPlaceholder": "Describe the exhibition...",
         "svcTitlePlaceholder": "e.g. Digital Advertising",
+        "brandName": "ROYA",
+        "jobCompany": "Company",
+        "jobLocation": "Location",
+        "jobType": "Job Type",
+        "jobSalary": "Salary Range",
+        "jobTypeFull": "Full-time",
+        "jobTypePart": "Part-time",
+        "jobTypeRemote": "Remote",
+        "jobTypeContract": "Contract",
+        "portfolioCategory": "Category",
+        "activeStatus": "Active",
+        "inactiveStatus": "Inactive",
+        "editService": "Edit Service",
+        "addNewService": "Add New Service",
+        "editJob": "Edit Job",
+        "addNewJob": "Add New Job",
+        "editPortfolio": "Edit Portfolio Item",
+        "addNewPortfolio": "Add New Portfolio Item",
+        "deactivateService": "Deactivate Service",
+        "deactivateJob": "Deactivate Job",
+        "deactivatePortfolio": "Deactivate Item",
+        "clearAllLogs": "Clear All Logs",
         "confirmTitle": "Are you sure?",
         "confirmMessage": "This action cannot be undone.",
         "cancelBtn": "Cancel",

@@ -9,7 +9,7 @@ const { AppError } = require('../middlewares/errorHandler');
  */
 const getStats = async (req, res, next) => {
     try {
-        const [users, orders, services, revenue, pending, exhibitions, properties, unanswered, usersWithOrders] = await Promise.all([
+        const [users, orders, services, revenue, pending, exhibitions, properties, unanswered, usersWithOrders, jobs, portfolio] = await Promise.all([
             query('SELECT COUNT(*) FROM users'),
             query('SELECT COUNT(*) FROM orders'),
             query('SELECT COUNT(*) FROM services WHERE is_active = TRUE'),
@@ -19,6 +19,8 @@ const getStats = async (req, res, next) => {
             query('SELECT COUNT(*) FROM properties WHERE is_active = TRUE'),
             query("SELECT COUNT(*) FROM contacts WHERE status = 'new'"),
             query('SELECT COUNT(DISTINCT user_id) FROM orders'),
+            query('SELECT COUNT(*) FROM jobs WHERE is_active = TRUE'),
+            query('SELECT COUNT(*) FROM portfolio_items WHERE is_active = TRUE'),
         ]);
 
         const totalUsers = parseInt(users.rows[0].count);
@@ -45,6 +47,8 @@ const getStats = async (req, res, next) => {
                     pendingOrders: parseInt(pending.rows[0].count),
                     totalExhibitions: parseInt(exhibitions.rows[0].count),
                     totalProperties: parseInt(properties.rows[0].count),
+                    totalJobs: parseInt(jobs.rows[0].count),
+                    totalPortfolio: parseInt(portfolio.rows[0].count),
                     unansweredMessages: parseInt(unanswered.rows[0].count),
                     conversionRate,
                 },
@@ -198,7 +202,7 @@ const globalSearch = async (req, res, next) => {
         if (!q || q.length < 2) return res.json({ success: true, data: { results: [] } });
 
         const searchTerm = `%${q}%`;
-        const [users, orders, properties, services] = await Promise.all([
+        const [users, orders, properties, services, jobs] = await Promise.all([
             query(
                 `SELECT id, name, email, 'user' as type FROM users WHERE name ILIKE $1 OR email ILIKE $1 LIMIT 5`,
                 [searchTerm]
@@ -215,6 +219,10 @@ const globalSearch = async (req, res, next) => {
                 `SELECT id, title, category, 'service' as type FROM services WHERE title ILIKE $1 LIMIT 5`,
                 [searchTerm]
             ),
+            query(
+                `SELECT id, title, company as location, 'job' as type FROM jobs WHERE title ILIKE $1 OR company ILIKE $1 LIMIT 5`,
+                [searchTerm]
+            ),
         ]);
 
         res.json({
@@ -225,6 +233,7 @@ const globalSearch = async (req, res, next) => {
                     ...orders.rows,
                     ...properties.rows,
                     ...services.rows,
+                    ...jobs.rows,
                 ],
             },
         });

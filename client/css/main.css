@@ -64,7 +64,7 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 30px rgba(108, 99, 255, 0.15);
+  --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.2);
 
   /* Transitions */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,7 +78,7 @@
   --bg-card: #ffffff;
   --bg-card-hover: #f1f5f9;
   --bg-glass: rgba(255, 255, 255, 0.85);
-  --bg-glass-border: rgba(108, 99, 255, 0.2);
+  --bg-glass-border: rgba(212, 175, 55, 0.2);
   --bg-overlay: rgba(255, 255, 255, 0.8);
   --bg-navbar-scrolled: rgba(255, 255, 255, 0.95);
 
@@ -88,7 +88,7 @@
 
   --border-color: rgba(0, 0, 0, 0.1);
   --border-light: rgba(0, 0, 0, 0.05);
-  --shadow-glow: 0 0 30px rgba(108, 99, 255, 0.25);
+  --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.25);
 }
 
 /* ── Reset & Base ── */
@@ -235,14 +235,14 @@ p {
 
 .btn-primary {
   background: var(--accent-gradient-btn);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+  color: #000;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
-  color: #fff;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  color: #000;
 }
 
 .btn-outline {
@@ -252,7 +252,7 @@ p {
 }
 
 .btn-outline:hover {
-  background: rgba(108, 99, 255, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   transform: translateY(-2px);
   color: var(--accent-primary);
 }
@@ -289,7 +289,7 @@ p {
 }
 
 .card:hover {
-  border-color: rgba(108, 99, 255, 0.3);
+  border-color: rgba(212, 175, 55, 0.35);
   box-shadow: var(--shadow-glow);
   transform: translateY(-4px);
 }
@@ -336,7 +336,7 @@ p {
 .form-textarea:focus,
 .form-select:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
 }
 
 .form-input::placeholder {
@@ -381,7 +381,7 @@ p {
 }
 
 .badge-primary {
-  background: rgba(108, 99, 255, 0.15);
+  background: rgba(212, 175, 55, 0.15);
   color: var(--accent-primary);
 }
 

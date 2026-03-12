@@ -24,7 +24,7 @@ let selectedSvc = new Set();
 let selectedProp = new Set();
 let _confirmResolve = null;
 
-const ADMIN_VIEW_KEYS = ['stats', 'orders', 'services', 'exhibitions', 'properties', 'messages', 'users', 'roles', 'logs'];
+const ADMIN_VIEW_KEYS = ['stats', 'orders', 'services', 'exhibitions', 'jobs', 'portfolio', 'messages', 'users', 'roles', 'logs'];
 
 document.addEventListener('DOMContentLoaded', () => {
     initAdminAuth();
@@ -73,10 +73,16 @@ function updateAdminUI() {
 //  NAVIGATION
 // ══════════════════════════════════════════
 const adminViewTitles = {
-    stats: 'Executive Insights', orders: 'Orders', services: 'Services',
-    exhibitions: 'Exhibitions', properties: 'Properties',
-    messages: 'Ticket Center',
-    users: 'User Management', roles: 'Roles', logs: 'Login Logs',
+    stats: document.querySelector('[data-view="stats"]')?.textContent?.trim() || 'Executive Insights',
+    orders: document.querySelector('[data-view="orders"]')?.textContent?.trim() || 'Orders',
+    services: document.querySelector('[data-view="services"]')?.textContent?.trim() || 'Services',
+    exhibitions: document.querySelector('[data-view="exhibitions"]')?.textContent?.trim() || 'Exhibitions',
+    jobs: document.querySelector('[data-view="jobs"]')?.textContent?.trim() || 'Jobs',
+    portfolio: document.querySelector('[data-view="portfolio"]')?.textContent?.trim() || 'Portfolio',
+    messages: document.querySelector('[data-view="messages"]')?.textContent?.trim() || 'Ticket Center',
+    users: document.querySelector('[data-view="users"]')?.textContent?.trim() || 'User Management',
+    roles: document.querySelector('[data-view="roles"]')?.textContent?.trim() || 'Roles',
+    logs: document.querySelector('[data-view="logs"]')?.textContent?.trim() || 'Login Logs',
 };
 
 function initAdminNav() {
@@ -99,7 +105,8 @@ function switchAdminView(viewName) {
 
     const loaders = {
         stats: loadStats, orders: loadAdminOrders, services: loadAdminServices,
-        exhibitions: loadAdminExhibitions, properties: loadAdminProperties,
+        exhibitions: loadAdminExhibitions, jobs: loadAdminJobs,
+        portfolio: loadAdminPortfolio,
         messages: loadAdminMessages, users: loadAdminUsers,
         roles: loadAdminRoles, logs: loadAdminLogs,
     };
@@ -212,10 +219,10 @@ function initCommandPalette() {
     if (!overlay || !input) return;
 
     const commands = ADMIN_VIEW_KEYS.map((key, i) => ({
-        label: adminViewTitles[key],
-        icon: ['fa-chart-line', 'fa-shopping-bag', 'fa-concierge-bell', 'fa-calendar', 'fa-building', 'fa-headset', 'fa-users-cog', 'fa-shield-halved', 'fa-file-lines'][i],
+        label: adminViewTitles[key] || key,
+        icon: ['fa-chart-line', 'fa-shopping-bag', 'fa-concierge-bell', 'fa-calendar', 'fa-briefcase', 'fa-images', 'fa-headset', 'fa-users-cog', 'fa-shield-halved', 'fa-file-lines'][i],
         action: () => switchAdminView(key),
-        shortcut: String(i + 1),
+        shortcut: i < 9 ? String(i + 1) : '0',
     }));
     commands.push(
         { label: 'Switch to Client View', icon: 'fa-exchange-alt', action: () => window.location.href = '/dashboard' },

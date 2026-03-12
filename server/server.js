@@ -163,6 +163,8 @@ const invoiceRoutes = require('./routes/invoice.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const adminRoutes = require('./routes/admin.routes');
 const contactRoutes = require('./routes/contact.routes');
+const jobRoutes = require('./routes/job.routes');
+const portfolioRoutes = require('./routes/portfolio.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -174,6 +176,8 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/portfolio', portfolioRoutes);
 
 // ── Health Check ──
 app.get('/api/health', (req, res) => {
@@ -288,6 +292,7 @@ app.get('/reset-password', seo('reset-password', 'resetPassword.welcomeDesc'));
 app.get('/dashboard', seo('dashboard', 'meta.description'));
 app.get('/admin', seo('admin', 'meta.description'));
 app.get('/services', seo('services', 'servicesPage.desc'));
+app.get('/jobs', seo('jobs', 'jobsPage.desc'));
 app.get('/properties', seo('properties', 'propertiesPage.desc'));
 app.get('/exhibitions', seo('exhibitions', 'exhibitionsPage.desc'));
 app.get('/banned', seo('banned', 'meta.description'));

@@ -9,7 +9,7 @@
         "about": "من نحن",
         "services": "خدماتنا",
         "exhibitions": "الفعاليات",
-        "properties": "البرمجيات",
+        "properties": "وظائف",
         "contact": "تواصل معنا",
         "signIn": "تسجيل الدخول",
         "getStarted": "ابدأ الآن",
@@ -36,7 +36,7 @@
         "desc": "نحن شركة خدمات مؤسسية رائدة نتخصص في أربعة مجالات رئيسية. يضمن نهجنا المتكامل أن يتلقى كل مشروع الاهتمام والخبرة التي يستحقها.",
         "advertising": "إعلان",
         "marketing": "تسويق",
-        "realEstate": "البرمجيات",
+        "realEstate": "وظائف",
         "exhibitions": "الفعاليات",
         "officeAlt": "مكتبنا"
     },
@@ -122,92 +122,22 @@
             }
         ]
     },
-    "properties": {
-        "label": "البرمجيات",
-        "title_before": "برمجيات",
-        "title_highlight": "مميزة",
-        "desc": "اكتشف عقارات متميزة من خلال محفظتنا المختارة.",
-        "seeMore": "عرض المزيد من العقارات",
-        "inquire": "استفسر",
-        "beds": "غرف",
-        "baths": "حمام",
-        "items": [
-            {
-                "title": "فيلا فاخرة — العليا",
-                "badge": "سكنية",
-                "badgeClass": "badge-primary",
-                "location": "الرياض، المملكة العربية السعودية",
-                "specs": [
-                    {
-                        "icon": "fas fa-bed",
-                        "value": "5",
-                        "label": "غرف"
-                    },
-                    {
-                        "icon": "fas fa-bath",
-                        "value": "4",
-                        "label": "حمام"
-                    },
-                    {
-                        "icon": "fas fa-ruler-combined",
-                        "value": "450",
-                        "label": "م²"
-                    }
-                ],
-                "price": "$850,000",
-                "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80"
-            },
-            {
-                "title": "مساحة مكتبية — الخليج التجاري",
-                "badge": "تجارية",
-                "badgeClass": "badge-info",
-                "location": "دبي، الإمارات",
-                "specs": [
-                    {
-                        "icon": "fas fa-door-open",
-                        "value": "12",
-                        "label": "مكتب"
-                    },
-                    {
-                        "icon": "fas fa-car",
-                        "value": "20",
-                        "label": "موقف"
-                    },
-                    {
-                        "icon": "fas fa-ruler-combined",
-                        "value": "800",
-                        "label": "م²"
-                    }
-                ],
-                "price": "$1,200,000",
-                "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80"
-            },
-            {
-                "title": "أرض تطوير — الساحل الشمالي",
-                "badge": "أرض",
-                "badgeClass": "badge-success",
-                "location": "الإسكندرية، مصر",
-                "specs": [
-                    {
-                        "icon": "fas fa-ruler-combined",
-                        "value": "2,000",
-                        "label": "م²"
-                    },
-                    {
-                        "icon": "fas fa-road",
-                        "value": "رئيسي",
-                        "label": "طريق"
-                    },
-                    {
-                        "icon": "fas fa-water",
-                        "value": "بحر",
-                        "label": "إطلالة"
-                    }
-                ],
-                "price": "$500,000",
-                "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80"
-            }
-        ]
+    "jobs": {
+        "label": "وظائف",
+        "title_before": "فرص",
+        "title_highlight": "وظيفية",
+        "desc": "اكتشف أحدث الفرص الوظيفية المتاحة.",
+        "seeMore": "عرض المزيد من الوظائف",
+        "apply": "تقدّم الآن",
+        "items": []
+    },
+    "portfolio": {
+        "label": "أعمال سابقة",
+        "title_before": "أعمالنا",
+        "title_highlight": "السابقة",
+        "desc": "نماذج من مشاريعنا المنجزة وأعمالنا المتميزة.",
+        "seeMore": "عرض المزيد",
+        "viewProject": "عرض المشروع"
     },
     "contact": {
         "label": "تواصل معنا",
@@ -322,17 +252,17 @@
         "requestService": "طلب الخدمة",
         "failedLoad": "فشل في التحميل"
     },
-    "propertiesPage": {
-        "title": "جميع العقارات — منصة رؤيا",
-        "label": "العقارات",
+    "jobsPage": {
+        "title": "الوظائف — منصة رؤيا",
+        "label": "الوظائف",
         "headingBefore": "جميع",
-        "headingHighlight": "العقارات",
-        "desc": "اكتشف عقارات متميزة من خلال محفظتنا العقارية المختارة.",
-        "loading": "جارٍ تحميل العقارات...",
-        "noProperties": "لا توجد عقارات متاحة",
+        "headingHighlight": "الوظائف",
+        "desc": "اكتشف أحدث الفرص الوظيفية.",
+        "loading": "جارٍ تحميل الوظائف...",
+        "noJobs": "لا توجد وظائف متاحة",
         "checkBack": "تحقق مجدداً قريباً!",
-        "inquire": "استفسر",
-        "failedLoad": "فشل في تحميل العقارات"
+        "apply": "تقدّم الآن",
+        "failedLoad": "فشل في تحميل الوظائف"
     },
     "exhibitionsPage": {
         "title": "جميع المعارض — منصة رؤيا",
@@ -404,7 +334,8 @@
         "contentSection": "المحتوى",
         "services": "الخدمات",
         "exhibitions": "الفعاليات",
-        "propertiesNav": "العقارات",
+        "jobsNav": "الوظائف",
+        "portfolioNav": "أعمال سابقة",
         "supportSection": "الدعم",
         "ticketCenter": "مركز التذاكر",
         "administration": "الإدارة",
@@ -434,8 +365,12 @@
         "completedLabel": "مكتمل",
         "cancelledLabel": "ملغي",
         "addService": "إضافة خدمة",
+        "addJob": "إضافة وظيفة",
+        "addPortfolio": "إضافة عمل",
         "addProperty": "إضافة عقار",
         "saveService": "حفظ الخدمة",
+        "saveJob": "حفظ الوظيفة",
+        "savePortfolio": "حفظ العمل",
         "saveProperty": "حفظ العقار",
         "allMessages": "جميع الرسائل",
         "newFilter": "جديد",
@@ -502,6 +437,28 @@
         "exhLocationPlaceholder": "مثال: مركز الرياض للمعارض",
         "exhDescPlaceholder": "صف المعرض...",
         "svcTitlePlaceholder": "مثال: الإعلان الرقمي",
+        "brandName": "رؤيا",
+        "jobCompany": "الشركة",
+        "jobLocation": "الموقع",
+        "jobType": "نوع الوظيفة",
+        "jobSalary": "نطاق الراتب",
+        "jobTypeFull": "دوام كامل",
+        "jobTypePart": "دوام جزئي",
+        "jobTypeRemote": "عن بُعد",
+        "jobTypeContract": "عقد",
+        "portfolioCategory": "الفئة",
+        "activeStatus": "نشط",
+        "inactiveStatus": "غير نشط",
+        "editService": "تعديل خدمة",
+        "addNewService": "إضافة خدمة جديدة",
+        "editJob": "تعديل وظيفة",
+        "addNewJob": "إضافة وظيفة جديدة",
+        "editPortfolio": "تعديل عمل",
+        "addNewPortfolio": "إضافة عمل جديد",
+        "deactivateService": "تعطيل الخدمة",
+        "deactivateJob": "تعطيل الوظيفة",
+        "deactivatePortfolio": "تعطيل العمل",
+        "clearAllLogs": "مسح جميع السجلات",
         "confirmTitle": "هل أنت متأكد؟",
         "confirmMessage": "لا يمكن التراجع عن هذا الإجراء.",
         "cancelBtn": "إلغاء",
