@@ -14,7 +14,8 @@
         "signIn": "Sign In",
         "getStarted": "Get Started",
         "toggleTheme": "Toggle Theme",
-        "toggleMenu": "Toggle menu"
+        "toggleMenu": "Toggle menu",
+        "portfolio": "Portfolio"
     },
     "hero": {
         "badge": "ROYA Platform",
@@ -135,12 +136,12 @@
         "label": "Previous Works",
         "title_before": "Our",
         "title_highlight": "Portfolio",
-        "desc": "A curated showcase of our best completed projects and works.",
+        "desc": "showcase of our best completed projects and works.",
         "seeMore": "See More",
         "viewProject": "View Project",
         "allWorks": "All Works",
         "loading": "Loading portfolio...",
-        "noWorks": "No portfolio items available yet."
+        "noWorks": "No works available at the moment"
     },
     "contact": {
         "label": "Get In Touch",

@@ -270,10 +270,9 @@
     }
 
     function showEmptyState(grid) {
-      const isRtl = document.documentElement.dir === 'rtl';
-      grid.innerHTML = `<div class="portfolio-empty">
+      grid.innerHTML = `<div class="portfolio-empty" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px;">
         <i class="fas fa-images" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 16px;"></i>
-        <h3>${isRtl ? 'لا توجد أعمال لعرضها حالياً' : 'No works available at the moment'}</h3>
+        <h3 style="text-align: center; margin: 0 auto;">{{ t.portfolio.noWorks | default('No works available at the moment') }}</h3>
       </div>`;
     }
 
