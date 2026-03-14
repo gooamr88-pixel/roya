@@ -33,33 +33,33 @@
   }
 }
 
-/* ── Navbar Options ── */
+/* ── Navbar Options (Premium Glassmorphism) ── */
 .navbar {
   position: fixed;
-  top: 20px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90%;
-  max-width: 1200px;
+  width: 95%;
+  max-width: 1400px;
   z-index: 1000;
-  padding: 12px 24px;
-  transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), border 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 16px;
-  background: rgba(15, 15, 20, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  padding: 14px 32px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+  background: rgba(10, 10, 15, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255,255,255,0.05);
   will-change: padding, background, transform, box-shadow;
 }
 
 .navbar.scrolled {
-  background: rgba(8, 8, 12, 0.95);
-  /* Deep dark background */
-  border: 1px solid var(--bg-glass-border);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  transform: translateX(-50%) translateY(-5px);
-  padding: 10px 24px;
+  background: rgba(8, 8, 12, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255,255,255,0.02);
+  transform: translateX(-50%) translateY(-8px);
+  padding: 10px 32px;
+  border-radius: 16px;
 }
 
 .navbar .container {
@@ -68,64 +68,69 @@
   justify-content: space-between;
   width: 100%;
   max-width: 100%;
-  /* Ensure it doesn't overflow */
   padding: 0;
-  /* Remove default container padding as navbar has padding */
 }
 
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  transition: transform 0.3s ease;
+}
+.nav-logo:hover {
+  transform: scale(1.02);
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 36px;
   list-style: none;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 8px 24px;
-  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px 32px;
+  border-radius: 100px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .nav-links a {
-  color: rgba(255, 255, 255, 0.85) !important;
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 0.95rem;
   font-weight: 500;
+  letter-spacing: 0.3px;
   position: relative;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-  padding: 4px 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 6px 0;
 }
 
 .nav-links a::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: -2px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: var(--accent-primary);
-  /* Use Royal Gold */
-  transition: var(--transition);
-  box-shadow: 0 0 10px var(--accent-primary);
+  background: var(--accent-gradient);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+  opacity: 0;
 }
 
 .nav-links a:hover {
   color: #ffffff !important;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
 .nav-links a:hover::after {
-  width: 20px;
+  width: 100%;
+  opacity: 1;
+  box-shadow: 0 0 12px var(--accent-primary);
 }
 
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .nav-toggle {
@@ -139,6 +144,10 @@
 
 #themeToggle {
   color: #ffffff !important;
+  transition: transform 0.3s ease;
+}
+#themeToggle:hover {
+  transform: rotate(15deg);
 }
 
 
