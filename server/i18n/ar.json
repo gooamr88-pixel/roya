@@ -18,9 +18,9 @@
     },
     "hero": {
         "badge": "منصة رؤيا",
-        "title_before": "<span style=\"color: #FFD700;\">حلول</span>",
-        "title_highlight": "<span style=\"color: #FFD700;\">أعمال احترافية</span>",
-        "title_after": "<span style=\"color: #FFD700;\">لنجاحك</span>",
+        "title_before": "",
+        "title_highlight": "<span style=\"color: #FFD700;\">رؤيا للدعايا والإعلان</span>",
+        "title_after": "",
         "subtitle": "تمكين الشركات بخدمات شاملة في الإعلان، التسويق، العقارات، وإدارة المعارض. حول رؤيتك إلى واقع.",
         "cta_services": "استكشف خدماتنا",
         "cta_contact": "تواصل معنا",

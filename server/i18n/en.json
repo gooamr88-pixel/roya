@@ -18,9 +18,9 @@
     },
     "hero": {
         "badge": "ROYA Platform",
-        "title_before": "Professional",
-        "title_highlight": "<span style=\"color: #FFD700;\">Business Solutions</span>",
-        "title_after": "<span style=\"color: #FFD700;\">for Your Success</span>",
+        "title_before": "",
+        "title_highlight": "<span style=\"color: #FFD700;\">رؤيا للدعايا والإعلان</span>",
+        "title_after": "",
         "subtitle": "Empowering businesses with comprehensive services in Advertising, Marketing, Real Estate, and Exhibition Management. Transform your vision into reality.",
         "cta_services": "Explore Services",
         "cta_contact": "Contact Us",
