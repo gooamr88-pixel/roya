@@ -288,6 +288,42 @@ const migrations = [
     },
 
     // ══════════════════════════════════════════
+    //  10.1. JOBS TABLE
+    // ══════════════════════════════════════════
+    {
+        name: 'Create jobs table',
+        sql: `CREATE TABLE IF NOT EXISTS jobs (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(200) NOT NULL,
+            description TEXT DEFAULT '',
+            company VARCHAR(200),
+            location VARCHAR(300),
+            type VARCHAR(50) DEFAULT 'full_time',
+            salary_range VARCHAR(100),
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`
+    },
+
+    // ══════════════════════════════════════════
+    //  10.2. PORTFOLIO ITEMS TABLE
+    // ══════════════════════════════════════════
+    {
+        name: 'Create portfolio_items table',
+        sql: `CREATE TABLE IF NOT EXISTS portfolio_items (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(200) NOT NULL,
+            description TEXT DEFAULT '',
+            images JSONB DEFAULT '[]',
+            category VARCHAR(50) DEFAULT 'general',
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`
+    },
+
+    // ══════════════════════════════════════════
     //  11. INDEXES
     // ══════════════════════════════════════════
     {
