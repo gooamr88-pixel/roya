@@ -1,0 +1,106 @@
+{# ═══════════════════════════════════════════════ #}
+{# Jobs Listing Page (loads from API)               #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/landing.njk" %}
+
+{% set pageTitle = t.jobsPage.title %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/landing.css?v=2">
+{% endblock %}
+
+{% block content %}
+  {# ════════════ PAGE HEADER ════════════ #}
+  <section style="padding: 120px 0 40px;">
+    <div class="container text-center">
+      <span class="section-label">{{ t.jobsPage.label }}</span>
+      <h1 class="section-title" style="font-size: 2.2rem;">{{ t.jobsPage.headingBefore }} <span class="text-gradient">{{ t.jobsPage.headingHighlight }}</span></h1>
+      <p class="section-desc" style="margin: 0 auto;">{{ t.jobsPage.desc }}</p>
+    </div>
+  </section>
+
+  {# ════════════ JOBS LISTING ════════════ #}
+  <section class="properties-section" style="padding-top: 0;">
+    <div class="container">
+      <div class="properties-grid" id="jobsGrid">
+        <div class="empty-state">
+          <div class="icon"><i class="fas fa-spinner fa-spin"></i></div>
+          <h3>{{ t.jobsPage.loading }}</h3>
+        </div>
+      </div>
+      <div class="text-center" style="margin-top: 36px;" id="jobsPagination"></div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/js/landing.js?v=2" defer></script>
+  <script defer>
+    {# Use jobsI18n to avoid shadowing the global i18n #}
+    window.jobsI18n = {
+      noJobs:     '{{ t.jobsPage.noJobs }}',
+      checkBack:  '{{ t.jobsPage.checkBack }}',
+      apply:      '{{ t.jobsPage.apply }}',
+      failedLoad: '{{ t.jobsPage.failedLoad }}'
+    };
+
+    let currentPage  = 1;
+    const PAGE_LIMIT = 12;
+
+    const typeColors = { full_time: 'success', part_time: 'info', remote: 'primary', contract: 'warning' };
+
+    document.addEventListener('DOMContentLoaded', () => { loadJobsPage(1); });
+
+    async function loadJobsPage(page) {
+      currentPage = page;
+      const grid  = document.getElementById('jobsGrid');
+      const pagEl = document.getElementById('jobsPagination');
+      try {
+        const res  = await fetch(`/api/jobs?page=${page}&limit=${PAGE_LIMIT}`);
+        const data = await res.json();
+        if (!res.ok || !data.data?.jobs?.length) {
+          const noJobsText = typeof i18n !== 'undefined' ? i18n.t('No jobs available at the moment.', 'لا توجد وظائف متاحة في الوقت الحالي') : jobsI18n.noJobs;
+          grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-briefcase"></i></div><h3 data-i18n="jobsPage.noJobs">' + noJobsText + '</h3><p data-i18n="jobsPage.checkBack">' + jobsI18n.checkBack + '</p></div>';
+          return;
+        }
+        const jobs = data.data.jobs;
+        const pagination = data.data.pagination;
+        const isRtl = document.documentElement.dir === 'rtl';
+
+        grid.innerHTML = jobs.map(j => {
+          const badge = typeColors[j.type] || 'primary';
+          const typeLabel = j.type?.replace('_', ' ') || 'Full-time';
+          return `
+            <div class="property-card fade-in visible">
+              <div class="property-card-body" style="padding:24px">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:12px">
+                  <h3 style="margin:0">${esc(j.title)}</h3>
+                  <span class="badge badge-${badge}" style="white-space:nowrap">${esc(typeLabel)}</span>
+                </div>
+                ${j.company ? \`<div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:6px"><i class="fas fa-building" style="margin-inline-end:6px"></i>\${esc(j.company)}</div>\` : ''}
+                ${j.location ? \`<div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:6px"><i class="fas fa-map-marker-alt" style="margin-inline-end:6px"></i>\${esc(j.location)}</div>\` : ''}
+                ${j.salary_range ? \`<div style="color:var(--accent-primary);font-size:0.875rem;margin-bottom:12px"><i class="fas fa-coins" style="margin-inline-end:6px"></i>\${esc(j.salary_range)}</div>\` : ''}
+                <a href="/dashboard" class="btn btn-outline btn-sm" style="width:100%;margin-top:8px">
+                  <i class="fas fa-paper-plane"></i> \${jobsI18n.apply}
+                </a>
+              </div>
+            </div>`;
+        }).join('');
+
+        if (pagination && pagination.totalPages > 1) {
+          let btns = '';
+          for (let i = 1; i <= pagination.totalPages; i++) {
+            btns += \`<button class="btn \${i === page ? 'btn-primary' : 'btn-outline'} btn-sm" style="margin: 0 4px;" data-page="\${i}">\${i}</button>\`;
+          }
+          pagEl.innerHTML = btns;
+          pagEl.querySelectorAll('[data-page]').forEach(btn => {
+            btn.addEventListener('click', () => loadJobsPage(parseInt(btn.dataset.page)));
+          });
+        } else { pagEl.innerHTML = ''; }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-exclamation-triangle"></i></div><h3>' + jobsI18n.failedLoad + '</h3></div>';
+      }
+    }
+  </script>
+{% endblock %}
