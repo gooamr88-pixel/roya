@@ -137,7 +137,10 @@
         "title_highlight": "Portfolio",
         "desc": "A curated showcase of our best completed projects and works.",
         "seeMore": "See More",
-        "viewProject": "View Project"
+        "viewProject": "View Project",
+        "allWorks": "All Works",
+        "loading": "Loading portfolio...",
+        "noWorks": "No portfolio items available yet."
     },
     "contact": {
         "label": "Get In Touch",

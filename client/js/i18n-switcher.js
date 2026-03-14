@@ -7,102 +7,11 @@
 
 async function switchLanguageSeamlessly(targetLang) {
     try {
-        // 1. Fetch locale JSON
-        const res = await fetch(`/api/locales/${targetLang}`);
-        if (!res.ok) throw new Error('Failed to load translations');
-        const translations = await res.json();
-
-        // 2. Set Cookie (persists choice for future SSR loads)
-        const secure = location.protocol === 'https:' ? ';secure' : '';
-        document.cookie = `roya_lang=${targetLang}; path=/; max-age=31536000; samesite=lax${secure}`;
-
-        // 3. Update DOM DIR and Lang attributes
-        const isRtl = targetLang === 'ar';
-        document.documentElement.lang = targetLang;
-        document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
-
-        // 4. Update texts dynamically based on [data-i18n]
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const keys = el.getAttribute('data-i18n').split('.');
-            let val = translations;
-            keys.forEach(k => { val = val?.[k]; });
-
-            if (val && typeof val === 'string') {
-                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    if (el.placeholder !== undefined) el.placeholder = val;
-                    else el.value = val;
-                } else {
-                    if (el.hasAttribute('data-i18n-html')) {
-                        el.innerHTML = val;
-                    } else if (el.hasAttribute('data-i18n-prefix')) {
-                        const prefix = el.getAttribute('data-i18n-prefix');
-                        el.innerHTML = prefix + val;
-                    } else {
-                        el.innerHTML = val;
-                    }
-                }
-            }
-        });
-
-        // 5. Update Logos — FIXED: was using undefined 'isRTL' variable
-        const logos = document.querySelectorAll('img[src*="/images/logo"]');
-        logos.forEach(logo => {
-            logo.src = isRtl ? '/images/logo-ar.svg' : '/images/logo.svg';
-            logo.alt = isRtl ? 'رؤيا' : 'ROYA';
-        });
-
-        const brandTextImgs = document.querySelectorAll('.brand-text-img');
-        brandTextImgs.forEach(img => {
-            img.src = isRtl ? '/images/brand-text.png' : '/images/logo.svg';
-            img.alt = isRtl ? 'رؤيا' : 'ROYA';
-        });
-
-        // 6. Inject RTL CSS or disable it
-        if (isRtl) {
-            if (!document.querySelector('link[href="/css/rtl.css"]')) {
-                const link = document.createElement('link');
-                link.rel = 'stylesheet';
-                link.href = '/css/rtl.css';
-                // Insert right after main.css to override safely
-                const mainCss = document.querySelector('link[href="/css/main.css"]');
-                if (mainCss) {
-                    mainCss.parentNode.insertBefore(link, mainCss.nextSibling);
-                } else {
-                    document.head.appendChild(link);
-                }
-            }
-        } else {
-            const rtlLink = document.querySelector('link[href="/css/rtl.css"]');
-            if (rtlLink) rtlLink.remove();
-        }
-
-        // 7. Swap the toggle button attributes for the NEXT switch
-        const toggles = document.querySelectorAll('.lang-toggle');
-        toggles.forEach(toggle => {
-            const nextLang = targetLang === 'ar' ? 'en' : 'ar';
-            toggle.setAttribute('data-target-lang', nextLang);
-            const img = toggle.querySelector('img');
-            if (img) {
-                img.src = targetLang === 'ar' ? 'https://flagcdn.com/w40/us.png' : 'https://flagcdn.com/w40/sa.png';
-                img.alt = targetLang === 'ar' ? 'English' : 'العربية';
-            }
-            toggle.title = targetLang === 'ar' ? 'English' : 'العربية';
-
-            // Re-write the native href as fallback
-            try {
-                const oldHref = new URL(toggle.href, window.location.origin);
-                oldHref.searchParams.set('lang', nextLang);
-                toggle.href = oldHref.toString();
-            } catch { /* ignore if href is not a valid URL */ }
-        });
-
-        // 8. Notify backend to persist session cookie (fire-and-forget, after DOM is updated)
-        fetch(`/api/set-lang?lang=${targetLang}`).catch(() => {});
-
+        // As per user request, always force a hard reload when switching languages
+        const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/api/set-lang?lang=${targetLang}&redirect=${currentPath}`;
     } catch (err) {
-        console.error('Failed to switch language seamlessly:', err);
-        // Silently fallback to classic hard reload if the fetch failed
-        window.location.href = `/api/set-lang?lang=${targetLang}&redirect=${encodeURIComponent(window.location.pathname)}`;
+        console.error('Failed to switch language:', err);
     }
 }
 

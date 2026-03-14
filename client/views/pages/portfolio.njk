@@ -152,7 +152,7 @@
     <div class="container">
       <!-- Category Filters Container (Populated dynamically) -->
       <div class="portfolio-filters" id="categoryFilters">
-        <button class="filter-btn active" data-filter="all">{{ typeof i18n !== 'undefined' ? i18n.t('All Works', 'كل الأعمال') : 'All Works' }}</button>
+        <button class="filter-btn active" data-filter="all">{{ t.portfolio.allWorks | default('All Works') }}</button>
       </div>
 
       <div class="portfolio-grid" id="mainPortfolioGrid">
