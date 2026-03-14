@@ -216,6 +216,17 @@
 /* ── Hero Section ── */
 .landing-view#home {
   display: none;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+.landing-view#home.active {
+  display: block;
+}
+
+.hero-wrapper {
+  display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
@@ -223,10 +234,7 @@
   padding-top: 100px;
   text-align: center;
   min-height: 100vh;
-}
-
-.landing-view#home.active {
-  display: flex;
+  width: 100%;
 }
 
 .floating-contact {
