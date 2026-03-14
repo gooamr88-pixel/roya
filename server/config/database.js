@@ -6,9 +6,9 @@ const config = require('./index');
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    max: 2,
-    idleTimeoutMillis: 1000,
-    connectionTimeoutMillis: 5000,
+    max: 20,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 10000,
     allowExitOnIdle: true,
     ssl: { rejectUnauthorized: false },
 });
