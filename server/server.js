@@ -295,6 +295,7 @@ app.get('/services', seo('services', 'servicesPage.desc'));
 app.get('/jobs', seo('jobs', 'jobsPage.desc'));
 app.get('/properties', seo('properties', 'propertiesPage.desc'));
 app.get('/exhibitions', seo('exhibitions', 'exhibitionsPage.desc'));
+app.get('/portfolio', seo('portfolio', 'portfolio.desc'));
 app.get('/banned', seo('banned', 'meta.description'));
 
 app.get('/ar', (req, res) => {

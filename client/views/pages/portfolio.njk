@@ -1,0 +1,293 @@
+{# ═══════════════════════════════════════════════ #}
+{# Professional Portfolio Page                      #}
+{# ═══════════════════════════════════════════════ #}
+{% extends "layouts/landing.njk" %}
+
+{% set pageTitle = t.portfolio.label %}
+
+{% block pageCss %}
+  <link rel="stylesheet" href="/css/landing.css?v=6">
+  <style>
+    /* Portfolio specific overrides */
+    .portfolio-header {
+      padding: 140px 0 60px;
+      text-align: center;
+      background: linear-gradient(to bottom, rgba(8,8,12,0.95), var(--bg-secondary));
+    }
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+      padding-bottom: 80px;
+    }
+    .portfolio-item {
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .portfolio-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+    .portfolio-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      overflow: hidden;
+      background: #111;
+    }
+    .portfolio-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .portfolio-item:hover .portfolio-img-wrapper img {
+      transform: scale(1.08);
+    }
+    .portfolio-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+    .portfolio-item:hover .portfolio-overlay {
+      opacity: 1;
+    }
+    .portfolio-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 24px;
+      z-index: 2;
+    }
+    .portfolio-category-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--accent-gradient);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 10px rgba(212,175,55,0.3);
+    }
+    .portfolio-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 8px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .portfolio-desc {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.8);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 0;
+    }
+    /* Category Filters */
+    .portfolio-filters {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(212, 175, 55, 0.1);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+    .portfolio-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      border: 1px dashed var(--border-color);
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {# ════════════ PAGE HEADER ════════════ #}
+  <section class="portfolio-header">
+    <div class="container">
+      <span class="section-label fade-in" data-i18n="portfolio.label">{{ t.portfolio.label }}</span>
+      <h1 class="section-title fade-in" style="font-size: 2.5rem; margin-bottom: 16px;">
+        <span data-i18n="portfolio.title_before">{{ t.portfolio.title_before | safe }}</span> 
+        <span class="text-gradient" data-i18n="portfolio.title_highlight">{{ t.portfolio.title_highlight | safe }}</span>
+      </h1>
+      <p class="section-desc fade-in" style="margin: 0 auto; max-width: 600px;" data-i18n="portfolio.desc">
+        {{ t.portfolio.desc }}
+      </p>
+    </div>
+  </section>
+
+  {# ════════════ PORTFOLIO GALLERY ════════════ #}
+  <section style="background: var(--bg-secondary);">
+    <div class="container">
+      <!-- Category Filters Container (Populated dynamically) -->
+      <div class="portfolio-filters" id="categoryFilters">
+        <button class="filter-btn active" data-filter="all">{{ typeof i18n !== 'undefined' ? i18n.t('All Works', 'كل الأعمال') : 'All Works' }}</button>
+      </div>
+
+      <div class="portfolio-grid" id="mainPortfolioGrid">
+        <div class="portfolio-empty">
+          <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-primary); margin-bottom: 16px;"></i>
+          <h3>{{ t.portfolio.loading|default('Loading portfolio...') }}</h3>
+        </div>
+      </div>
+      
+      <div class="text-center" id="portfolioPagination" style="margin-top: 20px; padding-bottom: 60px;"></div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block pageScripts %}
+  <script defer>
+    let allPortfolioItems = [];
+    let currentCategory = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchFullPortfolio();
+    });
+
+    async function fetchFullPortfolio() {
+      const grid = document.getElementById('mainPortfolioGrid');
+      const filtersContainer = document.getElementById('categoryFilters');
+      
+      try {
+        const res = await fetch('/api/portfolio?limit=100'); // Fetch a large batch for client-side filtering
+        const data = await res.json();
+        
+        if (!res.ok || !data.data?.portfolio?.length) {
+          showEmptyState(grid);
+          return;
+        }
+
+        allPortfolioItems = data.data.portfolio;
+        
+        // Extract unique categories
+        const categories = [...new Set(allPortfolioItems.map(item => item.category).filter(Boolean))];
+        
+        // Build filter buttons
+        const isRtl = document.documentElement.dir === 'rtl';
+        let filtersHtml = `<button class="filter-btn active" data-filter="all">${isRtl ? 'كل الأعمال' : 'All Works'}</button>`;
+        
+        categories.forEach(cat => {
+          filtersHtml += `<button class="filter-btn" data-filter="${cat}" style="text-transform: capitalize;">${cat.replace('_', ' ')}</button>`;
+        });
+        
+        filtersContainer.innerHTML = filtersHtml;
+        
+        // Attach filter listeners
+        filtersContainer.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            filtersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentCategory = e.target.dataset.filter;
+            renderPortfolioGrid(grid);
+          });
+        });
+
+        // Initial render
+        renderPortfolioGrid(grid);
+
+      } catch (err) {
+        console.error('Portfolio load error:', err);
+        grid.innerHTML = `<div class="portfolio-empty">
+          <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 16px;"></i>
+          <h3>Failed to load portfolio</h3>
+        </div>`;
+      }
+    }
+
+    function renderPortfolioGrid(grid) {
+      const filtered = currentCategory === 'all' 
+        ? allPortfolioItems 
+        : allPortfolioItems.filter(item => item.category === currentCategory);
+
+      if (filtered.length === 0) {
+        showEmptyState(grid);
+        return;
+      }
+
+      const isRtl = document.documentElement.dir === 'rtl';
+      
+      grid.innerHTML = filtered.map(item => {
+        let title = item.title;
+        let desc = item.description || '';
+        
+        // Handle localized fields if they exist from API (like i18n)
+        if (typeof item.title === 'object') {
+          title = isRtl ? (item.title.ar || item.title.en) : (item.title.en || item.title.ar);
+        }
+        if (typeof item.description === 'object') {
+          desc = isRtl ? (item.description.ar || item.description.en) : (item.description.en || item.description.ar);
+        }
+
+        const imgUrl = item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.jpg';
+        const categoryLabel = (item.category || 'General').replace('_', ' ');
+
+        return `
+          <div class="portfolio-item fade-in visible">
+            <div class="portfolio-img-wrapper">
+              <img src="${imgUrl}" alt="${esc(title)}" loading="lazy">
+              <div class="portfolio-overlay"></div>
+              <div class="portfolio-content">
+                <span class="portfolio-category-badge">${esc(categoryLabel)}</span>
+                <h3 class="portfolio-title">${esc(title)}</h3>
+                ${desc ? `<p class="portfolio-desc">${esc(desc)}</p>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showEmptyState(grid) {
+      const isRtl = document.documentElement.dir === 'rtl';
+      grid.innerHTML = `<div class="portfolio-empty">
+        <i class="fas fa-images" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+        <h3>${isRtl ? 'لا توجد أعمال لعرضها حالياً' : 'No works available at the moment'}</h3>
+      </div>`;
+    }
+
+    // Helper HTML escaper
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag]));
+    }
+  </script>
+{% endblock %}
