@@ -425,20 +425,22 @@ async function loadLandingPortfolio() {
     const grid = document.getElementById('portfolioGrid');
     if (!grid) return;
 
-    grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>Loading portfolio...</span></div>`;
+    grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="portfolio.loading">${typeof i18n !== 'undefined' ? i18n.t('Loading portfolio...', 'جارٍ تحميل الأعمال...') : 'Loading portfolio...'}</span></div>`;
 
     try {
         const response = await fetch('/api/portfolio?limit=6');
         const data = await response.json();
-        if (!response.ok || !data.data?.items?.length) {
+        if (!response.ok || !data.data?.portfolio?.length && !data.data?.items?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
             <i class="fas fa-images" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
-            <span>No portfolio items available yet.</span>
+            <span data-i18n="portfolio.noWorks">${typeof i18n !== 'undefined' ? i18n.t('No works available at the moment', 'لا توجد أعمال لعرضها حالياً') : 'No works available at the moment'}</span>
         </div>`;
             return;
         }
 
-        grid.innerHTML = data.data.items.map(item => {
+        const items = data.data.portfolio || data.data.items;
+
+        grid.innerHTML = items.map(item => {
             const images = Array.isArray(item.images) ? item.images : (JSON.parse(item.images || '[]'));
             const img = images?.[0] || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80';
             return `
