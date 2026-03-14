@@ -293,7 +293,6 @@ app.get('/dashboard', seo('dashboard', 'meta.description'));
 app.get('/admin', seo('admin', 'meta.description'));
 app.get('/services', seo('services', 'servicesPage.desc'));
 app.get('/jobs', seo('jobs', 'jobsPage.desc'));
-app.get('/portfolio', seo('portfolio', 'portfolio.desc'));
 app.get('/properties', seo('properties', 'propertiesPage.desc'));
 app.get('/exhibitions', seo('exhibitions', 'exhibitionsPage.desc'));
 app.get('/banned', seo('banned', 'meta.description'));
