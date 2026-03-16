@@ -3,7 +3,7 @@
 {# ═══════════════════════════════════════════════ #}
 {% extends "layouts/base.njk" %}
 
-{% set pageTitle = "Account Suspended" %}
+{% set pageTitle = t.banned.title | default("Account Suspended") %}
 
 {% block pageCss %}
   <link rel="stylesheet" href="/css/auth.css">
@@ -79,12 +79,12 @@
   <div class="banned-container">
     <div class="banned-card">
       <div class="banned-icon">🚫</div>
-      <h1>Account Suspended</h1>
-      <p>Your account has been suspended and you cannot access the platform at this time. If you believe this is a mistake, please reach out to our support team.</p>
+      <h1>{{ t.banned.heading | default('Account Suspended') }}</h1>
+      <p>{{ t.banned.message | default('Your account has been suspended and you cannot access the platform at this time. If you believe this is a mistake, please reach out to our support team.') }}</p>
       <a href="mailto:support@roya.com" class="support-link">
-        <i class="fas fa-envelope"></i> Contact Support
+        <i class="fas fa-envelope"></i> {{ t.banned.contactSupport | default('Contact Support') }}
       </a>
-      <a href="/" class="home-link">← Back to Home</a>
+      <a href="/" class="home-link">{{ t.banned.backToHome | default('← Back to Home') }}</a>
     </div>
   </div>
 {% endblock %}

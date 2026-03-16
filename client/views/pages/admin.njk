@@ -117,7 +117,7 @@
           <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect=/admin" class="topbar-btn" title="{{ langToggle.text }}" data-tooltip="{{ langToggle.text }}">
             <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}" style="width:18px;height:auto;border-radius:2px;">
           </a>
-          <a href="/dashboard" class="btn btn-ghost btn-sm" data-tooltip="Switch to Client View"><i class="fas fa-exchange-alt"></i> {{ t.admin.clientView }}</a>
+          <a href="/dashboard" class="btn btn-ghost btn-sm" data-tooltip="{{ t.admin.switchToClientView | default('Switch to Client View') }}"><i class="fas fa-exchange-alt"></i> {{ t.admin.clientView }}</a>
           <button type="button" class="topbar-btn" title="{{ t.admin.logoutBtn }}" id="logoutBtn" aria-label="{{ t.admin.logoutBtn }}" data-tooltip="{{ t.admin.logoutBtn }}"><i class="fas fa-sign-out-alt" aria-hidden="true"></i></button>
         </div>
       </div>
@@ -434,9 +434,9 @@
           <div class="drop-zone" id="svcDropZone">
             <input type="file" id="svcImagesInput" accept="image/*" multiple>
             <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-            <div class="drop-zone-title">Drag & Drop Images Here</div>
-            <div class="drop-zone-sub">or click to browse your files</div>
-            <span class="drop-zone-hint">JPG, PNG, WebP • Max 10MB each</span>
+            <div class="drop-zone-title">{{ t.admin.dropZoneTitle | default('Drag & Drop Images Here') }}</div>
+            <div class="drop-zone-sub">{{ t.admin.dropZoneSub | default('or click to browse your files') }}</div>
+            <span class="drop-zone-hint">{{ t.admin.dropZoneHint | default('JPG, PNG, WebP • Max 10MB each') }}</span>
           </div>
           <div class="image-preview-grid" id="svcPreviewGrid"></div>
         </div>
@@ -475,7 +475,7 @@
         <div class="form-tab-pane active" id="propPaneGeneral">
           <div class="form-group">
             <label class="form-label">{{ t.admin.thTitle }} *</label>
-            <input class="form-input" type="text" id="propTitle" required maxlength="200" placeholder="e.g. Luxury Villa — Al Olaya">
+            <input class="form-input" type="text" id="propTitle" required maxlength="200" placeholder="{{ t.admin.propTitlePlaceholder | default('e.g. Luxury Villa — Al Olaya') }}">
           </div>
           <div class="form-group">
             <label class="form-label">{{ t.admin.thDescription }}</label>
@@ -489,7 +489,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.thLocation }}</label>
-              <input class="form-input" type="text" id="propLocation" placeholder="e.g. Riyadh, KSA">
+              <input class="form-input" type="text" id="propLocation" placeholder="{{ t.admin.propLocationPlaceholder | default('e.g. Riyadh, KSA') }}">
             </div>
           </div>
           <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
@@ -651,7 +651,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">{{ t.admin.jobSalary }}</label>
-            <input class="form-input" type="text" id="jobSalary" placeholder="e.g. $3,000 – $5,000">
+            <input class="form-input" type="text" id="jobSalary" placeholder="{{ t.admin.jobSalaryPlaceholder | default('e.g. $3,000 – $5,000') }}">
           </div>
         </div>
         <div class="form-group" style="display:flex;align-items:center;gap:10px">
@@ -683,7 +683,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">{{ t.admin.portfolioCategory }}</label>
-          <input class="form-input" type="text" id="portfolioCategory" placeholder="e.g. branding, events, digital">
+          <input class="form-input" type="text" id="portfolioCategory" placeholder="{{ t.admin.portfolioCatPlaceholder | default('e.g. branding, events, digital') }}">
         </div>
         <div class="form-group">
           <label class="form-label">{{ t.admin.dropZoneTitle }}</label>

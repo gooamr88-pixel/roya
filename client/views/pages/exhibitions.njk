@@ -68,14 +68,14 @@
           const emoji     = exhEmojis[idx % exhEmojis.length];
           const startDate = ex.start_date
             ? new Date(ex.start_date).toLocaleDateString('{{ lang }}', { month: 'short', year: 'numeric' })
-            : 'TBA';
+            : '{{ t.exhibitionsPage.tba | default("TBA") }}';
           return `
             <div class="exhibition-card fade-in visible">
               <div class="emoji">${emoji}</div>
               <h3>${esc(ex.title)}</h3>
               <p>${esc(ex.description || '')}</p>
               <div class="meta">
-                <span><i class="fas fa-map-marker-alt"></i> ${esc(ex.location || 'Location TBA')}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${esc(ex.location || '{{ t.exhibitionsPage.locationTBA | default("Location TBA") }}')}</span>
                 <span><i class="fas fa-calendar"></i> ${startDate}</span>
               </div>
             </div>`;

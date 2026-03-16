@@ -30,9 +30,10 @@ function showLoginMessage() {
 function getGreeting(name) {
     const h = new Date().getHours();
     const first = (name || 'User').split(' ')[0];
-    if (h < 12) return `Good morning, ${first}!`;
-    if (h < 17) return `Good afternoon, ${first}!`;
-    return `Good evening, ${first}!`;
+    const dt = window.__dt || {};
+    if (h < 12) return `${dt.greetingMorning || 'Good morning'}, ${first}!`;
+    if (h < 17) return `${dt.greetingAfternoon || 'Good afternoon'}, ${first}!`;
+    return `${dt.greetingEvening || 'Good evening'}, ${first}!`;
 }
 
 // ── Auth Check ──
@@ -53,7 +54,7 @@ function updateUserUI() {
     if (el('userAvatar')) el('userAvatar').textContent = initials;
     if (el('profileAvatar')) el('profileAvatar').textContent = initials;
     if (el('userName')) el('userName').textContent = currentUser.name;
-    if (el('userRole')) el('userRole').textContent = currentUser.role || 'Client';
+    if (el('userRole')) el('userRole').textContent = currentUser.role || (window.__dt || {}).roleDefault || 'Client';
     if (el('profileName')) el('profileName').textContent = currentUser.name;
     if (el('profileEmail')) el('profileEmail').textContent = currentUser.email;
     if (el('profileNameInput')) el('profileNameInput').value = currentUser.name;
@@ -89,12 +90,13 @@ function animateCounter(el, target, prefix = '', suffix = '', duration = 800) {
 function relativeTime(dateStr) {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
+    const dt = window.__dt || {};
+    if (mins < 1) return dt.justNow || 'Just now';
+    if (mins < 60) return `${mins}${dt.minutesAgo || 'm ago'}`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
+    if (hrs < 24) return `${hrs}${dt.hoursAgo || 'h ago'}`;
     const days = Math.floor(hrs / 24);
-    if (days < 7) return `${days}d ago`;
+    if (days < 7) return `${days}${dt.daysAgo || 'd ago'}`;
     return Utils.formatDate(dateStr);
 }
 
@@ -108,7 +110,7 @@ function initNavigation() {
     document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button[type="submit"]');
-        setLoading(btn, true, 'Saving...');
+        setLoading(btn, true, (window.__dt || {}).saving || 'Saving...');
         try {
             const data = await API.put('/users/profile', {
                 name: document.getElementById('profileNameInput').value,
@@ -116,7 +118,7 @@ function initNavigation() {
             });
             currentUser = { ...currentUser, ...data.data.user };
             updateUserUI();
-            Toast.success('Profile updated!');
+            Toast.success((window.__dt || {}).profileUpdated || 'Profile updated!');
         } catch (err) { Toast.error(err.message); }
         finally { setLoading(btn, false); }
     });
@@ -128,15 +130,15 @@ function initNavigation() {
         const newPass = document.getElementById('newPass').value;
         const confirmNewPass = document.getElementById('confirmNewPass').value;
 
-        if (!currentPass || !newPass) { Toast.warning('Please fill in all password fields.'); return; }
-        if (newPass !== confirmNewPass) { Toast.error('New passwords do not match.'); return; }
-        if (newPass.length < 8) { Toast.error('Password must be at least 8 characters.'); return; }
+        if (!currentPass || !newPass) { Toast.warning((window.__dt || {}).fillPasswordFields || 'Please fill in all password fields.'); return; }
+        if (newPass !== confirmNewPass) { Toast.error((window.__dt || {}).passwordsNotMatch || 'New passwords do not match.'); return; }
+        if (newPass.length < 8) { Toast.error((window.__dt || {}).passwordMinLength || 'Password must be at least 8 characters.'); return; }
 
         const btn = e.target.querySelector('button[type="submit"]');
-        setLoading(btn, true, 'Updating...');
+        setLoading(btn, true, (window.__dt || {}).updating || 'Updating...');
         try {
             await API.put('/users/password', { currentPassword: currentPass, newPassword: newPass });
-            Toast.success('Password changed successfully!');
+            Toast.success((window.__dt || {}).passwordChanged || 'Password changed successfully!');
             document.getElementById('changePasswordForm').reset();
         } catch (err) { Toast.error(err.message); }
         finally { setLoading(btn, false); }
@@ -149,7 +151,7 @@ function initNavigation() {
     document.getElementById('markAllReadBtn')?.addEventListener('click', async () => {
         try {
             await API.put('/notifications/read-all');
-            Toast.success('All notifications marked as read.');
+            Toast.success((window.__dt || {}).allNotificationsRead || 'All notifications marked as read.');
             loadNotifications();
             updateNotifCount(0);
         } catch (err) { Toast.error(err.message); }
@@ -157,9 +159,13 @@ function initNavigation() {
 }
 
 const viewTitles = {
-    overview: 'Control Center', orders: 'My Orders', services: 'Browse Services',
-    exhibitions: 'Exhibitions', notifications: 'Notifications',
-    invoices: 'My Invoices', profile: 'Profile Settings',
+    overview: (window.__dt || {}).controlCenter || 'Control Center',
+    orders: (window.__dt || {}).myOrders || 'My Orders',
+    services: (window.__dt || {}).browseServices || 'Browse Services',
+    exhibitions: (window.__dt || {}).exhibitions || 'Exhibitions',
+    notifications: (window.__dt || {}).notifications || 'Notifications',
+    invoices: (window.__dt || {}).myInvoices || 'My Invoices',
+    profile: (window.__dt || {}).profileSettings || 'Profile Settings',
 };
 
 function switchView(viewName) {
@@ -210,7 +216,8 @@ function initSidebar() {
 // ── Logout with glass confirm ──
 function initLogout() {
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-        const ok = await glassConfirm('Log Out', 'Are you sure you want to log out?', 'warning');
+        const dt = window.__dt || {};
+        const ok = await glassConfirm(dt.logOut || 'Log Out', dt.logOutConfirm || 'Are you sure you want to log out?', 'warning');
         if (!ok) return;
         try { await API.post('/auth/logout'); } catch { }
         window.location.href = '/login';
@@ -247,7 +254,7 @@ async function loadOverview() {
         // ── Recent orders table ──
         const tbody = document.getElementById('recentOrdersTable');
         if (orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding:40px;color:var(--text-muted)"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px"></i>No orders yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding:40px;color:var(--text-muted)"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px"></i>' + ((window.__dt || {}).noOrdersYet || 'No orders yet') + '</td></tr>';
         } else {
             tbody.innerHTML = orders.slice(0, 5).map(o => `
                 <tr>
@@ -268,12 +275,12 @@ async function loadOverview() {
 function renderOrderTimeline(order) {
     const container = document.getElementById('orderTimeline');
     if (!order) {
-        container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted)"><i class="fas fa-clock" style="font-size:2rem;display:block;margin-bottom:10px"></i>No active orders</div>';
+        container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted)"><i class="fas fa-clock" style="font-size:2rem;display:block;margin-bottom:10px"></i>' + ((window.__dt || {}).noActiveOrders || 'No active orders') + '</div>';
         return;
     }
 
     const steps = ['pending', 'confirmed', 'in_progress', 'completed'];
-    const stepLabels = { pending: 'Pending', confirmed: 'Confirmed', in_progress: 'In Progress', completed: 'Completed' };
+    const stepLabels = { pending: (window.__dt||{}).statusPending||'Pending', confirmed: (window.__dt||{}).statusConfirmed||'Confirmed', in_progress: (window.__dt||{}).statusInProgress||'In Progress', completed: (window.__dt||{}).statusCompleted||'Completed' };
     const stepIcons = { pending: 'fa-clock', confirmed: 'fa-check', in_progress: 'fa-cog fa-spin', completed: 'fa-trophy' };
     const currentIdx = steps.indexOf(order.status);
     const isCancelled = order.status === 'cancelled';
@@ -286,13 +293,13 @@ function renderOrderTimeline(order) {
                     <span style="font-size:0.8rem;color:var(--text-muted);display:block;margin-top:2px">${esc(order.invoice_number)}</span>
                 </div>
                 <span class="badge badge-${isCancelled ? 'danger' : statusColor(order.status)}">
-                    ${isCancelled ? 'Cancelled' : order.status.replace(/_/g, ' ')}
+                    ${isCancelled ? ((window.__dt||{}).statusCancelled||'Cancelled') : order.status.replace(/_/g, ' ')}
                 </span>
             </div>
             ${isCancelled ? `
                 <div style="text-align:center;padding:20px;color:var(--danger)">
                     <i class="fas fa-ban" style="font-size:2rem;margin-bottom:8px;display:block"></i>
-                    This order has been cancelled.
+                    ${(window.__dt||{}).thisOrderCancelled||'This order has been cancelled.'}
                 </div>
             ` : `
                 <div class="order-timeline-track">
@@ -336,7 +343,7 @@ function glassConfirm(title, message, type = 'warning') {
         iconWrap.className  = `glass-modal-icon ${type}`;
         iconEl.className    = type === 'danger' ? 'fas fa-trash' : type === 'success' ? 'fas fa-check' : 'fas fa-exclamation-triangle';
         okBtn.className     = type === 'danger' ? 'btn btn-danger' : 'btn btn-primary';
-        okBtn.textContent   = 'Confirm';
+        okBtn.textContent   = (window.__dt||{}).confirm||'Confirm';
 
         _glassResolve = resolve;
         overlay.classList.add('show');
@@ -379,33 +386,34 @@ async function loadOrders(page = 1) {
                         <span class="order-card-date"><i class="fas fa-clock" style="margin-right:4px"></i>${relativeTime(o.created_at)}</span>
                     </div>
                     <div class="order-card-actions">
-                        <button class="btn btn-ghost btn-sm" onclick="viewOrderTimeline(${o.id},'${esc(o.service_title)}','${esc(o.invoice_number || '')}','${o.status}')" data-tooltip="View Timeline">
-                            <i class="fas fa-route"></i> Timeline
+                        <button class="btn btn-ghost btn-sm" onclick="viewOrderTimeline(${o.id},'${esc(o.service_title)}','${esc(o.invoice_number || '')}','${o.status}')" data-tooltip="${(window.__dt||{}).viewTimeline||'View Timeline'}">
+                            <i class="fas fa-route"></i> ${(window.__dt||{}).timeline||'Timeline'}
                         </button>
                         ${canCancel ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder(${o.id},'${esc(o.invoice_number || '')}')">
-                            <i class="fas fa-times-circle"></i> Cancel
+                            <i class="fas fa-times-circle"></i> ${(window.__dt||{}).cancel||'Cancel'}
                         </button>` : ''}
                     </div>
                 </div>`;
             }).join('');
         }
         renderPagination(data.data.pagination, 'ordersPagination', (p) => loadOrders(p));
-    } catch (err) { Toast.error('Failed to load orders.'); }
+    } catch (err) { Toast.error((window.__dt||{}).failedLoadOrders||'Failed to load orders.'); }
 }
 
 async function cancelOrder(orderId, invoiceNumber) {
+    const dt = window.__dt||{};
     const ok = await glassConfirm(
-        'Cancel Order',
-        `Cancel order #${invoiceNumber}? This cannot be undone.`,
+        dt.cancelOrder||'Cancel Order',
+        (dt.cancelOrderConfirm||'Cancel order #%s? This cannot be undone.').replace('%s', invoiceNumber),
         'danger'
     );
     if (!ok) return;
     try {
         await API.put(`/orders/${orderId}/cancel`);
-        Toast.success('Order cancelled successfully.');
+        Toast.success((window.__dt||{}).orderCancelled||'Order cancelled successfully.');
         _cache.orders50 = null;
         loadOrders();
-    } catch (err) { Toast.error(err.message || 'Failed to cancel order.'); }
+    } catch (err) { Toast.error(err.message || (window.__dt||{}).failedCancelOrder||'Failed to cancel order.'); }
 }
 
 function viewOrderTimeline(id, title, invoice, status) {
@@ -434,13 +442,13 @@ async function loadServices() {
                         <p>${esc(s.description || '')}</p>
                         <div class="service-card-footer">
                             <span class="service-price">${Utils.formatCurrency(s.price)}</span>
-                            <button class="btn btn-primary btn-sm" onclick="requestService('${s.id}')"><i class="fas fa-plus"></i> Request</button>
+                            <button class="btn btn-primary btn-sm" onclick="requestService('${s.id}')"><i class="fas fa-plus"></i> ${(window.__dt||{}).request||'Request'}</button>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
-    } catch (err) { Toast.error('Failed to load services.'); }
+    } catch (err) { Toast.error((window.__dt||{}).failedLoadServices||'Failed to load services.'); }
 }
 
 // ══════════════════════════════════════════
@@ -453,7 +461,7 @@ async function loadExhibitions() {
         const exhibitions = data.data.exhibitions;
 
         if (exhibitions.length === 0) {
-            grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-alt"></i></div><h3>No exhibitions</h3><p>Check back soon for upcoming events.</p></div>';
+            grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-alt"></i></div><h3>' + ((window.__dt||{}).noExhibitions||'No exhibitions') + '</h3><p>' + ((window.__dt||{}).checkBackExhibitions||'Check back soon for upcoming events.') + '</p></div>';
         } else {
             grid.innerHTML = exhibitions.map(e => `
                 <div class="exhibition-card">
@@ -461,12 +469,12 @@ async function loadExhibitions() {
                     <div class="exhibition-meta">
                         ${e.location ? `<span><i class="fas fa-map-marker-alt"></i>${esc(e.location)}</span>` : ''}
                         ${e.start_date ? `<span><i class="fas fa-calendar"></i>${Utils.formatDate(e.start_date)}${e.end_date ? ' — ' + Utils.formatDate(e.end_date) : ''}</span>` : ''}
-                        <span><i class="fas fa-circle" style="color:${e.is_active ? '#10b981' : '#ef4444'};font-size:0.5rem"></i> ${e.is_active ? 'Active' : 'Past'}</span>
+                        <span><i class="fas fa-circle" style="color:${e.is_active ? '#10b981' : '#ef4444'};font-size:0.5rem"></i> ${e.is_active ? ((window.__dt||{}).active||'Active') : ((window.__dt||{}).past||'Past')}</span>
                     </div>
                 </div>
             `).join('');
         }
-    } catch (err) { Toast.error('Failed to load exhibitions.'); }
+    } catch (err) { Toast.error((window.__dt||{}).failedLoadExhibitions||'Failed to load exhibitions.'); }
 }
 
 // ══════════════════════════════════════════
@@ -479,7 +487,7 @@ async function loadNotifications(page = 1) {
         const container = document.getElementById('notificationsList');
 
         if (notifs.length === 0) {
-            container.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-bell-slash"></i></div><h3>No notifications</h3><p>You\'re all caught up!</p></div>';
+            container.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-bell-slash"></i></div><h3>' + ((window.__dt||{}).noNotifications||'No notifications') + '</h3><p>' + ((window.__dt||{}).allCaughtUp||'You\'re all caught up!') + '</p></div>';
         } else {
             container.innerHTML = notifs.map(n => `
                 <div class="card" style="margin-bottom:10px;opacity:${n.is_read ? '0.6' : '1'}">
@@ -496,7 +504,7 @@ async function loadNotifications(page = 1) {
             `).join('');
         }
         renderPagination(data.data.pagination, 'notifPagination', (p) => loadNotifications(p));
-    } catch (err) { Toast.error('Failed to load notifications.'); }
+    } catch (err) { Toast.error((window.__dt||{}).failedLoadNotifications||'Failed to load notifications.'); }
 }
 
 // ══════════════════════════════════════════
@@ -509,7 +517,7 @@ async function loadInvoices(page = 1) {
         const tbody = document.getElementById('invoicesTable');
 
         if (invoices.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-muted)">No invoices yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-muted)">' + ((window.__dt||{}).noInvoicesYet||'No invoices yet') + '</td></tr>';
         } else {
             tbody.innerHTML = invoices.map(i => `
                 <tr>
@@ -523,7 +531,7 @@ async function loadInvoices(page = 1) {
             `).join('');
         }
         renderPagination(data.data.pagination, 'invoicesPagination', (p) => loadInvoices(p));
-    } catch (err) { Toast.error('Failed to load invoices.'); }
+    } catch (err) { Toast.error((window.__dt||{}).failedLoadInvoices||'Failed to load invoices.'); }
 }
 
 // ══════════════════════════════════════════
@@ -544,7 +552,7 @@ function updateNotifCount(count) {
 async function requestService(serviceId) {
     try {
         await API.post('/orders', { service_id: serviceId });
-        Toast.success('Order placed successfully!');
+        Toast.success((window.__dt||{}).orderPlaced||'Order placed successfully!');
         _cache.orders50 = null; // Invalidate cache
         switchView('orders');
     } catch (err) { Toast.error(err.message); }

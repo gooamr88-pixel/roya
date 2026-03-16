@@ -78,7 +78,7 @@
                 <h3>${esc(s.title)}</h3>
                 <p>${esc(s.description || '')}</p>
                 <div class="pro-card-footer">
-                  <span class="pro-category"><i class="fas fa-tag"></i> ${esc(s.category || 'General')}</span>
+                  <span class="pro-category"><i class="fas fa-tag"></i> ${esc(s.category || '{{ t.admin.catGeneral | default("General") }}')}</span>
                   <span class="btn btn-outline btn-sm" style="pointer-events:none;">${svcI18n.requestService}</span>
                 </div>
               </div>

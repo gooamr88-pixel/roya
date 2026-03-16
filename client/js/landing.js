@@ -199,7 +199,7 @@ function initContactForm() {
         if (!name || !email || !message) { Toast.warning(i18n.t('Please fill in all required fields.', 'يرجى ملء جميع الحقول المطلوبة.')); return; }
         const btn = form.querySelector('button[type="submit"]');
         const original = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${i18n.t('Sending...', 'جارٍ الإرسال...')}`; btn.disabled = true;
         try {
             await API.post('/contact', { name, email, subject, message });
             Toast.success(i18n.t('Message sent! We\'ll get back to you soon.', 'تم إرسال الرسالة! سنتواصل معك قريباً.'));
@@ -349,16 +349,16 @@ async function loadLandingServices() {
           <div class="pro-card-image">
             <img src="${esc(img)}" alt="${esc(s.title)}" loading="lazy">
             <div class="pro-card-overlay">
-              <span class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View Details</span>
+              <span class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> ${i18n.t('View Details', 'عرض التفاصيل')}</span>
             </div>
             <span class="pro-price-badge">${fmtPrice(s.price)}</span>
           </div>
           <div class="pro-card-body">
             <h3>${esc(s.title)}</h3>
-            <p>${esc(s.description || 'Professional service tailored to your needs.')}</p>
+            <p>${esc(s.description || i18n.t('Professional service tailored to your needs.', 'خدمة احترافية مصممة خصيصاً لاحتياجاتك.'))}</p>
             <div class="pro-card-footer">
-              <span class="pro-category"><i class="fas fa-tag"></i> ${esc(s.category || 'General')}</span>
-              <span class="btn btn-outline btn-sm" style="pointer-events:none;">Request Service</span>
+              <span class="pro-category"><i class="fas fa-tag"></i> ${esc(s.category || i18n.t('General', 'عام'))}</span>
+              <span class="btn btn-outline btn-sm" style="pointer-events:none;">${i18n.t('Request Service', 'طلب الخدمة')}</span>
             </div>
           </div>
         </div>`;
@@ -380,7 +380,7 @@ async function loadLandingJobs() {
     const grid = document.getElementById('jobsGrid');
     if (!grid) return;
 
-    grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>Loading jobs...</span></div>`;
+    grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>${i18n.t('Loading jobs...', 'جارٍ تحميل الوظائف...')}</span></div>`;
 
     try {
         const response = await fetch('/api/jobs?limit=6');
@@ -388,7 +388,7 @@ async function loadLandingJobs() {
         if (!response.ok || !data.data?.jobs?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
             <i class="fas fa-briefcase" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
-            <span>No jobs available at the moment.</span>
+            <span>${i18n.t('No jobs available at the moment.', 'لا توجد وظائف متاحة في الوقت الحالي')}</span>
         </div>`;
             return;
         }
@@ -398,7 +398,7 @@ async function loadLandingJobs() {
 
         grid.innerHTML = data.data.jobs.map(j => {
             const badge = typeColors[j.type] || 'primary';
-            const typeLabel = j.type?.replace('_', ' ') || 'Full-time';
+            const typeLabel = j.type?.replace('_', ' ') || i18n.t('Full-time', 'دوام كامل');
             return `
         <div class="property-card fade-in visible">
           <div class="property-card-body" style="padding:24px">
@@ -410,7 +410,7 @@ async function loadLandingJobs() {
             ${j.location ? `<div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:6px"><i class="fas fa-map-marker-alt" style="margin-inline-end:6px"></i>${esc(j.location)}</div>` : ''}
             ${j.salary_range ? `<div style="color:var(--accent-primary);font-size:0.875rem;margin-bottom:12px"><i class="fas fa-coins" style="margin-inline-end:6px"></i>${esc(j.salary_range)}</div>` : ''}
             <a href="/dashboard" class="btn btn-outline btn-sm" style="width:100%;margin-top:8px">
-              <i class="fas fa-paper-plane"></i> ${isRtl ? 'تقدّم الآن' : 'Apply Now'}
+              <i class="fas fa-paper-plane"></i> ${i18n.t('Apply Now', 'تقدّم الآن')}
             </a>
           </div>
         </div>`;
@@ -486,7 +486,7 @@ async function loadLandingExhibitions() {
           <h3>${esc(ex.title)}</h3>
           <p>${esc(ex.description || '')}</p>
           <div class="meta">
-            <span><i class="fas fa-map-marker-alt"></i> ${esc(ex.location || 'TBA')}</span>
+            <span><i class="fas fa-map-marker-alt"></i> ${esc(ex.location || i18n.t('TBA', 'سيُعلن لاحقاً'))}</span>
             <span><i class="fas fa-calendar"></i> ${esc(new Date(ex.start_date).toLocaleDateString())}</span>
           </div>
         </div>`;

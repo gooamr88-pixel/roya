@@ -221,7 +221,7 @@
         console.error('Portfolio load error:', err);
         grid.innerHTML = `<div class="portfolio-empty">
           <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 16px;"></i>
-          <h3>Failed to load portfolio</h3>
+          <h3>${isRtl ? 'فشل في تحميل الأعمال' : 'Failed to load portfolio'}</h3>
         </div>`;
       }
     }
@@ -251,7 +251,7 @@
         }
 
         const imgUrl = item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.jpg';
-        const categoryLabel = (item.category || 'General').replace('_', ' ');
+        const categoryLabel = (item.category || (isRtl ? 'عام' : 'General')).replace('_', ' ');
 
         return `
           <div class="portfolio-item fade-in visible">

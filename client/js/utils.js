@@ -37,7 +37,7 @@ function setLoading(btn, loading, text) {
     if (!btn) return;
     if (loading) {
         btn.dataset.original = btn.innerHTML;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text || 'Please wait...'}`;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text || (typeof i18n !== 'undefined' ? i18n.t('Please wait...', 'يرجى الانتظار...') : 'Please wait...')}`;
         btn.disabled = true;
     } else {
         btn.innerHTML = btn.dataset.original || btn.innerHTML;

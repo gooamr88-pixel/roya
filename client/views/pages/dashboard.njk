@@ -17,9 +17,9 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <a href="/" class="sidebar-logo">
-          <span class="brand-text">Roya</span>
+          <span class="brand-text">{{ t.admin.brandName | default('Roya') }}</span>
         </a>
-        <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Close Sidebar"><i class="fas fa-times" aria-hidden="true"></i></button>
+        <button type="button" class="sidebar-close" id="sidebarClose" aria-label="{{ t.dashboard.closeSidebar | default('Close Sidebar') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
 
       <nav class="sidebar-nav">
@@ -319,9 +319,67 @@
   </div>
 {% endblock %}
 
-{% block pageScripts %}
+  <script>
+    window.__dt = {
+      greetingMorning:      '{{ t.dashboard.greetingMorning | default("Good morning") }}',
+      greetingAfternoon:    '{{ t.dashboard.greetingAfternoon | default("Good afternoon") }}',
+      greetingEvening:      '{{ t.dashboard.greetingEvening | default("Good evening") }}',
+      roleDefault:          '{{ t.dashboard.roleDefault | default("Client") }}',
+      controlCenter:        '{{ t.dashboard.controlCenter | default("Control Center") }}',
+      myOrders:             '{{ t.dashboard.myOrders | default("My Orders") }}',
+      browseServices:       '{{ t.dashboard.browseServices | default("Browse Services") }}',
+      exhibitions:          '{{ t.dashboard.exhibitions | default("Exhibitions") }}',
+      notifications:        '{{ t.dashboard.notifications | default("Notifications") }}',
+      myInvoices:           '{{ t.dashboard.myInvoices | default("My Invoices") }}',
+      profileSettings:      '{{ t.dashboard.profileSettings | default("Profile Settings") }}',
+      justNow:              '{{ t.dashboard.justNow | default("Just now") }}',
+      minutesAgo:           '{{ t.dashboard.minutesAgo | default("m ago") }}',
+      hoursAgo:             '{{ t.dashboard.hoursAgo | default("h ago") }}',
+      daysAgo:              '{{ t.dashboard.daysAgo | default("d ago") }}',
+      noOrdersYet:          '{{ t.dashboard.noOrdersYet | default("No orders yet") }}',
+      noOrdersFound:        '{{ t.dashboard.noOrdersFound | default("No orders found") }}',
+      noInvoicesYet:        '{{ t.dashboard.noInvoicesYet | default("No invoices yet") }}',
+      noNotifications:      '{{ t.dashboard.noNotifications | default("No notifications") }}',
+      allCaughtUp:          '{{ t.dashboard.allCaughtUp | default("You\'re all caught up!") }}',
+      noExhibitions:        '{{ t.dashboard.noExhibitions | default("No exhibitions") }}',
+      checkBackExhibitions: '{{ t.dashboard.checkBackExhibitions | default("Check back soon for upcoming events.") }}',
+      active:               '{{ t.dashboard.active | default("Active") }}',
+      past:                 '{{ t.dashboard.past | default("Past") }}',
+      timeline:             '{{ t.dashboard.timeline | default("Timeline") }}',
+      viewTimeline:         '{{ t.dashboard.viewTimeline | default("View Timeline") }}',
+      cancel:               '{{ t.dashboard.cancel | default("Cancel") }}',
+      cancelOrder:          '{{ t.dashboard.cancelOrder | default("Cancel Order") }}',
+      cancelOrderConfirm:   '{{ t.dashboard.cancelOrderConfirm | default("Cancel order #%s? This cannot be undone.") }}',
+      orderCancelled:       '{{ t.dashboard.orderCancelled | default("Order cancelled successfully.") }}',
+      failedCancelOrder:    '{{ t.dashboard.failedCancelOrder | default("Failed to cancel order.") }}',
+      orderPlaced:          '{{ t.dashboard.orderPlaced | default("Order placed successfully!") }}',
+      request:              '{{ t.dashboard.request | default("Request") }}',
+      profileUpdated:       '{{ t.dashboard.profileUpdated | default("Profile updated!") }}',
+      passwordChanged:      '{{ t.dashboard.passwordChanged | default("Password changed successfully!") }}',
+      fillPasswordFields:   '{{ t.dashboard.fillPasswordFields | default("Please fill in all password fields.") }}',
+      passwordsNotMatch:    '{{ t.dashboard.passwordsNotMatch | default("New passwords do not match.") }}',
+      passwordMinLength:    '{{ t.dashboard.passwordMinLength | default("Password must be at least 8 characters.") }}',
+      saving:               '{{ t.dashboard.saving | default("Saving...") }}',
+      updating:             '{{ t.dashboard.updating | default("Updating...") }}',
+      allNotificationsRead: '{{ t.dashboard.allNotificationsRead | default("All notifications marked as read.") }}',
+      failedLoadOrders:     '{{ t.dashboard.failedLoadOrders | default("Failed to load orders.") }}',
+      failedLoadServices:   '{{ t.dashboard.failedLoadServices | default("Failed to load services.") }}',
+      failedLoadExhibitions:'{{ t.dashboard.failedLoadExhibitions | default("Failed to load exhibitions.") }}',
+      failedLoadNotifications:'{{ t.dashboard.failedLoadNotifications | default("Failed to load notifications.") }}',
+      failedLoadInvoices:   '{{ t.dashboard.failedLoadInvoices | default("Failed to load invoices.") }}',
+      statusPending:        '{{ t.dashboard.statusPending | default("Pending") }}',
+      statusConfirmed:      '{{ t.dashboard.statusConfirmed | default("Confirmed") }}',
+      statusInProgress:     '{{ t.dashboard.statusInProgress | default("In Progress") }}',
+      statusCompleted:      '{{ t.dashboard.statusCompleted | default("Completed") }}',
+      statusCancelled:      '{{ t.dashboard.statusCancelled | default("Cancelled") }}',
+      thisOrderCancelled:   '{{ t.dashboard.thisOrderCancelled | default("This order has been cancelled.") }}',
+      logOut:               '{{ t.dashboard.logOut | default("Log Out") }}',
+      logOutConfirm:        '{{ t.dashboard.logOutConfirm | default("Are you sure you want to log out?") }}',
+      confirm:              '{{ t.dashboard.confirm | default("Confirm") }}',
+      noActiveOrders:       '{{ t.dashboard.noActiveOrders | default("No active orders") }}',
+    };
+  </script>
   <script src="/js/dashboard.js" defer></script>
-{% endblock %}
 
 {# ═════ FROSTED GLASS CONFIRMATION MODAL ═════ #}
 {# FIX (F7): Now uses shared partial instead of inline duplicate #}
