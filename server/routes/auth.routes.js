@@ -46,4 +46,20 @@ router.post('/reset-password', passwordResetLimiter, resetPasswordValidation, au
 // ── Get current user: authenticated ──
 router.get('/me', authenticate, authController.me);
 
+// ── DEBUG: Check cookies (TEMPORARY — remove after fixing) ──
+router.get('/debug-cookies', (req, res) => {
+    const cookieKeys = Object.keys(req.cookies || {});
+    const hasAccess = !!req.cookies?.access_token;
+    const hasRefresh = !!req.cookies?.refresh_token;
+    console.log(`🔍 [DEBUG-COOKIES] Keys: ${JSON.stringify(cookieKeys)} | access: ${hasAccess} | refresh: ${hasRefresh} | protocol: ${req.protocol} | secure: ${req.secure} | NODE_ENV: ${process.env.NODE_ENV}`);
+    res.json({
+        cookieKeys,
+        hasAccessToken: hasAccess,
+        hasRefreshToken: hasRefresh,
+        nodeEnv: process.env.NODE_ENV,
+        protocol: req.protocol,
+        secure: req.secure,
+    });
+});
+
 module.exports = router;

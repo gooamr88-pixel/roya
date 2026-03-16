@@ -22,6 +22,9 @@ const authenticate = async (req, res, next) => {
     try {
         const token = req.cookies?.access_token;
 
+        // ── Debug: log cookie presence (remove after fixing) ──
+        console.log(`🔍 [AUTH DEBUG] ${req.method} ${req.originalUrl} | access_token: ${token ? 'YES (' + token.substring(0, 20) + '...)' : 'MISSING'} | cookies: ${JSON.stringify(Object.keys(req.cookies || {}))} | secure: ${req.secure} | protocol: ${req.protocol}`);
+
         if (!token) {
             throw new AppError('Authentication required. Please log in.', 401, 'AUTH_REQUIRED');
         }
