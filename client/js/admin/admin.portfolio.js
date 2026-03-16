@@ -110,10 +110,10 @@ async function saveAdminPortfolio() {
 
     try {
         if (editingPortfolioId) {
-            await API.putFormData(`/portfolio/${editingPortfolioId}`, formData);
+            await API.putForm(`/portfolio/${editingPortfolioId}`, formData);
             Toast.success(__t?.portfolioUpdated || 'Portfolio item updated');
         } else {
-            await API.postFormData('/portfolio', formData);
+            await API.postForm('/portfolio', formData);
             Toast.success(__t?.portfolioCreated || 'Portfolio item created');
         }
         closePortfolioModal();
