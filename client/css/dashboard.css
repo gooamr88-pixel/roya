@@ -2850,7 +2850,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
         padding: 0 20px;
     }
 
-    .page-content {
+    .content-area {
         padding: 20px;
     }
 
@@ -2937,7 +2937,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     }
 
     /* Full width page content */
-    .page-content {
+    .content-area {
         padding: 14px;
     }
 
@@ -3094,7 +3094,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 @media (max-width: 480px) {
 
     /* Body breathing room */
-    .page-content {
+    .content-area {
         padding: 10px;
     }
 

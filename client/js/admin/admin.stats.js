@@ -38,6 +38,8 @@ async function loadStats() {
         animateAdminCounter(el('aStatServices'), s.totalServices);
         animateAdminCounter(el('aStatProperties'), s.totalProperties);
         animateAdminCounter(el('aStatExhibitions'), s.totalExhibitions);
+        animateAdminCounter(el('aStatJobs'), s.totalJobs || 0);
+        animateAdminCounter(el('aStatPortfolio'), s.totalPortfolio || 0);
 
         // Performance bars
         const chartEl = document.getElementById('adminStatsChart');
