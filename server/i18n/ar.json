@@ -20,7 +20,7 @@
     "hero": {
         "badge": "منصة رؤيا",
         "title_before": "",
-        "title_highlight": "<span style=\"color: #FFD700;\">رؤيا للدعايا والإعلان</span>",
+        "title_highlight": "<span style=\"color: #FFD700;\">رؤيا للدعاية والإعلان</span>",
         "title_after": "",
         "subtitle": "تمكين الشركات بخدمات شاملة في الإعلان، التسويق، العقارات، وإدارة المعارض. حول رؤيتك إلى واقع.",
         "cta_services": "استكشف خدماتنا",
@@ -134,8 +134,8 @@
     },
     "portfolio": {
         "label": "أعمال سابقة",
-        "title_before": "أعمالنا",
-        "title_highlight": "السابقة",
+        "title_before": "",
+        "title_highlight": "أعمالنا السابقة",
         "desc": "نماذج من مشاريعنا المنجزة وأعمالنا المتميزة.",
         "seeMore": "عرض المزيد",
         "viewProject": "عرض المشروع",

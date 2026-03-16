@@ -48,12 +48,12 @@ const update = async (id, updates, values) => {
     return result.rows[0] || null;
 };
 
-const softDelete = async (id) => {
+const hardDelete = async (id) => {
     const result = await query(
-        'UPDATE exhibitions SET is_active = FALSE WHERE id = $1 RETURNING id',
+        'DELETE FROM exhibitions WHERE id = $1 RETURNING id',
         [id]
     );
     return result.rows[0] || null;
 };
 
-module.exports = { findAll, findById, create, update, softDelete };
+module.exports = { findAll, findById, create, update, hardDelete };

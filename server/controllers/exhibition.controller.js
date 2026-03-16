@@ -75,9 +75,9 @@ const update = asyncHandler(async (req, res) => {
  * DELETE /api/exhibitions/:id
  */
 const remove = asyncHandler(async (req, res) => {
-    const result = await exhibitionRepo.softDelete(req.params.id);
+    const result = await exhibitionRepo.hardDelete(req.params.id);
     if (!result) throw new AppError('Exhibition not found.', 404);
-    res.json({ success: true, message: 'Exhibition deactivated.' });
+    res.json({ success: true, message: 'Exhibition deleted.' });
 });
 
 module.exports = { getAll, getById, create, update, remove };
