@@ -6,16 +6,16 @@
     },
     "nav": {
         "home": "الرئيسية",
-        "about": "من نحن",
-        "services": "خدماتنا",
-        "exhibitions": "الفعاليات",
-        "properties": "وظائف",
-        "contact": "تواصل معنا",
-        "signIn": "تسجيل الدخول",
-        "getStarted": "ابدأ الآن",
-        "toggleTheme": "تبديل المظهر",
+        "about": "عن رؤيا",
+        "services": "الخدمات",
+        "exhibitions": "المعارض",
+        "properties": "التوظيف",
+        "contact": "اتصل بنا",
+        "signIn": "دخول",
+        "getStarted": "سجّل الآن",
+        "toggleTheme": "تغيير السمة",
         "toggleMenu": "القائمة",
-        "portfolio": "أعمال سابقة"
+        "portfolio": "معرض الأعمال"
     },
     "hero": {
         "badge": "منصة رؤيا",
@@ -579,6 +579,43 @@
         "portfolioCatPlaceholder": "مثال: علامات تجارية، فعاليات، رقمي",
         "editExhibition": "تعديل الفعالية",
         "addNewExhibition": "إضافة فعالية جديدة"
+    },
+    "servicesPage": {
+        "title": "جميع الخدمات — منصة رؤيا",
+        "label": "خدماتنا",
+        "headingBefore": "جميع",
+        "headingHighlight": "الخدمات",
+        "desc": "استكشف مجموعة شاملة من حلول الأعمال الاحترافية.",
+        "loading": "جارٍ تحميل الخدمات...",
+        "noServices": "لا توجد خدمات متاحة حالياً",
+        "viewDetails": "عرض التفاصيل",
+        "requestService": "طلب الخدمة",
+        "failedLoad": "فشل في تحميل الخدمات"
+    },
+    "jobsPage": {
+        "title": "التوظيف — منصة رؤيا",
+        "label": "التوظيف",
+        "headingBefore": "جميع",
+        "headingHighlight": "الوظائف",
+        "desc": "اكتشف أحدث الفرص الوظيفية المتاحة.",
+        "loading": "جارٍ تحميل الوظائف...",
+        "noJobs": "لا توجد وظائف متاحة حالياً",
+        "checkBack": "تحقق مجدداً قريباً!",
+        "apply": "تقدّم الآن",
+        "failedLoad": "فشل في تحميل الوظائف"
+    },
+    "exhibitionsPage": {
+        "title": "جميع المعارض — منصة رؤيا",
+        "label": "المعارض",
+        "headingBefore": "الفعاليات",
+        "headingHighlight": "القادمة",
+        "desc": "انضم إلينا في معارض تجارية عالمية المستوى في المنطقة.",
+        "loading": "جارٍ تحميل المعارض...",
+        "noExhibitions": "لا توجد معارض متاحة حالياً",
+        "checkBack": "تحقق مجدداً قريباً للفعاليات القادمة!",
+        "failedLoad": "فشل في تحميل المعارض",
+        "locationTBA": "الموقع سيُعلن لاحقاً",
+        "tba": "سيُعلن لاحقاً"
     },
     "banned": {
         "title": "الحساب معلّق",

@@ -69,7 +69,7 @@
 
         grid.innerHTML = jobs.map(j => {
           const badge = typeColors[j.type] || 'primary';
-          const typeLabel = j.type?.replace('_', ' ') || 'Full-time';
+          const typeLabel = j.type?.replace('_', ' ') || '{{ t.admin.jobTypeFull | default("Full-time") }}';
           return `
             <div class="property-card fade-in visible">
               <div class="property-card-body" style="padding:24px">
