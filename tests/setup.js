@@ -1,25 +1,10 @@
 // ═══════════════════════════════════════════════
-// Test Setup — Global jest setup + mock factories
+// Test Setup — Global jest.mock calls + factories
 //
-// This file provides:
-// ✅ Mock factories for all external dependencies
-// ✅ DB mock (prevents real database connections)
-// ✅ Service mock builders for token, email, notification
-// ✅ Test data factories (users, orders, etc.)
-// ✅ Custom Jest matchers / helpers
+// This file is loaded via setupFiles in jest.config.js.
+// Jest globals (beforeAll, etc.) are NOT available here.
+// Only put jest.mock() calls and module-level setup here.
 // ═══════════════════════════════════════════════
-
-// ── Suppress console output during tests ──
-// Comment out these lines to see logs while debugging
-beforeAll(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-});
-
-afterAll(() => {
-    jest.restoreAllMocks();
-});
 
 // ═══════════════════════════════════════════════
 // Mock: Database (config/database)
@@ -74,19 +59,37 @@ jest.mock('../server/config', () => ({
 }));
 
 // ═══════════════════════════════════════════════
+// Suppress console output during tests
+// ═══════════════════════════════════════════════
+// Using simple module-level overrides (no beforeAll needed)
+const originalConsoleLog = console.log;
+const originalConsoleWarn = console.warn;
+const originalConsoleError = console.error;
+
+console.log = () => {};
+console.warn = () => {};
+console.error = () => {};
+
+// Restore on process exit (safety net)
+process.on('exit', () => {
+    console.log = originalConsoleLog;
+    console.warn = originalConsoleWarn;
+    console.error = originalConsoleError;
+});
+
+// ═══════════════════════════════════════════════
 // Test Data Factories
 // ═══════════════════════════════════════════════
 
 /**
  * Create a mock user object with sensible defaults.
- * Override any field by passing an object.
  */
 const createMockUser = (overrides = {}) => ({
     id: 1,
     name: 'Test User',
     email: 'test@example.com',
     phone: '+966512345678',
-    password_hash: '$2a$12$hashedPasswordHere',  // bcrypt hash
+    password_hash: '$2a$12$hashedPasswordHere',
     is_active: true,
     is_verified: true,
     failed_login_attempts: 0,
@@ -148,10 +151,6 @@ const createMockRole = (overrides = {}) => ({
     ...overrides,
 });
 
-// ═══════════════════════════════════════════════
-// Custom assertion helpers
-// ═══════════════════════════════════════════════
-
 /**
  * Assert that an async function throws an AppError with the given code.
  */
@@ -170,7 +169,7 @@ const expectAppError = async (fn, expectedCode, expectedStatus) => {
 };
 
 // ═══════════════════════════════════════════════
-// Exports — available to all test files
+// Exports — available to all test files via require
 // ═══════════════════════════════════════════════
 module.exports = {
     createMockUser,

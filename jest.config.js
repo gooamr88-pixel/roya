@@ -14,20 +14,21 @@ module.exports = {
         '**/*.spec.js',
     ],
 
-    // Run setup before each test suite
+    // Setup files — runs BEFORE each test suite (no Jest globals available)
+    // Only for jest.mock() calls and module-level config
     setupFiles: ['<rootDir>/tests/setup.js'],
 
     // Coverage configuration
     collectCoverageFrom: [
         'server/**/*.js',
-        '!server/server.js',        // Entry point (tested via Supertest)
-        '!server/config/**',         // Config files
-        '!server/db/**',             // Migration/seed scripts
-        '!server/middlewares/i18n.js', // i18n (UI concern)
+        '!server/server.js',
+        '!server/config/**',
+        '!server/db/**',
+        '!server/middlewares/i18n.js',
         '!server/middlewares/logger.js',
     ],
 
-    // Coverage thresholds — enforce minimum coverage
+    // Coverage thresholds
     coverageThreshold: {
         global: {
             branches: 60,
@@ -48,7 +49,7 @@ module.exports = {
     clearMocks: true,
     restoreMocks: true,
 
-    // Module name mapper (if needed for path aliases)
+    // Module directories
     moduleDirectories: ['node_modules', 'server'],
 
     // Verbose output
