@@ -16,10 +16,16 @@ const buildSslConfig = () => {
     return { rejectUnauthorized: false };
 };
 
+// In serverless (Vercel), every function invocation gets its own process and pool.
+// A high `max` (e.g. 20) × many concurrent invocations instantly saturates the
+// managed DB's connection limit → "MaxClientsInSession" / "too many clients" errors.
+// Keep pool tiny in production; local dev can use a larger pool.
+const isServerless = !config.isDev;
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    max: 20,
-    idleTimeoutMillis: 10000,
+    max: isServerless ? 2 : 20,
+    idleTimeoutMillis: isServerless ? 1000 : 10000,
     connectionTimeoutMillis: 10000,
     allowExitOnIdle: true,
     ssl: buildSslConfig(),
