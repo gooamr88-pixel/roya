@@ -4,19 +4,25 @@
 const { Pool } = require('pg');
 const config = require('./index');
 
+// Build SSL configuration:
+// - DB_SSL=false              → SSL disabled entirely (local dev)
+// - DB_SSL_REJECT_UNAUTHORIZED=true → strict cert validation (self-managed VPS with real CA cert)
+// - Default (production)      → SSL enabled, rejectUnauthorized: false (required for managed DBs
+//   like Supabase, Neon, Railway, etc. that use self-signed or pooler certs)
+const buildSslConfig = () => {
+    if (process.env.DB_SSL === 'false') return false;
+    if (process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true') return { rejectUnauthorized: true };
+    // Safe default for managed PostgreSQL providers on Vercel / serverless
+    return { rejectUnauthorized: false };
+};
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 20,
     idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 10000,
     allowExitOnIdle: true,
-    // FIX: SSL config is now environment-aware.
-    // In production, you should use a proper CA certificate.
-    // rejectUnauthorized: false is acceptable for Supabase pooler but
-    // should be tightened for a self-managed VPS with a real cert.
-    ssl: process.env.DB_SSL === 'false'
-        ? false
-        : { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false' },
+    ssl: buildSslConfig(),
 });
 
 // Log connection events in dev
