@@ -101,9 +101,17 @@ const API = {
       if (response.status === 401 && !skipAuthRefresh) {
         const refreshed = await this.refreshToken();
         if (refreshed) {
-          return fetch(url, config).then((r) => r.json());
+          // Retry the original request with skipAuthRefresh to prevent infinite loop
+          const retryResponse = await fetch(url, config);
+          const retryData = await retryResponse.json();
+          if (!retryResponse.ok) {
+            const message =
+              retryData.error?.message || retryData.message || "Session expired";
+            throw new Error(i18n.translateApiMessage(message));
+          }
+          return retryData;
         }
-        // Redirect to login
+        // Refresh failed — redirect to login
         window.location.href = "/login";
         return null;
       }

@@ -139,6 +139,7 @@ const setAuthCookies = (res, accessToken, refreshToken, rememberMe = false) => {
     // Access token cookie
     res.cookie('access_token', accessToken, {
         ...baseCookieOptions,
+        path: '/',
         maxAge: rememberMe
             ? 30 * 24 * 60 * 60 * 1000  // 30 days if "remember me"
             : 24 * 60 * 60 * 1000,       // 1 day otherwise
@@ -166,7 +167,7 @@ const clearAuthCookies = (res) => {
         sameSite: 'lax',
     };
 
-    res.clearCookie('access_token', baseCookieOptions);
+    res.clearCookie('access_token', { ...baseCookieOptions, path: '/' });
     res.clearCookie('refresh_token', {
         ...baseCookieOptions,
         path: '/api/auth/refresh',
