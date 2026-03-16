@@ -134,7 +134,6 @@ const setAuthCookies = (res, accessToken, refreshToken, rememberMe = false) => {
         httpOnly: true,
         secure: isProduction,
         sameSite: 'lax',
-        domain: isProduction ? config.security.cookieDomain : undefined,
     };
 
     // Access token cookie
@@ -165,7 +164,6 @@ const clearAuthCookies = (res) => {
         httpOnly: true,
         secure: isProduction,
         sameSite: 'lax',
-        domain: isProduction ? config.security.cookieDomain : undefined,
     };
 
     res.clearCookie('access_token', baseCookieOptions);

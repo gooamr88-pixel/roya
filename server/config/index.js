@@ -56,7 +56,7 @@ module.exports = {
   // Security
   security: {
     csrfSecret: process.env.CSRF_SECRET || 'dev_csrf_secret',
-    cookieDomain: process.env.COOKIE_DOMAIN || 'localhost',
+    cookieDomain: process.env.COOKIE_DOMAIN || '',
     allowedOrigins: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,https://roya-advertising.com').split(','),
   },
 

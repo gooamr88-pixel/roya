@@ -85,7 +85,7 @@ const API = {
     const { skipAuthRefresh, ...fetchOptions } = options;
     const config = {
       headers: { "Content-Type": "application/json" },
-      credentials: "same-origin",
+      credentials: "include",
       ...fetchOptions,
     };
 
@@ -164,7 +164,7 @@ const API = {
     try {
       const response = await fetch(`${this.baseUrl}/auth/refresh`, {
         method: "POST",
-        credentials: "same-origin",
+        credentials: "include",
       });
       return response.ok;
     } catch {
