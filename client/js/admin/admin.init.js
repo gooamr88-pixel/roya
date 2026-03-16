@@ -1,28 +1,17 @@
 // ═══════════════════════════════════════════════
 // Admin V2.0 — Init, Auth, Navigation, Sidebar,
-// Search, Command Palette, Live Clock, Confirm Dialog
+// Search, Command Palette, Live Clock, Confirm Dialog,
+// Shared Utilities (Form Tabs, Featured, Bulk Actions)
 // Depends on: api.js, utils.js
 // ═══════════════════════════════════════════════
 
-/**
- * esc() — HTML-escape a value so it is safe to inject into innerHTML.
- * This was called throughout admin JS files but never defined — causing
- * ReferenceError on every table render. Now defined globally here.
- */
-function esc(str) {
-    if (str === null || str === undefined) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
+// ── Global `esc()` is now provided by utils.js (loaded first). ──
+// We do NOT re-declare it here. If you see a ReferenceError for esc(),
+// it means utils.js failed to load — check the network tab.
 
 let adminUser = null;
 let selectedSvc = new Set();
 let selectedProp = new Set();
-let _confirmResolve = null;
 
 const ADMIN_VIEW_KEYS = ['stats', 'orders', 'services', 'exhibitions', 'jobs', 'portfolio', 'messages', 'users', 'roles', 'logs'];
 
@@ -62,7 +51,7 @@ function updateAdminUI() {
     if (el('adminName'))  el('adminName').textContent  = adminUser.name || 'Admin';
     if (el('adminRole'))  el('adminRole').textContent  = (adminUser.role || '').replace(/_/g, ' ');
 
-    // B6 Fix: show "Clear All Logs" button only for super_admin
+    // Show "Clear All Logs" button only for super_admin
     const clearLogsBtn = document.getElementById('clearLogsBtn');
     if (clearLogsBtn && adminUser.role === 'super_admin') {
         clearLogsBtn.style.removeProperty('display');
@@ -121,7 +110,7 @@ function initAdminSidebar() {
 
 function initAdminLogout() {
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-        const ok = await glassConfirm('Log Out', 'Are you sure you want to log out of the admin panel?', 'warning');
+        const ok = await glassConfirm(__t?.logOut || 'Log Out', __t?.logOutMessage || 'Are you sure you want to log out of the admin panel?', 'warning');
         if (!ok) return;
         try { await API.post('/auth/logout'); } catch { }
         window.location.href = '/login';
@@ -207,6 +196,115 @@ const confirmAction = (title, msg, type) => glassConfirm(title, msg, type);
 function closeConfirmModal() {
     document.getElementById('glassConfirmOverlay')?.classList.remove('show');
     if (_glassResolve) { _glassResolve(false); _glassResolve = null; }
+}
+
+// ══════════════════════════════════════════
+//  FORM TAB SWITCHING (Shared by all modals)
+//  FIX (F1): This function was called in every tabbed modal
+//  (Services, Properties, Exhibitions) but NEVER DEFINED,
+//  causing a ReferenceError and breaking all modal tab navigation.
+// ══════════════════════════════════════════
+/**
+ * switchFormTab(activeTabBtnId, formId)
+ *
+ * Activates a tab button and shows its associated pane inside a form.
+ * Each tab button has a data-tab attribute pointing to the pane's ID.
+ *
+ * @param {string} activeTabBtnId - The ID of the tab button to activate
+ * @param {string} formId - The ID of the parent form (used to scope the query)
+ */
+function switchFormTab(activeTabBtnId, formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    // Find the closest modal-content ancestor (tabs live outside the <form> in some modals)
+    const container = form.closest('.modal-content') || form;
+
+    // Deactivate all tab buttons within this container
+    container.querySelectorAll('.form-tab-btn').forEach(btn => btn.classList.remove('active'));
+
+    // Hide all panes within this container
+    container.querySelectorAll('.form-tab-pane').forEach(pane => pane.classList.remove('active'));
+
+    // Activate the clicked tab button
+    const activeBtn = document.getElementById(activeTabBtnId);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        // Show the target pane
+        const paneId = activeBtn.dataset.tab;
+        const pane = document.getElementById(paneId);
+        if (pane) pane.classList.add('active');
+    }
+}
+
+// ══════════════════════════════════════════
+//  FEATURED TOGGLE (Shared by Services + Properties)
+//  FIX (F4): Moved here from admin.properties.js so all
+//  modules can use it without depending on properties loading first.
+// ══════════════════════════════════════════
+async function toggleFeatured(type, id, featured) {
+    try {
+        // API.put() sends JSON body — no FormData, no Multer interference
+        await API.put(`/${type}/${id}`, { is_featured: featured });
+        Toast.success(featured ? (__t?.markedFeatured || 'Marked as featured!') : (__t?.removedFeatured || 'Removed from featured.'));
+        if (type === 'services') loadAdminServices();
+        else loadAdminProperties();
+    } catch (err) {
+        Toast.error(err.message || (__t?.failedSave || 'Failed to update featured status.'));
+    }
+}
+
+// ══════════════════════════════════════════
+//  BULK SELECT & DELETE (Shared by Services + Properties)
+//  FIX (F4): Moved here from admin.properties.js
+// ══════════════════════════════════════════
+function toggleBulkSelect(prefix, id, checked) {
+    const set = prefix === 'svc' ? selectedSvc : selectedProp;
+    if (checked) set.add(id); else set.delete(id);
+    updateBulkInfo(prefix);
+}
+
+function toggleAllCheckboxes(prefix) {
+    const selectAll = document.getElementById(`${prefix}SelectAll`);
+    const checkboxes = document.querySelectorAll(`.${prefix}-checkbox`);
+    const set = prefix === 'svc' ? selectedSvc : selectedProp;
+    set.clear();
+    checkboxes.forEach(cb => {
+        cb.checked = selectAll.checked;
+        if (selectAll.checked) set.add(cb.value);
+    });
+    updateBulkInfo(prefix);
+}
+
+function updateBulkInfo(prefix) {
+    const set = prefix === 'svc' ? selectedSvc : selectedProp;
+    const el = document.getElementById(`${prefix}BulkInfo`);
+    if (!el) return;
+    if (set.size === 0) {
+        el.innerHTML = '';
+    } else {
+        const type = prefix === 'svc' ? 'services' : 'properties';
+        el.innerHTML = `
+            <strong>${set.size} ${__t?.selected || 'selected'}</strong> —
+            <button class="btn btn-ghost btn-sm" onclick="bulkDelete('${type}', '${prefix}')" style="color:var(--danger)"><i class="fas fa-trash"></i> ${__t?.deleteSelected || 'Delete Selected'}</button>
+        `;
+    }
+}
+
+async function bulkDelete(type, prefix) {
+    const set = prefix === 'svc' ? selectedSvc : selectedProp;
+    if (set.size === 0) return;
+    const confirmed = await glassConfirm(__t?.bulkDeactivate || 'Bulk Deactivate', `${__t?.confirmDeactivate || 'Deactivate'} ${set.size} ${type}?`, 'danger');
+    if (!confirmed) return;
+
+    let success = 0;
+    for (const id of set) {
+        try { await API.delete(`/${type}/${id}`); success++; } catch { }
+    }
+    Toast.success(`${success} ${type} ${__t?.deactivated || 'deactivated.'}`);
+    set.clear();
+    if (type === 'services') loadAdminServices();
+    else loadAdminProperties();
 }
 
 // ══════════════════════════════════════════

@@ -1,14 +1,14 @@
 // ═══════════════════════════════════════════════
-// Contact Routes
+// Contact Routes — PHASE 2: Rate limiting for spam prevention
 // ═══════════════════════════════════════════════
 const router = require('express').Router();
 const ctrl = require('../controllers/contact.controller');
 const { authenticate, authorize } = require('../middlewares/auth');
-const { apiLimiter } = require('../middlewares/rateLimiter');
+const { contactLimiter } = require('../middlewares/rateLimiter');
 const { idParamValidation } = require('../middlewares/validators');
 
-// Public — submit contact message
-router.post('/', apiLimiter, ctrl.submit);
+// Public — submit contact message (5 per hour to prevent spam)
+router.post('/', contactLimiter, ctrl.submit);
 
 // Admin — list all contacts
 router.get('/admin', authenticate, authorize('super_admin', 'admin', 'supervisor'), ctrl.getAll);

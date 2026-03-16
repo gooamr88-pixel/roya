@@ -10,7 +10,13 @@ const pool = new Pool({
     idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 10000,
     allowExitOnIdle: true,
-    ssl: { rejectUnauthorized: false },
+    // FIX: SSL config is now environment-aware.
+    // In production, you should use a proper CA certificate.
+    // rejectUnauthorized: false is acceptable for Supabase pooler but
+    // should be tightened for a self-managed VPS with a real cert.
+    ssl: process.env.DB_SSL === 'false'
+        ? false
+        : { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false' },
 });
 
 // Log connection events in dev
@@ -48,4 +54,36 @@ const getClient = async () => {
     return pool.connect();
 };
 
-module.exports = { pool, query, getClient };
+/**
+ * Execute a function within a database transaction.
+ * Automatically handles BEGIN, COMMIT, ROLLBACK, and client.release().
+ *
+ * FIX (BUG-4): Ensures the pool client is ALWAYS released back to the pool,
+ * even if the transaction throws. Prevents connection pool exhaustion.
+ *
+ * Usage:
+ *   const result = await withTransaction(async (client) => {
+ *       await client.query('INSERT INTO ...', [...]);
+ *       await client.query('UPDATE ...', [...]);
+ *       return someValue;
+ *   });
+ *
+ * @param {Function} fn - Async function receiving a PoolClient
+ * @returns {Promise<*>} - Whatever fn() returns
+ */
+const withTransaction = async (fn) => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const result = await fn(client);
+        await client.query('COMMIT');
+        return result;
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+};
+
+module.exports = { pool, query, getClient, withTransaction };

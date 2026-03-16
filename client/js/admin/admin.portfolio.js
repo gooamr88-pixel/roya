@@ -48,7 +48,7 @@ async function loadAdminPortfolio() {
             </tr>`;
         }).join('');
     } catch (err) {
-        Toast.error('Failed to load portfolio items');
+        Toast.error(__t?.failedLoad || 'Failed to load portfolio items');
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--danger)">Failed to load portfolio</td></tr>`;
     }
 }
@@ -95,7 +95,7 @@ async function editPortfolioItem(id) {
 
 async function saveAdminPortfolio() {
     const title = document.getElementById('portfolioTitle')?.value?.trim();
-    if (!title) { Toast.error('Title is required'); return; }
+    if (!title) { Toast.error(__t?.titleRequired || 'Title is required'); return; }
 
     const formData = new FormData();
     formData.append('title', title);
@@ -111,26 +111,26 @@ async function saveAdminPortfolio() {
     try {
         if (editingPortfolioId) {
             await API.putFormData(`/portfolio/${editingPortfolioId}`, formData);
-            Toast.success('Portfolio item updated');
+            Toast.success(__t?.portfolioUpdated || 'Portfolio item updated');
         } else {
             await API.postFormData('/portfolio', formData);
-            Toast.success('Portfolio item created');
+            Toast.success(__t?.portfolioCreated || 'Portfolio item created');
         }
         closePortfolioModal();
         loadAdminPortfolio();
     } catch (err) {
-        Toast.error(err.message || 'Failed to save portfolio item');
+        Toast.error(err.message || (__t?.failedSave || 'Failed to save portfolio item'));
     }
 }
 
 async function deletePortfolioItem(id) {
-    const ok = await glassConfirm('Deactivate Item', 'Are you sure you want to deactivate this portfolio item?', 'danger');
+    const ok = await glassConfirm(__t?.deactivatePortfolio || 'Deactivate Item', __t?.confirmDeactivate || 'Are you sure you want to deactivate this portfolio item?', 'danger');
     if (!ok) return;
     try {
         await API.delete(`/portfolio/${id}`);
-        Toast.success('Portfolio item deactivated');
+        Toast.success(__t?.portfolioDeactivated || 'Portfolio item deactivated');
         loadAdminPortfolio();
-    } catch { Toast.error('Failed to deactivate portfolio item'); }
+    } catch { Toast.error(__t?.failedSave || 'Failed to deactivate portfolio item'); }
 }
 
 // Wire up portfolio images live preview

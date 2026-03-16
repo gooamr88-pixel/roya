@@ -8,6 +8,7 @@ module.exports = {
   port: parseInt(process.env.PORT, 10) || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
   isDev: (process.env.NODE_ENV || 'development') === 'development',
+  baseUrl: process.env.BASE_URL || process.env.APP_URL || '',
 
   // Database
   db: {
@@ -79,6 +80,8 @@ if (module.exports.nodeEnv === 'production') {
     { key: 'SMTP_PASS',           val: process.env.SMTP_PASS },
     { key: 'CSRF_SECRET',         val: process.env.CSRF_SECRET },
     { key: 'ALLOWED_ORIGINS',     val: process.env.ALLOWED_ORIGINS },
+    { key: 'CLOUDINARY_CLOUD_NAME', val: process.env.CLOUDINARY_CLOUD_NAME },
+    { key: 'BASE_URL',            val: process.env.BASE_URL },
   ];
 
   const insecureDefaults = [

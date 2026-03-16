@@ -44,7 +44,7 @@ async function loadAdminJobs() {
             </tr>
         `).join('');
     } catch (err) {
-        Toast.error('Failed to load jobs');
+        Toast.error(__t?.failedLoad || 'Failed to load jobs');
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger)">Failed to load jobs</td></tr>`;
     }
 }
@@ -81,7 +81,7 @@ async function editJob(id) {
 
 async function saveAdminJob() {
     const title = document.getElementById('jobTitle')?.value?.trim();
-    if (!title) { Toast.error('Title is required'); return; }
+    if (!title) { Toast.error(__t?.titleRequired || 'Title is required'); return; }
 
     const payload = {
         title,
@@ -96,26 +96,26 @@ async function saveAdminJob() {
     try {
         if (editingJobId) {
             await API.put(`/jobs/${editingJobId}`, payload);
-            Toast.success('Job updated successfully');
+            Toast.success(__t?.jobUpdated || 'Job updated successfully');
         } else {
             await API.post('/jobs', payload);
-            Toast.success('Job created successfully');
+            Toast.success(__t?.jobCreated || 'Job created successfully');
         }
         closeJobModal();
         loadAdminJobs();
     } catch (err) {
-        Toast.error(err.message || 'Failed to save job');
+        Toast.error(err.message || (__t?.failedSave || 'Failed to save job'));
     }
 }
 
 async function deleteJob(id) {
-    const ok = await glassConfirm('Deactivate Job', 'Are you sure you want to deactivate this job?', 'danger');
+    const ok = await glassConfirm(__t?.deactivateJob || 'Deactivate Job', __t?.confirmDeactivate || 'Are you sure you want to deactivate this job?', 'danger');
     if (!ok) return;
     try {
         await API.delete(`/jobs/${id}`);
-        Toast.success('Job deactivated');
+        Toast.success(__t?.jobDeactivated || 'Job deactivated');
         loadAdminJobs();
-    } catch { Toast.error('Failed to deactivate job'); }
+    } catch { Toast.error(__t?.failedSave || 'Failed to deactivate job'); }
 }
 
 // Wire up modal close on overlay click

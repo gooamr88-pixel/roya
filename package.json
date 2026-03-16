@@ -7,7 +7,10 @@
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
     "db:migrate": "node server/db/migrate.js",
-    "db:seed": "node server/db/seed.js"
+    "db:seed": "node server/db/seed.js",
+    "test": "jest --verbose --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch --verbose",
+    "test:coverage": "jest --coverage --forceExit --detectOpenHandles"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -30,7 +33,9 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "jest": "^30.3.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^7.2.2"
   },
   "engines": {
     "node": ">=18.0.0"

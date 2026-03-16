@@ -324,18 +324,7 @@
 {% endblock %}
 
 {# ═════ FROSTED GLASS CONFIRMATION MODAL ═════ #}
+{# FIX (F7): Now uses shared partial instead of inline duplicate #}
 {% block pageModals %}
-<div class="glass-modal-overlay" id="glassConfirmOverlay" role="dialog" aria-modal="true">
-  <div class="glass-modal" id="glassConfirmModal">
-    <div class="glass-modal-icon warning" id="glassConfirmIcon">
-      <i class="fas fa-exclamation-triangle" id="glassConfirmIconInner"></i>
-    </div>
-    <h3 id="glassConfirmTitle">Confirm Action</h3>
-    <p id="glassConfirmMessage">Are you sure you want to proceed?</p>
-    <div class="glass-modal-actions">
-      <button class="btn btn-secondary" id="glassConfirmCancel">Cancel</button>
-      <button class="btn btn-danger" id="glassConfirmOk">Confirm</button>
-    </div>
-  </div>
-</div>
+  {% include "partials/glass-confirm.njk" %}
 {% endblock %}

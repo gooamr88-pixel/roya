@@ -1,30 +1,9 @@
 // ═══════════════════════════════════════════════
-// Admin V2.0 — Users, Roles, Login Logs, Exhibitions
+// Admin V2.0 — Users, Roles, Login Logs
 // Depends on: api.js, utils.js, admin.init.js
 // ═══════════════════════════════════════════════
-
-// ══════════════════════════════════════════
-//  EXHIBITIONS
-// ══════════════════════════════════════════
-async function loadAdminExhibitions() {
-    try {
-        const data = await API.get('/exhibitions?limit=50');
-        const items = data.data.exhibitions;
-        const tbody = document.getElementById('adminExhibitionsTable');
-        if (items.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center" style="padding:40px;color:var(--text-muted)">No exhibitions yet</td></tr>';
-        } else {
-            tbody.innerHTML = items.map(e => `
-                <tr>
-                    <td data-label="Title" style="font-weight:600">${esc(e.title)}</td>
-                    <td data-label="Location">${esc(e.location || '—')}</td>
-                    <td data-label="Start Date">${e.start_date ? Utils.formatDate(e.start_date) : '—'}</td>
-                    <td data-label="Status"><span class="badge badge-${e.is_active ? 'success' : 'danger'}">${e.is_active ? 'Active' : 'Inactive'}</span></td>
-                </tr>
-            `).join('');
-        }
-    } catch (err) { Toast.error('Failed to load exhibitions.'); }
-}
+// FIX (F2): Removed dead loadAdminExhibitions() stub that was
+// shadowing the real implementation in admin.exhibitions.js.
 
 // ══════════════════════════════════════════
 //  USERS — Role Change + Ban/Unban
@@ -49,7 +28,7 @@ async function loadAdminUsers(page = 1) {
                 tbody.innerHTML = users.map(u => buildUserRow(u, roles)).join('');
             }
             renderPagination(data.data.pagination, 'adminUsersPagination', loadAdminUsers);
-        } catch (err) { Toast.error('Failed to load users.'); }
+        } catch (err) { Toast.error(__t?.failedLoad || 'Failed to load users.'); }
     }, 300);
 }
 
@@ -104,15 +83,15 @@ function buildUserRow(u, roles) {
 async function changeUserRole(userId, roleName) {
     try {
         await API.put(`/admin/users/${userId}`, { role_name: roleName });
-        Toast.success(`Role changed to ${roleName.replace(/_/g, ' ')}`);
+        Toast.success(`${__t?.roleChanged || 'Role changed to'} ${roleName.replace(/_/g, ' ')}`);
     } catch (err) { Toast.error(err.message); loadAdminUsers(); }
 }
 
 async function toggleUserBan(userId, isCurrentlyActive) {
     const action = isCurrentlyActive ? 'ban' : 'unban';
     const confirmed = await confirmAction(
-        `${action.charAt(0).toUpperCase() + action.slice(1)} User`,
-        `Are you sure you want to ${action} this user?`,
+        `${action === 'ban' ? (__t?.banUser || 'Ban User') : (__t?.unbanUser || 'Unban User')}`,
+        action === 'ban' ? (__t?.banConfirm || `Are you sure you want to ban this user?`) : (__t?.unbanConfirm || `Are you sure you want to unban this user?`),
         isCurrentlyActive ? 'danger' : 'warning'
     );
     if (!confirmed) return;
@@ -124,7 +103,7 @@ async function toggleUserBan(userId, isCurrentlyActive) {
             ? { is_active: false, ban_type: 'permanent' }
             : { is_active: true, ban_type: null };
         await API.put(`/admin/users/${userId}`, payload);
-        Toast.success(`User ${action}ned successfully.`);
+        Toast.success(isCurrentlyActive ? (__t?.userBanned || 'User banned successfully.') : (__t?.userUnbanned || 'User unbanned successfully.'));
         loadAdminUsers();
     } catch (err) { Toast.error(err.message); }
 }
@@ -145,7 +124,7 @@ async function loadAdminRoles() {
                 <td data-label="Permissions"><div style="display:flex;flex-wrap:wrap;gap:4px">${perms.map(p => `<span class="badge badge-info" style="font-size:0.7rem">${esc(p)}</span>`).join('')}</div></td>
             </tr>`;
         }).join('');
-    } catch (err) { Toast.error('Failed to load roles.'); }
+    } catch (err) { Toast.error(__t?.failedLoad || 'Failed to load roles.'); }
 }
 
 // ══════════════════════════════════════════
@@ -177,7 +156,7 @@ async function loadAdminLogs(page = 1) {
             `).join('');
         }
         renderPagination(data.data.pagination, 'adminLogsPagination', loadAdminLogs);
-    } catch (err) { Toast.error('Failed to load logs.'); }
+    } catch (err) { Toast.error(__t?.failedLoad || 'Failed to load logs.'); }
 }
 
 function parseBrowser(ua) {
@@ -199,7 +178,7 @@ async function clearAdminLogs() {
     if (!confirmed) return;
     try {
         await API.delete('/admin/logs');
-        Toast.success('All login logs have been cleared.');
+        Toast.success(__t?.logsCleared || 'All login logs have been cleared.');
         loadAdminLogs();
-    } catch (err) { Toast.error(err.message || 'Failed to clear logs.'); }
+    } catch (err) { Toast.error(err.message || (__t?.failedSave || 'Failed to clear logs.')); }
 }

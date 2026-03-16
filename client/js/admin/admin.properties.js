@@ -34,7 +34,7 @@ async function loadAdminProperties(page = 1) {
                 </tr>
             `).join('');
         }
-    } catch (err) { Toast.error('Failed to load properties.'); }
+    } catch (err) { Toast.error(__t?.failedLoad || 'Failed to load properties.'); }
 }
 
 // ── Live Preview ──
@@ -127,7 +127,7 @@ async function saveAdminProperty(e) {
     // Validate required fields on the frontend first
     const title = document.getElementById('propTitle').value.trim();
     if (!title) {
-        Toast.error('Title is required.');
+        Toast.error(__t?.titleRequired || 'Title is required.');
         return;
     }
 
@@ -149,15 +149,15 @@ async function saveAdminProperty(e) {
     try {
         if (editId) {
             await API.putForm(`/properties/${editId}`, formData);
-            Toast.success('Property updated!');
+            Toast.success(__t?.propertyUpdated || 'Property updated!');
         } else {
             await API.postForm('/properties', formData);
-            Toast.success('Property created!');
+            Toast.success(__t?.propertyCreated || 'Property created!');
         }
         closePropertyModal();
         loadAdminProperties();
     } catch (err) {
-        Toast.error(err.message || 'Failed to save property.');
+        Toast.error(err.message || (__t?.failedSave || 'Failed to save property.'));
     } finally {
         setLoading(btn, false);
     }
@@ -168,77 +168,13 @@ async function editProperty(id) {
     catch (err) { Toast.error(err.message); }
 }
 async function deleteProperty(id) {
-    const confirmed = await glassConfirm('Deactivate Property', 'Are you sure you want to deactivate this property?', 'danger');
+    const confirmed = await glassConfirm(__t?.deactivateProperty || 'Deactivate Property', __t?.confirmDeactivate || 'Are you sure you want to deactivate this property?', 'danger');
     if (!confirmed) return;
-    try { await API.delete(`/properties/${id}`); Toast.success('Property deactivated.'); loadAdminProperties(); }
+    try { await API.delete(`/properties/${id}`); Toast.success(__t?.propertyDeactivated || 'Property deactivated.'); loadAdminProperties(); }
     catch (err) { Toast.error(err.message); }
 }
 
 document.addEventListener('DOMContentLoaded', initPropertyDropZone);
-
-// ══════════════════════════════════════════
-//  FEATURED TOGGLE + BULK ACTIONS
-// ══════════════════════════════════════════
-// B3 Fix: toggleFeatured sends a lean JSON body PUT.
-// The PUT routes have upload.array() middleware which only activates when
-// Content-Type is multipart/form-data, so a JSON body bypasses Multer cleanly.
-async function toggleFeatured(type, id, featured) {
-    try {
-        // API.put() sends JSON body — no FormData, no Multer interference
-        await API.put(`/${type}/${id}`, { is_featured: featured });
-        Toast.success(featured ? 'Marked as featured!' : 'Removed from featured.');
-        if (type === 'services') loadAdminServices();
-        else loadAdminProperties();
-    } catch (err) {
-        Toast.error(err.message || 'Failed to update featured status.');
-    }
-}
-
-function toggleBulkSelect(prefix, id, checked) {
-    const set = prefix === 'svc' ? selectedSvc : selectedProp;
-    if (checked) set.add(id); else set.delete(id);
-    updateBulkInfo(prefix);
-}
-
-function toggleAllCheckboxes(prefix) {
-    const selectAll = document.getElementById(`${prefix}SelectAll`);
-    const checkboxes = document.querySelectorAll(`.${prefix}-checkbox`);
-    const set = prefix === 'svc' ? selectedSvc : selectedProp;
-    set.clear();
-    checkboxes.forEach(cb => {
-        cb.checked = selectAll.checked;
-        if (selectAll.checked) set.add(cb.value);
-    });
-    updateBulkInfo(prefix);
-}
-
-function updateBulkInfo(prefix) {
-    const set = prefix === 'svc' ? selectedSvc : selectedProp;
-    const el = document.getElementById(`${prefix}BulkInfo`);
-    if (!el) return;
-    if (set.size === 0) {
-        el.innerHTML = '';
-    } else {
-        const type = prefix === 'svc' ? 'services' : 'properties';
-        el.innerHTML = `
-            <strong>${set.size} selected</strong> —
-            <button class="btn btn-ghost btn-sm" onclick="bulkDelete('${type}', '${prefix}')" style="color:var(--danger)"><i class="fas fa-trash"></i> Delete Selected</button>
-        `;
-    }
-}
-
-async function bulkDelete(type, prefix) {
-    const set = prefix === 'svc' ? selectedSvc : selectedProp;
-    if (set.size === 0) return;
-    const confirmed = await confirmAction('Bulk Deactivate', `Deactivate ${set.size} ${type}? This cannot be undone.`, 'danger');
-    if (!confirmed) return;
-
-    let success = 0;
-    for (const id of set) {
-        try { await API.delete(`/${type}/${id}`); success++; } catch { }
-    }
-    Toast.success(`${success} ${type} deactivated.`);
-    set.clear();
-    if (type === 'services') loadAdminServices();
-    else loadAdminProperties();
-}
+// FIX (F4): Shared utilities (toggleFeatured, toggleBulkSelect,
+// toggleAllCheckboxes, updateBulkInfo, bulkDelete) have been moved
+// to admin.init.js so they are available to all admin modules.

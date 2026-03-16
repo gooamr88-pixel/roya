@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════
 const nodemailer = require('nodemailer');
 const config = require('../config');
+const { escapeHtml } = require('../utils/helpers');
 
 const transporter = nodemailer.createTransport({
   host: config.email.host,
@@ -84,18 +85,22 @@ function baseLayout(content, direction = 'ltr') {
 // ══════════════════════════════════════════
 const sendOTP = async (to, name, otp) => {
   try {
+    // FIX (CRITICAL-1): Escape user-supplied `name` to prevent XSS
+    const safeName = escapeHtml(name);
+    const safeOtp = escapeHtml(otp);
+
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, ${BRAND_COLOR}, #2d4a7a);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
           <span style="font-size:28px;">🔐</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Verify Your Email</h1>
-        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${name || 'there'}</strong>, enter the code below to verify your account.</p>
+        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, enter the code below to verify your account.</p>
       </div>
 
       <div style="background:#f0f4ff;border:2px dashed ${BRAND_COLOR};border-radius:12px;padding:24px;text-align:center;margin:24px 0;">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:8px;">Your Verification Code</div>
-        <div style="font-size:36px;font-weight:800;letter-spacing:12px;color:${BRAND_COLOR};font-family:monospace;">${otp}</div>
+        <div style="font-size:36px;font-weight:800;letter-spacing:12px;color:${BRAND_COLOR};font-family:monospace;">${safeOtp}</div>
       </div>
 
       <div style="text-align:center;margin:24px 0;">
@@ -119,7 +124,9 @@ const sendOTP = async (to, name, otp) => {
     return true;
   } catch (err) {
     console.error('Email send error:', err.message);
-    return null;
+    // FIX (BUG-2): Throw the error so the caller knows sending failed,
+    // instead of silently returning null and telling the user "OTP sent"
+    throw err;
   }
 };
 
@@ -128,18 +135,21 @@ const sendOTP = async (to, name, otp) => {
 // ══════════════════════════════════════════
 const sendPasswordReset = async (to, name, otp) => {
   try {
+    const safeName = escapeHtml(name);
+    const safeOtp = escapeHtml(otp);
+
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #e53e3e, #c53030);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
           <span style="font-size:28px;">🔑</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Reset Your Password</h1>
-        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${name || 'there'}</strong>, we received a request to reset your password.</p>
+        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, we received a request to reset your password.</p>
       </div>
 
       <div style="background:#f0f4ff;border:2px dashed ${BRAND_COLOR};border-radius:12px;padding:24px;text-align:center;margin:24px 0;">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:8px;">Your Reset Code</div>
-        <div style="font-size:36px;font-weight:800;letter-spacing:12px;color:${BRAND_COLOR};font-family:monospace;">${otp}</div>
+        <div style="font-size:36px;font-weight:800;letter-spacing:12px;color:${BRAND_COLOR};font-family:monospace;">${safeOtp}</div>
       </div>
 
       <div style="background:#fff5f5;border-left:4px solid #e53e3e;border-radius:6px;padding:14px 18px;margin:24px 0;">
@@ -156,7 +166,7 @@ const sendPasswordReset = async (to, name, otp) => {
     return true;
   } catch (err) {
     console.error('Email send error:', err.message);
-    return null;
+    throw err;
   }
 };
 
@@ -165,17 +175,20 @@ const sendPasswordReset = async (to, name, otp) => {
 // ══════════════════════════════════════════
 const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
   try {
+    const safeName = escapeHtml(name);
+    const safeInvoice = escapeHtml(invoiceNumber);
+
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #38a169, #2f855a);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
           <span style="font-size:28px;">📄</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Invoice Ready</h1>
-        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${name || 'there'}</strong>, your invoice <strong>#${invoiceNumber}</strong> is attached.</p>
+        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, your invoice <strong>#${safeInvoice}</strong> is attached.</p>
       </div>
 
       <div style="background:#f0fff4;border:1px solid #c6f6d5;border-radius:10px;padding:20px;text-align:center;margin:24px 0;">
-        <div style="font-size:13px;color:#38a169;font-weight:600;">✓ Invoice #${invoiceNumber}</div>
+        <div style="font-size:13px;color:#38a169;font-weight:600;">✓ Invoice #${safeInvoice}</div>
         <p style="font-size:12px;color:#68d391;margin:4px 0 0;">Please find your invoice attached as a PDF document.</p>
       </div>
 
@@ -187,7 +200,7 @@ const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
     await transporter.sendMail({
       from: config.email.from,
       to,
-      subject: `📄 Roya — Invoice #${invoiceNumber}`,
+      subject: `📄 Roya — Invoice #${safeInvoice}`,
       html: baseLayout(content),
       attachments: pdfBuffer ? [{
         filename: `invoice-${invoiceNumber}.pdf`,
@@ -207,6 +220,12 @@ const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
 // ══════════════════════════════════════════
 const sendContactReply = async ({ to, name, originalSubject, originalMessage, replyMessage }) => {
   try {
+    // FIX (CRITICAL-1): Escape all user-supplied values
+    const safeName = escapeHtml(name);
+    const safeSubject = escapeHtml(originalSubject);
+    const safeOriginal = escapeHtml(originalMessage);
+    const safeReply = escapeHtml(replyMessage);
+
     // Detect if reply is likely Arabic (contains Arabic characters)
     const isArabic = /[\u0600-\u06FF]/.test(replyMessage);
     const dir = isArabic ? 'rtl' : 'ltr';
@@ -215,23 +234,23 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <h1 style="margin:0;font-size:22px;color:#1a202c;font-weight:700;">Official Response from Roya</h1>
-        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Regarding: <em>${originalSubject}</em></p>
+        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Regarding: <em>${safeSubject}</em></p>
       </div>
 
       <!-- ADMIN REPLY -->
       <div style="background:#f0f4ff;border-left:4px solid ${BRAND_COLOR};border-radius:8px;padding:20px 24px;margin:20px 0;direction:${dir};text-align:${textAlign};">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:${BRAND_COLOR};font-weight:700;margin-bottom:10px;">📩 Official Response</div>
-        <p style="margin:0;font-size:15px;line-height:1.7;color:#2d3748;">${replyMessage.replace(/\n/g, '<br>')}</p>
+        <p style="margin:0;font-size:15px;line-height:1.7;color:#2d3748;">${safeReply.replace(/\n/g, '<br>')}</p>
       </div>
 
       <!-- ORIGINAL MESSAGE -->
       <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:18px 22px;margin:20px 0;">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;font-weight:600;margin-bottom:8px;">💬 Your Original Message</div>
-        <p style="margin:0;font-size:13px;line-height:1.6;color:#718096;font-style:italic;">${originalMessage.replace(/\n/g, '<br>')}</p>
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#718096;font-style:italic;">${safeOriginal.replace(/\n/g, '<br>')}</p>
       </div>
 
       <div style="text-align:center;margin-top:28px;">
-        <p style="font-size:13px;color:#64748b;">Dear <strong>${name}</strong>, thank you for reaching out to us.</p>
+        <p style="font-size:13px;color:#64748b;">Dear <strong>${safeName}</strong>, thank you for reaching out to us.</p>
         <p style="font-size:12px;color:#a0aec0;margin-top:4px;">If you have further questions, simply reply to this email.</p>
       </div>
     `;
@@ -239,7 +258,7 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
     await transporter.sendMail({
       from: config.email.from,
       to,
-      subject: `📩 Re: ${originalSubject} — Roya Platform`,
+      subject: `📩 Re: ${safeSubject} — Roya Platform`,
       html: baseLayout(content, dir),
       replyTo: config.email.from,
     });
@@ -255,26 +274,31 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
 // ══════════════════════════════════════════
 const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reason) => {
   try {
+    const safeName = escapeHtml(name);
+    const safeInvoice = escapeHtml(invoiceNumber);
+    const safeService = escapeHtml(serviceTitle);
+    const safeReason = escapeHtml(reason);
+
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #e53e3e, #c53030);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
           <span style="font-size:28px;">⚠️</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Order Removed</h1>
-        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${name || 'there'}</strong>, your order has been removed by an administrator.</p>
+        <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, your order has been removed by an administrator.</p>
       </div>
 
       <div style="background:#fff5f5;border:1px solid #fed7d7;border-radius:10px;padding:20px;margin:24px 0;">
         <table style="width:100%;font-size:14px;color:#2d3748;">
-          <tr><td style="padding:6px 0;color:#718096;">Invoice:</td><td style="padding:6px 0;font-weight:600;">#${invoiceNumber}</td></tr>
-          <tr><td style="padding:6px 0;color:#718096;">Service:</td><td style="padding:6px 0;font-weight:600;">${serviceTitle}</td></tr>
+          <tr><td style="padding:6px 0;color:#718096;">Invoice:</td><td style="padding:6px 0;font-weight:600;">#${safeInvoice}</td></tr>
+          <tr><td style="padding:6px 0;color:#718096;">Service:</td><td style="padding:6px 0;font-weight:600;">${safeService}</td></tr>
         </table>
       </div>
 
-      ${reason ? `
+      ${safeReason ? `
       <div style="background:#f7fafc;border-left:4px solid #e53e3e;border-radius:6px;padding:14px 18px;margin:24px 0;">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#e53e3e;font-weight:700;margin-bottom:6px;">Reason</div>
-        <p style="margin:0;font-size:14px;color:#4a5568;">${reason}</p>
+        <p style="margin:0;font-size:14px;color:#4a5568;">${safeReason}</p>
       </div>` : ''}
 
       <div style="text-align:center;margin-top:28px;">
@@ -285,7 +309,7 @@ const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reas
     await transporter.sendMail({
       from: config.email.from,
       to,
-      subject: `⚠️ Roya — Order #${invoiceNumber} Removed`,
+      subject: `⚠️ Roya — Order #${safeInvoice} Removed`,
       html: baseLayout(content),
     });
     return true;

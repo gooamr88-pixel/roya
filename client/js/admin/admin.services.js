@@ -33,7 +33,7 @@ async function loadAdminServices(page = 1) {
                 </tr>
             `).join('');
         }
-    } catch (err) { Toast.error('Failed to load services.'); }
+    } catch (err) { Toast.error(__t?.failedLoad || 'Failed to load services.'); }
 }
 
 // ── Live Preview ──
@@ -124,7 +124,7 @@ async function saveAdminService(e) {
     // Validate required fields on the frontend first
     const title = document.getElementById('svcTitle').value.trim();
     if (!title) {
-        Toast.error('Title is required.');
+        Toast.error(__t?.titleRequired || 'Title is required.');
         return;
     }
 
@@ -142,15 +142,15 @@ async function saveAdminService(e) {
     try {
         if (editId) {
             await API.putForm(`/services/${editId}`, formData);
-            Toast.success('Service updated!');
+            Toast.success(__t?.serviceUpdated || 'Service updated!');
         } else {
             await API.postForm('/services', formData);
-            Toast.success('Service created!');
+            Toast.success(__t?.serviceCreated || 'Service created!');
         }
         closeServiceModal();
         loadAdminServices();
     } catch (err) {
-        Toast.error(err.message || 'Failed to save service.');
+        Toast.error(err.message || (__t?.failedSave || 'Failed to save service.'));
     } finally {
         setLoading(btn, false);
     }
@@ -161,9 +161,9 @@ async function editService(id) {
     catch (err) { Toast.error(err.message); }
 }
 async function deleteService(id) {
-    const confirmed = await glassConfirm('Deactivate Service', 'Are you sure you want to deactivate this service?', 'danger');
+    const confirmed = await glassConfirm(__t?.deactivateService || 'Deactivate Service', __t?.confirmDeactivate || 'Are you sure you want to deactivate this service?', 'danger');
     if (!confirmed) return;
-    try { await API.delete(`/services/${id}`); Toast.success('Service deactivated.'); loadAdminServices(); }
+    try { await API.delete(`/services/${id}`); Toast.success(__t?.serviceDeactivated || 'Service deactivated.'); loadAdminServices(); }
     catch (err) { Toast.error(err.message); }
 }
 

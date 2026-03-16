@@ -1,10 +1,16 @@
 // ═══════════════════════════════════════════════
-// Auth Routes
+// Auth Routes — PHASE 2: Granular rate limiters
 // ═══════════════════════════════════════════════
 const router = require('express').Router();
 const authController = require('../controllers/auth.controller');
 const { authenticate } = require('../middlewares/auth');
-const { loginLimiter } = require('../middlewares/rateLimiter');
+const {
+    loginLimiter,
+    registerLimiter,
+    otpLimiter,
+    resendOtpLimiter,
+    passwordResetLimiter,
+} = require('../middlewares/rateLimiter');
 const {
     registerValidation,
     loginValidation,
@@ -13,14 +19,31 @@ const {
     resetPasswordValidation,
 } = require('../middlewares/validators');
 
-router.post('/register', registerValidation, authController.register);
-router.post('/verify-otp', otpValidation, authController.verifyOTP);
-router.post('/resend-otp', forgotPasswordValidation, authController.resendOTP);
+// ── Registration: 3 per hour (prevents mass account creation) ──
+router.post('/register', registerLimiter, registerValidation, authController.register);
+
+// ── OTP Verification: 5 per 15 min (prevents brute-force OTP guessing) ──
+router.post('/verify-otp', otpLimiter, otpValidation, authController.verifyOTP);
+
+// ── Resend OTP: 3 per 15 min (prevents email flooding) ──
+router.post('/resend-otp', resendOtpLimiter, forgotPasswordValidation, authController.resendOTP);
+
+// ── Login: 5 per 15 min (brute-force defense) ──
 router.post('/login', loginLimiter, loginValidation, authController.login);
+
+// ── Logout: no rate limit needed (authenticated) ──
 router.post('/logout', authController.logout);
+
+// ── Token refresh: no aggressive limit (browser auto-refreshes) ──
 router.post('/refresh', authController.refresh);
-router.post('/forgot-password', forgotPasswordValidation, authController.forgotPassword);
-router.post('/reset-password', resetPasswordValidation, authController.resetPassword);
+
+// ── Forgot password: 3 per 15 min (prevents email flood + enumeration) ──
+router.post('/forgot-password', passwordResetLimiter, forgotPasswordValidation, authController.forgotPassword);
+
+// ── Reset password: 3 per 15 min ──
+router.post('/reset-password', passwordResetLimiter, resetPasswordValidation, authController.resetPassword);
+
+// ── Get current user: authenticated ──
 router.get('/me', authenticate, authController.me);
 
 module.exports = router;

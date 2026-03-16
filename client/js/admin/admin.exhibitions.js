@@ -77,7 +77,7 @@ async function loadAdminExhibitions() {
             });
         }
     } catch (err) {
-        Toast.error('Failed to load exhibitions.');
+        Toast.error(__t?.failedLoad || 'Failed to load exhibitions.');
         console.error('[admin.exhibitions] loadAdminExhibitions error:', err);
     }
 }
@@ -173,7 +173,7 @@ async function saveExhibition(e) {
     // Validate required fields on the frontend first
     const title = document.getElementById('exhTitle').value.trim();
     if (!title) {
-        Toast.error('Title is required.');
+        Toast.error(__t?.titleRequired || 'Title is required.');
         return;
     }
 
@@ -191,15 +191,15 @@ async function saveExhibition(e) {
 
         if (editingExhibitionId) {
             await API.putForm(`/exhibitions/${editingExhibitionId}`, formData);
-            Toast.success('Exhibition updated!');
+            Toast.success(__t?.exhibitionUpdated || 'Exhibition updated!');
         } else {
             await API.postForm('/exhibitions', formData);
-            Toast.success('Exhibition created!');
+            Toast.success(__t?.exhibitionCreated || 'Exhibition created!');
         }
         closeExhibitionModal();
         loadAdminExhibitions();
     } catch (err) {
-        Toast.error(err.message || 'Failed to save exhibition.');
+        Toast.error(err.message || (__t?.failedSave || 'Failed to save exhibition.'));
         console.error('[admin.exhibitions] saveExhibition error:', err);
     } finally {
         setLoading(btn, false);
@@ -210,14 +210,14 @@ async function saveExhibition(e) {
 //  DELETE
 // ══════════════════════════════════════════
 async function deleteExhibition(id, title) {
-    const ok = await glassConfirm('Delete Exhibition', `Delete "${title}"? This cannot be undone.`, 'danger');
+    const ok = await glassConfirm(__t?.deleteExhibition || 'Delete Exhibition', `${__t?.confirmDeleteExh || 'Delete'} "${title}"? ${__t?.confirmDeactivate || 'This cannot be undone.'}`, 'danger');
     if (!ok) return;
     try {
         await API.delete(`/exhibitions/${id}`);
-        Toast.success('Exhibition deleted.');
+        Toast.success(__t?.exhibitionDeleted || 'Exhibition deleted.');
         loadAdminExhibitions();
     } catch (err) {
-        Toast.error(err.message || 'Failed to delete exhibition.');
+        Toast.error(err.message || (__t?.failedSave || 'Failed to delete exhibition.'));
     }
 }
 

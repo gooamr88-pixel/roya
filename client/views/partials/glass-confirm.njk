@@ -1,0 +1,19 @@
+{# ═══════════════════════════════════════════════
+   FROSTED GLASS CONFIRMATION MODAL (shared partial)
+   FIX (F7): Extracted from admin.njk and dashboard.njk
+   to eliminate duplicate markup. Include via:
+     {% include "partials/glass-confirm.njk" %}
+   ═══════════════════════════════════════════════ #}
+<div class="glass-modal-overlay" id="glassConfirmOverlay" role="dialog" aria-modal="true">
+  <div class="glass-modal" id="glassConfirmModal">
+    <div class="glass-modal-icon warning" id="glassConfirmIcon">
+      <i class="fas fa-exclamation-triangle" id="glassConfirmIconInner"></i>
+    </div>
+    <h3 id="glassConfirmTitle">{{ t.admin.confirmTitle or 'Are you sure?' }}</h3>
+    <p id="glassConfirmMessage">{{ t.admin.confirmMessage or 'This action cannot be undone.' }}</p>
+    <div class="glass-modal-actions">
+      <button class="btn btn-secondary" id="glassConfirmCancel">{{ t.admin.cancelBtn or 'Cancel' }}</button>
+      <button class="btn btn-danger" id="glassConfirmOk">{{ t.admin.confirmBtn or 'Confirm' }}</button>
+    </div>
+  </div>
+</div>

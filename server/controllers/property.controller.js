@@ -1,119 +1,90 @@
 // ═══════════════════════════════════════════════
-// Property Controller
+// Property Controller — Thin HTTP layer
 // ═══════════════════════════════════════════════
-const { query } = require('../config/database');
 const { AppError } = require('../middlewares/errorHandler');
+const { asyncHandler, parseBool } = require('../utils/helpers');
+const propertyRepo = require('../repositories/property.repository');
 
 /**
- * parseBool — safely coerce FormData / JSON boolean values.
- * FormData sends booleans as strings ('true', 'false', '1', '0').
- * JSON PUT sends real booleans. This handles both.
+ * GET /api/properties
  */
-function parseBool(val) {
-    if (typeof val === 'boolean') return val;
-    return val === '1' || val === 'true';
-}
+const getAll = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const type = req.query.type;
 
+    const { rows, pagination } = await propertyRepo.findAll({ page, limit, type });
+    res.json({ success: true, data: { properties: rows, pagination } });
+});
 
-const getAll = async (req, res, next) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 12;
-        const offset = (page - 1) * limit;
-        const type = req.query.type;
-        let where = 'WHERE is_active = TRUE';
-        const params = [limit, offset];
-        let countWhere = 'WHERE is_active = TRUE';
-        const countParams = [];
-        if (type) {
-            where += ` AND property_type = $3`;
-            params.push(type);
-            countWhere += ` AND property_type = $1`;
-            countParams.push(type);
-        }
+/**
+ * GET /api/properties/:id
+ */
+const getById = asyncHandler(async (req, res) => {
+    const property = await propertyRepo.findById(req.params.id);
+    if (!property) throw new AppError('Property not found.', 404);
+    res.json({ success: true, data: { property } });
+});
 
-        const [properties, countResult] = await Promise.all([
-            query(`SELECT * FROM properties ${where} ORDER BY created_at DESC LIMIT $1 OFFSET $2`, params),
-            query(`SELECT COUNT(*) FROM properties ${countWhere}`, countParams),
-        ]);
+/**
+ * POST /api/properties
+ */
+const create = asyncHandler(async (req, res) => {
+    const { title, description, price, location, area_sqm, bedrooms, bathrooms, property_type } = req.body;
+    let images = [];
+    if (req.files && req.files.length > 0) {
+        const { processAndUploadMultiple } = require('../services/upload.service');
+        const uploaded = await processAndUploadMultiple(req.files, 'properties');
+        images = uploaded.map(u => u.url);
+    }
+    const property = await propertyRepo.create({
+        title, description, price, location,
+        areaSqm: area_sqm, bedrooms, bathrooms, propertyType: property_type, images,
+    });
+    res.status(201).json({ success: true, data: { property } });
+});
 
-        res.json({
-            success: true,
-            data: {
-                properties: properties.rows,
-                pagination: { page, limit, total: parseInt(countResult.rows[0].count), totalPages: Math.ceil(parseInt(countResult.rows[0].count) / limit) },
-            },
-        });
-    } catch (err) { next(err); }
-};
+/**
+ * PUT /api/properties/:id
+ */
+const update = asyncHandler(async (req, res) => {
+    const stringFields = ['title', 'description', 'location', 'property_type'];
+    const numericFields = ['price', 'area_sqm', 'bedrooms', 'bathrooms'];
+    const boolFields = ['is_active', 'is_featured'];
 
-const getById = async (req, res, next) => {
-    try {
-        const result = await query('SELECT * FROM properties WHERE id = $1', [req.params.id]);
-        if (result.rows.length === 0) throw new AppError('Property not found.', 404);
-        res.json({ success: true, data: { property: result.rows[0] } });
-    } catch (err) { next(err); }
-};
+    const updates = []; const values = []; let i = 1;
 
-const create = async (req, res, next) => {
-    try {
-        const { title, description, price, location, area_sqm, bedrooms, bathrooms, property_type } = req.body;
-        let images = [];
-        if (req.files && req.files.length > 0) {
-            const { processAndUploadMultiple } = require('../services/upload.service');
-            const uploaded = await processAndUploadMultiple(req.files, 'properties');
-            images = uploaded.map(u => u.url);
-        }
-        const result = await query(
-            `INSERT INTO properties (title, description, price, location, area_sqm, bedrooms, bathrooms, property_type, images)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-            [title, description || '', parseFloat(price) || 0, location || null, parseFloat(area_sqm) || null, parseInt(bedrooms) || null, parseInt(bathrooms) || null, property_type || 'residential', JSON.stringify(images)]
-        );
-        res.status(201).json({ success: true, data: { property: result.rows[0] } });
-    } catch (err) { next(err); }
-};
+    for (const f of stringFields) {
+        if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(req.body[f]); }
+    }
+    for (const f of numericFields) {
+        if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(parseFloat(req.body[f]) || null); }
+    }
+    for (const f of boolFields) {
+        if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(parseBool(req.body[f])); }
+    }
 
-const update = async (req, res, next) => {
-    try {
-        // Regular string fields — passed through directly
-        const stringFields = ['title', 'description', 'location', 'property_type'];
-        // Numeric fields
-        const numericFields = ['price', 'area_sqm', 'bedrooms', 'bathrooms'];
-        // Boolean fields that need parseBool coercion (B2/B7 Fix)
-        const boolFields = ['is_active', 'is_featured'];
+    if (req.files && req.files.length > 0) {
+        const { processAndUploadMultiple } = require('../services/upload.service');
+        const uploaded = await processAndUploadMultiple(req.files, 'properties');
+        updates.push(`images = $${i++}`);
+        values.push(JSON.stringify(uploaded.map(u => u.url)));
+    }
 
-        const updates = []; const values = []; let i = 1;
+    if (updates.length === 0) throw new AppError('No fields to update.', 400);
 
-        for (const f of stringFields) {
-            if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(req.body[f]); }
-        }
-        for (const f of numericFields) {
-            if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(parseFloat(req.body[f]) || null); }
-        }
-        for (const f of boolFields) {
-            if (req.body[f] !== undefined) { updates.push(`${f} = $${i++}`); values.push(parseBool(req.body[f])); }
-        }
+    const property = await propertyRepo.update(req.params.id, updates, values);
+    if (!property) throw new AppError('Property not found.', 404);
+    res.json({ success: true, data: { property } });
+});
 
-        if (req.files && req.files.length > 0) {
-            const { processAndUploadMultiple } = require('../services/upload.service');
-            const uploaded = await processAndUploadMultiple(req.files, 'properties');
-            updates.push(`images = $${i++}`); values.push(JSON.stringify(uploaded.map(u => u.url)));
-        }
-        if (updates.length === 0) throw new AppError('No fields to update.', 400);
-        updates.push('updated_at = CURRENT_TIMESTAMP');
-        values.push(req.params.id);
-        const result = await query(`UPDATE properties SET ${updates.join(', ')} WHERE id = $${i} RETURNING *`, values);
-        if (result.rows.length === 0) throw new AppError('Property not found.', 404);
-        res.json({ success: true, data: { property: result.rows[0] } });
-    } catch (err) { next(err); }
-};
-
-const remove = async (req, res, next) => {
-    try {
-        const result = await query('UPDATE properties SET is_active = FALSE WHERE id = $1 RETURNING id', [req.params.id]);
-        if (result.rows.length === 0) throw new AppError('Property not found.', 404);
-        res.json({ success: true, message: 'Property deactivated.' });
-    } catch (err) { next(err); }
-};
+/**
+ * DELETE /api/properties/:id
+ */
+const remove = asyncHandler(async (req, res) => {
+    const result = await propertyRepo.softDelete(req.params.id);
+    if (!result) throw new AppError('Property not found.', 404);
+    res.json({ success: true, message: 'Property deactivated.' });
+});
 
 module.exports = { getAll, getById, create, update, remove };

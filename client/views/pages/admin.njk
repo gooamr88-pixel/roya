@@ -9,45 +9,7 @@
 {% block pageCss %}
   <link rel="stylesheet" href="/css/dashboard.css">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
-  <style>
-    /* ── Topbar theme btn for Admin layout if added ── */
-  </style>
-  <style>
-    /* ── Executive Metric Cards (inline for admin-only) ── */
-    .exec-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px; }
-    .exec-card { background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:var(--transition); }
-    .exec-card:hover { transform:translateY(-4px);box-shadow:var(--shadow-glow);border-color:rgba(212,175,55,0.2); }
-    .exec-card .exec-icon { width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:16px; }
-    .exec-card .exec-icon.revenue { background:rgba(16,185,129,0.1);color:#10b981; }
-    .exec-card .exec-icon.conversion { background:rgba(59,130,246,0.1);color:#3b82f6; }
-    .exec-card .exec-icon.content { background:rgba(168,85,247,0.1);color:#a855f7; }
-    .exec-card .exec-icon.support { background:rgba(245,158,11,0.1);color:#f59e0b; }
-    .exec-card .exec-value { font-size:1.8rem;font-weight:800;margin-bottom:4px; }
-    .exec-card .exec-label { font-size:0.85rem;color:var(--text-2); }
-    .exec-card .exec-bar { height:4px;background:var(--body-bg);border-radius:4px;margin-top:12px;overflow:hidden; }
-    .exec-card .exec-bar-fill { height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
-    .exec-bar-fill.green { background:linear-gradient(90deg,#10b981,#34d399); }
-    .exec-bar-fill.blue { background:linear-gradient(90deg,#3b82f6,#60a5fa); }
-    .exec-bar-fill.purple { background:linear-gradient(90deg,#a855f7,#c084fc); }
-    .exec-bar-fill.amber { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
-    .role-select { width:auto;padding:3px 8px;font-size:0.78rem;border-radius:6px;background:var(--body-bg);border:1px solid var(--border);color:var(--text-1); }
-    .featured-star { cursor:pointer;font-size:1rem;transition:color 0.2s,transform 0.2s; }
-    .featured-star:hover { transform:scale(1.2); }
-    .featured-star.active { color:#f59e0b; }
-    .featured-star.inactive { color:var(--text-3); }
-    /* ── Responsive chart grid: collapses to 1 col on tablet/mobile ── */
-    .charts-section { display:grid;grid-template-columns:1fr min(380px, 100%);gap:22px;margin-bottom:28px; }
-    @media (max-width:900px) { .charts-section { grid-template-columns:1fr; } }
-    /* Charts card styles preserved from inline original */
-    .chart-card { background:#0e0e14;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:border-color 0.3s; }
-    .chart-card:hover { border-color:rgba(212,175,55,0.22); }
-    .chart-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
-    .chart-card-header h3 { font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.82); }
-    .chart-card-header .chart-subtitle { font-size:0.76rem;color:rgba(255,255,255,0.3);margin-top:2px; }
-    #revenueChart,#distributionChart { min-height:260px; }
-    .internal-note { background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:0.82rem;color:var(--text-2); }
-    .internal-note-label { font-size:0.7rem;font-weight:700;text-transform:uppercase;color:#3b82f6;margin-bottom:4px; }
-  </style>
+  {# FIX (F5): All admin styles moved to dashboard.css — no more inline <style> #}
 {% endblock %}
 
 {% block body %}
@@ -739,23 +701,62 @@
   </div>
 
   {# ══════ FROSTED GLASS CONFIRMATION MODAL ══════ #}
-  <div class="glass-modal-overlay" id="glassConfirmOverlay" role="dialog" aria-modal="true">
-    <div class="glass-modal" id="glassConfirmModal">
-      <div class="glass-modal-icon warning" id="glassConfirmIcon">
-        <i class="fas fa-exclamation-triangle" id="glassConfirmIconInner"></i>
-      </div>
-      <h3 id="glassConfirmTitle">{{ t.admin.confirmTitle }}</h3>
-      <p id="glassConfirmMessage">{{ t.admin.confirmMessage }}</p>
-      <div class="glass-modal-actions">
-        <button class="btn btn-secondary" id="glassConfirmCancel">{{ t.admin.cancelBtn }}</button>
-        <button class="btn btn-danger" id="glassConfirmOk">{{ t.admin.confirmBtn }}</button>
-      </div>
-    </div>
-  </div>
+  {# FIX (F7): Now uses shared partial instead of inline duplicate #}
+  {% include "partials/glass-confirm.njk" %}
 
 {% endblock %}
 
 {% block pageScripts %}
+  {# FIX (F6): Inject i18n strings for client-side admin JS #}
+  <script>
+    window.__t = {
+      serviceUpdated:    {{ t.admin.serviceUpdated    | default('Service updated!')       | dump | safe }},
+      serviceCreated:    {{ t.admin.serviceCreated    | default('Service created!')       | dump | safe }},
+      serviceDeactivated:{{ t.admin.serviceDeactivated| default('Service deactivated.')   | dump | safe }},
+      propertyUpdated:   {{ t.admin.propertyUpdated   | default('Property updated!')     | dump | safe }},
+      propertyCreated:   {{ t.admin.propertyCreated   | default('Property created!')     | dump | safe }},
+      propertyDeactivated:{{ t.admin.propertyDeactivated| default('Property deactivated.')| dump | safe }},
+      exhibitionUpdated: {{ t.admin.exhibitionUpdated | default('Exhibition updated!')   | dump | safe }},
+      exhibitionCreated: {{ t.admin.exhibitionCreated | default('Exhibition created!')   | dump | safe }},
+      exhibitionDeleted: {{ t.admin.exhibitionDeleted | default('Exhibition deleted.')   | dump | safe }},
+      jobUpdated:        {{ t.admin.jobUpdated        | default('Job updated!')          | dump | safe }},
+      jobCreated:        {{ t.admin.jobCreated        | default('Job created!')          | dump | safe }},
+      jobDeactivated:    {{ t.admin.jobDeactivated    | default('Job deactivated.')      | dump | safe }},
+      portfolioUpdated:  {{ t.admin.portfolioUpdated  | default('Portfolio updated!')    | dump | safe }},
+      portfolioCreated:  {{ t.admin.portfolioCreated  | default('Portfolio created!')    | dump | safe }},
+      portfolioDeactivated:{{ t.admin.portfolioDeactivated| default('Portfolio deactivated.')| dump | safe }},
+      markedFeatured:    {{ t.admin.markedFeatured    | default('Marked as featured!')   | dump | safe }},
+      removedFeatured:   {{ t.admin.removedFeatured   | default('Removed from featured.')| dump | safe }},
+      failedLoad:        {{ t.admin.failedLoad        | default('Failed to load.')       | dump | safe }},
+      failedSave:        {{ t.admin.failedSave        | default('Failed to save.')       | dump | safe }},
+      titleRequired:     {{ t.admin.titleRequired     | default('Title is required.')    | dump | safe }},
+      exported:          {{ t.admin.exported          | default('exported!')             | dump | safe }},
+      deactivateService: {{ t.admin.deactivateService | default('Deactivate Service')    | dump | safe }},
+      deactivateProperty:{{ t.admin.deactivateProperty| default('Deactivate Property')   | dump | safe }},
+      deactivateJob:     {{ t.admin.deactivateJob     | default('Deactivate Job')        | dump | safe }},
+      deactivatePortfolio:{{ t.admin.deactivatePortfolio| default('Deactivate Item')     | dump | safe }},
+      deleteExhibition:  {{ t.admin.deleteExhibition  | default('Delete Exhibition')     | dump | safe }},
+      confirmDeactivate: {{ t.admin.confirmDeactivate | default('Are you sure you want to deactivate this item?') | dump | safe }},
+      confirmDeleteExh:  {{ t.admin.confirmDeleteExh  | default('This cannot be undone.')| dump | safe }},
+      logOut:            {{ t.admin.logOut            | default('Log Out')               | dump | safe }},
+      logOutMessage:     {{ t.admin.logOutMessage     | default('Are you sure you want to log out of the admin panel?') | dump | safe }},
+      bulkDeactivate:    {{ t.admin.bulkDeactivate    | default('Bulk Deactivate')       | dump | safe }},
+      clearAllLogs:      {{ t.admin.clearAllLogs      | default('Clear All Logs')        | dump | safe }},
+      clearLogsMessage:  {{ t.admin.clearLogsMessage  | default('Are you sure you want to permanently delete all login logs? This action cannot be undone.') | dump | safe }},
+      logsCleared:       {{ t.admin.logsCleared       | default('All login logs have been cleared.') | dump | safe }},
+      roleChanged:       {{ t.admin.roleChanged       | default('Role changed')          | dump | safe }},
+      userBanned:        {{ t.admin.userBanned        | default('User banned successfully.') | dump | safe }},
+      userUnbanned:      {{ t.admin.userUnbanned      | default('User unbanned successfully.') | dump | safe }},
+      banUser:           {{ t.admin.banUser           | default('Ban User')              | dump | safe }},
+      unbanUser:         {{ t.admin.unbanUser         | default('Unban User')            | dump | safe }},
+      banConfirm:        {{ t.admin.banConfirm        | default('Are you sure you want to ban this user?') | dump | safe }},
+      unbanConfirm:      {{ t.admin.unbanConfirm      | default('Are you sure you want to unban this user?') | dump | safe }},
+      noResultsFound:    {{ t.admin.noResultsFound    | default('No results found')      | dump | safe }},
+      selected:          {{ t.admin.selected          | default('selected')              | dump | safe }},
+      deleteSelected:    {{ t.admin.deleteSelected    | default('Delete Selected')       | dump | safe }},
+      deactivated:       {{ t.admin.deactivated       | default('deactivated.')          | dump | safe }},
+    };
+  </script>
   <script src="/js/admin/admin.init.js" defer></script>
   <script src="/js/admin/admin.stats.js" defer></script>
   <script src="/js/admin/admin.orders.js" defer></script>
