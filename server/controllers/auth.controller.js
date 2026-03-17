@@ -5,6 +5,7 @@ const authService = require('../services/auth.service');
 const tokenService = require('../services/token.service');
 const { asyncHandler } = require('../utils/helpers');
 const { AppError } = require('../middlewares/errorHandler');
+const config = require('../config');
 
 /**
  * POST /api/auth/register
