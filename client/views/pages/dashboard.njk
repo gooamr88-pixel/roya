@@ -8,6 +8,7 @@
 
 {% block pageCss %}
   <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/onboarding.css">
 {% endblock %}
 
 {% block body %}
@@ -283,7 +284,7 @@
                     <input class="form-input" type="text" id="profileNameInput">
                   </div>
                   <div class="form-group">
-                    <label class="form-label" for="profilePhoneInput">{{ t.dashboard.phone }}</label>
+                    <label class="form-label" for="profilePhoneInput">{{ t.dashboard.phone }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.dashboard.tooltipPhone | default('Your phone number for order updates and support. Include country code.') }}</span></span></label>
                     <input class="form-input" type="tel" id="profilePhoneInput">
                   </div>
                 </div>
@@ -293,7 +294,7 @@
 
             <div class="dashboard-card">
               <div class="card-header">
-                <h3><i class="fas fa-lock"></i> {{ t.dashboard.changePassword }}</h3>
+                <h3><i class="fas fa-lock"></i> {{ t.dashboard.changePassword }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.dashboard.tooltipPassword | default('Minimum 8 characters. Use upper-case, numbers, and symbols for better security.') }}</span></span></h3>
               </div>
               <form id="changePasswordForm">
                 <div class="form-group">
@@ -377,9 +378,29 @@
       logOutConfirm:        '{{ t.dashboard.logOutConfirm | default("Are you sure you want to log out?") }}',
       confirm:              '{{ t.dashboard.confirm | default("Confirm") }}',
       noActiveOrders:       '{{ t.dashboard.noActiveOrders | default("No active orders") }}',
+      emptyOrdersDesc:      '{{ t.dashboard.emptyOrdersDesc | default("Place your first order to get started with our services.") }}',
+      emptyOrdersCta:       '{{ t.dashboard.emptyOrdersCta | default("Browse Services") }}',
+      emptyOrdersFilterDesc:'{{ t.dashboard.emptyOrdersFilterDesc | default("Try adjusting your filters or place a new order.") }}',
+      emptyInvoicesDesc:    '{{ t.dashboard.emptyInvoicesDesc | default("Invoices will appear here once you place your first order.") }}',
+      tourWelcomeTitle:     '{{ t.onboarding.welcomeTitle | default("Welcome to Roya!") }}',
+      tourWelcomeDesc:      '{{ t.onboarding.welcomeDesc | default("Let us give you a quick tour of your dashboard.") }}',
+      tourStatsTitle:       '{{ t.onboarding.statsTitle | default("Your Overview") }}',
+      tourStatsDesc:        '{{ t.onboarding.statsDesc | default("See your active orders, completed projects, and spending at a glance.") }}',
+      tourSidebarTitle:     '{{ t.onboarding.sidebarTitle | default("Navigation") }}',
+      tourSidebarDesc:      '{{ t.onboarding.sidebarDesc | default("Use the sidebar to switch between orders, services, and more.") }}',
+      tourServicesTitle:    '{{ t.onboarding.servicesTitle | default("Browse Services") }}',
+      tourServicesDesc:     '{{ t.onboarding.servicesDesc | default("Explore our services and place orders with a single click.") }}',
+      tourNotifTitle:       '{{ t.onboarding.notifTitle | default("Notifications") }}',
+      tourNotifDesc:        '{{ t.onboarding.notifDesc | default("Stay updated on order status changes and important announcements.") }}',
+      tourProfileTitle:     '{{ t.onboarding.profileTitle | default("Your Profile") }}',
+      tourProfileDesc:      '{{ t.onboarding.profileDesc | default("Manage your personal information and security settings here.") }}',
+      tourNext:             '{{ t.onboarding.next | default("Next") }}',
+      tourSkip:             '{{ t.onboarding.skip | default("Skip Tour") }}',
+      tourFinish:           '{{ t.onboarding.finish | default("Get Started!") }}',
     };
   </script>
   <script src="/js/dashboard.js" defer></script>
+  <script src="/js/onboarding.js" defer></script>
 
 {# ═════ FROSTED GLASS CONFIRMATION MODAL ═════ #}
 {# FIX (F7): Now uses shared partial instead of inline duplicate #}

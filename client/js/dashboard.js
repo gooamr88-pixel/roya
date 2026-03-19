@@ -100,6 +100,17 @@ function relativeTime(dateStr) {
     return Utils.formatDate(dateStr);
 }
 
+// ── Reusable Empty State ──
+function renderEmptyState(icon, title, desc, ctaText, ctaAction) {
+    const ctaHtml = ctaText ? `<button class="empty-cta" onclick="${esc(ctaAction)}"><i class="fas fa-plus"></i> ${esc(ctaText)}</button>` : '';
+    return `<div class="empty-state-card">
+        <div class="empty-icon"><i class="fas ${esc(icon)}"></i></div>
+        <div class="empty-title">${esc(title)}</div>
+        <div class="empty-desc">${esc(desc)}</div>
+        ${ctaHtml}
+    </div>`;
+}
+
 // ── Navigation ──
 function initNavigation() {
     document.querySelectorAll('[data-view]').forEach(link => {
@@ -254,7 +265,7 @@ async function loadOverview() {
         // ── Recent orders table ──
         const tbody = document.getElementById('recentOrdersTable');
         if (orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding:40px;color:var(--text-muted)"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px"></i>' + ((window.__dt || {}).noOrdersYet || 'No orders yet') + '</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5">' + renderEmptyState('fa-shopping-bag', (window.__dt||{}).noOrdersYet||'No orders yet', (window.__dt||{}).emptyOrdersDesc||'Place your first order to get started with our services.', (window.__dt||{}).emptyOrdersCta||'Browse Services', "switchView('services')") + '</td></tr>';
         } else {
             tbody.innerHTML = orders.slice(0, 5).map(o => `
                 <tr>
@@ -365,10 +376,7 @@ async function loadOrders(page = 1) {
         const container = document.getElementById('ordersTable');
 
         if (orders.length === 0) {
-            container.innerHTML = `<div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--text-3)">
-                <i class="fas fa-inbox" style="font-size:2.5rem;display:block;margin-bottom:12px;opacity:0.4"></i>
-                No orders found
-            </div>`;
+            container.innerHTML = renderEmptyState('fa-shopping-bag', (window.__dt||{}).noOrdersFound||'No orders found', (window.__dt||{}).emptyOrdersFilterDesc||'Try adjusting your filters or place a new order.', (window.__dt||{}).emptyOrdersCta||'Browse Services', "switchView('services')");
         } else {
             container.innerHTML = orders.map(o => {
                 const canCancel = o.status === 'pending';
@@ -461,7 +469,7 @@ async function loadExhibitions() {
         const exhibitions = data.data.exhibitions;
 
         if (exhibitions.length === 0) {
-            grid.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-calendar-alt"></i></div><h3>' + ((window.__dt||{}).noExhibitions||'No exhibitions') + '</h3><p>' + ((window.__dt||{}).checkBackExhibitions||'Check back soon for upcoming events.') + '</p></div>';
+            grid.innerHTML = renderEmptyState('fa-calendar-alt', (window.__dt||{}).noExhibitions||'No exhibitions', (window.__dt||{}).checkBackExhibitions||'Check back soon for upcoming events and exhibitions.', '', '');
         } else {
             grid.innerHTML = exhibitions.map(e => `
                 <div class="exhibition-card">
@@ -487,7 +495,7 @@ async function loadNotifications(page = 1) {
         const container = document.getElementById('notificationsList');
 
         if (notifs.length === 0) {
-            container.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-bell-slash"></i></div><h3>' + ((window.__dt||{}).noNotifications||'No notifications') + '</h3><p>' + ((window.__dt||{}).allCaughtUp||'You\'re all caught up!') + '</p></div>';
+            container.innerHTML = renderEmptyState('fa-bell-slash', (window.__dt||{}).noNotifications||'No notifications', (window.__dt||{}).allCaughtUp||'You\'re all caught up! We\'ll notify you when something needs your attention.', '', '');
         } else {
             container.innerHTML = notifs.map(n => `
                 <div class="card" style="margin-bottom:10px;opacity:${n.is_read ? '0.6' : '1'}">
@@ -517,7 +525,7 @@ async function loadInvoices(page = 1) {
         const tbody = document.getElementById('invoicesTable');
 
         if (invoices.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-muted)">' + ((window.__dt||{}).noInvoicesYet||'No invoices yet') + '</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6">' + renderEmptyState('fa-file-invoice-dollar', (window.__dt||{}).noInvoicesYet||'No invoices yet', (window.__dt||{}).emptyInvoicesDesc||'Invoices will appear here once you place your first order.', (window.__dt||{}).emptyOrdersCta||'Browse Services', "switchView('services')") + '</td></tr>';
         } else {
             tbody.innerHTML = invoices.map(i => `
                 <tr>

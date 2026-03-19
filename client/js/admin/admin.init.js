@@ -238,6 +238,68 @@ function switchFormTab(activeTabBtnId, formId) {
 }
 
 // ══════════════════════════════════════════
+//  WIZARD MULTI-STEP NAVIGATION
+//  Used by Job and Portfolio modals
+// ══════════════════════════════════════════
+function wizardNext(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const panes = form.querySelectorAll('.wizard-pane');
+    const stepsContainer = form.querySelector('.wizard-steps');
+    let currentIdx = -1;
+    panes.forEach((p, i) => { if (p.classList.contains('active')) currentIdx = i; });
+    if (currentIdx < 0 || currentIdx >= panes.length - 1) return;
+
+    // Validate required fields in current pane before advancing
+    const currentPane = panes[currentIdx];
+    const requiredFields = currentPane.querySelectorAll('[required]');
+    let valid = true;
+    requiredFields.forEach(f => { if (!f.value.trim()) { f.focus(); valid = false; } });
+    if (!valid) return;
+
+    panes[currentIdx].classList.remove('active');
+    panes[currentIdx + 1].classList.add('active');
+    updateWizardSteps(stepsContainer, currentIdx + 1);
+}
+
+function wizardPrev(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const panes = form.querySelectorAll('.wizard-pane');
+    const stepsContainer = form.querySelector('.wizard-steps');
+    let currentIdx = -1;
+    panes.forEach((p, i) => { if (p.classList.contains('active')) currentIdx = i; });
+    if (currentIdx <= 0) return;
+
+    panes[currentIdx].classList.remove('active');
+    panes[currentIdx - 1].classList.add('active');
+    updateWizardSteps(stepsContainer, currentIdx - 1);
+}
+
+function updateWizardSteps(container, activeIdx) {
+    if (!container) return;
+    const steps = container.querySelectorAll('.wizard-step');
+    const lines = container.querySelectorAll('.wizard-step-line');
+    steps.forEach((step, i) => {
+        step.classList.remove('active', 'completed');
+        if (i < activeIdx) step.classList.add('completed');
+        else if (i === activeIdx) step.classList.add('active');
+    });
+    lines.forEach((line, i) => {
+        line.classList.toggle('done', i < activeIdx);
+    });
+}
+
+function resetWizard(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const panes = form.querySelectorAll('.wizard-pane');
+    const stepsContainer = form.querySelector('.wizard-steps');
+    panes.forEach((p, i) => p.classList.toggle('active', i === 0));
+    updateWizardSteps(stepsContainer, 0);
+}
+
+// ══════════════════════════════════════════
 //  FEATURED TOGGLE (Shared by Services + Properties)
 //  FIX (F4): Moved here from admin.properties.js so all
 //  modules can use it without depending on properties loading first.

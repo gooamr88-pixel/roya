@@ -407,11 +407,11 @@
           {# Responsive 2-col grid — collapses on mobile #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
-              <label class="form-label">{{ t.admin.thPrice }} ($)</label>
+              <label class="form-label">{{ t.admin.thPrice }} ($) <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipServicePrice | default('Set the base price for this service. Clients will see this amount when browsing.') }}</span></span></label>
               <input class="form-input" type="number" id="svcPrice" min="0" step="0.01" placeholder="0.00">
             </div>
             <div class="form-group">
-              <label class="form-label">{{ t.admin.thCategory }}</label>
+              <label class="form-label">{{ t.admin.thCategory }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipCategory | default('Categorize this service so clients can filter and find it easily.') }}</span></span></label>
               <select class="form-select" id="svcCategory">
             <option value="general">{{ t.admin.catGeneral }}</option>
                 <option value="advertising">{{ t.admin.catAdvertising }}</option>
@@ -424,7 +424,7 @@
           {# Checkbox row: use flex-row so it doesn't stack vertically on mobile #}
           <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
             <input type="checkbox" id="svcActive" checked style="width:16px;height:16px;cursor:pointer">
-            <label class="form-label" for="svcActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
+            <label class="form-label" for="svcActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipActiveVisible | default('When unchecked, this item will be hidden from all public-facing pages.') }}</span></span></label>
           </div>
         </div>
 
@@ -483,7 +483,7 @@
           {# Responsive 2-col grid — collapses on mobile #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
-              <label class="form-label">{{ t.admin.thPrice }} ($)</label>
+              <label class="form-label">{{ t.admin.thPrice }} ($) <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipPropertyPrice | default('The listing or asking price for this property in USD.') }}</span></span></label>
               <input class="form-input" type="number" id="propPrice" min="0" step="0.01" placeholder="0.00">
             </div>
             <div class="form-group">
@@ -502,7 +502,7 @@
           {# Responsive 3-col grid — collapses to 1-col on small screens #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px">
             <div class="form-group">
-              <label class="form-label">{{ t.admin.areaLabel }}</label>
+              <label class="form-label">{{ t.admin.areaLabel }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipArea | default('Total built-up area of the property in square meters.') }}</span></span></label>
               <input class="form-input" type="number" id="propArea" min="0" placeholder="450">
             </div>
             <div class="form-group">
@@ -515,7 +515,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">{{ t.admin.propertyType }}</label>
+            <label class="form-label">{{ t.admin.propertyType }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipPropertyType | default('Select the category that best describes this property listing.') }}</span></span></label>
             <select class="form-select" id="propType">
             <option value="residential">{{ t.admin.propTypeResidential }}</option>
               <option value="commercial">{{ t.admin.propTypeCommercial }}</option>
@@ -575,11 +575,11 @@
           {# Responsive 2-col grid — collapses on mobile #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
-              <label class="form-label">{{ t.admin.startDate }}</label>
+              <label class="form-label">{{ t.admin.startDate }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipStartDate | default('The opening date of the exhibition. This will be shown publicly.') }}</span></span></label>
               <input class="form-input" type="date" id="exhStartDate">
             </div>
             <div class="form-group">
-              <label class="form-label">{{ t.admin.endDate }}</label>
+              <label class="form-label">{{ t.admin.endDate }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipEndDate | default('The closing date. Leave empty for single-day events.') }}</span></span></label>
               <input class="form-input" type="date" id="exhEndDate">
             </div>
           </div>
@@ -612,90 +612,166 @@
     </div>
   </div>
 
-  {# ══════ JOB MODAL ══════ #}
+  {# ══════ JOB MODAL (Wizard) ══════ #}
   <div class="modal-overlay" id="jobModal">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="jobModalTitle">{{ t.admin.addJob }}</h3>
         <button type="button" class="modal-close" onclick="closeJobModal()" aria-label="Close"><i class="fas fa-times"></i></button>
       </div>
-      <form onsubmit="event.preventDefault(); saveAdminJob();">
-        <div class="form-group">
-          <label class="form-label">{{ t.admin.thTitle }} *</label>
-          <input class="form-input" type="text" id="jobTitle" placeholder="{{ t.admin.svcTitlePlaceholder }}" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ t.admin.thDescription }}</label>
-          <textarea class="form-textarea" id="jobDescription" rows="3" placeholder="{{ t.admin.svcDescPlaceholder }}"></textarea>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="form-group">
-            <label class="form-label">{{ t.admin.jobCompany }}</label>
-            <input class="form-input" type="text" id="jobCompany">
+      <form id="jobWizardForm" onsubmit="event.preventDefault(); saveAdminJob();">
+        {# Wizard Steps Indicator #}
+        <div class="wizard-steps" id="jobWizardSteps">
+          <div class="wizard-step active" data-step="0">
+            <div class="wizard-step-dot">1</div>
+            <span class="wizard-step-label">{{ t.admin.wizardBasics | default('Basics') }}</span>
           </div>
-          <div class="form-group">
-            <label class="form-label">{{ t.admin.jobLocation }}</label>
-            <input class="form-input" type="text" id="jobLocation">
+          <div class="wizard-step-line"></div>
+          <div class="wizard-step" data-step="1">
+            <div class="wizard-step-dot">2</div>
+            <span class="wizard-step-label">{{ t.admin.wizardDetails | default('Details') }}</span>
           </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="form-group">
-            <label class="form-label">{{ t.admin.jobType }}</label>
-            <select class="form-select" id="jobType">
-              <option value="full_time">{{ t.admin.jobTypeFull }}</option>
-              <option value="part_time">{{ t.admin.jobTypePart }}</option>
-              <option value="remote">{{ t.admin.jobTypeRemote }}</option>
-              <option value="contract">{{ t.admin.jobTypeContract }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">{{ t.admin.jobSalary }}</label>
-            <input class="form-input" type="text" id="jobSalary" placeholder="{{ t.admin.jobSalaryPlaceholder | default('e.g. $3,000 – $5,000') }}">
+          <div class="wizard-step-line"></div>
+          <div class="wizard-step" data-step="2">
+            <div class="wizard-step-dot">3</div>
+            <span class="wizard-step-label">{{ t.admin.wizardPublish | default('Publish') }}</span>
           </div>
         </div>
-        <div class="form-group" style="display:flex;align-items:center;gap:10px">
-          <input type="checkbox" id="jobIsActive" checked style="width:18px;height:18px;cursor:pointer">
-          <label for="jobIsActive" class="form-label" style="margin:0;cursor:pointer">{{ t.admin.activeStatus }}</label>
+
+        {# Step 1: Basics #}
+        <div class="wizard-pane active" data-wizard-pane="0">
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thTitle }} *</label>
+            <input class="form-input" type="text" id="jobTitle" placeholder="{{ t.admin.svcTitlePlaceholder }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thDescription }}</label>
+            <textarea class="form-textarea" id="jobDescription" rows="3" placeholder="{{ t.admin.svcDescPlaceholder }}"></textarea>
+          </div>
+          <div class="wizard-nav">
+            <span></span>
+            <button type="button" class="btn-wizard-next" onclick="wizardNext('jobWizardForm')"><span>{{ t.admin.wizardNext | default('Next') }}</span> <i class="fas fa-arrow-right"></i></button>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary w-full" style="margin-top:12px">
-          <i class="fas fa-save"></i> {{ t.admin.saveJob }}
-        </button>
+
+        {# Step 2: Details #}
+        <div class="wizard-pane" data-wizard-pane="1">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.jobCompany }}</label>
+              <input class="form-input" type="text" id="jobCompany">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.jobLocation }}</label>
+              <input class="form-input" type="text" id="jobLocation">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.jobType }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipJobType | default('Select the employment type. This helps candidates filter relevant listings.') }}</span></span></label>
+              <select class="form-select" id="jobType">
+                <option value="full_time">{{ t.admin.jobTypeFull }}</option>
+                <option value="part_time">{{ t.admin.jobTypePart }}</option>
+                <option value="remote">{{ t.admin.jobTypeRemote }}</option>
+                <option value="contract">{{ t.admin.jobTypeContract }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.jobSalary }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipJobSalary | default('Optional. Specify a range like "$3,000 – $5,000" to attract qualified candidates.') }}</span></span></label>
+              <input class="form-input" type="text" id="jobSalary" placeholder="{{ t.admin.jobSalaryPlaceholder | default('e.g. $3,000 – $5,000') }}">
+            </div>
+          </div>
+          <div class="wizard-nav">
+            <button type="button" class="btn-wizard-back" onclick="wizardPrev('jobWizardForm')"><i class="fas fa-arrow-left"></i> <span>{{ t.admin.wizardBack | default('Back') }}</span></button>
+            <button type="button" class="btn-wizard-next" onclick="wizardNext('jobWizardForm')"><span>{{ t.admin.wizardNext | default('Next') }}</span> <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+
+        {# Step 3: Publish #}
+        <div class="wizard-pane" data-wizard-pane="2">
+          <div class="form-group" style="display:flex;align-items:center;gap:10px">
+            <input type="checkbox" id="jobIsActive" checked style="width:18px;height:18px;cursor:pointer">
+            <label for="jobIsActive" class="form-label" style="margin:0;cursor:pointer">{{ t.admin.activeStatus }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipActiveVisible | default('When unchecked, this item will be hidden from all public-facing pages.') }}</span></span></label>
+          </div>
+          <div class="wizard-nav">
+            <button type="button" class="btn-wizard-back" onclick="wizardPrev('jobWizardForm')"><i class="fas fa-arrow-left"></i> <span>{{ t.admin.wizardBack | default('Back') }}</span></button>
+            <button type="submit" class="btn btn-primary" style="gap:8px"><i class="fas fa-save"></i> {{ t.admin.saveJob }}</button>
+          </div>
+        </div>
       </form>
     </div>
   </div>
 
-  {# ══════ PORTFOLIO MODAL ══════ #}
+  {# ══════ PORTFOLIO MODAL (Wizard) ══════ #}
   <div class="modal-overlay" id="portfolioModal">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="portfolioModalTitle">{{ t.admin.addPortfolio }}</h3>
         <button type="button" class="modal-close" onclick="closePortfolioModal()" aria-label="Close"><i class="fas fa-times"></i></button>
       </div>
-      <form onsubmit="event.preventDefault(); saveAdminPortfolio();">
-        <div class="form-group">
-          <label class="form-label">{{ t.admin.thTitle }} *</label>
-          <input class="form-input" type="text" id="portfolioTitle" required>
+      <form id="portfolioWizardForm" onsubmit="event.preventDefault(); saveAdminPortfolio();">
+        {# Wizard Steps Indicator #}
+        <div class="wizard-steps" id="portfolioWizardSteps">
+          <div class="wizard-step active" data-step="0">
+            <div class="wizard-step-dot">1</div>
+            <span class="wizard-step-label">{{ t.admin.wizardBasics | default('Basics') }}</span>
+          </div>
+          <div class="wizard-step-line"></div>
+          <div class="wizard-step" data-step="1">
+            <div class="wizard-step-dot">2</div>
+            <span class="wizard-step-label">{{ t.admin.tabMedia | default('Media') }}</span>
+          </div>
+          <div class="wizard-step-line"></div>
+          <div class="wizard-step" data-step="2">
+            <div class="wizard-step-dot">3</div>
+            <span class="wizard-step-label">{{ t.admin.wizardPublish | default('Publish') }}</span>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">{{ t.admin.thDescription }}</label>
-          <textarea class="form-textarea" id="portfolioDescription" rows="3"></textarea>
+
+        {# Step 1: Basics #}
+        <div class="wizard-pane active" data-wizard-pane="0">
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thTitle }} *</label>
+            <input class="form-input" type="text" id="portfolioTitle" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.thDescription }}</label>
+            <textarea class="form-textarea" id="portfolioDescription" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.portfolioCategory }}</label>
+            <input class="form-input" type="text" id="portfolioCategory" placeholder="{{ t.admin.portfolioCatPlaceholder | default('e.g. branding, events, digital') }}">
+          </div>
+          <div class="wizard-nav">
+            <span></span>
+            <button type="button" class="btn-wizard-next" onclick="wizardNext('portfolioWizardForm')"><span>{{ t.admin.wizardNext | default('Next') }}</span> <i class="fas fa-arrow-right"></i></button>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">{{ t.admin.portfolioCategory }}</label>
-          <input class="form-input" type="text" id="portfolioCategory" placeholder="{{ t.admin.portfolioCatPlaceholder | default('e.g. branding, events, digital') }}">
+
+        {# Step 2: Media #}
+        <div class="wizard-pane" data-wizard-pane="1">
+          <div class="form-group">
+            <label class="form-label">{{ t.admin.dropZoneTitle }}</label>
+            <input type="file" id="portfolioImages" accept="image/*" multiple class="form-input" style="padding:10px">
+            <div id="portfolioImgPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+          </div>
+          <div class="wizard-nav">
+            <button type="button" class="btn-wizard-back" onclick="wizardPrev('portfolioWizardForm')"><i class="fas fa-arrow-left"></i> <span>{{ t.admin.wizardBack | default('Back') }}</span></button>
+            <button type="button" class="btn-wizard-next" onclick="wizardNext('portfolioWizardForm')"><span>{{ t.admin.wizardNext | default('Next') }}</span> <i class="fas fa-arrow-right"></i></button>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">{{ t.admin.dropZoneTitle }}</label>
-          <input type="file" id="portfolioImages" accept="image/*" multiple class="form-input" style="padding:10px">
-          <div id="portfolioImgPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+
+        {# Step 3: Publish #}
+        <div class="wizard-pane" data-wizard-pane="2">
+          <div class="form-group" style="display:flex;align-items:center;gap:10px">
+            <input type="checkbox" id="portfolioIsActive" checked style="width:18px;height:18px;cursor:pointer">
+            <label for="portfolioIsActive" class="form-label" style="margin:0;cursor:pointer">{{ t.admin.activeStatus }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipActiveVisible | default('When unchecked, this item will be hidden from all public-facing pages.') }}</span></span></label>
+          </div>
+          <div class="wizard-nav">
+            <button type="button" class="btn-wizard-back" onclick="wizardPrev('portfolioWizardForm')"><i class="fas fa-arrow-left"></i> <span>{{ t.admin.wizardBack | default('Back') }}</span></button>
+            <button type="submit" class="btn btn-primary" style="gap:8px"><i class="fas fa-save"></i> {{ t.admin.savePortfolio }}</button>
+          </div>
         </div>
-        <div class="form-group" style="display:flex;align-items:center;gap:10px">
-          <input type="checkbox" id="portfolioIsActive" checked style="width:18px;height:18px;cursor:pointer">
-          <label for="portfolioIsActive" class="form-label" style="margin:0;cursor:pointer">{{ t.admin.activeStatus }}</label>
-        </div>
-        <button type="submit" class="btn btn-primary w-full" style="margin-top:12px">
-          <i class="fas fa-save"></i> {{ t.admin.savePortfolio }}
-        </button>
       </form>
     </div>
   </div>
