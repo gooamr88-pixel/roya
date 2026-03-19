@@ -839,7 +839,7 @@
       aiGenerating:      {{ t.admin.aiGenerating      | default('Generating summary...')  | dump | safe }},
       aiError:           {{ t.admin.aiError           | default('AI is currently resting. Please type manually.') | dump | safe }},
       updateOrderStatus: {{ t.admin.updateOrderStatus | default('Update Order Status')   | dump | safe }},
-      changeStatusTo:    {{ t.admin.changeStatusTo    | default('Change this order\\'s status to') | dump | safe }},
+      changeStatusTo:    {{ t.admin.changeStatusTo    | default('Change status to')      | dump | safe }},
       orderStatusUpdated:{{ t.admin.orderStatusUpdated| default('Order status updated to')| dump | safe }},
       deleteOrder:       {{ t.admin.deleteOrder       | default('Delete Completed Order') | dump | safe }},
       deleteOrderConfirm:{{ t.admin.deleteOrderConfirm| default('Permanently delete order')| dump | safe }},
