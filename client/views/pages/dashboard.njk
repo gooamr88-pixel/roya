@@ -164,6 +164,9 @@
             </button>
           </div>
 
+          {# ── Recommended For You ── #}
+          <div class="recommendations-section" id="aiRecommendations" style="display:none"></div>
+
           <div class="dashboard-card full-width" style="margin-bottom:32px">
             <div class="card-header">
               <h3><i class="fas fa-route"></i> {{ t.dashboard.activeOrderProgress }}</h3>
@@ -397,6 +400,15 @@
       tourNext:             '{{ t.onboarding.next | default("Next") }}',
       tourSkip:             '{{ t.onboarding.skip | default("Skip Tour") }}',
       tourFinish:           '{{ t.onboarding.finish | default("Get Started!") }}',
+      aiGenerate:           '{{ t.dashboard.aiGenerate | default("✨ AI Generate") }}',
+      aiPromptTitle:        '{{ t.dashboard.aiPromptTitle | default("AI Content Assistant") }}',
+      aiPromptPlaceholder:  '{{ t.dashboard.aiPromptPlaceholder | default("Describe your idea briefly, e.g. \"A social media campaign for a coffee brand\"") }}',
+      aiPromptHint:         '{{ t.dashboard.aiPromptHint | default("AI will generate a professional description based on your idea.") }}',
+      aiGenerating:         '{{ t.dashboard.aiGenerating | default("Generating...") }}',
+      aiError:              '{{ t.dashboard.aiError | default("AI is currently resting. Please type manually.") }}',
+      aiTooltip:            '{{ t.dashboard.aiTooltip | default("Let AI write a professional description for you") }}',
+      recommendedForYou:    '{{ t.dashboard.recommendedForYou | default("Recommended For You") }}',
+      recommendedDesc:      '{{ t.dashboard.recommendedDesc | default("Based on your activity") }}',
     };
   </script>
   <script src="/js/dashboard.js" defer></script>
@@ -406,4 +418,25 @@
 {# FIX (F7): Now uses shared partial instead of inline duplicate #}
 {% block pageModals %}
   {% include "partials/glass-confirm.njk" %}
+
+  {# ═════ AI PROMPT MODAL ═════ #}
+  <div class="ai-modal-overlay" id="aiModalOverlay">
+    <div class="ai-modal">
+      <div class="ai-modal-header">
+        <h3><i class="fas fa-wand-magic-sparkles"></i> <span id="aiModalTitle">AI Content Assistant</span></h3>
+        <button class="ai-modal-close" onclick="closeAiModal()">&times;</button>
+      </div>
+      <div class="ai-modal-body">
+        <textarea id="aiPromptInput" rows="3" placeholder="Describe your idea briefly..."></textarea>
+        <div class="ai-modal-hint" id="aiModalHint">AI will generate a professional description based on your idea.</div>
+        <div class="ai-modal-actions">
+          <button class="btn btn-outline btn-sm" onclick="closeAiModal()">{{ t.dashboard.cancel | default('Cancel') }}</button>
+          <button class="btn-ai-generate" id="aiGenerateBtn" onclick="aiGenerate()">
+            <span class="btn-text"><i class="fas fa-wand-magic-sparkles"></i> Generate</span>
+            <span class="ai-spinner"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

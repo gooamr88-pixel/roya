@@ -31,6 +31,18 @@ async function loadStats() {
             if (badge) { badge.textContent = s.unansweredMessages; badge.classList.remove('hidden'); }
         }
 
+        // ── Urgent Indicators ──
+        // Support exec card: highlight if unread messages
+        const execCards = document.querySelectorAll('.exec-card');
+        if (execCards[3] && s.unansweredMessages > 0) {
+            execCards[3].classList.add('has-urgent', 'urgent-pulse');
+        }
+        // Pending stat card: highlight if pending orders
+        const pendingCard = el('aStatPending')?.closest('.stat-card');
+        if (pendingCard && s.pendingOrders > 0) {
+            pendingCard.classList.add('pending-highlight');
+        }
+
         // Secondary stats with animated counters
         animateAdminCounter(el('aStatUsers'), s.totalUsers);
         animateAdminCounter(el('aStatOrders'), s.totalOrders);

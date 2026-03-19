@@ -386,7 +386,16 @@
         "toggleSidebar": "تبديل القائمة الجانبية",
         "profileSettings": "إعدادات الملف الشخصي",
         "goToDashboard": "الذهاب للوحة التحكم",
-        "switchToClientView": "التبديل لعرض العميل"
+        "switchToClientView": "التبديل لعرض العميل",
+        "aiGenerate": "✨ توليد بالذكاء",
+        "aiPromptTitle": "مساعد المحتوى الذكي",
+        "aiPromptPlaceholder": "صف فكرتك بإيجاز، مثال: \"حملة تسويقية لعلامة قهوة\"",
+        "aiPromptHint": "سيقوم الذكاء الاصطناعي بتوليد وصف احترافي بناءً على فكرتك.",
+        "aiGenerating": "جارٍ التوليد...",
+        "aiError": "الذكاء الاصطناعي يستريح حالياً. يرجى الكتابة يدوياً.",
+        "aiTooltip": "دع الذكاء الاصطناعي يكتب وصفاً احترافياً لك",
+        "recommendedForYou": "موصى به لك",
+        "recommendedDesc": "بناءً على نشاطك"
     },
     "admin": {
         "title": "مركز إدارة القيادة — رؤيا",
@@ -593,7 +602,14 @@
         "wizardDetails": "التفاصيل",
         "wizardPublish": "النشر",
         "wizardNext": "التالي",
-        "wizardBack": "السابق"
+        "wizardBack": "السابق",
+        "aiSummarize": "✨ تلخيص",
+        "aiDraft": "مسودة",
+        "aiDraftReply": "✨ مسودة رد ذكي",
+        "aiDrafting": "الذكاء الاصطناعي يكتب رداً...",
+        "aiDraftSuccess": "✨ المسودة جاهزة — راجعها وأرسلها!",
+        "aiGenerating": "جارٍ إنشاء الملخص...",
+        "aiError": "الذكاء الاصطناعي يستريح حالياً. يرجى الكتابة يدوياً."
     },
     "onboarding": {
         "welcomeTitle": "مرحباً بك في رؤيا!",

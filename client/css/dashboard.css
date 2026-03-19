@@ -4253,4 +4253,433 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 
 .wizard-nav .btn-wizard-next:hover {
     background: #E5E7EB;
+}
+
+/* ═══════════════════════════════════════
+   AI SPARKLE BUTTON
+   ═══════════════════════════════════════ */
+.ai-sparkle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(229, 193, 88, 0.3);
+    background: linear-gradient(135deg, rgba(229, 193, 88, 0.1), rgba(229, 193, 88, 0.02));
+    color: var(--gold);
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.ai-sparkle-btn:hover {
+    background: linear-gradient(135deg, rgba(229, 193, 88, 0.2), rgba(229, 193, 88, 0.08));
+    border-color: rgba(229, 193, 88, 0.5);
+    box-shadow: 0 0 16px rgba(229, 193, 88, 0.15);
+    transform: translateY(-1px);
+}
+
+.ai-sparkle-btn .sparkle-icon {
+    font-size: 0.85rem;
+    animation: sparkle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sparkle-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.15) rotate(10deg); }
+}
+
+/* ═══════════════════════════════════════
+   AI PROMPT MODAL
+   ═══════════════════════════════════════ */
+.ai-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.ai-modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.ai-modal {
+    width: 440px;
+    max-width: calc(100vw - 32px);
+    background: var(--surface-1);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    transform: scale(0.92) translateY(8px);
+    transition: transform 0.25s ease;
+}
+
+.ai-modal-overlay.show .ai-modal {
+    transform: scale(1) translateY(0);
+}
+
+.ai-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 0;
+}
+
+.ai-modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-modal-header h3 i {
+    color: var(--gold);
+}
+
+.ai-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-3);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.15s;
+}
+
+.ai-modal-close:hover { color: var(--text-1); }
+
+.ai-modal-body {
+    padding: 16px 24px 24px;
+}
+
+.ai-modal-body textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--surface-2);
+    color: var(--text-1);
+    font-size: 0.88rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.15s;
+}
+
+.ai-modal-body textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.ai-modal-hint {
+    font-size: 0.78rem;
+    color: var(--text-3);
+    margin-top: 6px;
+}
+
+.ai-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn-ai-generate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--gold);
+    border: none;
+    color: #000;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.btn-ai-generate:hover {
+    background: #D4AF37;
+    box-shadow: 0 4px 16px rgba(229, 193, 88, 0.3);
+}
+
+.btn-ai-generate:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-ai-generate .ai-spinner {
+    display: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: ai-spin 0.6s linear infinite;
+}
+
+.btn-ai-generate.loading .ai-spinner { display: inline-block; }
+.btn-ai-generate.loading .btn-text { display: none; }
+
+@keyframes ai-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════
+   RECOMMENDATIONS SECTION
+   ═══════════════════════════════════════ */
+.recommendations-section {
+    margin-bottom: 32px;
+}
+
+.recommendations-section .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.recommendations-section .section-header h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recommendations-section .section-header h3 .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(229, 193, 88, 0.15), rgba(229, 193, 88, 0.05));
+    border: 1px solid rgba(229, 193, 88, 0.2);
+    color: var(--gold);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.recommendation-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.recommendation-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.recommendation-card:hover {
+    border-color: rgba(229, 193, 88, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.recommendation-card:hover::before { opacity: 1; }
+
+.recommendation-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, rgba(229, 193, 88, 0.12), rgba(229, 193, 88, 0.04));
+    border: 1px solid rgba(229, 193, 88, 0.15);
+    color: var(--gold);
+}
+
+.recommendation-card h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 6px;
+}
+
+.recommendation-card p {
+    font-size: 0.82rem;
+    color: var(--text-3);
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+.recommendation-card .btn-recommend {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-1);
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.recommendation-card .btn-recommend:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(229, 193, 88, 0.05);
+}
+
+/* ═══════════════════════════════════════
+   ADMIN AI — Summary Box
+   ═══════════════════════════════════════ */
+.ai-summary-box {
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(229, 193, 88, 0.06), rgba(229, 193, 88, 0.02));
+    border: 1px solid rgba(229, 193, 88, 0.15);
+    border-radius: 10px;
+    animation: ai-fade-in 0.3s ease;
+}
+
+.ai-summary-box .ai-summary-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--gold);
+    margin-bottom: 6px;
+}
+
+.ai-summary-box ul {
+    margin: 0;
+    padding-left: 18px;
+    list-style-type: disc;
+}
+
+.ai-summary-box ul li {
+    font-size: 0.83rem;
+    color: var(--text-2);
+    line-height: 1.55;
+    margin-bottom: 3px;
+}
+
+@keyframes ai-fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════
+   ADMIN UI POLISH — Urgent Badges
+   ═══════════════════════════════════════ */
+.urgent-pulse {
+    position: relative;
+}
+
+.urgent-pulse::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    animation: urgent-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes urgent-blink {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
+/* Exec card highlight for support card with unread */
+.exec-card.has-urgent {
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.06);
+}
+
+.exec-card.has-urgent .exec-icon {
+    animation: icon-attention 2s ease-in-out infinite;
+}
+
+@keyframes icon-attention {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+/* Badge count for sidebar (admin) */
+.badge-count {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    margin-inline-start: auto;
+}
+
+/* Stat card with pending highlight */
+.stat-card.pending-highlight {
+    border-color: rgba(212, 175, 55, 0.3);
+}
+
+.stat-card.pending-highlight .stat-icon {
+    animation: icon-attention 2s ease-in-out infinite;
+}
+
+/* AI Draft Reply indicator on message cards */
+.ai-drafting-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--gold);
+    padding: 4px 0;
+}
+
+.ai-drafting-indicator .ai-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(229, 193, 88, 0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: ai-spin 0.6s linear infinite;
 }

@@ -262,6 +262,9 @@ async function loadOverview() {
         // ── Order Timeline (most recent active order) ──
         renderOrderTimeline(activeOrders[0] || orders[0]);
 
+        // ── Smart Recommendations ──
+        loadRecommendations(orders);
+
         // ── Recent orders table ──
         const tbody = document.getElementById('recentOrdersTable');
         if (orders.length === 0) {
@@ -450,7 +453,12 @@ async function loadServices() {
                         <p>${esc(s.description || '')}</p>
                         <div class="service-card-footer">
                             <span class="service-price">${Utils.formatCurrency(s.price)}</span>
-                            <button class="btn btn-primary btn-sm" onclick="requestService('${s.id}')"><i class="fas fa-plus"></i> ${(window.__dt||{}).request||'Request'}</button>
+                            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                                <button class="ai-sparkle-btn" onclick="showAiPrompt('${s.id}', '${esc(s.title)}')" title="${(window.__dt||{}).aiTooltip||'Let AI write a professional description for you'}">
+                                    <i class="fas fa-wand-magic-sparkles sparkle-icon"></i> ${(window.__dt||{}).aiGenerate||'✨ AI'}
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="requestService('${s.id}')"><i class="fas fa-plus"></i> ${(window.__dt||{}).request||'Request'}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -573,4 +581,172 @@ async function markNotifRead(id) {
         const data = await API.get('/notifications?limit=1');
         updateNotifCount(data.data.unreadCount || 0);
     } catch (err) { Toast.error(err.message); }
+}
+
+// ══════════════════════════════════════════
+//  AI CONTENT ASSISTANT
+// ══════════════════════════════════════════
+let _aiTargetServiceId = null;
+let _aiTargetServiceTitle = '';
+
+function showAiPrompt(serviceId, serviceTitle) {
+    _aiTargetServiceId = serviceId;
+    _aiTargetServiceTitle = serviceTitle;
+    const dt = window.__dt || {};
+    const overlay = document.getElementById('aiModalOverlay');
+    const titleEl = document.getElementById('aiModalTitle');
+    const input = document.getElementById('aiPromptInput');
+    const hint = document.getElementById('aiModalHint');
+    if (titleEl) titleEl.textContent = dt.aiPromptTitle || 'AI Content Assistant';
+    if (input) {
+        input.value = '';
+        input.placeholder = dt.aiPromptPlaceholder || 'Describe your idea briefly...';
+    }
+    if (hint) hint.textContent = dt.aiPromptHint || 'AI will generate a professional description based on your idea.';
+    overlay?.classList.add('show');
+    setTimeout(() => input?.focus(), 200);
+}
+
+function closeAiModal() {
+    document.getElementById('aiModalOverlay')?.classList.remove('show');
+    _aiTargetServiceId = null;
+}
+
+async function aiGenerate() {
+    const dt = window.__dt || {};
+    const input = document.getElementById('aiPromptInput');
+    const btn = document.getElementById('aiGenerateBtn');
+    const prompt = (input?.value || '').trim();
+
+    if (!prompt) {
+        Toast.warning(dt.aiPromptPlaceholder || 'Please describe your idea first.');
+        input?.focus();
+        return;
+    }
+
+    btn?.classList.add('loading');
+    btn && (btn.disabled = true);
+
+    try {
+        const result = await API.post('/ai/generate', {
+            prompt,
+            context: _aiTargetServiceTitle || 'general',
+        });
+        const text = result.data?.text || '';
+        if (text) {
+            Toast.success(dt.aiGenerate || '✨ Content generated!');
+            // Close modal and show result in a toast or alert
+            closeAiModal();
+            // Copy to clipboard for easy pasting
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(text);
+                Toast.info('📋 Generated text copied to clipboard!');
+            }
+            // Also show in a temporary overlay
+            showAiResult(text);
+        } else {
+            Toast.warning('AI returned empty content. Please try a different idea.');
+        }
+    } catch (err) {
+        const msg = err.message || dt.aiError || 'AI is currently resting. Please type manually.';
+        Toast.error(msg);
+    } finally {
+        btn?.classList.remove('loading');
+        btn && (btn.disabled = false);
+    }
+}
+
+function showAiResult(text) {
+    // Create a temporary result overlay
+    const existing = document.getElementById('aiResultOverlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'aiResultOverlay';
+    overlay.className = 'ai-modal-overlay show';
+    overlay.innerHTML = `
+        <div class="ai-modal">
+            <div class="ai-modal-header">
+                <h3><i class="fas fa-wand-magic-sparkles"></i> Generated Content</h3>
+                <button class="ai-modal-close" onclick="document.getElementById('aiResultOverlay')?.remove()">&times;</button>
+            </div>
+            <div class="ai-modal-body">
+                <textarea id="aiResultText" rows="6" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;background:var(--surface-2);color:var(--text-1);font-size:0.88rem;font-family:inherit;resize:vertical">${esc(text)}</textarea>
+                <div class="ai-modal-actions" style="margin-top:12px">
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('aiResultOverlay')?.remove()">Close</button>
+                    <button class="btn-ai-generate" onclick="navigator.clipboard?.writeText(document.getElementById('aiResultText')?.value||'');Toast.success('Copied!');document.getElementById('aiResultOverlay')?.remove()">
+                        <span class="btn-text"><i class="fas fa-copy"></i> Copy & Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ══════════════════════════════════════════
+//  SMART RECOMMENDATIONS
+// ══════════════════════════════════════════
+const SERVICE_RECOMMENDATIONS = {
+    advertising: [
+        { icon: 'fa-hashtag', title: 'Social Media Management', desc: 'Amplify your ad campaigns with consistent social media content and community management.' },
+        { icon: 'fa-bullhorn', title: 'Brand Strategy', desc: 'Build a cohesive brand identity that makes your advertising campaigns more effective.' },
+    ],
+    marketing: [
+        { icon: 'fa-chart-line', title: 'Digital Analytics', desc: 'Track your marketing ROI with comprehensive analytics and data-driven insights.' },
+        { icon: 'fa-envelope', title: 'Email Marketing', desc: 'Convert leads into customers with targeted email campaigns and automation.' },
+    ],
+    exhibitions: [
+        { icon: 'fa-camera', title: 'Event Photography', desc: 'Capture every moment of your exhibition with professional photography services.' },
+        { icon: 'fa-video', title: 'Video Production', desc: 'Create compelling event highlight reels and promotional videos.' },
+    ],
+    real_estate: [
+        { icon: 'fa-vr-cardboard', title: 'Virtual Tours', desc: 'Offer immersive 360° virtual tours of your properties to remote buyers.' },
+        { icon: 'fa-drafting-compass', title: 'Interior Design', desc: 'Stage your properties with professional interior design for maximum appeal.' },
+    ],
+    general: [
+        { icon: 'fa-bullhorn', title: 'Digital Advertising', desc: 'Reach your target audience with data-driven digital advertising campaigns.' },
+        { icon: 'fa-palette', title: 'Brand Identity', desc: 'Create a memorable brand that stands out from the competition.' },
+    ],
+};
+
+function loadRecommendations(orders) {
+    const dt = window.__dt || {};
+    const container = document.getElementById('aiRecommendations');
+    if (!container) return;
+
+    // Determine category from latest order
+    let category = 'general';
+    if (orders && orders.length > 0) {
+        const latestCategory = (orders[0].service_category || orders[0].category || '').toLowerCase();
+        if (SERVICE_RECOMMENDATIONS[latestCategory]) {
+            category = latestCategory;
+        }
+    }
+
+    const recs = SERVICE_RECOMMENDATIONS[category] || SERVICE_RECOMMENDATIONS.general;
+
+    container.style.display = 'block';
+    container.innerHTML = `
+        <div class="section-header">
+            <h3>
+                <i class="fas fa-lightbulb" style="color:var(--gold)"></i>
+                ${esc(dt.recommendedForYou || 'Recommended For You')}
+                <span class="ai-badge"><i class="fas fa-wand-magic-sparkles"></i> Smart</span>
+            </h3>
+        </div>
+        <div class="recommendations-grid">
+            ${recs.map(r => `
+                <div class="recommendation-card">
+                    <div class="recommendation-card-icon"><i class="fas ${r.icon}"></i></div>
+                    <h4>${esc(r.title)}</h4>
+                    <p>${esc(r.desc)}</p>
+                    <button class="btn-recommend" onclick="switchView('services')">
+                        <i class="fas fa-arrow-right"></i> ${esc(dt.request || 'Explore')}
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
 }

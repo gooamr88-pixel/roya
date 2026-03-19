@@ -831,6 +831,13 @@
       selected:          {{ t.admin.selected          | default('selected')              | dump | safe }},
       deleteSelected:    {{ t.admin.deleteSelected    | default('Delete Selected')       | dump | safe }},
       deactivated:       {{ t.admin.deactivated       | default('deactivated.')          | dump | safe }},
+      aiSummarize:       {{ t.admin.aiSummarize       | default('✨ Summarize')           | dump | safe }},
+      aiDraft:           {{ t.admin.aiDraft           | default('Draft')                 | dump | safe }},
+      aiDraftReply:      {{ t.admin.aiDraftReply      | default('✨ AI Draft Reply')       | dump | safe }},
+      aiDrafting:        {{ t.admin.aiDrafting        | default('AI is drafting a reply...')| dump | safe }},
+      aiDraftSuccess:    {{ t.admin.aiDraftSuccess    | default('✨ Draft ready — review and send!') | dump | safe }},
+      aiGenerating:      {{ t.admin.aiGenerating      | default('Generating summary...')  | dump | safe }},
+      aiError:           {{ t.admin.aiError           | default('AI is currently resting. Please type manually.') | dump | safe }},
     };
   </script>
   <script src="/js/admin/admin.init.js" defer></script>

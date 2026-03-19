@@ -182,6 +182,7 @@ app.use('/api/admin',         require('./routes/admin.routes'));
 app.use('/api/contact',       require('./routes/contact.routes'));
 app.use('/api/jobs',          require('./routes/job.routes'));
 app.use('/api/portfolio',     require('./routes/portfolio.routes'));
+app.use('/api/ai',            require('./routes/ai.routes'));
 
 // ── Health Check ──
 app.get('/api/health', (req, res) => {

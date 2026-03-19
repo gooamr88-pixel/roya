@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════
-// Admin V2.0 — Ticket Center (Messages)
+// Admin V2.0 — Ticket Center (Messages) + AI Draft Reply
 // Depends on: api.js, utils.js, admin.init.js
 // ═══════════════════════════════════════════════
 
@@ -26,7 +26,7 @@ async function loadAdminMessages(page = 1) {
                                 <span class="badge badge-${m.status === 'replied' ? 'success' : 'warning'}" style="font-size:0.7rem">${m.status || 'new'}</span>
                                 ${m.phone ? `<span style="font-size:0.75rem;color:var(--text-3)"><i class="fas fa-phone" style="font-size:0.65rem"></i> ${esc(m.phone)}</span>` : ''}
                             </div>
-                            <p style="font-size:0.88rem;color:var(--text-2);margin:6px 0;line-height:1.5">${esc(m.message)}</p>
+                            <p style="font-size:0.88rem;color:var(--text-2);margin:6px 0;line-height:1.5" id="msg-text-${m.id}">${esc(m.message)}</p>
                             <span style="font-size:0.75rem;color:var(--text-3)">${Utils.formatDate(m.created_at)}</span>
 
                             ${m.admin_reply ? `
@@ -36,18 +36,23 @@ async function loadAdminMessages(page = 1) {
                                 </div>
                             ` : ''}
 
-                            ${/* BUG FIX #5: was m.internal_note (wrong), DB column is internal_notes (plural) */ m.internal_notes ? `
+                            ${m.internal_notes ? `
                                 <div class="internal-note">
                                     <div class="internal-note-label"><i class="fas fa-sticky-note"></i> Internal Note</div>
                                     ${esc(m.internal_notes)}
                                 </div>
                             ` : ''}
 
-                            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+                            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center">
                                 <input type="text" class="form-input" id="reply-${m.id}" placeholder="Type your reply..." style="flex:1;min-width:200px;font-size:0.85rem;padding:8px 12px">
+                                <button class="ai-sparkle-btn" onclick="aiDraftReply(${m.id})" data-tooltip="${(window.__t||{}).aiDraftReply||'✨ AI Draft Reply'}">
+                                    <i class="fas fa-wand-magic-sparkles sparkle-icon"></i> ${(window.__t||{}).aiDraft||'Draft'}
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="sendAdminReply(${m.id})"><i class="fas fa-paper-plane"></i> Reply</button>
                                 <button class="btn btn-outline btn-sm" onclick="saveInternalNote(${m.id})"><i class="fas fa-sticky-note"></i> Note</button>
-                                ${adminUser?.role === 'super_admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAdminMessage(${m.id})" style="margin-left:auto"><i class="fas fa-trash"></i> Delete</button>` : ''}
+                                ${adminUser?.role === 'super_admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAdminMessage(${m.id})" style="margin-left:auto"><i class="fas fa-trash"></i></button>` : ''}
                             </div>
+                            <div id="ai-draft-status-${m.id}"></div>
                         </div>
                     </div>
                 </div>
@@ -62,7 +67,6 @@ async function sendAdminReply(messageId) {
     const reply = input?.value?.trim();
     if (!reply) { Toast.warning('Please enter a reply.'); return; }
     try {
-        // BUG FIX #2: API expects { reply_message }, was incorrectly sending { reply }
         await API.put(`/admin/messages/${messageId}/reply`, { reply_message: reply });
         Toast.success('Reply sent successfully!');
         loadAdminMessages();
@@ -74,7 +78,6 @@ async function saveInternalNote(messageId) {
     const note = input?.value?.trim();
     if (!note) { Toast.warning('Please enter a note.'); return; }
     try {
-        // BUG FIX #4: API expects { internal_notes }, was incorrectly sending { note }
         await API.put(`/admin/messages/${messageId}/note`, { internal_notes: note });
         Toast.success('Internal note saved!');
         loadAdminMessages();
@@ -93,4 +96,44 @@ async function deleteAdminMessage(messageId) {
         Toast.success('Message deleted successfully.');
         loadAdminMessages();
     } catch (err) { Toast.error(err.message || 'Failed to delete message.'); }
+}
+
+// ══════════════════════════════════════════
+//  AI DRAFT REPLY
+// ══════════════════════════════════════════
+async function aiDraftReply(messageId) {
+    const msgEl = document.getElementById(`msg-text-${messageId}`);
+    const replyInput = document.getElementById(`reply-${messageId}`);
+    const statusEl = document.getElementById(`ai-draft-status-${messageId}`);
+    if (!msgEl || !replyInput) return;
+
+    const customerMessage = msgEl.textContent || '';
+    if (!customerMessage.trim()) {
+        Toast.warning('No message content to draft a reply for.');
+        return;
+    }
+
+    // Show drafting indicator
+    if (statusEl) statusEl.innerHTML = '<div class="ai-drafting-indicator"><span class="ai-spinner"></span> ' + ((window.__t||{}).aiDrafting||'AI is drafting a reply...') + '</div>';
+
+    try {
+        const result = await API.post('/ai/generate', {
+            prompt: `Write a professional, polite, and helpful customer service reply to this message: "${customerMessage}"`,
+            context: 'admin_draft_reply',
+        });
+        const text = result.data?.text || '';
+        if (text) {
+            replyInput.value = text;
+            replyInput.focus();
+            replyInput.style.borderColor = 'var(--gold)';
+            setTimeout(() => { replyInput.style.borderColor = ''; }, 2000);
+            Toast.success((window.__t||{}).aiDraftSuccess || '✨ Draft ready — review and send!');
+        } else {
+            Toast.warning('AI returned empty draft. Please write manually.');
+        }
+    } catch (err) {
+        Toast.error(err.message || (window.__t||{}).aiError || 'AI is currently resting. Please type manually.');
+    } finally {
+        if (statusEl) statusEl.innerHTML = '';
+    }
 }
