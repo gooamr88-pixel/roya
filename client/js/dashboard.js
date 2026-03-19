@@ -750,3 +750,122 @@ function loadRecommendations(orders) {
         </div>
     `;
 }
+
+// ══════════════════════════════════════════
+//  AI MODAL ONBOARDING TOUR (3-step, first-time only)
+// ══════════════════════════════════════════
+const AI_TOUR_KEY = 'roya_ai_tour_done';
+let _aiTourActive = false;
+let _aiTourStep = 0;
+
+const AI_TOUR_STEPS = [
+    {
+        target: '#aiPromptInput',
+        title: () => (window.__dt || {}).aiTourStep1Title || '✍️ Describe Your Idea',
+        desc: () => (window.__dt || {}).aiTourStep1Desc || 'Type a brief description of what you need. The more details, the better the AI output!',
+        position: 'bottom',
+    },
+    {
+        target: '#aiGenerateBtn',
+        title: () => (window.__dt || {}).aiTourStep2Title || '✨ Generate with AI',
+        desc: () => (window.__dt || {}).aiTourStep2Desc || 'Click the sparkle button and the AI will craft a professional description for you instantly.',
+        position: 'top',
+    },
+    {
+        target: '.ai-modal-body',
+        title: () => (window.__dt || {}).aiTourStep3Title || '📋 Review & Use',
+        desc: () => (window.__dt || {}).aiTourStep3Desc || 'Review the generated text, make any edits, then it auto-fills your service request form.',
+        position: 'top',
+    },
+];
+
+function maybeShowAiTour() {
+    if (localStorage.getItem(AI_TOUR_KEY)) return;
+    if (_aiTourActive) return;
+    // Wait a beat so the modal is fully painted
+    setTimeout(() => startAiTour(), 400);
+}
+
+function startAiTour() {
+    _aiTourActive = true;
+    _aiTourStep = 0;
+    renderAiTourStep();
+}
+
+function renderAiTourStep() {
+    // Clean previous
+    document.querySelectorAll('.ai-tour-overlay, .ai-tour-spotlight, .ai-tour-tooltip').forEach(el => el.remove());
+
+    if (_aiTourStep >= AI_TOUR_STEPS.length) {
+        endAiTour();
+        return;
+    }
+
+    const step = AI_TOUR_STEPS[_aiTourStep];
+    const target = document.querySelector(step.target);
+    if (!target) { endAiTour(); return; }
+
+    const rect = target.getBoundingClientRect();
+
+    // Overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'ai-tour-overlay';
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) endAiTour(); });
+
+    // Spotlight cutout
+    const spotlight = document.createElement('div');
+    spotlight.className = 'ai-tour-spotlight';
+    const pad = 6;
+    spotlight.style.cssText = `top:${rect.top - pad}px;left:${rect.left - pad}px;width:${rect.width + pad * 2}px;height:${rect.height + pad * 2}px;`;
+
+    // Tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'ai-tour-tooltip';
+    const dt = window.__dt || {};
+
+    tooltip.innerHTML = `
+        <h4><i class="fas fa-wand-magic-sparkles"></i> ${step.title()}</h4>
+        <p>${step.desc()}</p>
+        <div class="ai-tour-actions">
+            <div class="ai-tour-dots">
+                ${AI_TOUR_STEPS.map((_, i) => `<div class="dot${i === _aiTourStep ? ' active' : ''}"></div>`).join('')}
+            </div>
+            <button class="ai-tour-next" id="aiTourNextBtn">
+                ${_aiTourStep < AI_TOUR_STEPS.length - 1 ? (dt.tourNext || 'Next') : (dt.tourFinish || 'Got it!')}
+            </button>
+        </div>
+    `;
+
+    // Position tooltip relative to target
+    if (step.position === 'bottom') {
+        tooltip.style.top = `${rect.bottom + 12}px`;
+        tooltip.style.left = `${rect.left + rect.width / 2 - 140}px`;
+    } else {
+        tooltip.style.top = `${rect.top - 12}px`;
+        tooltip.style.left = `${rect.left + rect.width / 2 - 140}px`;
+        tooltip.style.transform = 'translateY(-100%)';
+    }
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(spotlight);
+    document.body.appendChild(tooltip);
+
+    document.getElementById('aiTourNextBtn')?.addEventListener('click', () => {
+        _aiTourStep++;
+        renderAiTourStep();
+    });
+}
+
+function endAiTour() {
+    _aiTourActive = false;
+    localStorage.setItem(AI_TOUR_KEY, '1');
+    document.querySelectorAll('.ai-tour-overlay, .ai-tour-spotlight, .ai-tour-tooltip').forEach(el => el.remove());
+}
+
+// Patch showAiPrompt to trigger the tour on first open
+const _origShowAiPrompt = showAiPrompt;
+showAiPrompt = function (serviceId, serviceTitle) {
+    _origShowAiPrompt(serviceId, serviceTitle);
+    maybeShowAiTour();
+};
+

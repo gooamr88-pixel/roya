@@ -110,6 +110,31 @@
 
   {# ── Page-specific Scripts ── #}
   {% block pageScripts %}{% endblock %}
+
+  {# ── AI Chatbot Widget (all pages) ── #}
+  <link rel="stylesheet" href="/css/chatbot.css">
+
+  <button class="chatbot-fab" id="chatbotFab" aria-label="Chat with AI">
+    <span class="fab-open"><i class="fas fa-wand-magic-sparkles"></i></span>
+    <span class="fab-close"><i class="fas fa-times"></i></span>
+  </button>
+
+  <div class="chatbot-window" id="chatbotWindow">
+    <div class="chatbot-header">
+      <div class="chatbot-header-avatar"><i class="fas fa-wand-magic-sparkles"></i></div>
+      <div class="chatbot-header-info">
+        <h4>ROYA AI</h4>
+        <span id="chatbotOnline">Online now</span>
+      </div>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages"></div>
+    <div class="chatbot-input-area">
+      <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." maxlength="300" autocomplete="off">
+      <button class="chatbot-send" id="chatbotSend" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <script src="/js/chatbot.js" defer></script>
 </body>
 
 </html>

@@ -180,7 +180,7 @@ function glassConfirm(title, message, type = 'warning') {
         iconWrap.className = `glass-modal-icon ${type}`;
         iconEl.className = type === 'danger' ? 'fas fa-trash' : type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
         okBtn.className = type === 'danger' ? 'btn btn-danger' : 'btn btn-primary';
-        okBtn.textContent = 'Confirm';
+        okBtn.textContent = __t?.confirmBtn || 'Confirm';
 
         _glassResolve = resolve;
         overlay.classList.add('show');
@@ -385,8 +385,8 @@ function initCommandPalette() {
         shortcut: i < 9 ? String(i + 1) : '0',
     }));
     commands.push(
-        { label: 'Switch to Client View', icon: 'fa-exchange-alt', action: () => window.location.href = '/dashboard' },
-        { label: 'Logout', icon: 'fa-sign-out-alt', action: () => document.getElementById('logoutBtn')?.click() },
+        { label: __t?.switchToClientView || 'Switch to Client View', icon: 'fa-exchange-alt', action: () => window.location.href = '/dashboard' },
+        { label: __t?.logOut || 'Logout', icon: 'fa-sign-out-alt', action: () => document.getElementById('logoutBtn')?.click() },
     );
 
     function render(filter = '') {
@@ -399,7 +399,7 @@ function initCommandPalette() {
                 <span>${c.label}</span>
                 ${c.shortcut ? `<span class="cmd-shortcut">${c.shortcut}</span>` : ''}
             </div>
-        `).join('') || '<div style="padding:20px;text-align:center;color:var(--text-3);font-size:0.85rem">No matching commands</div>';
+        `).join('') || `<div style="padding:20px;text-align:center;color:var(--text-3);font-size:0.85rem">${__t?.noResultsFound || 'No matching commands'}</div>`;
 
         results.querySelectorAll('.command-palette-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -453,7 +453,7 @@ function exportTableCSV(tableId, filename) {
     link.download = `${filename}_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(link.href);
-    Toast.success(`${filename} exported!`);
+    Toast.success(`${filename} ${__t?.exported || 'exported!'}`);
 }
 
 // ══════════════════════════════════════════
@@ -474,7 +474,7 @@ function initGlobalSearch() {
                 const data = await API.get(`/admin/search?q=${encodeURIComponent(q)}`);
                 const items = data.data.results;
                 if (items.length === 0) {
-                    results.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-3);font-size:0.85rem">No results found</div>';
+                    results.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-3);font-size:0.85rem">${__t?.noResultsFound || 'No results found'}</div>`;
                 } else {
                     const typeIcons = { user: 'fa-user', order: 'fa-shopping-bag', property: 'fa-building', service: 'fa-concierge-bell' };
                     const typeColors = { user: '#a855f7', order: '#3b82f6', property: '#10b981', service: '#f59e0b' };

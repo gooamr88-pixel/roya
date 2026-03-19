@@ -12,7 +12,7 @@ async function loadAdminOrders(page = 1) {
         const isSuperAdmin = adminUser?.role === 'super_admin';
 
         if (orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:40px;color:var(--text-muted)">No orders found</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:40px;color:var(--text-muted)">${(window.__t||{}).noResultsFound||'No orders found'}</td></tr>`;
         } else {
             tbody.innerHTML = orders.map(o => `
                 <tr id="order-row-${o.id}">
@@ -47,40 +47,40 @@ async function loadAdminOrders(page = 1) {
             `).join('');
         }
         renderPagination(data.data.pagination, 'adminOrdersPagination', loadAdminOrders);
-    } catch (err) { Toast.error('Failed to load orders.'); }
+    } catch (err) { Toast.error((window.__t||{}).failedLoad || 'Failed to load orders.'); }
 }
 
 async function updateOrderStatus(orderId, status) {
     const confirmed = await glassConfirm(
-        'Update Order Status',
-        `Change this order's status to "${status.replace(/_/g, ' ')}"?`,
+        (window.__t||{}).updateOrderStatus || 'Update Order Status',
+        `${(window.__t||{}).changeStatusTo || 'Change this order\'s status to'} "${status.replace(/_/g, ' ')}"?`,
         status === 'cancelled' ? 'danger' : 'warning'
     );
     if (!confirmed) { loadAdminOrders(); return; }
     try {
         await API.put(`/orders/${orderId}/status`, { status });
-        Toast.success(`Order status updated to ${status.replace(/_/g, ' ')}`);
+        Toast.success(`${(window.__t||{}).orderStatusUpdated || 'Order status updated to'} ${status.replace(/_/g, ' ')}`);
     } catch (err) { Toast.error(err.message); loadAdminOrders(); }
 }
 
 async function deleteAdminOrder(orderId, invoiceNumber) {
     const confirmed = await glassConfirm(
-        'Delete Completed Order',
-        `Permanently delete order #${invoiceNumber}? The client will be notified by email.`,
+        (window.__t||{}).deleteOrder || 'Delete Completed Order',
+        `${(window.__t||{}).deleteOrderConfirm || 'Permanently delete order'} #${invoiceNumber}?`,
         'danger'
     );
     if (!confirmed) return;
     try {
         await API.delete(`/orders/${orderId}`);
-        Toast.success('Order deleted and client notified.');
+        Toast.success((window.__t||{}).orderDeleted || 'Order deleted and client notified.');
         loadAdminOrders();
-    } catch (err) { Toast.error(err.message || 'Failed to delete order.'); }
+    } catch (err) { Toast.error(err.message || (window.__t||{}).failedSave || 'Failed to delete order.'); }
 }
 
 async function generateInvoice(orderId) {
     try {
         await API.post(`/invoices/${orderId}/generate`);
-        Toast.success('Invoice generated!');
+        Toast.success((window.__t||{}).invoiceGenerated || 'Invoice generated!');
     } catch (err) { Toast.error(err.message); }
 }
 

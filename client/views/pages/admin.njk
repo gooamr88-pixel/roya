@@ -838,6 +838,21 @@
       aiDraftSuccess:    {{ t.admin.aiDraftSuccess    | default('✨ Draft ready — review and send!') | dump | safe }},
       aiGenerating:      {{ t.admin.aiGenerating      | default('Generating summary...')  | dump | safe }},
       aiError:           {{ t.admin.aiError           | default('AI is currently resting. Please type manually.') | dump | safe }},
+      updateOrderStatus: {{ t.admin.updateOrderStatus | default('Update Order Status')   | dump | safe }},
+      changeStatusTo:    {{ t.admin.changeStatusTo    | default('Change this order\\'s status to') | dump | safe }},
+      orderStatusUpdated:{{ t.admin.orderStatusUpdated| default('Order status updated to')| dump | safe }},
+      deleteOrder:       {{ t.admin.deleteOrder       | default('Delete Completed Order') | dump | safe }},
+      deleteOrderConfirm:{{ t.admin.deleteOrderConfirm| default('Permanently delete order')| dump | safe }},
+      orderDeleted:      {{ t.admin.orderDeleted      | default('Order deleted and client notified.') | dump | safe }},
+      invoiceGenerated:  {{ t.admin.invoiceGenerated  | default('Invoice generated!')     | dump | safe }},
+      enterReply:        {{ t.admin.enterReply        | default('Please enter a reply.')   | dump | safe }},
+      replySent:         {{ t.admin.replySent         | default('Reply sent successfully!')| dump | safe }},
+      enterNote:         {{ t.admin.enterNote         | default('Please enter a note.')    | dump | safe }},
+      noteSaved:         {{ t.admin.noteSaved         | default('Internal note saved!')    | dump | safe }},
+      deleteMessage:     {{ t.admin.deleteMessage     | default('Delete Message')          | dump | safe }},
+      deleteMessageConfirm:{{ t.admin.deleteMessageConfirm | default('Are you sure you want to permanently delete this contact message?') | dump | safe }},
+      messageDeleted:    {{ t.admin.messageDeleted    | default('Message deleted successfully.') | dump | safe }},
+      noMessagesDesc:    {{ t.admin.noMessagesDesc    | default('When clients reach out, their tickets will appear here.') | dump | safe }},
     };
   </script>
   <script src="/js/admin/admin.init.js" defer></script>

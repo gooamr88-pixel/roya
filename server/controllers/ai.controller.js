@@ -24,4 +24,24 @@ const generate = asyncHandler(async (req, res) => {
     res.json({ success: true, data: result });
 });
 
-module.exports = { generate };
+/**
+ * POST /api/ai/chat  (PUBLIC — no auth)
+ * Body: { prompt: string }
+ * Always uses 'website_chatbot' context for security.
+ */
+const chat = asyncHandler(async (req, res) => {
+    const { prompt } = req.body;
+
+    if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
+        throw new AppError('Message is required.', 400, 'MISSING_PROMPT');
+    }
+
+    if (prompt.length > 300) {
+        throw new AppError('Message must be 300 characters or fewer.', 400, 'PROMPT_TOO_LONG');
+    }
+
+    const result = await aiService.generateContent(prompt.trim(), 'website_chatbot');
+    res.json({ success: true, data: result });
+});
+
+module.exports = { generate, chat };

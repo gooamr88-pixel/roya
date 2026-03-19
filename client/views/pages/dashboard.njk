@@ -318,11 +318,39 @@
           </div>
         </div>
 
+      </div>{# /.content-area #}
+    </div>{# /.main-content #}
+  </div>{# /.dashboard-layout #}
+
+  {# ═════ FROSTED GLASS CONFIRMATION MODAL ═════ #}
+  {% include "partials/glass-confirm.njk" %}
+
+  {# ═════ AI PROMPT MODAL ═════ #}
+  <div class="ai-modal-overlay" id="aiModalOverlay">
+    <div class="ai-modal">
+      <div class="ai-modal-header">
+        <h3><i class="fas fa-wand-magic-sparkles"></i> <span id="aiModalTitle">{{ t.dashboard.aiPromptTitle | default('AI Content Assistant') }}</span></h3>
+        <button class="ai-modal-close" onclick="closeAiModal()">&times;</button>
+      </div>
+      <div class="ai-modal-body">
+        <div style="position:relative">
+          <textarea id="aiPromptInput" rows="3" placeholder="{{ t.dashboard.aiPromptPlaceholder | default('E.g., I want an ad campaign for a new real estate app targeting young professionals...') }}"></textarea>
+          <span class="help-tooltip" style="position:absolute;top:8px;right:8px;z-index:2">?<span class="tooltip-text">{{ t.dashboard.aiTooltipDetail | default('Tip: The more details you provide (audience, tone, platform), the better the AI result will be.') }}</span></span>
+        </div>
+        <div class="ai-modal-hint" id="aiModalHint">{{ t.dashboard.aiPromptHint | default('AI will generate a professional description based on your idea.') }}</div>
+        <div class="ai-modal-actions">
+          <button class="btn btn-outline btn-sm" onclick="closeAiModal()">{{ t.dashboard.cancel | default('Cancel') }}</button>
+          <button class="btn-ai-generate" id="aiGenerateBtn" onclick="aiGenerate()">
+            <span class="btn-text"><i class="fas fa-wand-magic-sparkles"></i> {{ t.dashboard.aiGenerate | default('Generate') }}</span>
+            <span class="ai-spinner"></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 {% endblock %}
 
+{% block pageScripts %}
   <script>
     window.__dt = {
       greetingMorning:      '{{ t.dashboard.greetingMorning | default("Good morning") }}',
@@ -409,34 +437,15 @@
       aiTooltip:            '{{ t.dashboard.aiTooltip | default("Let AI write a professional description for you") }}',
       recommendedForYou:    '{{ t.dashboard.recommendedForYou | default("Recommended For You") }}',
       recommendedDesc:      '{{ t.dashboard.recommendedDesc | default("Based on your activity") }}',
+      aiTourStep1Title:     '{{ t.dashboard.aiTourStep1Title | default("✍️ Describe Your Idea") }}',
+      aiTourStep1Desc:      '{{ t.dashboard.aiTourStep1Desc | default("Type a brief description of what you need. The more details, the better the AI output!") }}',
+      aiTourStep2Title:     '{{ t.dashboard.aiTourStep2Title | default("✨ Generate with AI") }}',
+      aiTourStep2Desc:      '{{ t.dashboard.aiTourStep2Desc | default("Click the sparkle button and the AI will craft a professional description for you instantly.") }}',
+      aiTourStep3Title:     '{{ t.dashboard.aiTourStep3Title | default("📋 Review & Use") }}',
+      aiTourStep3Desc:      '{{ t.dashboard.aiTourStep3Desc | default("Review the generated text, make any edits, then it auto-fills your service request form.") }}',
     };
   </script>
   <script src="/js/dashboard.js" defer></script>
   <script src="/js/onboarding.js" defer></script>
-
-{# ═════ FROSTED GLASS CONFIRMATION MODAL ═════ #}
-{# FIX (F7): Now uses shared partial instead of inline duplicate #}
-{% block pageModals %}
-  {% include "partials/glass-confirm.njk" %}
-
-  {# ═════ AI PROMPT MODAL ═════ #}
-  <div class="ai-modal-overlay" id="aiModalOverlay">
-    <div class="ai-modal">
-      <div class="ai-modal-header">
-        <h3><i class="fas fa-wand-magic-sparkles"></i> <span id="aiModalTitle">AI Content Assistant</span></h3>
-        <button class="ai-modal-close" onclick="closeAiModal()">&times;</button>
-      </div>
-      <div class="ai-modal-body">
-        <textarea id="aiPromptInput" rows="3" placeholder="Describe your idea briefly..."></textarea>
-        <div class="ai-modal-hint" id="aiModalHint">AI will generate a professional description based on your idea.</div>
-        <div class="ai-modal-actions">
-          <button class="btn btn-outline btn-sm" onclick="closeAiModal()">{{ t.dashboard.cancel | default('Cancel') }}</button>
-          <button class="btn-ai-generate" id="aiGenerateBtn" onclick="aiGenerate()">
-            <span class="btn-text"><i class="fas fa-wand-magic-sparkles"></i> Generate</span>
-            <span class="ai-spinner"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 {% endblock %}
+

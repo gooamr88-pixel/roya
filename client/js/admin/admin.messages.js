@@ -11,7 +11,7 @@ async function loadAdminMessages(page = 1) {
         const container = document.getElementById('adminMessagesContainer');
 
         if (messages.length === 0) {
-            container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text-3)"><i class="fas fa-inbox" style="font-size:3rem;display:block;margin-bottom:16px;opacity:0.3"></i><h3 style="font-weight:500;margin-bottom:4px">No messages</h3><p style="font-size:0.85rem">When clients reach out, their tickets will appear here.</p></div>';
+            container.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-3)"><i class="fas fa-inbox" style="font-size:3rem;display:block;margin-bottom:16px;opacity:0.3"></i><h3 style="font-weight:500;margin-bottom:4px">${(window.__t||{}).noResultsFound || 'No messages'}</h3><p style="font-size:0.85rem">${(window.__t||{}).noMessagesDesc || 'When clients reach out, their tickets will appear here.'}</p></div>`;
         } else {
             container.innerHTML = messages.map(m => `
                 <div class="card" style="margin-bottom:12px;border-left:3px solid ${m.status === 'replied' ? '#10b981' : 'var(--gold)'}">
@@ -59,16 +59,16 @@ async function loadAdminMessages(page = 1) {
             `).join('');
         }
         renderPagination(data.data.pagination, 'adminMsgPagination', loadAdminMessages);
-    } catch (err) { Toast.error('Failed to load messages.'); }
+    } catch (err) { Toast.error((window.__t||{}).failedLoad || 'Failed to load messages.'); }
 }
 
 async function sendAdminReply(messageId) {
     const input = document.getElementById(`reply-${messageId}`);
     const reply = input?.value?.trim();
-    if (!reply) { Toast.warning('Please enter a reply.'); return; }
+    if (!reply) { Toast.warning((window.__t||{}).enterReply || 'Please enter a reply.'); return; }
     try {
         await API.put(`/admin/messages/${messageId}/reply`, { reply_message: reply });
-        Toast.success('Reply sent successfully!');
+        Toast.success((window.__t||{}).replySent || 'Reply sent successfully!');
         loadAdminMessages();
     } catch (err) { Toast.error(err.message); }
 }
@@ -76,26 +76,26 @@ async function sendAdminReply(messageId) {
 async function saveInternalNote(messageId) {
     const input = document.getElementById(`reply-${messageId}`);
     const note = input?.value?.trim();
-    if (!note) { Toast.warning('Please enter a note.'); return; }
+    if (!note) { Toast.warning((window.__t||{}).enterNote || 'Please enter a note.'); return; }
     try {
         await API.put(`/admin/messages/${messageId}/note`, { internal_notes: note });
-        Toast.success('Internal note saved!');
+        Toast.success((window.__t||{}).noteSaved || 'Internal note saved!');
         loadAdminMessages();
     } catch (err) { Toast.error(err.message); }
 }
 
 async function deleteAdminMessage(messageId) {
     const confirmed = await glassConfirm(
-        'Delete Message',
-        'Are you sure you want to permanently delete this contact message?',
+        (window.__t||{}).deleteMessage || 'Delete Message',
+        (window.__t||{}).deleteMessageConfirm || 'Are you sure you want to permanently delete this contact message?',
         'danger'
     );
     if (!confirmed) return;
     try {
         await API.delete(`/admin/messages/${messageId}`);
-        Toast.success('Message deleted successfully.');
+        Toast.success((window.__t||{}).messageDeleted || 'Message deleted successfully.');
         loadAdminMessages();
-    } catch (err) { Toast.error(err.message || 'Failed to delete message.'); }
+    } catch (err) { Toast.error(err.message || (window.__t||{}).failedSave || 'Failed to delete message.'); }
 }
 
 // ══════════════════════════════════════════
