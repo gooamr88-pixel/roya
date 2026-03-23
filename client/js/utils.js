@@ -16,6 +16,21 @@ function esc(str) {
 }
 
 /**
+ * Resolve a bilingual DB field based on the active locale.
+ * If Arabic is active and obj[field + '_ar'] exists, returns it.
+ * Otherwise falls back to obj[field].
+ * @param {object} obj - The API data object (e.g. service, job, exhibition)
+ * @param {string} field - The base field name (e.g. 'title', 'description', 'category')
+ * @returns {string}
+ */
+function localize(obj, field) {
+    if (!obj) return '';
+    const lang = document.documentElement.lang;
+    if (lang === 'ar' && obj[field + '_ar']) return obj[field + '_ar'];
+    return obj[field] || '';
+}
+
+/**
  * Map an order/item status to a badge colour class.
  * @param {string} status
  * @returns {string}

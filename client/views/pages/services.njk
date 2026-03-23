@@ -70,15 +70,15 @@
           return `
             <div class="service-card pro-card fade-in visible" data-service-id="${s.id}" style="cursor:pointer;">
               <div class="pro-card-image">
-                <img src="${esc(img)}" alt="${esc(s.title)}" width="800" height="600" loading="lazy" decoding="async">
+                <img src="${esc(img)}" alt="${esc(localize(s, 'title'))}" width="800" height="600" loading="lazy" decoding="async">
                 <div class="pro-card-overlay"><span class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> ${svcI18n.viewDetails}</span></div>
                 <span class="pro-price-badge">${fmtPrice(s.price)}</span>
               </div>
               <div class="pro-card-body">
-                <h3>${esc(s.title)}</h3>
-                <p>${esc(s.description || '')}</p>
+                <h3>${esc(localize(s, 'title'))}</h3>
+                <p>${esc(localize(s, 'description'))}</p>
                 <div class="pro-card-footer">
-                  <span class="pro-category"><i class="fas fa-tag"></i> ${esc(s.category || '{{ t.admin.catGeneral | default("General") }}')}</span>
+                  <span class="pro-category"><i class="fas fa-tag"></i> ${esc(localize(s, 'category') || '{{ t.admin.catGeneral | default("General") }}')}</span>
                   <span class="btn btn-outline btn-sm" style="pointer-events:none;">${svcI18n.requestService}</span>
                 </div>
               </div>

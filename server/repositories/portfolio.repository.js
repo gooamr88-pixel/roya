@@ -8,7 +8,7 @@ const findAll = async ({ page, limit }) => {
 
     const [items, countResult] = await Promise.all([
         query(
-            `SELECT id, title, title_ar, description, description_ar, images, category, is_active, created_at
+            `SELECT id, title, title_ar, description, description_ar, images, category, category_ar, is_active, created_at
              FROM portfolio_items
              WHERE is_active = TRUE
              ORDER BY created_at DESC LIMIT $1 OFFSET $2`,

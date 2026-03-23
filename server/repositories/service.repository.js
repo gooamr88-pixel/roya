@@ -19,7 +19,7 @@ const findAll = async ({ page, limit, category }) => {
 
     const [services, countResult] = await Promise.all([
         query(
-            `SELECT id, title, title_ar, description, description_ar, price, images, category, created_at
+            `SELECT id, title, title_ar, description, description_ar, price, images, category, category_ar, created_at
              FROM services ${whereClause}
              ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
             params

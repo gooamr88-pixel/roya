@@ -267,13 +267,13 @@ async function openServiceDetailModal(service) {
                 <i class="fas fa-times"></i>
             </button>
             <div class="glass-modal-image">
-                <img src="${esc(img)}" alt="${esc(service.title)}">
-                <span class="glass-modal-category"><i class="fas fa-tag"></i> ${esc(service.category || i18n.t('General', 'عام'))}</span>
+                <img src="${esc(img)}" alt="${esc(localize(service, 'title'))}">
+                <span class="glass-modal-category"><i class="fas fa-tag"></i> ${esc(localize(service, 'category') || i18n.t('General', 'عام'))}</span>
             </div>
             <div class="glass-modal-body">
-                <h2>${esc(service.title)}</h2>
+                <h2>${esc(localize(service, 'title'))}</h2>
                 ${historyBadge}
-                <p class="glass-modal-desc">${esc(service.description || i18n.t('Professional service tailored to your specific business needs. Our team delivers high-quality results with attention to detail.', 'خدمة احترافية مصممة خصيصاً لاحتياجات عملك. فريقنا يقدم نتائج عالية الجودة مع الاهتمام بالتفاصيل.'))}</p>
+                <p class="glass-modal-desc">${esc(localize(service, 'description') || i18n.t('Professional service tailored to your specific business needs. Our team delivers high-quality results with attention to detail.', 'خدمة احترافية مصممة خصيصاً لاحتياجات عملك. فريقنا يقدم نتائج عالية الجودة مع الاهتمام بالتفاصيل.'))}</p>
                 <div class="glass-modal-price">
                     <span class="label">${i18n.t('Service Price', 'سعر الخدمة')}</span>
                     <span class="value">${fmtPrice(service.price)}</span>
@@ -347,17 +347,17 @@ async function loadLandingServices() {
             return `
         <div class="service-card pro-card fade-in visible" data-service-id="${s.id}" style="cursor:pointer;">
           <div class="pro-card-image">
-            <img src="${esc(img)}" alt="${esc(s.title)}" loading="lazy">
+            <img src="${esc(img)}" alt="${esc(localize(s, 'title'))}" loading="lazy">
             <div class="pro-card-overlay">
               <span class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> ${i18n.t('View Details', 'عرض التفاصيل')}</span>
             </div>
             <span class="pro-price-badge">${fmtPrice(s.price)}</span>
           </div>
           <div class="pro-card-body">
-            <h3>${esc(s.title)}</h3>
-            <p>${esc(s.description || i18n.t('Professional service tailored to your needs.', 'خدمة احترافية مصممة خصيصاً لاحتياجاتك.'))}</p>
+            <h3>${esc(localize(s, 'title'))}</h3>
+            <p>${esc(localize(s, 'description') || i18n.t('Professional service tailored to your needs.', 'خدمة احترافية مصممة خصيصاً لاحتياجاتك.'))}</p>
             <div class="pro-card-footer">
-              <span class="pro-category"><i class="fas fa-tag"></i> ${esc(s.category || i18n.t('General', 'عام'))}</span>
+              <span class="pro-category"><i class="fas fa-tag"></i> ${esc(localize(s, 'category') || i18n.t('General', 'عام'))}</span>
               <span class="btn btn-outline btn-sm" style="pointer-events:none;">${i18n.t('Request Service', 'طلب الخدمة')}</span>
             </div>
           </div>
@@ -403,7 +403,7 @@ async function loadLandingJobs() {
         <div class="property-card fade-in visible">
           <div class="property-card-body" style="padding:24px">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:12px">
-              <h3 style="margin:0">${esc(j.title)}</h3>
+              <h3 style="margin:0">${esc(localize(j, 'title'))}</h3>
               <span class="badge badge-${badge}" style="white-space:nowrap">${esc(typeLabel)}</span>
             </div>
             ${j.company ? `<div style="color:var(--text-muted);font-size:0.875rem;margin-bottom:6px"><i class="fas fa-building" style="margin-inline-end:6px"></i>${esc(j.company)}</div>` : ''}
@@ -448,9 +448,9 @@ async function loadLandingPortfolio() {
           <div style="width:100%;height:180px;border-radius:12px;overflow:hidden;margin-bottom:12px">
             <img src="${esc(img)}" alt="${esc(item.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">
           </div>
-          <h3 style="margin-bottom:6px">${esc(item.title)}</h3>
-          <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:8px">${esc(item.description || '')}</p>
-          ${item.category ? `<span class="badge badge-primary">${esc(item.category)}</span>` : ''}
+          <h3 style="margin-bottom:6px">${esc(localize(item, 'title'))}</h3>
+          <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:8px">${esc(localize(item, 'description'))}</p>
+          ${localize(item, 'category') ? `<span class="badge badge-primary">${esc(localize(item, 'category'))}</span>` : ''}
         </div>`;
         }).join('');
     } catch (err) { console.error('Portfolio load error:', err); }
@@ -483,8 +483,8 @@ async function loadLandingExhibitions() {
             return `
         <div class="exhibition-card fade-in">
           <div class="emoji">${esc(ex.icon || fallbackEmoji)}</div>
-          <h3>${esc(ex.title)}</h3>
-          <p>${esc(ex.description || '')}</p>
+          <h3>${esc(localize(ex, 'title'))}</h3>
+          <p>${esc(localize(ex, 'description'))}</p>
           <div class="meta">
             <span><i class="fas fa-map-marker-alt"></i> ${esc(ex.location || i18n.t('TBA', 'سيُعلن لاحقاً'))}</span>
             <span><i class="fas fa-calendar"></i> ${esc(new Date(ex.start_date).toLocaleDateString())}</span>
