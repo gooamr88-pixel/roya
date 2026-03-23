@@ -13,6 +13,12 @@ let adminUser = null;
 let selectedSvc = new Set();
 let selectedProp = new Set();
 
+// ── Hierarchical RBAC: role weight map (mirrors backend ROLE_HIERARCHY) ──
+const ROLE_WEIGHT = { viewer: 1, client: 1, supervisor: 1, editor: 2, admin: 3, super_admin: 4 };
+function hasMinRole(minRole) {
+    return (ROLE_WEIGHT[adminUser?.role] || 0) >= (ROLE_WEIGHT[minRole] || 0);
+}
+
 const ADMIN_VIEW_KEYS = ['stats', 'orders', 'services', 'exhibitions', 'jobs', 'portfolio', 'messages', 'users', 'roles', 'logs'];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -56,6 +62,25 @@ function updateAdminUI() {
     if (clearLogsBtn && adminUser.role === 'super_admin') {
         clearLogsBtn.style.removeProperty('display');
     }
+
+    // Apply RBAC gating to sidebar, actions, and buttons
+    applyRoleGating();
+}
+
+/**
+ * applyRoleGating — hides/shows UI elements based on data-min-role attribute.
+ * Any element with data-min-role="admin" will be hidden if the user's role
+ * weight is less than admin (3).
+ */
+function applyRoleGating() {
+    document.querySelectorAll('[data-min-role]').forEach(el => {
+        const minRole = el.dataset.minRole;
+        if (!hasMinRole(minRole)) {
+            el.style.display = 'none';
+        } else {
+            el.style.removeProperty('display');
+        }
+    });
 }
 
 // ══════════════════════════════════════════

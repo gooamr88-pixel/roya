@@ -9,7 +9,7 @@ async function loadAdminOrders(page = 1) {
         const data = await API.get(`/orders?page=${page}&limit=20${status ? `&status=${status}` : ''}`);
         const orders = data.data.orders;
         const tbody = document.getElementById('adminOrdersTable');
-        const isSuperAdmin = adminUser?.role === 'super_admin';
+        const canDelete = hasMinRole('admin');
 
         if (orders.length === 0) {
             tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:40px;color:var(--text-muted)">${(window.__t||{}).noResultsFound||'No orders found'}</td></tr>`;
@@ -33,7 +33,7 @@ async function loadAdminOrders(page = 1) {
                             <i class="fas fa-wand-magic-sparkles sparkle-icon"></i>
                         </button>
                         <button class="btn btn-ghost btn-sm" data-tooltip="Generate Invoice" onclick="generateInvoice(${o.id})"><i class="fas fa-file-invoice"></i></button>
-                        ${isSuperAdmin && o.status === 'completed' ? `
+                        ${canDelete && o.status === 'completed' ? `
                         <button class="btn btn-danger btn-sm" data-tooltip="Delete Completed Order" onclick="deleteAdminOrder(${o.id}, '${esc(o.invoice_number || '')}')">
                             <i class="fas fa-trash"></i>
                         </button>` : ''}

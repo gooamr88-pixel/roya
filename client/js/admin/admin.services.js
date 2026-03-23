@@ -74,6 +74,8 @@ function openServiceModal(editData = null) {
         const descArEl = document.getElementById('svcDescriptionAr');
         if (titleArEl) titleArEl.value = editData.title_ar || '';
         if (descArEl) descArEl.value = editData.description_ar || '';
+        const catArEl = document.getElementById('svcCategoryAr');
+        if (catArEl) catArEl.value = editData.category_ar || '';
 
         const images = Array.isArray(editData.images) ? editData.images : (typeof editData.images === 'string' ? (() => { try { return JSON.parse(editData.images); } catch { return []; } })() : []);
         if (images.length > 0) renderServicePreviews(images);
@@ -145,6 +147,8 @@ async function saveAdminService(e) {
     const descAr = (document.getElementById('svcDescriptionAr')?.value || '').trim();
     if (titleAr) formData.append('title_ar', titleAr);
     if (descAr) formData.append('description_ar', descAr);
+    const catAr = (document.getElementById('svcCategoryAr')?.value || '').trim();
+    if (catAr) formData.append('category_ar', catAr);
 
     serviceDropFiles.forEach(file => formData.append('images', file));
 

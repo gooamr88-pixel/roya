@@ -370,6 +370,51 @@ const migrations = [
     },
 
     // ══════════════════════════════════════════
+    //  10.4. HIERARCHICAL RBAC — Role weights
+    //  Adds a weight column to roles for hierarchy comparison
+    //  Higher weight = more privileges
+    // ══════════════════════════════════════════
+    {
+        name: 'Add weight column to roles',
+        sql: `ALTER TABLE roles ADD COLUMN IF NOT EXISTS weight INTEGER DEFAULT 0`
+    },
+    {
+        name: 'Seed viewer and editor roles',
+        sql: `
+            INSERT INTO roles (name, description, weight) VALUES
+                ('viewer', 'Read-only access', 1),
+                ('editor', 'Content editing access', 2)
+            ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description, weight = EXCLUDED.weight
+        `
+    },
+    {
+        name: 'Update weights for existing roles',
+        sql: `
+            UPDATE roles SET weight = CASE name
+                WHEN 'client'      THEN 1
+                WHEN 'viewer'      THEN 1
+                WHEN 'supervisor'  THEN 1
+                WHEN 'editor'      THEN 2
+                WHEN 'admin'       THEN 3
+                WHEN 'super_admin' THEN 4
+                ELSE 0
+            END
+        `
+    },
+
+    // ══════════════════════════════════════════
+    //  10.5. i18n — Bilingual category columns
+    // ══════════════════════════════════════════
+    {
+        name: 'Add category_ar to services',
+        sql: `ALTER TABLE services ADD COLUMN IF NOT EXISTS category_ar VARCHAR(100) DEFAULT NULL`
+    },
+    {
+        name: 'Add category_ar to portfolio_items',
+        sql: `ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS category_ar VARCHAR(100) DEFAULT NULL`
+    },
+
+    // ══════════════════════════════════════════
     //  11. INDEXES
     // ══════════════════════════════════════════
     {

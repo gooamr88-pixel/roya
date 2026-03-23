@@ -47,11 +47,11 @@ const findActiveById = async (id) => {
     return result.rows[0] || null;
 };
 
-const create = async ({ title, description, price, images, category, title_ar, description_ar }) => {
+const create = async ({ title, description, price, images, category, title_ar, description_ar, category_ar }) => {
     const result = await query(
-        `INSERT INTO services (title, description, price, images, category, title_ar, description_ar)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [title, description || '', parseFloat(price) || 0, JSON.stringify(images), category || 'general', title_ar || null, description_ar || null]
+        `INSERT INTO services (title, description, price, images, category, title_ar, description_ar, category_ar)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+        [title, description || '', parseFloat(price) || 0, JSON.stringify(images), category || 'general', title_ar || null, description_ar || null, category_ar || null]
     );
     return result.rows[0];
 };

@@ -14,6 +14,15 @@ const config = require('../config');
 const userRepo = require('../repositories/user.repository');
 const { AppError } = require('./errorHandler');
 
+// ── Hierarchical Role Weights ──
+// Higher weight = more privileges. authorizeRole(minRole) checks user.weight >= min.
+const ROLE_HIERARCHY = {
+    viewer: 1, client: 1, supervisor: 1,
+    editor: 2,
+    admin: 3,
+    super_admin: 4,
+};
+
 /**
  * Authenticate — verifies JWT from HttpOnly cookie.
  * Checks: valid token → correct type → user exists → not banned → verified.
@@ -205,6 +214,35 @@ const checkPermission = (permission) => {
  *
  * @param {string} [paramKey='id'] - The req.params key holding the resource owner's user ID
  */
+/**
+ * Authorize by Role Level — hierarchical role check.
+ * Uses weight-based comparison: user role weight must be >= minimum role weight.
+ * E.g., authorizeRole('admin') allows admin (3) and super_admin (4),
+ * but blocks editor (2), viewer (1), client (1).
+ *
+ * @param {string} minRole - Minimum required role name
+ */
+const authorizeRole = (minRole) => {
+    const minWeight = ROLE_HIERARCHY[minRole] || 0;
+    return (req, res, next) => {
+        if (!req.user) {
+            return next(new AppError('Authentication required.', 401, 'AUTH_REQUIRED'));
+        }
+        const userWeight = ROLE_HIERARCHY[req.user.role] || 0;
+        if (userWeight >= minWeight) {
+            return next();
+        }
+        console.warn(
+            `🔒 [RBAC LEVEL] User ${req.user.id} (${req.user.role}, weight ${userWeight}) ` +
+            `denied access to ${req.method} ${req.originalUrl} | Required: ${minRole} (weight ${minWeight})`
+        );
+        return next(new AppError(
+            'Insufficient role privileges.',
+            403, 'ROLE_INSUFFICIENT'
+        ));
+    };
+};
+
 const ownerOrAdmin = (paramKey = 'id') => {
     return (req, res, next) => {
         if (!req.user) {
@@ -226,4 +264,4 @@ const ownerOrAdmin = (paramKey = 'id') => {
     };
 };
 
-module.exports = { authenticate, authorize, checkPermission, ownerOrAdmin };
+module.exports = { authenticate, authorize, authorizeRole, checkPermission, ownerOrAdmin, ROLE_HIERARCHY };

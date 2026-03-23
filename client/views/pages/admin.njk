@@ -70,16 +70,16 @@
           <span class="kbd-hint">6</span>
         </button>
 
-        <div class="nav-section">{{ t.admin.administration }}</div>
-        <button class="sidebar-link" data-view="users">
+        <div class="nav-section" data-min-role="admin">{{ t.admin.administration }}</div>
+        <button class="sidebar-link" data-view="users" data-min-role="admin">
           <span class="icon"><i class="fas fa-users-cog"></i></span> {{ t.admin.users }}
           <span class="kbd-hint">7</span>
         </button>
-        <button class="sidebar-link" data-view="roles">
+        <button class="sidebar-link" data-view="roles" data-min-role="admin">
           <span class="icon"><i class="fas fa-shield-halved"></i></span> {{ t.admin.roles }}
           <span class="kbd-hint">8</span>
         </button>
-        <button class="sidebar-link" data-view="logs">
+        <button class="sidebar-link" data-view="logs" data-min-role="admin">
           <span class="icon"><i class="fas fa-file-lines"></i></span> {{ t.admin.loginLogs }}
           <span class="kbd-hint">9</span>
         </button>
@@ -414,6 +414,10 @@
             <div class="form-group">
               <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
               <textarea class="form-textarea" id="svcDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+            </div>
+          <div class="form-group">
+              <label class="form-label">{{ t.admin.categoryAr | default('Arabic Category') }}</label>
+              <input class="form-input" type="text" id="svcCategoryAr" maxlength="100" dir="rtl" placeholder="{{ t.admin.categoryArPlaceholder | default('التصنيف بالعربية') }}">
             </div>
           </div>
           {# Responsive 2-col grid — collapses on mobile #}

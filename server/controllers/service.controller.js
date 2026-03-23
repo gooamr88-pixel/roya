@@ -31,7 +31,7 @@ const getById = asyncHandler(async (req, res) => {
  * POST /api/services
  */
 const create = asyncHandler(async (req, res) => {
-    const { title, description, price, category, title_ar, description_ar } = req.body;
+    const { title, description, price, category, title_ar, description_ar, category_ar } = req.body;
     let images = [];
 
     if (req.files && req.files.length > 0) {
@@ -40,7 +40,7 @@ const create = asyncHandler(async (req, res) => {
         images = uploaded.map(u => u.url);
     }
 
-    const service = await serviceRepo.create({ title, description, price, images, category, title_ar, description_ar });
+    const service = await serviceRepo.create({ title, description, price, images, category, title_ar, description_ar, category_ar });
     res.status(201).json({ success: true, data: { service } });
 });
 
@@ -48,7 +48,7 @@ const create = asyncHandler(async (req, res) => {
  * PUT /api/services/:id
  */
 const update = asyncHandler(async (req, res) => {
-    const { title, description, price, category, is_active, is_featured, title_ar, description_ar } = req.body;
+    const { title, description, price, category, is_active, is_featured, title_ar, description_ar, category_ar } = req.body;
     const updates = [];
     const values = [];
     let i = 1;
@@ -61,6 +61,7 @@ const update = asyncHandler(async (req, res) => {
     if (is_featured !== undefined)    { updates.push(`is_featured = $${i++}`);    values.push(parseBool(is_featured)); }
     if (title_ar !== undefined)       { updates.push(`title_ar = $${i++}`);       values.push(title_ar); }
     if (description_ar !== undefined) { updates.push(`description_ar = $${i++}`); values.push(description_ar); }
+    if (category_ar !== undefined)    { updates.push(`category_ar = $${i++}`);    values.push(category_ar); }
 
     if (req.files && req.files.length > 0) {
         const { processAndUploadMultiple } = require('../services/upload.service');
