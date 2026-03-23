@@ -8,7 +8,7 @@ const findAll = async ({ page, limit }) => {
 
     const [items, countResult] = await Promise.all([
         query(
-            `SELECT id, title, description, images, category, is_active, created_at
+            `SELECT id, title, title_ar, description, description_ar, images, category, is_active, created_at
              FROM portfolio_items
              WHERE is_active = TRUE
              ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
@@ -29,11 +29,11 @@ const findById = async (id) => {
     return result.rows[0] || null;
 };
 
-const create = async ({ title, description, images, category }) => {
+const create = async ({ title, description, images, category, title_ar, description_ar }) => {
     const result = await query(
-        `INSERT INTO portfolio_items (title, description, images, category)
-         VALUES ($1, $2, $3, $4) RETURNING *`,
-        [title, description || '', JSON.stringify(images), category || 'general']
+        `INSERT INTO portfolio_items (title, description, images, category, title_ar, description_ar)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [title, description || '', JSON.stringify(images), category || 'general', title_ar || null, description_ar || null]
     );
     return result.rows[0];
 };

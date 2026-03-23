@@ -64,6 +64,11 @@ function openPortfolioModal(item = null) {
     document.getElementById('portfolioDescription').value = item?.description || '';
     document.getElementById('portfolioCategory').value = item?.category || 'general';
     document.getElementById('portfolioIsActive').checked = item ? !!item.is_active : true;
+    // i18n Arabic fields
+    const titleArEl = document.getElementById('portfolioTitleAr');
+    const descArEl = document.getElementById('portfolioDescriptionAr');
+    if (titleArEl) titleArEl.value = item?.title_ar || '';
+    if (descArEl) descArEl.value = item?.description_ar || '';
 
     // Reset file input
     const fileInput = document.getElementById('portfolioImages');
@@ -102,6 +107,11 @@ async function saveAdminPortfolio() {
     formData.append('description', document.getElementById('portfolioDescription')?.value?.trim() || '');
     formData.append('category', document.getElementById('portfolioCategory')?.value || 'general');
     formData.append('is_active', document.getElementById('portfolioIsActive')?.checked ? '1' : '0');
+    // i18n Arabic fields
+    const titleAr = (document.getElementById('portfolioTitleAr')?.value || '').trim();
+    const descAr = (document.getElementById('portfolioDescriptionAr')?.value || '').trim();
+    if (titleAr) formData.append('title_ar', titleAr);
+    if (descAr) formData.append('description_ar', descAr);
 
     const fileInput = document.getElementById('portfolioImages');
     if (fileInput?.files?.length > 0) {

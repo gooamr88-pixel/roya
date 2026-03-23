@@ -101,11 +101,19 @@ async function deleteAdminMessage(messageId) {
 // ══════════════════════════════════════════
 //  AI DRAFT REPLY
 // ══════════════════════════════════════════
+let _aiDraftBusy = false;
+
 async function aiDraftReply(messageId) {
     const msgEl = document.getElementById(`msg-text-${messageId}`);
     const replyInput = document.getElementById(`reply-${messageId}`);
     const statusEl = document.getElementById(`ai-draft-status-${messageId}`);
     if (!msgEl || !replyInput) return;
+
+    // Prevent concurrent/spam requests
+    if (_aiDraftBusy) {
+        Toast.warning((window.__t||{}).aiPleaseWait || 'Please wait for the current AI request to finish.');
+        return;
+    }
 
     const customerMessage = msgEl.textContent || '';
     if (!customerMessage.trim()) {
@@ -115,6 +123,7 @@ async function aiDraftReply(messageId) {
 
     // Show drafting indicator
     if (statusEl) statusEl.innerHTML = '<div class="ai-drafting-indicator"><span class="ai-spinner"></span> ' + ((window.__t||{}).aiDrafting||'AI is drafting a reply...') + '</div>';
+    _aiDraftBusy = true;
 
     try {
         const result = await API.post('/ai/generate', {
@@ -132,8 +141,14 @@ async function aiDraftReply(messageId) {
             Toast.warning('AI returned empty draft. Please write manually.');
         }
     } catch (err) {
-        Toast.error(err.message || (window.__t||{}).aiError || 'AI is currently resting. Please type manually.');
+        const msg = err.message || '';
+        if (msg.includes('429') || msg.toLowerCase().includes('rate limit')) {
+            Toast.error((window.__t||{}).aiRateLimited || '⏳ AI rate limit reached. Please wait a few minutes.');
+        } else {
+            Toast.error(msg || (window.__t||{}).aiError || 'AI is currently resting. Please type manually.');
+        }
     } finally {
+        _aiDraftBusy = false;
         if (statusEl) statusEl.innerHTML = '';
     }
 }

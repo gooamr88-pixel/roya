@@ -108,6 +108,20 @@ const strictApiLimiter = createLimiter(
     'Too many requests to admin endpoints. Please slow down.'
 );
 
+// ── AI Generate: 10 requests per 15 min per IP ──
+// Protects free-tier Gemini API quota (authenticated admin/dashboard usage)
+const aiLimiter = createLimiter(
+    15 * 60 * 1000, 10,
+    'AI rate limit reached. Please wait a few minutes before trying again.'
+);
+
+// ── AI Chatbot: 6 requests per 5 min per IP ──
+// Stricter limit for public, unauthenticated chatbot endpoint
+const aiChatLimiter = createLimiter(
+    5 * 60 * 1000, 6,
+    'You\'re sending messages too fast. Please wait a moment and try again.'
+);
+
 module.exports = {
     loginLimiter,
     otpLimiter,
@@ -119,4 +133,6 @@ module.exports = {
     contactLimiter,
     apiLimiter,
     strictApiLimiter,
+    aiLimiter,
+    aiChatLimiter,
 };

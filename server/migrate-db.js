@@ -324,6 +324,52 @@ const migrations = [
     },
 
     // ══════════════════════════════════════════
+    //  10.3. i18n — Arabic columns for dynamic content
+    //  Adds title_ar / description_ar to all content tables
+    //  Safe: uses ADD COLUMN IF NOT EXISTS
+    // ══════════════════════════════════════════
+    {
+        name: 'Add title_ar to services',
+        sql: `ALTER TABLE services ADD COLUMN IF NOT EXISTS title_ar VARCHAR(200) DEFAULT NULL`
+    },
+    {
+        name: 'Add description_ar to services',
+        sql: `ALTER TABLE services ADD COLUMN IF NOT EXISTS description_ar TEXT DEFAULT NULL`
+    },
+    {
+        name: 'Add title_ar to portfolio_items',
+        sql: `ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS title_ar VARCHAR(200) DEFAULT NULL`
+    },
+    {
+        name: 'Add description_ar to portfolio_items',
+        sql: `ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS description_ar TEXT DEFAULT NULL`
+    },
+    {
+        name: 'Add title_ar to exhibitions',
+        sql: `ALTER TABLE exhibitions ADD COLUMN IF NOT EXISTS title_ar VARCHAR(200) DEFAULT NULL`
+    },
+    {
+        name: 'Add description_ar to exhibitions',
+        sql: `ALTER TABLE exhibitions ADD COLUMN IF NOT EXISTS description_ar TEXT DEFAULT NULL`
+    },
+    {
+        name: 'Add title_ar to jobs',
+        sql: `ALTER TABLE jobs ADD COLUMN IF NOT EXISTS title_ar VARCHAR(200) DEFAULT NULL`
+    },
+    {
+        name: 'Add description_ar to jobs',
+        sql: `ALTER TABLE jobs ADD COLUMN IF NOT EXISTS description_ar TEXT DEFAULT NULL`
+    },
+    {
+        name: 'Add title_ar to properties',
+        sql: `ALTER TABLE properties ADD COLUMN IF NOT EXISTS title_ar VARCHAR(200) DEFAULT NULL`
+    },
+    {
+        name: 'Add description_ar to properties',
+        sql: `ALTER TABLE properties ADD COLUMN IF NOT EXISTS description_ar TEXT DEFAULT NULL`
+    },
+
+    // ══════════════════════════════════════════
     //  11. INDEXES
     // ══════════════════════════════════════════
     {

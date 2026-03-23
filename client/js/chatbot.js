@@ -78,6 +78,22 @@
 
             removeTyping(typingEl);
 
+            if (res.status === 429) {
+                const retryMsg = lang === 'ar'
+                    ? 'أنت ترسل رسائل بسرعة كبيرة. يرجى الانتظار لحظة والمحاولة مرة أخرى.'
+                    : 'You\'re sending messages too fast. Please wait a moment and try again.';
+                addBotMessage('⏳ ' + retryMsg);
+                // Cooldown: disable input for 30 seconds on rate-limit
+                chatInput.disabled = true;
+                chatInput.classList.add('chatbot-cooldown');
+                setTimeout(() => {
+                    chatInput.disabled = false;
+                    chatInput.classList.remove('chatbot-cooldown');
+                    chatInput.focus();
+                }, 30000);
+                return;
+            }
+
             if (!res.ok) {
                 addBotMessage(i18n.error);
                 return;
@@ -91,7 +107,8 @@
             addBotMessage(i18n.error);
         } finally {
             isLoading = false;
-            chatSend.disabled = false;
+            // 3-second cooldown between messages to prevent spam
+            setTimeout(() => { chatSend.disabled = false; }, 3000);
         }
     }
 

@@ -6,7 +6,7 @@
 /* ── Floating Action Button ── */
 .chatbot-fab {
     position: fixed;
-    bottom: 24px;
+    bottom: 100px;
     right: 24px;
     z-index: 9998;
     width: 56px;
@@ -41,7 +41,7 @@
 /* ── Chat Window ── */
 .chatbot-window {
     position: fixed;
-    bottom: 92px;
+    bottom: 168px;
     right: 24px;
     z-index: 9999;
     width: 380px;
@@ -250,16 +250,29 @@
 
 /* ── Mobile Responsive ── */
 @media (max-width: 480px) {
+    .chatbot-fab {
+        bottom: 90px;
+    }
     .chatbot-window {
         width: calc(100vw - 24px);
         right: 12px;
-        bottom: 80px;
-        max-height: 70vh;
+        bottom: 156px;
+        max-height: 60vh;
+    }
+    [dir="rtl"] .chatbot-fab {
+        right: auto;
+        left: 12px;
     }
     [dir="rtl"] .chatbot-window {
         right: auto;
         left: 12px;
     }
+}
+
+/* ── Cooldown state (on rate-limit) ── */
+.chatbot-input.chatbot-cooldown {
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 /* ═══════════════════════════════════════

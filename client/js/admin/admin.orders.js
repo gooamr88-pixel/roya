@@ -87,10 +87,18 @@ async function generateInvoice(orderId) {
 // ══════════════════════════════════════════
 //  AI ORDER SUMMARIZER
 // ══════════════════════════════════════════
+let _aiSummarizeBusy = false;
+
 async function aiSummarizeOrder(orderId, serviceTitle) {
     const summaryRow = document.getElementById(`order-summary-${orderId}`);
     const summaryBox = document.getElementById(`order-summary-box-${orderId}`);
     if (!summaryRow || !summaryBox) return;
+
+    // Prevent concurrent/spam requests
+    if (_aiSummarizeBusy) {
+        Toast.warning((window.__t||{}).aiPleaseWait || 'Please wait for the current AI request to finish.');
+        return;
+    }
 
     // Toggle off if already visible
     if (summaryRow.style.display !== 'none' && summaryBox.innerHTML.includes('ai-summary-label')) {
@@ -101,6 +109,7 @@ async function aiSummarizeOrder(orderId, serviceTitle) {
     // Show loading
     summaryRow.style.display = '';
     summaryBox.innerHTML = '<div class="ai-drafting-indicator"><span class="ai-spinner"></span> ' + ((window.__t||{}).aiGenerating||'Generating summary...') + '</div>';
+    _aiSummarizeBusy = true;
 
     try {
         const result = await API.post('/ai/generate', {
@@ -118,6 +127,13 @@ async function aiSummarizeOrder(orderId, serviceTitle) {
             summaryBox.innerHTML = '<div class="ai-summary-label"><i class="fas fa-wand-magic-sparkles"></i> AI Summary</div><p style="font-size:0.83rem;color:var(--text-3)">No summary available.</p>';
         }
     } catch (err) {
-        summaryBox.innerHTML = `<div class="ai-summary-label" style="color:var(--text-3)"><i class="fas fa-exclamation-triangle"></i> AI</div><p style="font-size:0.83rem;color:var(--text-3)">${esc(err.message || (window.__t||{}).aiError || 'AI is currently resting.')}</p>`;
+        const msg = err.message || '';
+        if (msg.includes('429') || msg.toLowerCase().includes('rate limit')) {
+            summaryBox.innerHTML = `<div class="ai-summary-label" style="color:var(--text-3)"><i class="fas fa-clock"></i> AI</div><p style="font-size:0.83rem;color:var(--text-3)">⏳ ${(window.__t||{}).aiRateLimited || 'AI rate limit reached. Please wait a few minutes.'}</p>`;
+        } else {
+            summaryBox.innerHTML = `<div class="ai-summary-label" style="color:var(--text-3)"><i class="fas fa-exclamation-triangle"></i> AI</div><p style="font-size:0.83rem;color:var(--text-3)">${esc(msg || (window.__t||{}).aiError || 'AI is currently resting.')}</p>`;
+        }
+    } finally {
+        _aiSummarizeBusy = false;
     }
 }

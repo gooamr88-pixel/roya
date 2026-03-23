@@ -649,6 +649,12 @@ async function aiGenerate() {
         }
     } catch (err) {
         const msg = err.message || dt.aiError || 'AI is currently resting. Please type manually.';
+        if (msg.includes('429') || msg.toLowerCase().includes('rate limit')) {
+            Toast.error(dt.aiRateLimited || '⏳ AI rate limit reached. Please wait a few minutes.');
+            // Extended cooldown on rate-limit — disable button for 15s
+            setTimeout(() => { btn?.classList.remove('loading'); btn && (btn.disabled = false); }, 15000);
+            return;
+        }
         Toast.error(msg);
     } finally {
         btn?.classList.remove('loading');

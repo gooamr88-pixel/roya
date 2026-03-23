@@ -404,6 +404,18 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="svcDescription" rows="3" placeholder="{{ t.admin.serviceDescPlaceholder }}"></textarea>
           </div>
+          {# ── Arabic Content (i18n) ── #}
+          <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
+            <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
+              <input class="form-input" type="text" id="svcTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
+              <textarea class="form-textarea" id="svcDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+            </div>
+          </div>
           {# Responsive 2-col grid — collapses on mobile #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
@@ -742,6 +754,18 @@
             <label class="form-label">{{ t.admin.portfolioCategory }}</label>
             <input class="form-input" type="text" id="portfolioCategory" placeholder="{{ t.admin.portfolioCatPlaceholder | default('e.g. branding, events, digital') }}">
           </div>
+          {# ── Arabic Content (i18n) ── #}
+          <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
+            <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
+              <input class="form-input" type="text" id="portfolioTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
+              <textarea class="form-textarea" id="portfolioDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+            </div>
+          </div>
           <div class="wizard-nav">
             <span></span>
             <button type="button" class="btn-wizard-next" onclick="wizardNext('portfolioWizardForm')"><span>{{ t.admin.wizardNext | default('Next') }}</span> <i class="fas fa-arrow-right"></i></button>
@@ -838,6 +862,8 @@
       aiDraftSuccess:    {{ t.admin.aiDraftSuccess    | default('✨ Draft ready — review and send!') | dump | safe }},
       aiGenerating:      {{ t.admin.aiGenerating      | default('Generating summary...')  | dump | safe }},
       aiError:           {{ t.admin.aiError           | default('AI is currently resting. Please type manually.') | dump | safe }},
+      aiPleaseWait:      {{ t.admin.aiPleaseWait      | default('Please wait for the current AI request to finish.') | dump | safe }},
+      aiRateLimited:     {{ t.admin.aiRateLimited     | default('AI rate limit reached. Please wait a few minutes.') | dump | safe }},
       updateOrderStatus: {{ t.admin.updateOrderStatus | default('Update Order Status')   | dump | safe }},
       changeStatusTo:    {{ t.admin.changeStatusTo    | default('Change status to')      | dump | safe }},
       orderStatusUpdated:{{ t.admin.orderStatusUpdated| default('Order status updated to')| dump | safe }},

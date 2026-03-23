@@ -69,6 +69,11 @@ function openServiceModal(editData = null) {
         document.getElementById('svcPrice').value = editData.price || '';
         document.getElementById('svcCategory').value = editData.category || 'general';
         document.getElementById('svcActive').checked = editData.is_active !== false;
+        // i18n Arabic fields
+        const titleArEl = document.getElementById('svcTitleAr');
+        const descArEl = document.getElementById('svcDescriptionAr');
+        if (titleArEl) titleArEl.value = editData.title_ar || '';
+        if (descArEl) descArEl.value = editData.description_ar || '';
 
         const images = Array.isArray(editData.images) ? editData.images : (typeof editData.images === 'string' ? (() => { try { return JSON.parse(editData.images); } catch { return []; } })() : []);
         if (images.length > 0) renderServicePreviews(images);
@@ -135,6 +140,11 @@ async function saveAdminService(e) {
     formData.append('category', document.getElementById('svcCategory').value);
     // B2 Fix: FormData converts booleans to strings — use '1'/'0' and parse on backend
     formData.append('is_active', document.getElementById('svcActive').checked ? '1' : '0');
+    // i18n Arabic fields
+    const titleAr = (document.getElementById('svcTitleAr')?.value || '').trim();
+    const descAr = (document.getElementById('svcDescriptionAr')?.value || '').trim();
+    if (titleAr) formData.append('title_ar', titleAr);
+    if (descAr) formData.append('description_ar', descAr);
 
     serviceDropFiles.forEach(file => formData.append('images', file));
 

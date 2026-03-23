@@ -19,7 +19,7 @@ const findAll = async ({ page, limit, category }) => {
 
     const [services, countResult] = await Promise.all([
         query(
-            `SELECT id, title, description, price, images, category, created_at
+            `SELECT id, title, title_ar, description, description_ar, price, images, category, created_at
              FROM services ${whereClause}
              ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
             params
@@ -47,11 +47,11 @@ const findActiveById = async (id) => {
     return result.rows[0] || null;
 };
 
-const create = async ({ title, description, price, images, category }) => {
+const create = async ({ title, description, price, images, category, title_ar, description_ar }) => {
     const result = await query(
-        `INSERT INTO services (title, description, price, images, category)
-         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [title, description || '', parseFloat(price) || 0, JSON.stringify(images), category || 'general']
+        `INSERT INTO services (title, description, price, images, category, title_ar, description_ar)
+         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        [title, description || '', parseFloat(price) || 0, JSON.stringify(images), category || 'general', title_ar || null, description_ar || null]
     );
     return result.rows[0];
 };
