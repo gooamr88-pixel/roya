@@ -62,7 +62,7 @@ function buildUserRow(u, roles) {
         <td data-label="Phone" style="font-size:0.85rem">${esc(u.phone || '—')}</td>
         <td data-label="Role">
             <select class="role-select" onchange="changeUserRole(${u.id}, this.value)" ${!canEdit ? 'disabled' : ''}>
-                ${roles.map(r => `<option value="${r.name}" ${(u.role || 'client') === r.name ? 'selected' : ''}>${r.name.replace(/_/g, ' ')}</option>`).join('')}
+                ${roles.map(r => `<option value="${r.name}" ${(u.role || 'client') === r.name ? 'selected' : ''}>${__t?.roleNames?.[r.name] || r.name.replace(/_/g, ' ')}</option>`).join('')}
             </select>
         </td>
         <td data-label="Status">
@@ -83,7 +83,7 @@ function buildUserRow(u, roles) {
 async function changeUserRole(userId, roleName) {
     try {
         await API.put(`/admin/users/${userId}`, { role_name: roleName });
-        Toast.success(`${__t?.roleChanged || 'Role changed to'} ${roleName.replace(/_/g, ' ')}`);
+        Toast.success(`${__t?.roleChanged || 'Role changed to'} ${__t?.roleNames?.[roleName] || roleName.replace(/_/g, ' ')}`);
     } catch (err) { Toast.error(err.message); loadAdminUsers(); }
 }
 
@@ -118,10 +118,12 @@ async function loadAdminRoles() {
         const tbody = document.getElementById('adminRolesTable');
         tbody.innerHTML = roles.map(r => {
             const perms = Array.isArray(r.permissions_json) ? r.permissions_json : JSON.parse(r.permissions_json || '[]');
+            const roleName = __t?.roleNames?.[r.name] || r.name.replace(/_/g, ' ');
+            const roleDesc = __t?.roleDescs?.[r.name] || r.description || 'System role';
             return `<tr>
-                <td data-label="Role" style="font-weight:600;text-transform:capitalize">${esc(r.name.replace(/_/g, ' '))}</td>
-                <td data-label="Description" style="color:var(--text-muted)">System role</td>
-                <td data-label="Permissions"><div style="display:flex;flex-wrap:wrap;gap:4px">${perms.map(p => `<span class="badge badge-info" style="font-size:0.7rem">${esc(p)}</span>`).join('')}</div></td>
+                <td data-label="Role" style="font-weight:600;text-transform:capitalize">${esc(roleName)}</td>
+                <td data-label="Description" style="color:var(--text-muted)">${esc(roleDesc)}</td>
+                <td data-label="Permissions"><div style="display:flex;flex-wrap:wrap;gap:4px">${perms.map(p => `<span class="badge badge-info" style="font-size:0.7rem">${esc(__t?.permNames?.[p] || p.replace(/_/g, ' '))}</span>`).join('')}</div></td>
             </tr>`;
         }).join('');
     } catch (err) { Toast.error(__t?.failedLoad || 'Failed to load roles.'); }
