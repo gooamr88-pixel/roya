@@ -220,8 +220,13 @@ function initKeyboardShortcuts() {
 
 // ── Sidebar ──
 function initSidebar() {
-    document.getElementById('sidebarToggle')?.addEventListener('click', () => document.getElementById('sidebar').classList.add('open'));
-    document.getElementById('sidebarClose')?.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open'));
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const openSidebar = () => { sidebar?.classList.add('open'); overlay?.classList.add('active'); };
+    const closeSidebar = () => { sidebar?.classList.remove('open'); overlay?.classList.remove('active'); };
+    document.getElementById('sidebarToggle')?.addEventListener('click', openSidebar);
+    document.getElementById('sidebarClose')?.addEventListener('click', closeSidebar);
+    overlay?.addEventListener('click', closeSidebar);
 }
 
 // ── Logout with glass confirm ──

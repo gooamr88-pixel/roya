@@ -286,6 +286,80 @@
   .auth-form-side {
     padding: 24px;
   }
+
+  .auth-form-wrapper h1 {
+    font-size: 1.5rem;
+  }
+
+  .otp-container {
+    gap: 8px;
+  }
+
+  .otp-input {
+    width: 46px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+  .auth-brand {
+    min-height: 160px;
+    padding: 24px 20px;
+  }
+
+  .auth-brand h2 {
+    font-size: 1.2rem;
+  }
+
+  .auth-brand p {
+    font-size: 0.85rem;
+  }
+
+  .auth-form-side {
+    padding: 20px 16px;
+  }
+
+  .auth-form-wrapper h1 {
+    font-size: 1.3rem;
+  }
+
+  .auth-form-wrapper .subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+
+  .auth-form-wrapper .form-input {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+
+  .form-helpers {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .otp-container {
+    gap: 6px;
+  }
+
+  .otp-input {
+    width: 40px;
+    height: 44px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+  }
+
+  .auth-step {
+    width: 60px;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
 }
 
 /* ═══════════════════════════════════════════════

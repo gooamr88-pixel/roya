@@ -1351,3 +1351,122 @@
     padding: 20px 24px 28px;
   }
 }
+
+/* ── Small Phones (≤ 480px) ── */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.55rem;
+    letter-spacing: -0.5px;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+  }
+
+  .hero-badge {
+    font-size: 0.75rem;
+    padding: 6px 14px;
+  }
+
+  .hero-stats {
+    gap: 20px;
+  }
+
+  .hero-stat .number {
+    font-size: 1.3rem;
+  }
+
+  .hero-stat .label {
+    font-size: 0.72rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 16px;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+  }
+
+  .section-desc {
+    font-size: 0.92rem;
+  }
+
+  .service-card-body,
+  .pro-card-body {
+    padding: 16px;
+  }
+
+  .exhibition-card {
+    padding: 20px;
+  }
+
+  .contact-form {
+    padding: 20px;
+  }
+
+  .floating-contact {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .contact-toggle {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .contact-item {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
+
+  .glass-modal-content {
+    border-radius: 16px;
+  }
+
+  .glass-modal-image {
+    height: 170px;
+  }
+
+  .glass-modal-body {
+    padding: 16px 20px 24px;
+  }
+
+  .glass-modal-body h2 {
+    font-size: 1.2rem;
+  }
+
+  .glass-modal-price {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 14px;
+  }
+
+  .glass-modal-price .value {
+    font-size: 1.3rem;
+  }
+
+  .glass-modal-actions {
+    flex-direction: column;
+  }
+
+  .footer-brand {
+    max-width: 100%;
+  }
+
+  .mobile-menu a {
+    font-size: 1.1rem;
+  }
+}
