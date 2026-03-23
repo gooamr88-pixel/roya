@@ -306,8 +306,10 @@ function resetWizard(formId) {
 // ══════════════════════════════════════════
 async function toggleFeatured(type, id, featured) {
     try {
-        // API.put() sends JSON body — no FormData, no Multer interference
-        await API.put(`/${type}/${id}`, { is_featured: featured });
+        // Must use FormData + putForm because the PUT route passes through Multer
+        const formData = new FormData();
+        formData.append('is_featured', featured ? '1' : '0');
+        await API.putForm(`/${type}/${id}`, formData);
         Toast.success(featured ? (__t?.markedFeatured || 'Marked as featured!') : (__t?.removedFeatured || 'Removed from featured.'));
         if (type === 'services') loadAdminServices();
         else loadAdminProperties();

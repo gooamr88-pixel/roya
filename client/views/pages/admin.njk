@@ -381,7 +381,7 @@
         <h3 id="serviceModalTitle">{{ t.admin.addService }}</h3>
         <button type="button" class="modal-close" onclick="closeServiceModal()" aria-label="Close Modal"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
-      <form id="serviceForm" onsubmit="saveAdminService(event)">
+      <form id="serviceForm" onsubmit="saveAdminService(event)" novalidate>
         <input type="hidden" id="serviceEditId">
         
         {# ── Tabs ── #}
@@ -466,7 +466,7 @@
         <h3 id="propertyModalTitle">{{ t.admin.addProperty }}</h3>
         <button type="button" class="modal-close" onclick="closePropertyModal()" aria-label="Close Modal"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
-      <form id="propertyForm" onsubmit="saveAdminProperty(event)">
+      <form id="propertyForm" onsubmit="saveAdminProperty(event)" novalidate>
         <input type="hidden" id="propEditId">
         
         {# ── Tabs ── #}
@@ -563,7 +563,7 @@
         <h3 id="exhibitionModalTitle">{{ t.admin.addExhibition }}</h3>
         <button type="button" class="modal-close" onclick="closeExhibitionModal()" aria-label="Close Modal"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
-      <form id="exhibitionForm" onsubmit="saveExhibition(event)">
+      <form id="exhibitionForm" onsubmit="saveExhibition(event)" novalidate>
         {# ── Tabs ── #}
         <div class="form-tabs">
           <button type="button" class="form-tab-btn active" id="exhTabGeneral" data-tab="exhPaneGeneral" onclick="switchFormTab('exhTabGeneral','exhibitionForm')">
