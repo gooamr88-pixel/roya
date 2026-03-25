@@ -12,7 +12,7 @@ async function loadAdminPortfolio() {
 
     try {
         const data = await API.get('/portfolio?limit=50');
-        const items = data.data.items;
+        const items = data.data.portfolio;
 
         if (!items.length) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3)"><i class="fas fa-images" style="font-size:2rem;margin-bottom:8px;display:block;opacity:.4"></i> No portfolio items yet</td></tr>`;
@@ -41,7 +41,12 @@ async function loadAdminPortfolio() {
                         </button>
                         <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)"
                             onclick="deletePortfolioItem(${item.id})" title="Deactivate">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-eye-slash"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background:rgba(220,38,38,.15);color:#dc2626;border:1px solid rgba(220,38,38,.3)"
+                            onclick="permanentDeletePortfolioItem(${item.id}, '${esc(item.title).replace(/'/g, "\\'")}')"
+                            title="Permanent Delete">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 </td>
@@ -141,6 +146,22 @@ async function deletePortfolioItem(id) {
         Toast.success(__t?.portfolioDeactivated || 'Portfolio item deactivated');
         loadAdminPortfolio();
     } catch { Toast.error(__t?.failedSave || 'Failed to deactivate portfolio item'); }
+}
+
+async function permanentDeletePortfolioItem(id, title) {
+    const ok = await glassConfirm(
+        __t?.permanentDelete || 'Permanent Delete',
+        (__t?.confirmPermanentDelete || 'Are you sure you want to PERMANENTLY delete "{title}"? This action cannot be undone.').replace('{title}', title),
+        'danger'
+    );
+    if (!ok) return;
+    try {
+        await API.delete(`/portfolio/${id}/permanent`);
+        Toast.success(__t?.portfolioPermanentlyDeleted || 'Portfolio item permanently deleted');
+        loadAdminPortfolio();
+    } catch (err) {
+        Toast.error(err.message || (__t?.failedSave || 'Failed to delete portfolio item'));
+    }
 }
 
 // Wire up portfolio images live preview

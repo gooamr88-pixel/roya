@@ -14,7 +14,7 @@ const getAll = asyncHandler(async (req, res) => {
     const isAdmin = req.user && ['super_admin', 'admin'].includes(req.user.role);
 
     const { rows, pagination } = await portfolioRepo.findAll({ page, limit, isAdmin });
-    res.json({ success: true, data: { items: rows, pagination } });
+    res.json({ success: true, data: { portfolio: rows, pagination } });
 });
 
 /**
@@ -74,7 +74,7 @@ const update = asyncHandler(async (req, res) => {
 });
 
 /**
- * DELETE /api/portfolio/:id
+ * DELETE /api/portfolio/:id  (soft delete — deactivate)
  */
 const remove = asyncHandler(async (req, res) => {
     const result = await portfolioRepo.softDelete(req.params.id);
@@ -82,4 +82,13 @@ const remove = asyncHandler(async (req, res) => {
     res.json({ success: true, message: 'Portfolio item deactivated.' });
 });
 
-module.exports = { getAll, getById, create, update, remove };
+/**
+ * DELETE /api/portfolio/:id/permanent  (hard delete — remove from DB)
+ */
+const permanentRemove = asyncHandler(async (req, res) => {
+    const result = await portfolioRepo.hardDelete(req.params.id);
+    if (!result) throw new AppError('Portfolio item not found.', 404);
+    res.json({ success: true, message: 'Portfolio item permanently deleted.' });
+});
+
+module.exports = { getAll, getById, create, update, remove, permanentRemove };

@@ -58,4 +58,12 @@ const softDelete = async (id) => {
     return result.rows[0] || null;
 };
 
-module.exports = { findAll, findById, create, update, softDelete };
+const hardDelete = async (id) => {
+    const result = await query(
+        'DELETE FROM portfolio_items WHERE id = $1 RETURNING id',
+        [id]
+    );
+    return result.rows[0] || null;
+};
+
+module.exports = { findAll, findById, create, update, softDelete, hardDelete };

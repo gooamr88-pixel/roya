@@ -14,5 +14,6 @@ router.get('/:id', portfolioController.getById);
 router.post('/', authenticate, authorize('super_admin', 'admin'), upload.array('images', 5), portfolioController.create);
 router.put('/:id', authenticate, authorize('super_admin', 'admin'), upload.array('images', 5), portfolioController.update);
 router.delete('/:id', authenticate, authorize('super_admin', 'admin'), portfolioController.remove);
+router.delete('/:id/permanent', authenticate, authorize('super_admin'), portfolioController.permanentRemove);
 
 module.exports = router;
