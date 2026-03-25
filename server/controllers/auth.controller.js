@@ -51,8 +51,7 @@ const login = asyncHandler(async (req, res) => {
     // Set cookies
     tokenService.setAuthCookies(res, result.accessToken, result.refreshToken, result.rememberMe);
 
-    // Debug: log what cookies are being set (remove after fixing)
-    console.log(`🔍 [LOGIN DEBUG] Setting cookies for user ${result.user.email} | NODE_ENV: ${process.env.NODE_ENV} | secure: ${!config.isDev} | accessToken length: ${result.accessToken.length}`);
+
 
     res.json({
         success: true,

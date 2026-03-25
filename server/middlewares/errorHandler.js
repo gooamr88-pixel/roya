@@ -78,7 +78,18 @@ const errorHandler = (err, req, res, _next) => {
             success: false,
             error: {
                 code: 'FILE_TOO_LARGE',
-                message: 'Uploaded file exceeds the maximum allowed size.',
+                message: 'Uploaded file exceeds the maximum allowed size (10MB).',
+            },
+        });
+    }
+
+    // ── Multer file count errors ──
+    if (err.code === 'LIMIT_FILE_COUNT') {
+        return res.status(400).json({
+            success: false,
+            error: {
+                code: 'TOO_MANY_FILES',
+                message: 'Too many files. Maximum is 5 files per upload.',
             },
         });
     }

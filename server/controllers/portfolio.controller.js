@@ -11,8 +11,9 @@ const portfolioRepo = require('../repositories/portfolio.repository');
 const getAll = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
+    const isAdmin = req.user && ['super_admin', 'admin'].includes(req.user.role);
 
-    const { rows, pagination } = await portfolioRepo.findAll({ page, limit });
+    const { rows, pagination } = await portfolioRepo.findAll({ page, limit, isAdmin });
     res.json({ success: true, data: { items: rows, pagination } });
 });
 
@@ -29,7 +30,7 @@ const getById = asyncHandler(async (req, res) => {
  * POST /api/portfolio
  */
 const create = asyncHandler(async (req, res) => {
-    const { title, description, category, title_ar, description_ar } = req.body;
+    const { title, description, category, category_ar, title_ar, description_ar } = req.body;
     if (!title) throw new AppError('Title is required.', 400);
 
     let images = [];
@@ -39,7 +40,7 @@ const create = asyncHandler(async (req, res) => {
         images = uploaded.map(u => u.url);
     }
 
-    const item = await portfolioRepo.create({ title, description, images, category, title_ar, description_ar });
+    const item = await portfolioRepo.create({ title, description, images, category, category_ar, title_ar, description_ar });
     res.status(201).json({ success: true, data: { item } });
 });
 
@@ -47,12 +48,13 @@ const create = asyncHandler(async (req, res) => {
  * PUT /api/portfolio/:id
  */
 const update = asyncHandler(async (req, res) => {
-    const { title, description, category, is_active, title_ar, description_ar } = req.body;
+    const { title, description, category, category_ar, is_active, title_ar, description_ar } = req.body;
     const updates = []; const values = []; let i = 1;
 
     if (title !== undefined)          { updates.push(`title = $${i++}`);          values.push(title); }
     if (description !== undefined)    { updates.push(`description = $${i++}`);    values.push(description); }
     if (category !== undefined)       { updates.push(`category = $${i++}`);       values.push(category); }
+    if (category_ar !== undefined)    { updates.push(`category_ar = $${i++}`);    values.push(category_ar); }
     if (is_active !== undefined)      { updates.push(`is_active = $${i++}`);      values.push(parseBool(is_active)); }
     if (title_ar !== undefined)       { updates.push(`title_ar = $${i++}`);       values.push(title_ar); }
     if (description_ar !== undefined) { updates.push(`description_ar = $${i++}`); values.push(description_ar); }

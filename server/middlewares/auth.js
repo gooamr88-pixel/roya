@@ -31,9 +31,6 @@ const authenticate = async (req, res, next) => {
     try {
         const token = req.cookies?.access_token;
 
-        // ── Debug: log cookie presence (remove after fixing) ──
-        console.log(`🔍 [AUTH DEBUG] ${req.method} ${req.originalUrl} | access_token: ${token ? 'YES (' + token.substring(0, 20) + '...)' : 'MISSING'} | cookies: ${JSON.stringify(Object.keys(req.cookies || {}))} | secure: ${req.secure} | protocol: ${req.protocol}`);
-
         if (!token) {
             throw new AppError('Authentication required. Please log in.', 401, 'AUTH_REQUIRED');
         }
@@ -264,4 +261,49 @@ const ownerOrAdmin = (paramKey = 'id') => {
     };
 };
 
-module.exports = { authenticate, authorize, authorizeRole, checkPermission, ownerOrAdmin, ROLE_HIERARCHY };
+/**
+ * Optional Auth — same as authenticate but non-blocking.
+ * If the cookie is missing or the token is invalid, the request continues as guest.
+ * Used on public routes that need to optionally attach user context for admin-specific behavior.
+ */
+const optionalAuth = async (req, res, next) => {
+    try {
+        const token = req.cookies?.access_token;
+        if (!token) return next();
+
+        const decoded = jwt.verify(token, config.jwt.accessSecret, {
+            algorithms: ['HS256'],
+            issuer: 'roya-platform',
+            audience: 'roya-api',
+        });
+
+        if (decoded.type && decoded.type !== 'access') return next();
+        if (!decoded.userId) return next();
+
+        const user = await userRepo.findById(decoded.userId);
+        if (!user || !user.is_active || !user.is_verified) return next();
+
+        req.user = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            role: user.role || 'client',
+            permissions: (() => {
+                const perms = user.permissions_json;
+                if (Array.isArray(perms)) return perms;
+                if (typeof perms === 'string') {
+                    try { return JSON.parse(perms); } catch { return []; }
+                }
+                return [];
+            })(),
+        };
+
+        next();
+    } catch {
+        // Token invalid/expired — continue as guest
+        next();
+    }
+};
+
+module.exports = { authenticate, authorize, authorizeRole, checkPermission, ownerOrAdmin, optionalAuth, ROLE_HIERARCHY };

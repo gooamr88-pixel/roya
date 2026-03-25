@@ -8,8 +8,8 @@ const { idParamValidation } = require('../middlewares/validators');
 
 router.use(authenticate);
 
-router.get('/', ctrl.getAll);
-router.post('/:orderId/generate', authorize('super_admin', 'admin'), ctrl.generate);
+router.get('/', authorize('super_admin'), ctrl.getAll);
+router.post('/:orderId/generate', authorize('super_admin'), ctrl.generate);
 router.get('/:id/download', idParamValidation, ctrl.download);
 
 module.exports = router;

@@ -56,6 +56,10 @@ jest.mock('../server/config', () => ({
         phone: '+966500000000',
         password: 'Admin@123456',
     },
+    ai: {
+        model: 'gemini-2.5-flash',
+        apiKey: 'test_api_key',
+    },
 }));
 
 // ═══════════════════════════════════════════════

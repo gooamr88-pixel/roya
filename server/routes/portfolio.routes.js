@@ -3,11 +3,11 @@
 // ═══════════════════════════════════════════════
 const router = require('express').Router();
 const portfolioController = require('../controllers/portfolio.controller');
-const { authenticate, authorize } = require('../middlewares/auth');
+const { authenticate, authorize, optionalAuth } = require('../middlewares/auth');
 const { upload } = require('../services/upload.service');
 
-// Public
-router.get('/', portfolioController.getAll);
+// Public (optionalAuth populates req.user for admin if cookie exists)
+router.get('/', optionalAuth, portfolioController.getAll);
 router.get('/:id', portfolioController.getById);
 
 // Admin only
