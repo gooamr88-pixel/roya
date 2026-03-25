@@ -1,8 +1,8 @@
 {
     "meta": {
-        "title": "ROYA Platform — Professional Business Solutions",
-        "description": "ROYA Platform — Professional solutions in Advertising, Marketing, Real Estate, and Exhibitions.",
-        "keywords": "ROYA, services, advertising, marketing, real estate, exhibitions"
+        "title": "Nabda Platform — Professional Business Solutions",
+        "description": "Nabda Platform — Professional solutions in Advertising, Marketing, Real Estate, and Exhibitions.",
+        "keywords": "Nabda, services, advertising, marketing, real estate, exhibitions"
     },
     "nav": {
         "home": "Home",
@@ -18,9 +18,9 @@
         "portfolio": "Portfolio"
     },
     "hero": {
-        "badge": "ROYA Platform",
+        "badge": "Nabda Platform",
         "title_before": "",
-        "title_highlight": "<span style=\"color: #FFD700;\">Roya For Advertisng And Marketing</span>",
+        "title_highlight": "<span style=\"color: #FFD700;\">Nabda For Advertising And Marketing</span>",
         "title_after": "",
         "subtitle": "Empowering businesses with comprehensive services in Advertising, Marketing, Real Estate, and Exhibition Management. Transform your vision into reality.",
         "cta_services": "Explore Services",
@@ -171,10 +171,11 @@
         "signIn": "Sign In",
         "register": "Register",
         "dashboard": "Dashboard",
-        "copyright": "© 2026 ROYA Platform. All rights reserved."
+        "copyright": "© 2026 Nabda Platform — All rights reserved.",
+        "createdBy": "Designed & Developed by"
     },
     "login": {
-        "title": "Sign In — ROYA Platform",
+        "title": "Sign In — Nabda Platform",
         "welcome": "Welcome Back",
         "welcomeDesc": "Sign in to access your dashboard, manage orders, and stay connected with our services.",
         "feature_secure": "Secure Authentication",
@@ -195,7 +196,7 @@
         "createOne": "Create one"
     },
     "register": {
-        "title": "Register — ROYA Platform",
+        "title": "Register — Nabda Platform",
         "welcome": "Join Our Platform",
         "welcomeDesc": "Create your account to access premium services, request projects, and manage your business needs.",
         "feature_otp": "Email OTP Verification",
@@ -225,15 +226,15 @@
         "signIn": "Sign In"
     },
     "resetPassword": {
-        "title": "Reset Password — ROYA Platform",
+        "title": "Reset Password — Nabda Platform",
         "welcome": "Password Recovery",
         "welcomeDesc": "We'll help you get back into your account securely.",
         "backToLogin": "Back to Sign In",
         "heading": "Reset Password",
-        "subtitle": "Enter your email to receive a password reset link.",
+        "subtitle": "Enter your email to receive a password reset code.",
         "emailLabel": "Email Address",
         "emailPlaceholder": "your@email.com",
-        "sendBtn": "Send Reset Link",
+        "sendBtn": "Send OTP Code",
         "newHeading": "New Password",
         "newSubtitle": "Choose a strong new password for your account.",
         "newPassLabel": "New Password",
@@ -245,7 +246,7 @@
         "signIn": "Sign In"
     },
     "servicesPage": {
-        "title": "All Services — ROYA Platform",
+        "title": "All Services — Nabda Platform",
         "label": "Our Services",
         "headingBefore": "All",
         "headingHighlight": "Services",
@@ -257,7 +258,7 @@
         "failedLoad": "Failed to load"
     },
     "jobsPage": {
-        "title": "Jobs — ROYA Platform",
+        "title": "Jobs — Nabda Platform",
         "label": "Career Opportunities",
         "headingBefore": "All",
         "headingHighlight": "Jobs",
@@ -269,7 +270,7 @@
         "failedLoad": "Failed to load jobs"
     },
     "exhibitionsPage": {
-        "title": "All Exhibitions — ROYA Platform",
+        "title": "All Exhibitions — Nabda Platform",
         "label": "Exhibitions",
         "headingBefore": "Upcoming",
         "headingHighlight": "Events",
@@ -280,7 +281,7 @@
         "failedLoad": "Failed to load exhibitions"
     },
     "dashboard": {
-        "title": "Dashboard — ROYA Platform",
+        "title": "Dashboard — Nabda Platform",
         "navMain": "Main",
         "overview": "Overview",
         "myOrders": "My Orders",
@@ -331,7 +332,7 @@
         "updatePassword": "Update Password"
     },
     "admin": {
-        "title": "Admin Command Center — ROYA",
+        "title": "Admin Command Center — Nabda",
         "commandCenter": "Admin Command Center",
         "executiveInsights": "Executive Insights",
         "orders": "Orders",
@@ -417,6 +418,9 @@
         "bathroomsLabel": "Bathrooms",
         "propertyType": "Property Type",
         "exportCsv": "Export CSV",
+        "exportPdf": "Export PDF",
+        "exportWord": "Export Word",
+        "exportExcel": "Export Excel",
         "addExhibition": "Add Event",
         "saveExhibition": "Save Event",
         "tabGeneralInfo": "General Info",
@@ -442,7 +446,7 @@
         "exhLocationPlaceholder": "e.g. Riyadh Exhibition Center",
         "exhDescPlaceholder": "Describe the exhibition...",
         "svcTitlePlaceholder": "e.g. Digital Advertising",
-        "brandName": "ROYA",
+        "brandName": "Nabda",
         "jobCompany": "Company",
         "jobLocation": "Location",
         "jobType": "Job Type",
@@ -510,6 +514,14 @@
         "banConfirm": "Are you sure you want to ban this user?",
         "unbanConfirm": "Are you sure you want to unban this user?",
         "noResultsFound": "No results found",
+        "noOrdersYet": "No orders yet",
+        "noExhibitionsYet": "No exhibitions yet. Click 'Add Event' to create one.",
+        "noJobsYet": "No jobs yet",
+        "noPortfolioYet": "No portfolio items yet",
+        "orderCompletion": "Order Completion",
+        "pendingOrdersLabel": "Pending Orders",
+        "servicesVsProperties": "Services vs Properties",
+        "samePasswordError": "New password cannot be the same as your current password.",
         "selected": "selected",
         "deleteSelected": "Delete Selected",
         "deactivated": "deactivated.",
@@ -559,7 +571,7 @@
         "permViewProfile": "View Profile"
     },
     "onboarding": {
-        "welcomeTitle": "Welcome to Roya!",
+        "welcomeTitle": "Welcome to Nabda!",
         "welcomeDesc": "Let us give you a quick tour of your dashboard.",
         "statsTitle": "Your Overview",
         "statsDesc": "See your active orders, completed projects, and spending at a glance.",

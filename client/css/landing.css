@@ -243,7 +243,7 @@
   bottom: 30px;
   right: 30px;
   /* Default LTR */
-  z-index: 998;
+  z-index: 990;
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
@@ -974,6 +974,37 @@
   transform: translateY(-2px);
 }
 
+.footer-copyright-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.footer-credit {
+  width: 100%;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.footer-credit-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.footer-credit-link:hover {
+  color: #f3e5ab;
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+}
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .about-grid {
@@ -1086,8 +1117,140 @@
   }
 
   .floating-contact {
-    bottom: 20px;
-    right: 20px;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  [dir="rtl"] .floating-contact {
+    right: auto;
+    left: 16px;
+  }
+
+  .contact-toggle {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .contact-item {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
+
+  /* Chatbot FAB — smaller on mobile */
+  #chatbot-fab {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.1rem !important;
+    bottom: 80px !important;
+  }
+
+  /* Portfolio section — single column on mobile */
+  .portfolio-grid,
+  .portfolio-section .grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Section headers — scale down */
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-header p {
+    font-size: 0.9rem;
+  }
+}
+
+/* ── Ultra-Small Screens (< 480px) ── */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.6rem !important;
+    line-height: 1.3;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+    padding: 0 12px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+
+  .hero-stats {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat .number {
+    font-size: 1.3rem;
+  }
+
+  .hero-stat .label {
+    font-size: 0.75rem;
+  }
+
+  .hero-badge {
+    font-size: 0.75rem;
+    padding: 6px 14px;
+  }
+
+  /* Floating contact — even more compact */
+  .floating-contact {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  [dir="rtl"] .floating-contact {
+    right: auto;
+    left: 12px;
+  }
+
+  .contact-toggle {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+    box-shadow: 0 2px 12px rgba(212, 175, 55, 0.3);
+  }
+
+  .contact-item {
+    width: 38px;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+
+  /* Footer — fully centered on mobile */
+  .footer {
+    padding: 40px 16px 24px;
+  }
+
+  .footer-bottom {
+    padding-top: 16px;
+  }
+
+  .footer-social a {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+  }
+
+  /* Service cards — full width image */
+  .service-card-image {
+    height: 160px;
+  }
+
+  .service-card-body {
+    padding: 16px;
   }
 }
 

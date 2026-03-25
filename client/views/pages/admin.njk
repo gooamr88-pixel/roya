@@ -9,6 +9,9 @@
 {% block pageCss %}
   <link rel="stylesheet" href="/css/dashboard.css">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   {# FIX (F5): All admin styles moved to dashboard.css — no more inline <style> #}
 {% endblock %}
 
@@ -184,7 +187,7 @@
               <div class="stat-value" id="aStatJobs"><div class="skeleton skeleton-value"></div></div>
             </div>
             <div class="stat-card">
-              <div class="stat-header"><div class="stat-icon green"><i class="fas fa-calendar-star"></i></div><div class="stat-label">{{ t.admin.exhibitions }}</div></div>
+              <div class="stat-header"><div class="stat-icon green"><i class="fas fa-calendar-alt"></i></div><div class="stat-label">{{ t.admin.exhibitions }}</div></div>
               <div class="stat-value" id="aStatExhibitions"><div class="skeleton skeleton-value"></div></div>
             </div>
             <div class="stat-card">
@@ -226,7 +229,10 @@
               <option value="completed">{{ t.admin.completedLabel }}</option>
               <option value="cancelled">{{ t.admin.cancelledLabel }}</option>
             </select>
-            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminOrdersTable', 'orders')"><i class="fas fa-download"></i> {{ t.admin.exportCsv }}</button>
+            <button class="btn btn-outline btn-sm" onclick="exportTableCSV('adminOrdersTable', 'orders')"><i class="fas fa-file-csv"></i> {{ t.admin.exportCsv }}</button>
+            <button class="btn btn-outline btn-sm" onclick="exportTablePDF('adminOrdersTable', 'orders')"><i class="fas fa-file-pdf" style="color:#e74c3c"></i> {{ t.admin.exportPdf | default('PDF') }}</button>
+            <button class="btn btn-outline btn-sm" onclick="exportTableExcel('adminOrdersTable', 'orders')"><i class="fas fa-file-excel" style="color:#27ae60"></i> {{ t.admin.exportExcel | default('Excel') }}</button>
+            <button class="btn btn-outline btn-sm" onclick="exportTableWord('adminOrdersTable', 'orders')"><i class="fas fa-file-word" style="color:#2980b9"></i> {{ t.admin.exportWord | default('Word') }}</button>
           </div>
           <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thInvoice }}</th><th>{{ t.admin.thClient }}</th><th>{{ t.admin.thService }}</th><th>{{ t.admin.thAmount }}</th><th>{{ t.admin.thStatus }}</th><th>{{ t.admin.thDate }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminOrdersTable"></tbody></table></div>
           <div class="pagination" id="adminOrdersPagination"></div>
@@ -604,6 +610,18 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="exhDesc" rows="3" placeholder="{{ t.admin.exhDescPlaceholder }}"></textarea>
           </div>
+          {# ── Arabic Content (i18n) ── #}
+          <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
+            <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
+              <input class="form-input" type="text" id="exhTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
+              <textarea class="form-textarea" id="exhDescAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+            </div>
+          </div>
           <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
             <input type="checkbox" id="exhActive" checked style="width:16px;height:16px;cursor:pointer">
             <label class="form-label" for="exhActive" style="margin:0;cursor:pointer">{{ t.admin.activeVisible }}</label>
@@ -664,6 +682,18 @@
           <div class="form-group">
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="jobDescription" rows="3" placeholder="{{ t.admin.svcDescPlaceholder }}"></textarea>
+          </div>
+          {# ── Arabic Content (i18n) ── #}
+          <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
+            <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
+              <input class="form-input" type="text" id="jobTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
+              <textarea class="form-textarea" id="jobDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+            </div>
           </div>
           <div class="wizard-nav">
             <span></span>
@@ -860,6 +890,15 @@
       banConfirm:        {{ t.admin.banConfirm        | default('Are you sure you want to ban this user?') | dump | safe }},
       unbanConfirm:      {{ t.admin.unbanConfirm      | default('Are you sure you want to unban this user?') | dump | safe }},
       noResultsFound:    {{ t.admin.noResultsFound    | default('No results found')      | dump | safe }},
+      noOrdersYet:       {{ t.admin.noOrdersYet       | default('No orders yet')          | dump | safe }},
+      noExhibitionsYet:  {{ t.admin.noExhibitionsYet  | default('No exhibitions yet')     | dump | safe }},
+      noJobsYet:         {{ t.admin.noJobsYet         | default('No jobs yet')            | dump | safe }},
+      noPortfolioYet:    {{ t.admin.noPortfolioYet    | default('No portfolio items yet') | dump | safe }},
+      orderCompletion:   {{ t.admin.orderCompletion   | default('Order Completion')       | dump | safe }},
+      pendingOrdersLabel:{{ t.admin.pendingOrdersLabel| default('Pending Orders')         | dump | safe }},
+      servicesVsProperties:{{ t.admin.servicesVsProperties | default('Services vs Properties') | dump | safe }},
+      confirmBtn:        {{ t.admin.confirmBtn        | default('Confirm')               | dump | safe }},
+      cancelBtn:         {{ t.admin.cancelBtn         | default('Cancel')                | dump | safe }},
       selected:          {{ t.admin.selected          | default('selected')              | dump | safe }},
       deleteSelected:    {{ t.admin.deleteSelected    | default('Delete Selected')       | dump | safe }},
       deactivated:       {{ t.admin.deactivated       | default('deactivated.')          | dump | safe }},

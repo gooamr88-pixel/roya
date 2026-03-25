@@ -23,7 +23,7 @@ async function loadAdminUsers(page = 1) {
             try { const rolesData = await API.get('/admin/roles'); roles = rolesData.data.roles; } catch { }
 
             if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:40px;color:var(--text-muted)">No users found</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:40px;color:var(--text-muted)">${__t?.noResultsFound || 'No users found'}</td></tr>`;
             } else {
                 tbody.innerHTML = users.map(u => buildUserRow(u, roles)).join('');
             }
@@ -144,7 +144,7 @@ async function loadAdminLogs(page = 1) {
         }
 
         if (logs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-muted)">No logs yet</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-muted)">${__t?.noResultsFound || 'No logs yet'}</td></tr>`;
         } else {
             tbody.innerHTML = logs.map(l => `
                 <tr>
@@ -173,8 +173,8 @@ function parseBrowser(ua) {
 
 async function clearAdminLogs() {
     const confirmed = await glassConfirm(
-        'Clear All Logs',
-        'Are you sure you want to permanently delete all login logs? This action cannot be undone.',
+        __t?.clearAllLogs || 'Clear All Logs',
+        __t?.clearLogsMessage || 'Are you sure you want to permanently delete all login logs? This action cannot be undone.',
         'danger'
     );
     if (!confirmed) return;

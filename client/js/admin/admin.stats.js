@@ -63,22 +63,22 @@ async function loadStats() {
 
             chartEl.innerHTML = `
                 <div class="chart-bar-group">
-                    <div class="chart-bar-label"><span>Order Completion</span><strong>${completionRate}%</strong></div>
+                    <div class="chart-bar-label"><span>${__t?.orderCompletion || 'Order Completion'}</span><strong>${completionRate}%</strong></div>
                     <div class="chart-bar-track"><div class="chart-bar-fill success" style="width:${completionRate}%"></div></div>
                 </div>
                 <div class="chart-bar-group">
-                    <div class="chart-bar-label"><span>Pending Orders</span><strong>${pendingRate}%</strong></div>
+                    <div class="chart-bar-label"><span>${__t?.pendingOrdersLabel || 'Pending Orders'}</span><strong>${pendingRate}%</strong></div>
                     <div class="chart-bar-track"><div class="chart-bar-fill warning" style="width:${pendingRate}%"></div></div>
                 </div>
                 <div class="chart-bar-group">
-                    <div class="chart-bar-label"><span>Services vs Properties</span><strong>${s.totalServices}S / ${s.totalProperties}P</strong></div>
+                    <div class="chart-bar-label"><span>${__t?.servicesVsProperties || 'Services vs Properties'}</span><strong>${s.totalServices}S / ${s.totalProperties}P</strong></div>
                     <div class="chart-bar-track" style="display:flex;gap:2px">
                         <div class="chart-bar-fill info" style="width:${Math.round((s.totalServices / Math.max(s.totalServices + s.totalProperties, 1)) * 100)}%"></div>
                         <div class="chart-bar-fill primary" style="width:${Math.round((s.totalProperties / Math.max(s.totalServices + s.totalProperties, 1)) * 100)}%"></div>
                     </div>
                 </div>
                 <div class="chart-bar-group">
-                    <div class="chart-bar-label"><span>Conversion Rate</span><strong>${s.conversionRate}%</strong></div>
+                    <div class="chart-bar-label"><span>${__t?.conversionRate || 'Conversion Rate'}</span><strong>${s.conversionRate}%</strong></div>
                     <div class="chart-bar-track"><div class="chart-bar-fill success" style="width:${s.conversionRate}%"></div></div>
                 </div>
             `;
@@ -172,7 +172,7 @@ async function loadStats() {
         const tbody = document.getElementById('adminRecentOrders');
         const orders = data.data.recentOrders;
         if (orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-3)">No orders yet</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-3)">${__t?.noOrdersYet || 'No orders yet'}</td></tr>`;
         } else {
             tbody.innerHTML = orders.map(o => `
                 <tr>

@@ -15,7 +15,7 @@ async function loadAdminJobs() {
         const jobs = data.data.jobs;
 
         if (!jobs.length) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3)"><i class="fas fa-briefcase" style="font-size:2rem;margin-bottom:8px;display:block;opacity:.4"></i> No jobs yet</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3)"><i class="fas fa-briefcase" style="font-size:2rem;margin-bottom:8px;display:block;opacity:.4"></i> ${__t?.noJobsYet || 'No jobs yet'}</td></tr>`;
             return;
         }
 
@@ -64,6 +64,12 @@ function openJobModal(job = null) {
     document.getElementById('jobSalary').value = job?.salary_range || '';
     document.getElementById('jobIsActive').checked = job ? !!job.is_active : true;
 
+    // i18n Arabic fields
+    const titleArEl = document.getElementById('jobTitleAr');
+    const descArEl = document.getElementById('jobDescriptionAr');
+    if (titleArEl) titleArEl.value = job?.title_ar || '';
+    if (descArEl) descArEl.value = job?.description_ar || '';
+
     modal.classList.add('show');
 }
 
@@ -92,6 +98,12 @@ async function saveAdminJob() {
         salary_range: document.getElementById('jobSalary')?.value?.trim(),
         is_active: document.getElementById('jobIsActive')?.checked ? '1' : '0',
     };
+
+    // i18n Arabic fields
+    const titleAr = (document.getElementById('jobTitleAr')?.value || '').trim();
+    const descAr = (document.getElementById('jobDescriptionAr')?.value || '').trim();
+    if (titleAr) payload.title_ar = titleAr;
+    if (descAr) payload.description_ar = descAr;
 
     try {
         if (editingJobId) {

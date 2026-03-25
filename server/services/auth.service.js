@@ -76,7 +76,7 @@ const verifyOTP = async (email, otp) => {
     await notificationService.createNotification(
         user.id,
         'Welcome!',
-        'Your email has been verified. Welcome to ROYA Platform!',
+        'Your email has been verified. Welcome to Nabda Platform!',
         'success'
     );
 };
@@ -259,6 +259,12 @@ const resetPassword = async (email, otp, password) => {
     const user = await userRepo.findByResetToken(email, otp);
     if (!user) {
         throw new AppError('Invalid or expired reset code.', 400, 'INVALID_RESET_TOKEN');
+    }
+
+    // Check if new password is the same as old
+    const isSamePassword = await bcrypt.compare(password, user.password_hash);
+    if (isSamePassword) {
+        throw new AppError('New password cannot be the same as your current password.', 400, 'SAME_PASSWORD');
     }
 
     const passwordHash = await bcrypt.hash(password, 12);

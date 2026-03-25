@@ -32,7 +32,7 @@ async function loadAdminExhibitions() {
             container.innerHTML = `
                 <div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--text-3)">
                     <i class="fas fa-calendar-alt" style="font-size:2.5rem;display:block;margin-bottom:12px;opacity:0.4"></i>
-                    No exhibitions yet. Click "Add Exhibition" to create one.
+                    ${__t?.noExhibitionsYet || 'No exhibitions yet. Click "Add Exhibition" to create one.'}
                 </div>`;
         } else {
             container.innerHTML = items.map(e => {
@@ -107,6 +107,12 @@ function openExhibitionModal(exhibition = null) {
         document.getElementById('exhEndDate').value   = exhibition.end_date   ? exhibition.end_date.split('T')[0]   : '';
         document.getElementById('exhDesc').value      = exhibition.description  || '';
         document.getElementById('exhActive').checked  = exhibition.is_active !== false;
+
+        // i18n Arabic fields
+        const titleArEl = document.getElementById('exhTitleAr');
+        const descArEl = document.getElementById('exhDescAr');
+        if (titleArEl) titleArEl.value = exhibition.title_ar || '';
+        if (descArEl) descArEl.value = exhibition.description_ar || '';
 
         // Show existing images
         const images = Array.isArray(exhibition.images)
@@ -187,6 +193,13 @@ async function saveExhibition(e) {
         formData.append('description', document.getElementById('exhDesc').value.trim());
         // B2 Fix: FormData converts booleans to strings — use '1'/'0' and parse on backend
         formData.append('is_active',   document.getElementById('exhActive').checked ? '1' : '0');
+
+        // i18n Arabic fields
+        const titleAr = (document.getElementById('exhTitleAr')?.value || '').trim();
+        const descAr = (document.getElementById('exhDescAr')?.value || '').trim();
+        if (titleAr) formData.append('title_ar', titleAr);
+        if (descAr) formData.append('description_ar', descAr);
+
         exhibitionDropFiles.forEach(file => formData.append('images', file));
 
         if (editingExhibitionId) {

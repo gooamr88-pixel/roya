@@ -16,8 +16,8 @@ const seo = (pagePath, descKey) => (req, res) => {
 
     // Dynamic SEO matching user request
     const pageTitle = lang === 'ar'
-        ? 'منصة رؤيا | للحلول الرقمية والعقارات'
-        : 'Roya Platform | Digital & Real Estate Solutions';
+        ? 'منصة نبضة | للحلول الرقمية والعقارات'
+        : 'Nabda Platform | Digital & Real Estate Solutions';
 
     // Vercel sits behind a reverse proxy, so req.protocol is 'http' by default.
     const protocol = req.headers['x-forwarded-proto'] || req.protocol;
@@ -30,6 +30,7 @@ const seo = (pagePath, descKey) => (req, res) => {
         pageDescription: desc,
         pageTitle,
         pageImage,
+        isHomePage: pagePath === 'index',
     });
 };
 
@@ -49,7 +50,7 @@ router.get('/banned',         seo('banned',         'meta.description'));
 
 // ── Arabic shortcut ──
 router.get('/ar', (req, res) => {
-    res.cookie('roya_lang', 'ar', {
+    res.cookie('nabda_lang', 'ar', {
         maxAge: 365 * 24 * 60 * 60 * 1000,
         httpOnly: false,
         secure: !config.isDev,

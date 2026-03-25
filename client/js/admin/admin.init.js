@@ -491,6 +491,87 @@ function exportTableCSV(tableId, filename) {
 }
 
 // ══════════════════════════════════════════
+//  PDF EXPORT (jsPDF + autoTable)
+// ══════════════════════════════════════════
+function exportTablePDF(tableId, filename) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    if (!window.jspdf) { Toast.error('PDF library not loaded'); return; }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape' });
+
+    // Header
+    doc.setFontSize(16);
+    doc.setTextColor(40);
+    doc.text(`Nabda Platform — ${filename}`, 14, 18);
+    doc.setFontSize(9);
+    doc.setTextColor(130);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 24);
+
+    doc.autoTable({
+        html: `#${tableId}`,
+        startY: 30,
+        styles: { fontSize: 8, cellPadding: 3 },
+        headStyles: { fillColor: [212, 175, 55], textColor: 255, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { top: 30 },
+    });
+
+    doc.save(`${filename}_${new Date().toISOString().slice(0, 10)}.pdf`);
+    Toast.success(`${filename} ${__t?.exported || 'exported as PDF!'}`);
+}
+
+// ══════════════════════════════════════════
+//  EXCEL EXPORT (SheetJS / XLSX)
+// ══════════════════════════════════════════
+function exportTableExcel(tableId, filename) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    if (!window.XLSX) { Toast.error('Excel library not loaded'); return; }
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.table_to_sheet(table);
+    XLSX.utils.book_append_sheet(wb, ws, filename.slice(0, 31));
+    XLSX.writeFile(wb, `${filename}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    Toast.success(`${filename} ${__t?.exported || 'exported as Excel!'}`);
+}
+
+// ══════════════════════════════════════════
+//  WORD EXPORT (HTML → .doc)
+// ══════════════════════════════════════════
+function exportTableWord(tableId, filename) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+
+    const htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'>
+        <style>
+            table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 11px; }
+            th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+            th { background: #d4af37; color: #fff; font-weight: bold; }
+            tr:nth-child(even) { background: #f9f9f9; }
+            h2 { font-family: Arial; color: #333; }
+        </style></head>
+        <body>
+            <h2>Nabda Platform — ${filename}</h2>
+            <p style='color:#888;font-size:10px'>Generated: ${new Date().toLocaleString()}</p>
+            ${table.outerHTML}
+        </body></html>`;
+
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${filename}_${new Date().toISOString().slice(0, 10)}.doc`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    Toast.success(`${filename} ${__t?.exported || 'exported as Word!'}`);
+}
+
+// ══════════════════════════════════════════
 //  GLOBAL SEARCH
 // ══════════════════════════════════════════
 function initGlobalSearch() {

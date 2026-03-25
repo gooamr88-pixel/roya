@@ -25,7 +25,7 @@
   <link rel="alternate" hreflang="x-default" href="{{ baseUrl }}{{ currentPath }}">
 
   {# ── OpenGraph (Facebook, LinkedIn, WhatsApp) ── #}
-  <meta property="og:site_name" content="ROYA Advertising">
+  <meta property="og:site_name" content="Nabda Platform">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="{{ 'ar_SA' if isRTL else 'en_US' }}">
   <meta property="og:locale:alternate" content="{{ 'en_US' if isRTL else 'ar_SA' }}">
@@ -50,7 +50,7 @@
   {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    "name": "ROYA Advertising",
+    "name": "Nabda Platform",
     "url": "{{ baseUrl }}",
     "logo": "{{ baseUrl }}/images/logo.svg",
     "description": "{{ t.meta.description }}",
@@ -111,7 +111,8 @@
   {# ── Page-specific Scripts ── #}
   {% block pageScripts %}{% endblock %}
 
-  {# ── AI Chatbot Widget (all pages) ── #}
+  {# ── AI Chatbot Widget (HOME PAGE ONLY) ── #}
+  {% if isHomePage %}
   <link rel="stylesheet" href="/css/chatbot.css">
 
   <button class="chatbot-fab" id="chatbotFab" aria-label="Chat with AI">
@@ -123,18 +124,19 @@
     <div class="chatbot-header">
       <div class="chatbot-header-avatar"><i class="fas fa-wand-magic-sparkles"></i></div>
       <div class="chatbot-header-info">
-        <h4>ROYA AI</h4>
-        <span id="chatbotOnline">Online now</span>
+        <h4>Nabda AI</h4>
+        <span id="chatbotOnline">{{ t.chatbot.online | default('Online now') }}</span>
       </div>
     </div>
     <div class="chatbot-messages" id="chatbotMessages"></div>
     <div class="chatbot-input-area">
-      <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." maxlength="300" autocomplete="off">
+      <input type="text" class="chatbot-input" id="chatbotInput" placeholder="{{ t.chatbot.placeholder | default('Type your message...') }}" maxlength="300" autocomplete="off">
       <button class="chatbot-send" id="chatbotSend" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
     </div>
   </div>
 
   <script src="/js/chatbot.js" defer></script>
+  {% endif %}
 </body>
 
 </html>

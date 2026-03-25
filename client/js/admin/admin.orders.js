@@ -10,6 +10,7 @@ async function loadAdminOrders(page = 1) {
         const orders = data.data.orders;
         const tbody = document.getElementById('adminOrdersTable');
         const canDelete = hasMinRole('admin');
+        const canInvoice = hasMinRole('super_admin');
 
         if (orders.length === 0) {
             tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:40px;color:var(--text-muted)">${(window.__t||{}).noResultsFound||'No orders found'}</td></tr>`;
@@ -29,10 +30,10 @@ async function loadAdminOrders(page = 1) {
                     </td>
                     <td data-label="Date">${Utils.formatDate(o.created_at)}</td>
                     <td data-label="Actions" style="display:flex;gap:6px;flex-wrap:wrap">
-                        <button class="ai-sparkle-btn" data-tooltip="${(window.__t||{}).aiSummarize||'✨ Summarize'}" onclick="aiSummarizeOrder(${o.id}, '${esc(o.service_title)}')">
-                            <i class="fas fa-wand-magic-sparkles sparkle-icon"></i>
+                        <button class="ai-sparkle-btn" data-tooltip="${(window.__t||{}).aiSummarize||'✨ Summarize'}" onclick="aiSummarizeOrder(${o.id}, '${esc(o.service_title)}')"
+                            ><i class="fas fa-wand-magic-sparkles sparkle-icon"></i>
                         </button>
-                        <button class="btn btn-ghost btn-sm" data-tooltip="Generate Invoice" onclick="generateInvoice(${o.id})"><i class="fas fa-file-invoice"></i></button>
+                        ${canInvoice ? `<button class="btn btn-ghost btn-sm" data-tooltip="Generate Invoice" onclick="generateInvoice(${o.id})"><i class="fas fa-file-invoice"></i></button>` : ''}
                         ${canDelete && o.status === 'completed' ? `
                         <button class="btn btn-danger btn-sm" data-tooltip="Delete Completed Order" onclick="deleteAdminOrder(${o.id}, '${esc(o.invoice_number || '')}')">
                             <i class="fas fa-trash"></i>

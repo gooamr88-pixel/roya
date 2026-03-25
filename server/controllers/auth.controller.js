@@ -43,7 +43,7 @@ const resendOTP = asyncHandler(async (req, res) => {
  */
 const login = asyncHandler(async (req, res) => {
     const { email, password, rememberMe } = req.body;
-    const ip = req.ip || req.connection.remoteAddress;
+    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.connection.remoteAddress;
     const userAgent = req.headers['user-agent'] || '';
 
     const result = await authService.loginUser({ email, password, rememberMe, ip, userAgent });

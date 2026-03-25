@@ -9,6 +9,9 @@ const emailService = require('../services/email.service');
 const orderRepo = require('../repositories/order.repository');
 const serviceRepo = require('../repositories/service.repository');
 const { randomBytes } = require('crypto');
+const invoiceRepo = require('../repositories/invoice.repository');
+const pdfService = require('../services/pdf.service');
+const winstonLogger = require('../utils/logger');
 
 /**
  * POST /api/orders
@@ -89,6 +92,45 @@ const updateStatus = asyncHandler(async (req, res) => {
     const phone = await orderRepo.getUserPhone(order.user_id);
     if (phone) {
         whatsappService.sendStatusUpdate(phone, order).catch(() => {});
+    }
+
+    // ── Auto-Invoice: Generate + email PDF when order is completed ──
+    if (status === 'completed') {
+        try {
+            const fullOrder = await invoiceRepo.getOrderWithClient(req.params.id);
+            if (fullOrder) {
+                const invNumber = fullOrder.invoice_number || `INV-${Date.now()}`;
+                const subtotal = parseFloat(fullOrder.price);
+                const tax = subtotal * 0.15;
+                const total = subtotal + tax;
+
+                const pdfBuffer = await pdfService.generateInvoicePDF({
+                    invoiceNumber: invNumber,
+                    serviceTitle: fullOrder.service_title,
+                    price: fullOrder.price,
+                    taxAmount: tax,
+                    clientName: fullOrder.client_name,
+                    clientEmail: fullOrder.client_email,
+                    clientPhone: fullOrder.client_phone,
+                    createdAt: fullOrder.created_at,
+                    status: 'completed',
+                });
+
+                const existing = await invoiceRepo.findByOrderId(fullOrder.id);
+                if (existing) {
+                    await invoiceRepo.update({ orderId: fullOrder.id, totalAmount: total, taxAmount: tax, pdfBuffer });
+                } else {
+                    await invoiceRepo.create({ orderId: fullOrder.id, invoiceNumber: invNumber, totalAmount: total, taxAmount: tax, pdfBuffer });
+                }
+
+                // Email invoice (non-blocking)
+                emailService.sendInvoice(fullOrder.client_email, fullOrder.client_name, invNumber, pdfBuffer).catch(() => {});
+                winstonLogger.info('Auto-invoice generated for completed order', { orderId: req.params.id, invoice: invNumber });
+            }
+        } catch (invoiceErr) {
+            // Don't fail the status update if invoice generation fails
+            winstonLogger.error('Auto-invoice generation failed', { orderId: req.params.id, error: invoiceErr.message });
+        }
     }
 
     res.json({ success: true, data: { order } });

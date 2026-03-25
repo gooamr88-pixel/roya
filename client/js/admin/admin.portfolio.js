@@ -15,7 +15,7 @@ async function loadAdminPortfolio() {
         const items = data.data.portfolio;
 
         if (!items.length) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3)"><i class="fas fa-images" style="font-size:2rem;margin-bottom:8px;display:block;opacity:.4"></i> No portfolio items yet</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3)"><i class="fas fa-images" style="font-size:2rem;margin-bottom:8px;display:block;opacity:.4"></i> ${__t?.noPortfolioYet || 'No portfolio items yet'}</td></tr>`;
             return;
         }
 
@@ -23,7 +23,7 @@ async function loadAdminPortfolio() {
             const images = Array.isArray(item.images) ? item.images : (JSON.parse(item.images || '[]'));
             const thumb = images?.[0] || '';
             return `
-            <tr>
+            <tr id="portfolio-row-${item.id}">
                 <td>
                     ${thumb ? `<img src="${esc(thumb)}" style="width:48px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color)" alt="">` : '<i class="fas fa-image" style="opacity:.3;font-size:1.5rem"></i>'}
                 </td>
@@ -54,7 +54,7 @@ async function loadAdminPortfolio() {
         }).join('');
     } catch (err) {
         Toast.error(__t?.failedLoad || 'Failed to load portfolio items');
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--danger)">Failed to load portfolio</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--danger)">${__t?.failedLoad || 'Failed to load portfolio'}</td></tr>`;
     }
 }
 
@@ -148,7 +148,16 @@ async function deletePortfolioItem(id) {
     try {
         await API.delete(`/portfolio/${id}`);
         Toast.success(__t?.portfolioDeactivated || 'Portfolio item deactivated');
-        loadAdminPortfolio();
+        // Instantly remove from DOM
+        const row = document.getElementById(`portfolio-row-${id}`);
+        if (row) {
+            row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+            setTimeout(() => { row.remove(); _checkPortfolioEmpty(); }, 300);
+        } else {
+            loadAdminPortfolio();
+        }
     } catch { Toast.error(__t?.failedSave || 'Failed to deactivate portfolio item'); }
 }
 
@@ -162,9 +171,26 @@ async function permanentDeletePortfolioItem(id, title) {
     try {
         await API.delete(`/portfolio/${id}/permanent`);
         Toast.success(__t?.portfolioPermanentlyDeleted || 'Portfolio item permanently deleted');
-        loadAdminPortfolio();
+        // Instantly remove from DOM
+        const row = document.getElementById(`portfolio-row-${id}`);
+        if (row) {
+            row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+            setTimeout(() => { row.remove(); _checkPortfolioEmpty(); }, 300);
+        } else {
+            loadAdminPortfolio();
+        }
     } catch (err) {
         Toast.error(err.message || (__t?.failedSave || 'Failed to delete portfolio item'));
+    }
+}
+
+// Helper: check if portfolio table is empty after DOM removal
+function _checkPortfolioEmpty() {
+    const tbody = document.getElementById('portfolioTableBody');
+    if (tbody && tbody.querySelectorAll('tr[id^="portfolio-row-"]').length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3)"><i class="fas fa-images" style="font-size:2rem;margin-bottom:8px;display:block;opacity:.4"></i> ${__t?.noPortfolioYet || 'No portfolio items yet'}</td></tr>`;
     }
 }
 

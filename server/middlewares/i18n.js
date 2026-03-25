@@ -18,7 +18,7 @@ const DEFAULT_LANG = 'en';
  */
 const i18nMiddleware = (req, res, next) => {
     // 1. Detect language from cookie (set by /api/set-lang)
-    const cookieLang = req.cookies?.roya_lang;
+    const cookieLang = req.cookies?.nabda_lang;
     const lang = SUPPORTED_LANGS.includes(cookieLang) ? cookieLang : DEFAULT_LANG;
 
     // 2. Set direction and language metadata
@@ -32,7 +32,7 @@ const i18nMiddleware = (req, res, next) => {
 
     // 4. Logo changes based on language
     res.locals.logoSrc = isRTL ? '/images/logo-ar.svg' : '/images/logo.svg';
-    res.locals.logoAlt = isRTL ? 'رؤيا' : 'ROYA';
+    res.locals.logoAlt = isRTL ? 'نبضة' : 'Nabda';
 
     // New: Handle the separated text logo alongside the emblem
     res.locals.brandTextSrc = isRTL ? '/images/brand-text.png' : '/images/logo.svg';

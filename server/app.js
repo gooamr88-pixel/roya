@@ -221,7 +221,7 @@ app.get('/api/set-lang', (req, res) => {
     const lang = req.query.lang === 'ar' ? 'ar' : 'en';
     const redirect = req.query.redirect || '/';
     const safePath = redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/';
-    res.cookie('roya_lang', lang, {
+    res.cookie('nabda_lang', lang, {
         maxAge: 365 * 24 * 60 * 60 * 1000,
         httpOnly: false,
         secure: !config.isDev,
