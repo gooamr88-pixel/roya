@@ -25,6 +25,8 @@ router.get('/sitemap.xml', (req, res) => {
         { path: '/services', priority: '0.9', freq: 'weekly' },
         { path: '/properties', priority: '0.9', freq: 'weekly' },
         { path: '/exhibitions', priority: '0.8', freq: 'weekly' },
+        { path: '/portfolio', priority: '0.8', freq: 'weekly' },
+        { path: '/jobs', priority: '0.7', freq: 'weekly' },
         { path: '/login', priority: '0.5', freq: 'monthly' },
         { path: '/register', priority: '0.5', freq: 'monthly' },
     ];

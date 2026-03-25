@@ -110,7 +110,11 @@ async function saveAdminPortfolio() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', document.getElementById('portfolioDescription')?.value?.trim() || '');
-    formData.append('category', document.getElementById('portfolioCategory')?.value || 'general');
+    const categoryVal = document.getElementById('portfolioCategory')?.value || 'general';
+    formData.append('category', categoryVal);
+    // Map English category to Arabic for i18n
+    const categoryArMap = { general: 'عام', branding: 'العلامة التجارية', digital: 'رقمي', print: 'طباعة', social_media: 'وسائل التواصل', events: 'فعاليات', exhibitions: 'معارض', real_estate: 'عقارات' };
+    formData.append('category_ar', categoryArMap[categoryVal] || categoryVal);
     formData.append('is_active', document.getElementById('portfolioIsActive')?.checked ? '1' : '0');
     // i18n Arabic fields
     const titleAr = (document.getElementById('portfolioTitleAr')?.value || '').trim();
