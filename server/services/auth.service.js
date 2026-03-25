@@ -9,6 +9,7 @@ const emailService = require('./email.service');
 const notificationService = require('./notification.service');
 const userRepo = require('../repositories/user.repository');
 const loginLogRepo = require('../repositories/login-log.repository');
+const logger = require('../utils/logger');
 
 /**
  * Register a new user
@@ -37,7 +38,16 @@ const registerUser = async ({ name, email, phone, password }) => {
     const user = await userRepo.create({ name, email, phone, passwordHash, roleId, otp, otpExpires });
 
     // Send OTP email
-    await emailService.sendOTP(user.email, user.name, otp);
+    try {
+        await emailService.sendOTP(user.email, user.name, otp);
+    } catch (emailErr) {
+        logger.error('OTP email delivery failed', { error: emailErr.message });
+        throw new AppError(
+            'Account created but we could not send the verification email. Please try resending the OTP.',
+            502,
+            'EMAIL_SEND_FAILED'
+        );
+    }
 
     return { userId: user.id, email: user.email };
 };
@@ -88,7 +98,17 @@ const resendOTP = async (email) => {
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
     await userRepo.updateOtp(user.id, otp, otpExpires);
-    await emailService.sendOTP(email, user.name, otp);
+
+    try {
+        await emailService.sendOTP(email, user.name, otp);
+    } catch (emailErr) {
+        logger.error('OTP resend email delivery failed', { error: emailErr.message });
+        throw new AppError(
+            'Could not send the verification email. Please check your email address or try again later.',
+            502,
+            'EMAIL_SEND_FAILED'
+        );
+    }
 };
 
 /**

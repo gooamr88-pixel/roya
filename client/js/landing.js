@@ -186,7 +186,7 @@ function animateCounter(el, target) {
     requestAnimationFrame(update);
 }
 
-// ── Contact Form ──
+// ── Contact Form (with CSRF Protection) ──
 function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
@@ -201,7 +201,14 @@ function initContactForm() {
         const original = btn.innerHTML;
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${i18n.t('Sending...', 'جارٍ الإرسال...')}`; btn.disabled = true;
         try {
-            await API.post('/contact', { name, email, subject, message });
+            // Fetch CSRF token before submitting
+            const csrfRes = await fetch('/api/contact/csrf-token', { credentials: 'include' });
+            const csrfData = await csrfRes.json();
+            const csrfToken = csrfData.csrfToken;
+
+            await API.post('/contact', { name, email, subject, message }, {
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken }
+            });
             Toast.success(i18n.t('Message sent! We\'ll get back to you soon.', 'تم إرسال الرسالة! سنتواصل معك قريباً.'));
             form.reset();
         } catch (err) { Toast.error(err.message || i18n.t('Failed to send message.', 'فشل في إرسال الرسالة.')); }

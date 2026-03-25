@@ -7,6 +7,7 @@
 // ═══════════════════════════════════════════════
 const config = require('../config');
 const { AppError } = require('../middlewares/errorHandler');
+const logger = require('../utils/logger');
 
 // ── Gemini REST endpoint ──
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${config.ai.model}:generateContent`;
@@ -117,7 +118,7 @@ async function generateContent(prompt, context = 'general') {
 
         if (!response.ok) {
             const errBody = await response.text().catch(() => '');
-            console.error(`[AI/Gemini] HTTP ${response.status}: ${errBody}`);
+            logger.error('[AI/Gemini] HTTP error', { status: response.status, body: errBody });
 
             if (response.status === 429) {
                 throw new AppError(
@@ -150,7 +151,7 @@ async function generateContent(prompt, context = 'general') {
                     400, 'AI_SAFETY_BLOCKED'
                 );
             }
-            console.warn('[AI/Gemini] Empty response:', JSON.stringify(data).slice(0, 300));
+            logger.warn('[AI/Gemini] Empty response', { data: JSON.stringify(data).slice(0, 300) });
         }
 
         return { text: text.trim() };
@@ -164,7 +165,7 @@ async function generateContent(prompt, context = 'general') {
             );
         }
 
-        console.error('[AI/Gemini] Connection error:', err.message);
+        logger.error('[AI/Gemini] Connection error', { error: err.message });
         throw new AppError(
             'AI service is currently unavailable. Please type manually.',
             503, 'AI_UNAVAILABLE'

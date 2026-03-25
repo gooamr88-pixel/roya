@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const config = require('../config');
+const logger = require('../utils/logger');
 
 // Configure Cloudinary once at module load (not on every upload)
 const cloudinary = require('cloudinary').v2;
@@ -31,7 +32,7 @@ try {
         fs.mkdirSync(uploadsDir, { recursive: true });
     }
 } catch (err) {
-    console.warn('⚠️ Directory creation skipped or failed:', err.message);
+    logger.warn('Directory creation skipped or failed', { error: err.message });
 }
 
 // ── Multer Config ──
@@ -93,7 +94,7 @@ const uploadToCloudinary = async (buffer, folder = 'corporate-platform') => {
             Readable.from(buffer).pipe(stream);
         });
     } catch (err) {
-        console.error('❌ Cloudinary upload error:', err.message);
+        logger.error('Cloudinary upload error', { error: err.message });
         return saveLocally(buffer);
     }
 };
@@ -117,15 +118,10 @@ const processAndUpload = async (file, folder) => {
 };
 
 /**
- * Process and upload multiple images
+ * Process and upload multiple images (parallel for performance)
  */
 const processAndUploadMultiple = async (files, folder) => {
-    const results = [];
-    for (const file of files) {
-        const result = await processAndUpload(file, folder);
-        results.push(result);
-    }
-    return results;
+    return Promise.all(files.map(file => processAndUpload(file, folder)));
 };
 
 module.exports = {

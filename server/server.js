@@ -7,34 +7,29 @@
 const app = require('./app');
 const config = require('./config');
 const { pool } = require('./config/database');
+const logger = require('./utils/logger');
 
 const PORT = config.port;
 
 const server = app.listen(PORT, () => {
-    console.log(`
-╔═══════════════════════════════════════════════╗
-║                 ROYA Platform                 ║
-║   Server running on port ${PORT}                 ║
-║   Environment: ${config.nodeEnv.padEnd(20)}       ║
-╚═══════════════════════════════════════════════╝
-  `);
+    logger.info(`ROYA Platform server running on port ${PORT} [${config.nodeEnv}]`);
 });
 
 const gracefulShutdown = async (signal) => {
-    console.log(`\n⚠️  ${signal} received. Shutting down gracefully...`);
+    logger.warn(`${signal} received. Shutting down gracefully...`);
     server.close(async () => {
         try {
             await pool.end();
-            console.log('📦 Database pool closed.');
+            logger.info('Database pool closed.');
         } catch (err) {
-            console.error('Error closing pool:', err.message);
+            logger.error('Error closing pool', { error: err.message });
         }
-        console.log('✅ Server shut down cleanly.');
+        logger.info('Server shut down cleanly.');
         process.exit(0);
     });
 
     setTimeout(() => {
-        console.error('⚠️  Forcing shutdown...');
+        logger.error('Forcing shutdown after timeout');
         process.exit(1);
     }, 10000);
 };
@@ -42,11 +37,11 @@ const gracefulShutdown = async (signal) => {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 process.on('uncaughtException', (err) => {
-    console.error('💥 Uncaught Exception:', err);
+    logger.error('Uncaught Exception', { error: err.message, stack: err.stack });
     gracefulShutdown('uncaughtException');
 });
 process.on('unhandledRejection', (reason) => {
-    console.error('💥 Unhandled Rejection:', reason);
+    logger.error('Unhandled Rejection', { reason });
     gracefulShutdown('unhandledRejection');
 });
 

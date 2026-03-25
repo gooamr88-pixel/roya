@@ -18,6 +18,7 @@ const logger = require('./middlewares/logger');
 const { i18nMiddleware } = require('./middlewares/i18n');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const { requestId, sanitizeInput, sqlInjectionGuard, hppProtection } = require('./middlewares/security');
+const logger = require('./utils/logger');
 
 const app = express();
 
@@ -105,7 +106,7 @@ app.use(cors({
         if (uniqueOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            console.warn(`🔒 [CORS BLOCKED] Origin: ${origin}`);
+            logger.warn('CORS blocked origin', { origin });
             callback(new Error('CORS Error: Origin not allowed'));
         }
     },
@@ -184,9 +185,35 @@ app.use('/api/jobs',          require('./routes/job.routes'));
 app.use('/api/portfolio',     require('./routes/portfolio.routes'));
 app.use('/api/ai',            require('./routes/ai.routes'));
 
-// ── Health Check ──
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+// ── Health Check with DB Connectivity ──
+app.get('/api/health', async (req, res) => {
+    const { pool } = require('./config/database');
+    const maxRetries = 2;
+    let dbStatus = 'disconnected';
+    let dbError = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            await pool.query('SELECT 1');
+            dbStatus = 'connected';
+            break;
+        } catch (err) {
+            dbError = err.message;
+            if (attempt < maxRetries) {
+                await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+    }
+
+    const status = dbStatus === 'connected' ? 'ok' : 'degraded';
+    const statusCode = dbStatus === 'connected' ? 200 : 503;
+
+    res.status(statusCode).json({
+        status,
+        timestamp: new Date().toISOString(),
+        db: dbStatus,
+        ...(dbError && { dbError }),
+    });
 });
 
 // ── Language Switch ──

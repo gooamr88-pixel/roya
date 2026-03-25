@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════
 const { Pool } = require('pg');
 const config = require('./index');
+const logger = require('../utils/logger');
 
 // Build SSL configuration:
 // - DB_SSL=false              → SSL disabled entirely (local dev)
@@ -34,12 +35,12 @@ const pool = new Pool({
 // Log connection events in dev
 pool.on('connect', () => {
     if (config.isDev) {
-        console.log('📦 New client connected to PostgreSQL');
+        logger.info('New client connected to PostgreSQL');
     }
 });
 
 pool.on('error', (err) => {
-    console.error('❌ Unexpected PostgreSQL pool error:', err.message);
+    logger.error('Unexpected PostgreSQL pool error', { error: err.message });
 });
 
 /**
@@ -53,7 +54,7 @@ const query = async (text, params) => {
     const result = await pool.query(text, params);
     const duration = Date.now() - start;
     if (config.isDev) {
-        console.log(`🔍 Query (${duration}ms): ${text.substring(0, 80)}...`);
+        logger.debug(`Query (${duration}ms): ${text.substring(0, 80)}...`);
     }
     return result;
 };

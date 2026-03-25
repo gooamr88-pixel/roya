@@ -4,6 +4,7 @@
 const nodemailer = require('nodemailer');
 const config = require('../config');
 const { escapeHtml } = require('../utils/helpers');
+const logger = require('../utils/logger');
 
 const transporter = nodemailer.createTransport({
   host: config.email.host,
@@ -123,7 +124,7 @@ const sendOTP = async (to, name, otp) => {
     });
     return true;
   } catch (err) {
-    console.error('Email send error:', err.message);
+    logger.error('Email send error', { error: err.message });
     // FIX (BUG-2): Throw the error so the caller knows sending failed,
     // instead of silently returning null and telling the user "OTP sent"
     throw err;
@@ -165,7 +166,7 @@ const sendPasswordReset = async (to, name, otp) => {
     });
     return true;
   } catch (err) {
-    console.error('Email send error:', err.message);
+    logger.error('Email send error', { error: err.message });
     throw err;
   }
 };
@@ -210,7 +211,7 @@ const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
     });
     return true;
   } catch (err) {
-    console.error('Email send error:', err.message);
+    logger.error('Email send error', { error: err.message });
     return null;
   }
 };
@@ -264,7 +265,7 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
     });
     return true;
   } catch (err) {
-    console.error('Email send error:', err.message);
+    logger.error('Email send error', { error: err.message });
     return null;
   }
 };
@@ -314,7 +315,7 @@ const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reas
     });
     return true;
   } catch (err) {
-    console.error('Email send error:', err.message);
+    logger.error('Email send error', { error: err.message });
     return null;
   }
 };

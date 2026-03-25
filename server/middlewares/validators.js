@@ -71,7 +71,7 @@ const serviceValidation = [
 // ── Order Validators ──
 const orderValidation = [
     body('service_id').isInt({ min: 1 }).withMessage('Valid service ID required'),
-    body('notes').optional().trim(),
+    body('notes').optional().trim().isLength({ max: 1000 }).withMessage('Notes must not exceed 1000 characters'),
     validate,
 ];
 

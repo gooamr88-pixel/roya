@@ -2,6 +2,7 @@
 // WhatsApp Service — Stub with Provider Support
 // ═══════════════════════════════════════════════
 const config = require('../config');
+const logger = require('../utils/logger');
 
 /**
  * Send a WhatsApp message
@@ -11,8 +12,7 @@ const sendMessage = async (phone, message) => {
     const provider = config.whatsapp.provider;
 
     if (provider === 'stub') {
-        console.log(`📱 [WhatsApp Stub] To: ${phone}`);
-        console.log(`   Message: ${message}`);
+        logger.info(`[WhatsApp Stub] To: ${phone}, Message: ${message}`);
         return { success: true, provider: 'stub' };
     }
 
@@ -27,15 +27,15 @@ const sendMessage = async (phone, message) => {
             //   body: message,
             // });
             // return { success: true, sid: result.sid };
-            console.log(`📱 [Twilio WhatsApp] Would send to ${phone}: ${message}`);
+            logger.info(`[Twilio WhatsApp] Would send to ${phone}: ${message}`);
             return { success: true, provider: 'twilio' };
         } catch (err) {
-            console.error('❌ Twilio WhatsApp error:', err.message);
+            logger.error('Twilio WhatsApp error', { error: err.message });
             return { success: false, error: err.message };
         }
     }
 
-    console.warn(`⚠️  Unknown WhatsApp provider: ${provider}`);
+    logger.warn('Unknown WhatsApp provider', { provider });
     return { success: false, error: 'Unknown provider' };
 };
 
