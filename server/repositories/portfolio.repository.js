@@ -5,7 +5,7 @@ const { query } = require('../config/database');
 
 const findAll = async ({ page, limit, isAdmin = false }) => {
     const offset = (page - 1) * limit;
-    const whereClause = isAdmin ? '' : 'WHERE is_active = TRUE';
+    const whereClause = isAdmin ? '' : 'WHERE is_active IS NOT FALSE';
 
     const [items, countResult] = await Promise.all([
         query(
