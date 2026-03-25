@@ -30,11 +30,11 @@ const findById = async (id) => {
     return result.rows[0] || null;
 };
 
-const create = async ({ title, description, images, category, category_ar, title_ar, description_ar }) => {
+const create = async ({ title, description, images, category, category_ar, title_ar, description_ar, is_active }) => {
     const result = await query(
-        `INSERT INTO portfolio_items (title, description, images, category, category_ar, title_ar, description_ar)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [title, description || '', JSON.stringify(images), category || 'general', category_ar || null, title_ar || null, description_ar || null]
+        `INSERT INTO portfolio_items (title, description, images, category, category_ar, title_ar, description_ar, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+        [title, description || '', JSON.stringify(images), category || 'general', category_ar || null, title_ar || null, description_ar || null, is_active !== undefined ? is_active : true]
     );
     return result.rows[0];
 };

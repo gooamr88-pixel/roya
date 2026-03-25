@@ -30,7 +30,7 @@ const getById = asyncHandler(async (req, res) => {
  * POST /api/portfolio
  */
 const create = asyncHandler(async (req, res) => {
-    const { title, description, category, category_ar, title_ar, description_ar } = req.body;
+    const { title, description, category, category_ar, title_ar, description_ar, is_active } = req.body;
     if (!title) throw new AppError('Title is required.', 400);
 
     let images = [];
@@ -40,7 +40,7 @@ const create = asyncHandler(async (req, res) => {
         images = uploaded.map(u => u.url);
     }
 
-    const item = await portfolioRepo.create({ title, description, images, category, category_ar, title_ar, description_ar });
+    const item = await portfolioRepo.create({ title, description, images, category, category_ar, title_ar, description_ar, is_active: parseBool(is_active ?? true) });
     res.status(201).json({ success: true, data: { item } });
 });
 
