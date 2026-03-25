@@ -14,11 +14,11 @@ const path = require('path');
 const nunjucks = require('nunjucks');
 const config = require('./config');
 const errorHandler = require('./middlewares/errorHandler');
-const logger = require('./middlewares/logger');
+const requestLogger = require('./middlewares/logger');
 const { i18nMiddleware } = require('./middlewares/i18n');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const { requestId, sanitizeInput, sqlInjectionGuard, hppProtection } = require('./middlewares/security');
-const logger = require('./utils/logger');
+const winstonLogger = require('./utils/logger');
 
 const app = express();
 
@@ -106,7 +106,7 @@ app.use(cors({
         if (uniqueOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            logger.warn('CORS blocked origin', { origin });
+            winstonLogger.warn('CORS blocked origin', { origin });
             callback(new Error('CORS Error: Origin not allowed'));
         }
     },
@@ -131,7 +131,7 @@ app.use(sanitizeInput);
 app.use(hppProtection);
 
 // ── Request Logger ──
-app.use(logger);
+app.use(requestLogger);
 
 // ── Gzip Compression ──
 app.use(compression({
