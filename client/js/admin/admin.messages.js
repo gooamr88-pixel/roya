@@ -31,14 +31,14 @@ async function loadAdminMessages(page = 1) {
 
                             ${m.admin_reply ? `
                                 <div style="margin-top:10px;padding:10px 14px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.12);border-radius:8px">
-                                    <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;color:#10b981;margin-bottom:4px"><i class="fas fa-reply"></i> Admin Reply</div>
+                                    <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;color:#10b981;margin-bottom:4px"><i class="fas fa-reply"></i> ${(window.__t||{}).adminReply || 'Admin Reply'}</div>
                                     <p style="font-size:0.85rem;color:var(--text-2)">${esc(m.admin_reply)}</p>
                                 </div>
                             ` : ''}
 
                             ${m.internal_notes ? `
                                 <div class="internal-note">
-                                    <div class="internal-note-label"><i class="fas fa-sticky-note"></i> Internal Note</div>
+                                    <div class="internal-note-label"><i class="fas fa-sticky-note"></i> ${(window.__t||{}).internalNote || 'Internal Note'}</div>
                                     ${esc(m.internal_notes)}
                                 </div>
                             ` : ''}
@@ -48,8 +48,8 @@ async function loadAdminMessages(page = 1) {
                                 <button class="ai-sparkle-btn" onclick="aiDraftReply(${m.id})" data-tooltip="${(window.__t||{}).aiDraftReply||'✨ AI Draft Reply'}">
                                     <i class="fas fa-wand-magic-sparkles sparkle-icon"></i> ${(window.__t||{}).aiDraft||'Draft'}
                                 </button>
-                                <button class="btn btn-primary btn-sm" onclick="sendAdminReply(${m.id})"><i class="fas fa-paper-plane"></i> Reply</button>
-                                <button class="btn btn-outline btn-sm" onclick="saveInternalNote(${m.id})"><i class="fas fa-sticky-note"></i> Note</button>
+                                <button class="btn btn-primary btn-sm" onclick="sendAdminReply(${m.id})"><i class="fas fa-paper-plane"></i> ${(window.__t||{}).replyBtn || 'Reply'}</button>
+                                <button class="btn btn-outline btn-sm" onclick="saveInternalNote(${m.id})"><i class="fas fa-sticky-note"></i> ${(window.__t||{}).noteBtn || 'Note'}</button>
                                 ${adminUser?.role === 'super_admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAdminMessage(${m.id})" style="margin-left:auto"><i class="fas fa-trash"></i></button>` : ''}
                             </div>
                             <div id="ai-draft-status-${m.id}"></div>
@@ -94,6 +94,13 @@ async function deleteAdminMessage(messageId) {
     try {
         await API.delete(`/admin/messages/${messageId}`);
         Toast.success((window.__t||{}).messageDeleted || 'Message deleted successfully.');
+        // Update sidebar badge count
+        const badge = document.querySelector('[data-view="messages"] .sidebar-badge, .sidebar-menu a[href*="messages"] .badge');
+        if (badge) {
+            const count = parseInt(badge.textContent) || 0;
+            if (count > 1) badge.textContent = count - 1;
+            else badge.remove();
+        }
         loadAdminMessages();
     } catch (err) { Toast.error(err.message || (window.__t||{}).failedSave || 'Failed to delete message.'); }
 }

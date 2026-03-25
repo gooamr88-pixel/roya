@@ -27,11 +27,11 @@ async function loadAdminPortfolio() {
                 <td>
                     ${thumb ? `<img src="${esc(thumb)}" style="width:48px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color)" alt="">` : '<i class="fas fa-image" style="opacity:.3;font-size:1.5rem"></i>'}
                 </td>
-                <td><strong>${esc(item.title)}</strong></td>
-                <td>${esc(item.category || '—')}</td>
+                <td><strong>${esc(document.documentElement.lang === 'ar' && item.title_ar ? item.title_ar : item.title)}</strong></td>
+                <td>${esc(document.documentElement.lang === 'ar' && item.category_ar ? item.category_ar : (item.category || '—'))}</td>
                 <td>
                     <span class="badge ${item.is_active ? 'badge-success' : 'badge-danger'}">
-                        ${item.is_active ? '<i class="fas fa-check-circle"></i> Active' : '<i class="fas fa-times-circle"></i> Inactive'}
+                        ${item.is_active ? `<i class="fas fa-check-circle"></i> ${__t?.activeStatus || 'Active'}` : `<i class="fas fa-times-circle"></i> ${__t?.inactiveStatus || 'Inactive'}`}
                     </span>
                 </td>
                 <td>
@@ -64,7 +64,7 @@ function openPortfolioModal(item = null) {
     const title = document.getElementById('portfolioModalTitle');
     if (!modal) return;
 
-    title.textContent = item ? 'Edit Portfolio Item' : 'Add New Portfolio Item';
+    title.textContent = item ? (__t?.editPortfolio || 'Edit Portfolio Item') : (__t?.addNewPortfolio || 'Add New Portfolio Item');
     document.getElementById('portfolioTitle').value = item?.title || '';
     document.getElementById('portfolioDescription').value = item?.description || '';
     document.getElementById('portfolioCategory').value = item?.category || 'general';
@@ -100,7 +100,7 @@ async function editPortfolioItem(id) {
     try {
         const data = await API.get(`/portfolio/${id}`);
         openPortfolioModal(data.data.item);
-    } catch { Toast.error('Failed to load portfolio item'); }
+    } catch { Toast.error(__t?.failedLoad || 'Failed to load portfolio item'); }
 }
 
 async function saveAdminPortfolio() {

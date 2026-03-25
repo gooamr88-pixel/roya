@@ -66,12 +66,12 @@ function buildUserRow(u, roles) {
             </select>
         </td>
         <td data-label="Status">
-            <span class="badge badge-${u.is_active ? 'success' : 'danger'}" style="cursor:pointer" onclick="toggleUserBan(${u.id}, ${u.is_active})" title="Click to ${u.is_active ? 'ban' : 'unban'}">
-                <i class="fas fa-${u.is_active ? 'check-circle' : 'ban'}"></i> ${u.is_active ? 'Active' : 'Banned'}
+            <span class="badge badge-${u.is_active ? 'success' : 'danger'}" style="cursor:pointer" onclick="toggleUserBan(${u.id}, ${u.is_active})" title="${u.is_active ? (__t?.banUser || 'Ban') : (__t?.unbanUser || 'Unban')}">
+                <i class="fas fa-${u.is_active ? 'check-circle' : 'ban'}"></i> ${u.is_active ? (__t?.activeStatus || 'Active') : (__t?.bannedStatus || 'Banned')}
             </span>
         </td>
         <td data-label="Verified"><i class="fas fa-${u.is_verified ? 'check' : 'times'}" style="color:${u.is_verified ? 'var(--success)' : 'var(--danger)'}"></i></td>
-        <td data-label="Last Login" style="font-size:0.8rem">${u.last_login ? Utils.formatDate(u.last_login) : '<span style="color:var(--text-muted)">Never</span>'}</td>
+        <td data-label="Last Login" style="font-size:0.8rem">${u.last_login ? Utils.formatDate(u.last_login) : `<span style="color:var(--text-muted)">${__t?.neverLoggedIn || 'Never'}</span>`}</td>
         <td data-label="Actions">
             <button class="btn btn-ghost btn-sm" onclick="toggleUserBan(${u.id}, ${u.is_active})" data-tooltip="${u.is_active ? 'Ban' : 'Unban'}" style="color:${u.is_active ? 'var(--danger)' : 'var(--success)'}">
                 <i class="fas fa-${u.is_active ? 'user-slash' : 'user-check'}"></i>
@@ -152,7 +152,7 @@ async function loadAdminLogs(page = 1) {
                     <td data-label="Email" style="font-size:0.85rem">${esc(l.user_email || '—')}</td>
                     <td data-label="IP" style="font-family:monospace;font-size:0.8rem">${esc(l.ip_address || '—')}</td>
                     <td data-label="Browser" style="font-size:0.78rem;color:var(--text-muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(l.user_agent || '')}">${parseBrowser(l.user_agent)}</td>
-                    <td data-label="Status"><span class="badge badge-${l.success ? 'success' : 'danger'}">${l.success ? 'Success' : 'Failed'}</span></td>
+                    <td data-label="Status"><span class="badge badge-${l.success ? 'success' : 'danger'}">${l.success ? (__t?.successStatus || 'Success') : (__t?.failedStatus || 'Failed')}</span></td>
                     <td data-label="Time" style="font-size:0.85rem">${Utils.formatDate(l.login_time)}</td>
                 </tr>
             `).join('');

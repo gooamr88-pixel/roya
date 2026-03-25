@@ -12,19 +12,19 @@ async function loadAdminServices(page = 1) {
         updateBulkInfo('svc');
 
         if (services.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:40px;color:var(--text-muted)">No services yet</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding:40px;color:var(--text-muted)">${__t?.noServicesYet || 'No services yet'}</td></tr>`;
         } else {
             tbody.innerHTML = services.map(s => `
                 <tr>
                     <td><input type="checkbox" class="svc-checkbox" value="${s.id}" onchange="toggleBulkSelect('svc', '${s.id}', this.checked)"></td>
-                    <td data-label="Title" style="font-weight:600">${esc(s.title)}</td>
+                    <td data-label="Title" style="font-weight:600">${esc(document.documentElement.lang === 'ar' && s.title_ar ? s.title_ar : s.title)}</td>
                     <td data-label="Price">${Utils.formatCurrency(s.price)}</td>
                     <td data-label="Featured">
                         <i class="fas fa-star featured-star ${s.is_featured ? 'active' : 'inactive'}" 
                            onclick="toggleFeatured('services', '${s.id}', ${!s.is_featured})" 
-                           title="${s.is_featured ? 'Remove from featured' : 'Add to featured'}"></i>
+                           title="${s.is_featured ? (__t?.removedFeatured || 'Remove from featured') : (__t?.markedFeatured || 'Add to featured')}"></i>
                     </td>
-                    <td data-label="Status"><span class="badge badge-${s.is_active !== false ? 'success' : 'danger'}">${s.is_active !== false ? 'Active' : 'Inactive'}</span></td>
+                    <td data-label="Status"><span class="badge badge-${s.is_active !== false ? 'success' : 'danger'}">${s.is_active !== false ? (__t?.activeStatus || 'Active') : (__t?.inactiveStatus || 'Inactive')}</span></td>
                     <td data-label="Created">${Utils.formatDate(s.created_at)}</td>
                     <td data-label="Actions">
                         <button class="btn btn-ghost btn-sm" onclick="editService(${s.id})" data-tooltip="Edit"><i class="fas fa-edit"></i></button>
@@ -56,8 +56,8 @@ function openServiceModal(editData = null) {
     const modal = document.getElementById('serviceModal');
     const form = document.getElementById('serviceForm');
     document.getElementById('serviceModalTitle').textContent = editData
-        ? (document.body.dataset.editService || 'Edit Service')
-        : (document.body.dataset.addService || 'Add New Service');
+        ? (__t?.editService || 'Edit Service')
+        : (__t?.addNewService || 'Add New Service');
     form.reset();
     serviceDropFiles = [];
     document.getElementById('serviceEditId').value = editData ? editData.id : '';
@@ -152,7 +152,7 @@ async function saveAdminService(e) {
 
     serviceDropFiles.forEach(file => formData.append('images', file));
 
-    setLoading(btn, true, 'Saving...');
+    setLoading(btn, true, __t?.saving || 'Saving...');
     try {
         if (editId) {
             await API.putForm(`/services/${editId}`, formData);

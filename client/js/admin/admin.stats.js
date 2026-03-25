@@ -109,9 +109,9 @@ async function loadStats() {
                         animations: { enabled: true, easing: 'easeinout', speed: 900 }
                     },
                     series: [
-                        { name: 'Completed', data: [completed] },
-                        { name: 'In Progress', data: [inProgress] },
-                        { name: 'Pending', data: [pending] },
+                        { name: __t?.completedLabel || 'Completed', data: [completed] },
+                        { name: __t?.inProgressLabel || 'In Progress', data: [inProgress] },
+                        { name: __t?.pendingOrdersLabel || 'Pending', data: [pending] },
                     ],
                     colors: ['#00e676', '#40c4ff', '#d4af37'],
                     plotOptions: {
@@ -119,7 +119,7 @@ async function loadStats() {
                     },
                     dataLabels: { enabled: true, style: { fontSize: '12px', fontWeight: 700, colors: ['#fff'] } },
                     xaxis: {
-                        categories: ['Orders'],
+                        categories: [__t?.orders || 'Orders'],
                         labels: { style: { colors: 'rgba(255,255,255,0.3)', fontSize: '11px' } },
                         axisBorder: { show: false }, axisTicks: { show: false },
                     },
@@ -141,7 +141,7 @@ async function loadStats() {
                         animations: { enabled: true, easing: 'easeinout', speed: 900 }
                     },
                     series: [s.totalServices || 0, s.totalProperties || 0, s.totalExhibitions || 0],
-                    labels: ['Services', 'Properties', 'Exhibitions'],
+                    labels: [__t?.services || 'Services', __t?.properties || 'Properties', __t?.exhibitions || 'Exhibitions'],
                     colors: ['#d4af37', '#10b981', '#40c4ff'],
                     plotOptions: {
                         pie: {
@@ -150,7 +150,7 @@ async function loadStats() {
                                 labels: {
                                     show: true,
                                     total: {
-                                        show: true, label: 'Total',
+                                        show: true, label: __t?.total || 'Total',
                                         color: 'rgba(255,255,255,0.4)',
                                         fontSize: '12px',
                                         formatter: () => total,

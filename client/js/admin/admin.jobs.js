@@ -21,13 +21,13 @@ async function loadAdminJobs() {
 
         tbody.innerHTML = jobs.map(j => `
             <tr>
-                <td><strong>${esc(j.title)}</strong></td>
+                <td><strong>${esc(document.documentElement.lang === 'ar' && j.title_ar ? j.title_ar : j.title)}</strong></td>
                 <td>${esc(j.company || '—')}</td>
                 <td>${esc(j.location || '—')}</td>
                 <td>${esc(j.type?.replace('_', ' ') || '—')}</td>
                 <td>
                     <span class="badge ${j.is_active ? 'badge-success' : 'badge-danger'}">
-                        ${j.is_active ? '<i class="fas fa-check-circle"></i> Active' : '<i class="fas fa-times-circle"></i> Inactive'}
+                        ${j.is_active ? `<i class="fas fa-check-circle"></i> ${__t?.activeStatus || 'Active'}` : `<i class="fas fa-times-circle"></i> ${__t?.inactiveStatus || 'Inactive'}`}
                     </span>
                 </td>
                 <td>
@@ -55,7 +55,7 @@ function openJobModal(job = null) {
     const title = document.getElementById('jobModalTitle');
     if (!modal) return;
 
-    title.textContent = job ? 'Edit Job' : 'Add New Job';
+    title.textContent = job ? (__t?.editJob || 'Edit Job') : (__t?.addNewJob || 'Add New Job');
     document.getElementById('jobTitle').value = job?.title || '';
     document.getElementById('jobDescription').value = job?.description || '';
     document.getElementById('jobCompany').value = job?.company || '';
@@ -82,7 +82,7 @@ async function editJob(id) {
     try {
         const data = await API.get(`/jobs/${id}`);
         openJobModal(data.data.job);
-    } catch { Toast.error('Failed to load job'); }
+    } catch { Toast.error(__t?.failedLoad || 'Failed to load job'); }
 }
 
 async function saveAdminJob() {
