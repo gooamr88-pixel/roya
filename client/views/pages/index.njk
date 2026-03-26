@@ -199,9 +199,32 @@
     </div>
   </section>
 
+      {# ════════════ PORTFOLIO ════════════ #}
+      <section class="landing-view" id="portfolio">
+    <div class="container">
+      <div class="text-center fade-in">
+        <span class="section-label" data-i18n="portfolio.label">{{ t.portfolio.label | default('Portfolio') }}</span>
+        <h2 class="section-title">
+          <span data-i18n="portfolio.title_before">{{ t.portfolio.title_before | default('Our') | safe }}</span>
+          <span class="text-gradient" data-i18n="portfolio.title_highlight">{{ t.portfolio.title_highlight | default('Best Works') | safe }}</span>
+        </h2>
+        <p class="section-desc text-gray-800 dark:text-gray-300" style="margin: 0 auto;" data-i18n="portfolio.desc">
+          {{ t.portfolio.desc | default('Explore our featured projects and creative work') }}
+        </p>
+      </div>
+
+      <div class="portfolio-filters" id="portfolioFilters" style="display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:40px 0 30px;">
+        <button class="filter-btn active" data-filter="all">{{ t.portfolio.allWorks | default('All Works') }}</button>
+      </div>
+
+      <div class="services-grid" id="portfolioGrid">
+        <!-- Loaded dynamically by landing.js -->
+      </div>
+    </div>
+  </section>
 
 
-      {# ════════════ CONTACT ════════════ #}
+
       <section class="landing-view" id="contact">
     <div class="container">
       <div class="text-center fade-in">

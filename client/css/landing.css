@@ -815,6 +815,24 @@
   color: var(--text-muted);
 }
 
+/* ── Portfolio Filter Buttons ── */
+.filter-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
 /* ── Properties Section ── */
 .properties-section {
   padding: var(--section-padding);
