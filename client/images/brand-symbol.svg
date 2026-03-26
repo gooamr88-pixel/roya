@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37"/>
+      <stop offset="50%" style="stop-color:#f5e6a3"/>
+      <stop offset="100%" style="stop-color:#d4af37"/>
+    </linearGradient>
+    <linearGradient id="goldDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b8941e"/>
+      <stop offset="100%" style="stop-color:#d4af37"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Left Wing -->
+  <g transform="translate(100,105) scale(-1,1) translate(-100,-105)">
+    <path d="M95,80 Q60,60 30,95 Q15,115 20,140 L35,128 Q30,108 50,92 Q70,78 90,82 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <path d="M90,88 Q58,72 32,105 L42,98 Q60,80 85,85 Z" fill="url(#goldDark)" opacity="0.7"/>
+    <path d="M85,95 Q60,82 40,108 L48,102 Q62,88 82,92 Z" fill="url(#goldDark)" opacity="0.5"/>
+    <path d="M80,102 Q62,92 48,112 L54,107 Q64,96 78,99 Z" fill="url(#goldDark)" opacity="0.35"/>
+  </g>
+
+  <!-- Right Wing -->
+  <g>
+    <path d="M105,80 Q140,60 170,95 Q185,115 180,140 L165,128 Q170,108 150,92 Q130,78 110,82 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <path d="M110,88 Q142,72 168,105 L158,98 Q140,80 115,85 Z" fill="url(#goldDark)" opacity="0.7"/>
+    <path d="M115,95 Q140,82 160,108 L152,102 Q138,88 118,92 Z" fill="url(#goldDark)" opacity="0.5"/>
+    <path d="M120,102 Q138,92 152,112 L146,107 Q136,96 122,99 Z" fill="url(#goldDark)" opacity="0.35"/>
+  </g>
+
+  <!-- Shield -->
+  <path d="M100,38 L145,55 Q152,58 152,65 L152,110 Q152,140 100,168 Q48,140 48,110 L48,65 Q48,58 55,55 Z" fill="none" stroke="url(#goldGrad)" stroke-width="4"/>
+  <path d="M100,44 L142,59 Q147,61 147,67 L147,108 Q147,135 100,162 Q53,135 53,108 L53,67 Q53,61 58,59 Z" fill="rgba(20,15,5,0.85)"/>
+
+  <!-- Letter N -->
+  <text x="82" y="118" font-family="'Segoe UI', system-ui, sans-serif" font-size="52" font-weight="900" fill="url(#goldGrad)" letter-spacing="-2">N</text>
+
+  <!-- Letter B -->
+  <text x="110" y="118" font-family="'Segoe UI', system-ui, sans-serif" font-size="52" font-weight="900" fill="url(#goldGrad)" letter-spacing="-2">B</text>
+</svg>

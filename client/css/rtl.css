@@ -48,6 +48,10 @@ body {
     margin: 0 auto;
     padding-right: 24px;
     padding-left: 24px;
+    gap: 18px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    flex-wrap: nowrap;
 }
 
 .nav-links a::after {

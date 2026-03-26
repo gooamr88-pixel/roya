@@ -148,7 +148,7 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 28px;
   list-style: none;
   background: rgba(255, 255, 255, 0.03);
   padding: 8px 24px;
