@@ -6,7 +6,7 @@
     </linearGradient>
   </defs>
   <g class="logo-light">
-    <text x="100" y="42" text-anchor="middle" font-family="'Cairo', 'Segoe UI', system-ui, sans-serif" font-size="44" font-weight="700" letter-spacing="4" fill="url(#lightBrand)">رؤيا</text>
+    <text x="100" y="42" text-anchor="middle" font-family="'Cairo', 'Segoe UI', system-ui, sans-serif" font-size="44" font-weight="700" letter-spacing="4" fill="url(#lightBrand)">نبضة</text>
     <rect x="168" y="32" width="8" height="8" rx="2" fill="#d4af37"/>
   </g>
 </svg>

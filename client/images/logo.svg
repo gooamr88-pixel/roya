@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 50">
   <defs>
     <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#d4af37"/>
@@ -11,6 +11,6 @@
   </defs>
   <!-- Dark mode version (default) -->
   <g class="logo-dark">
-    <text x="0" y="38" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" letter-spacing="6" fill="url(#darkGrad)">ROYA</text>
+    <text x="0" y="38" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="42" font-weight="800" letter-spacing="6" fill="url(#darkGrad)">NABDA</text>
   </g>
 </svg>
