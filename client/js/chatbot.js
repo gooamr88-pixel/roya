@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════
-// ROYA AI CHATBOT — Landing Page Virtual Assistant
+// NABDA AI CHATBOT — Landing Page Virtual Assistant
 // Uses /api/ai/generate with context 'website_chatbot'
 // Works for both authenticated and guest users
 // ═══════════════════════════════════════════════
@@ -20,7 +20,7 @@
     const i18n = {
         greeting: lang === 'ar'
             ? 'مرحباً! 👋 أنا المساعد الذكي لمنصة رؤيا. كيف يمكنني مساعدتك اليوم؟'
-            : 'Hello! 👋 I\'m Roya\'s AI assistant. How can I help you today?',
+            : 'Hello! 👋 I\'m Nabda\'s AI assistant. How can I help you today?',
         placeholder: lang === 'ar' ? 'اكتب رسالتك...' : 'Type your message...',
         error: lang === 'ar'
             ? 'عذراً، لم أتمكن من الرد الآن. حاول مرة أخرى.'

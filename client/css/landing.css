@@ -76,7 +76,7 @@
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   text-decoration: none;
   transition: opacity 0.3s ease;
 }
@@ -92,6 +92,7 @@
   display: block;
   filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.25));
   transition: transform 0.3s ease;
+  mix-blend-mode: lighten;
 }
 
 .nav-logo:hover .nav-logo-emblem {
@@ -116,7 +117,7 @@
 .footer-logo-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   text-decoration: none;
   margin-bottom: 20px;
   transition: opacity 0.3s ease;
@@ -132,6 +133,7 @@
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 2px 12px rgba(212, 175, 55, 0.3));
+  mix-blend-mode: lighten;
 }
 
 .footer-logo-divider {

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════
-// ROYA ONBOARDING TOUR — Lightweight, Custom
+// NABDA ONBOARDING TOUR — Lightweight, Custom
 // Uses localStorage to track completion.
 // Auto-starts on first dashboard visit.
 // ═══════════════════════════════════════════════
@@ -7,7 +7,7 @@
 (function () {
     'use strict';
 
-    const STORAGE_KEY = 'roya_onboarded';
+    const STORAGE_KEY = 'nabda_onboarded';
 
     // Don't run if already completed or no dashboard context
     if (localStorage.getItem(STORAGE_KEY)) return;
@@ -91,7 +91,7 @@
         welcomeEl.innerHTML = `
             <div class="tour-welcome-card">
                 <span class="tour-welcome-emoji">👋</span>
-                <div class="tour-welcome-title">${esc(dt.tourWelcomeTitle || 'Welcome to Roya!')}</div>
+                <div class="tour-welcome-title">${esc(dt.tourWelcomeTitle || 'Welcome to Nabda!')}</div>
                 <div class="tour-welcome-desc">${esc(dt.tourWelcomeDesc || 'Let us give you a quick tour of your dashboard.')}</div>
                 <div class="tour-welcome-actions">
                     <button class="tour-btn-next" id="tourStartBtn">

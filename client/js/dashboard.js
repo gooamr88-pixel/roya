@@ -765,7 +765,7 @@ function loadRecommendations(orders) {
 // ══════════════════════════════════════════
 //  AI MODAL ONBOARDING TOUR (3-step, first-time only)
 // ══════════════════════════════════════════
-const AI_TOUR_KEY = 'roya_ai_tour_done';
+const AI_TOUR_KEY = 'nabda_ai_tour_done';
 let _aiTourActive = false;
 let _aiTourStep = 0;
 
