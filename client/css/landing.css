@@ -76,7 +76,7 @@
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   text-decoration: none;
   transition: opacity 0.3s ease;
 }
@@ -92,7 +92,6 @@
   display: block;
   filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.25));
   transition: transform 0.3s ease;
-  mix-blend-mode: lighten;
 }
 
 .nav-logo:hover .nav-logo-emblem {
@@ -100,10 +99,7 @@
 }
 
 .nav-logo-divider {
-  width: 1.5px;
-  height: 28px;
-  background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.6), transparent);
-  flex-shrink: 0;
+  display: none;
 }
 
 .nav-logo-text {
@@ -117,7 +113,7 @@
 .footer-logo-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   text-decoration: none;
   margin-bottom: 20px;
   transition: opacity 0.3s ease;
@@ -133,7 +129,6 @@
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 2px 12px rgba(212, 175, 55, 0.3));
-  mix-blend-mode: lighten;
 }
 
 .footer-logo-divider {
@@ -153,7 +148,7 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 40px;
   list-style: none;
   background: rgba(255, 255, 255, 0.03);
   padding: 8px 24px;
