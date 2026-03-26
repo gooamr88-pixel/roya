@@ -3,9 +3,10 @@
 {# ═══════════════════════════════════════════════ #}
 <nav class="navbar" id="navbar">
   <div class="container">
-    <a href="/" class="nav-logo" aria-label="Nabda Home" style="display: flex; align-items: center; text-decoration: none; gap: 10px;">
-      <img src="/images/brand-symbol.png" alt="Nabda Emblem" style="height: 3.2rem; width: auto; object-fit: contain; display: block;" fetchpriority="high">
-      <img class="brand-text-img" src="{{ brandTextSrc }}" alt="{{ logoAlt }}" style="height: 1.8rem; width: auto; object-fit: contain; display: block;" fetchpriority="high">
+    <a href="/" class="nav-logo" aria-label="Nabda Home">
+      <img class="nav-logo-emblem" src="/images/brand-symbol.png" alt="Nabda Emblem" fetchpriority="high">
+      <span class="nav-logo-divider"></span>
+      <img class="nav-logo-text" src="{{ brandTextSrc }}" alt="{{ logoAlt }}" fetchpriority="high">
     </a>
 
     <ul class="nav-links" id="navLinks">

@@ -76,7 +76,76 @@
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.nav-logo:hover {
+  opacity: 0.85;
+}
+
+.nav-logo-emblem {
+  height: 3rem;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.25));
+  transition: transform 0.3s ease;
+}
+
+.nav-logo:hover .nav-logo-emblem {
+  transform: scale(1.05);
+}
+
+.nav-logo-divider {
+  width: 1.5px;
+  height: 28px;
+  background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.6), transparent);
+  flex-shrink: 0;
+}
+
+.nav-logo-text {
+  height: 1.6rem;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── Footer logo group ── */
+.footer-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  margin-bottom: 20px;
+  transition: opacity 0.3s ease;
+}
+
+.footer-logo-group:hover {
+  opacity: 0.85;
+}
+
+.footer-logo-emblem {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 12px rgba(212, 175, 55, 0.3));
+}
+
+.footer-logo-divider {
+  width: 2px;
+  height: 45px;
+  background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.5), transparent);
+  flex-shrink: 0;
+}
+
+.footer-logo-text {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .nav-links {
@@ -207,9 +276,16 @@
     padding: 10px 16px;
   }
 
-  .nav-logo img {
-    height: 36px !important;
-    /* Scale brand down slightly on mobile */
+  .nav-logo-emblem {
+    height: 2.4rem !important;
+  }
+
+  .nav-logo-text {
+    height: 1.2rem !important;
+  }
+
+  .nav-logo-divider {
+    height: 22px;
   }
 }
 
