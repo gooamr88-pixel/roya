@@ -335,7 +335,7 @@ async function loadLandingServices() {
     grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>${typeof i18n !== 'undefined' ? i18n.t('Loading services...', 'جاري تحميل الخدمات...') : 'Loading services...'}</span></div>`;
 
     try {
-        const response = await fetch('/api/services?limit=6');
+        const response = await fetch('/api/services?limit=50');
         const data = await response.json();
         if (!response.ok || !data.data?.services?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
@@ -390,7 +390,7 @@ async function loadLandingJobs() {
     grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>${i18n.t('Loading jobs...', 'جارٍ تحميل الوظائف...')}</span></div>`;
 
     try {
-        const response = await fetch('/api/jobs?limit=6');
+        const response = await fetch('/api/jobs?limit=50');
         const data = await response.json();
         if (!response.ok || !data.data?.jobs?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
@@ -435,7 +435,7 @@ async function loadLandingPortfolio() {
     grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="portfolio.loading">${typeof i18n !== 'undefined' ? i18n.t('Loading portfolio...', 'جارٍ تحميل الأعمال...') : 'Loading portfolio...'}</span></div>`;
 
     try {
-        const response = await fetch('/api/portfolio?limit=6');
+        const response = await fetch('/api/portfolio?limit=50');
         const data = await response.json();
         if (!response.ok || !data.data?.portfolio?.length && !data.data?.items?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
@@ -474,7 +474,7 @@ async function loadLandingExhibitions() {
     grid.innerHTML = `<div class="empty-state-wrapper"><i class="fas fa-spinner fa-spin"></i> <span>${typeof i18n !== 'undefined' ? i18n.t('Loading exhibitions...', 'جاري تحميل المعارض...') : 'Loading exhibitions...'}</span></div>`;
 
     try {
-        const response = await fetch('/api/exhibitions?limit=6');
+        const response = await fetch('/api/exhibitions?limit=50');
         const data = await response.json();
         if (!response.ok || !data.data?.exhibitions?.length) {
             grid.innerHTML = `<div class="empty-state-wrapper">
