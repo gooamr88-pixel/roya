@@ -18,6 +18,7 @@ const requestLogger = require('./middlewares/logger');
 const { i18nMiddleware } = require('./middlewares/i18n');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const { requestId, sanitizeInput, sqlInjectionGuard, hppProtection } = require('./middlewares/security');
+const { maintenanceMiddleware } = require('./middlewares/maintenance');
 const winstonLogger = require('./utils/logger');
 
 const app = express();
@@ -129,6 +130,9 @@ app.use(cookieParser());
 // ═══════════════════════════════════════════════
 app.use(sanitizeInput);
 app.use(hppProtection);
+
+// ── Maintenance Mode Gate (must be after cookie-parser) ──
+app.use(maintenanceMiddleware);
 
 // ── Request Logger ──
 app.use(requestLogger);
