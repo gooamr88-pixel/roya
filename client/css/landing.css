@@ -81,7 +81,7 @@
   color: #1e293b !important;
 }
 [data-theme="light"] .nav-links a:hover {
-  color: #000 !important;
+  color: var(--accent-primary) !important;
   text-shadow: none;
 }
 [data-theme="light"] .nav-toggle {
