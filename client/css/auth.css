@@ -98,6 +98,20 @@
   text-align: center;
 }
 
+/* ── Light Theme: Auth Brand Panel ── */
+[data-theme="light"] .auth-brand {
+  background: linear-gradient(135deg, #f8f6f1 0%, #faf7ef 50%, #f5f0e5 100%);
+}
+[data-theme="light"] .auth-brand h2 {
+  color: #1a202c;
+}
+[data-theme="light"] .auth-brand p {
+  color: #475569;
+}
+[data-theme="light"] .auth-brand-features .feature {
+  color: #334155;
+}
+
 /* Form Side */
 .auth-form-side {
   flex: 1;

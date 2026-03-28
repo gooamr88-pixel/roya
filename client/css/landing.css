@@ -62,6 +62,38 @@
   padding: 10px 24px;
 }
 
+/* ── Light Theme Navbar ── */
+[data-theme="light"] .navbar {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .nav-links {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .nav-links a {
+  color: #1e293b !important;
+}
+[data-theme="light"] .nav-links a:hover {
+  color: #000 !important;
+  text-shadow: none;
+}
+[data-theme="light"] .nav-toggle {
+  color: #1e293b !important;
+}
+[data-theme="light"] #themeToggle {
+  color: #1e293b !important;
+}
+[data-theme="light"] .mobile-menu {
+  background: rgba(255, 255, 255, 0.98);
+}
+
 .navbar .container {
   display: flex;
   align-items: center;
