@@ -19,7 +19,7 @@
     const lang = document.documentElement.lang || 'en';
     const i18n = {
         greeting: lang === 'ar'
-            ? 'مرحباً! 👋 أنا المساعد الذكي لمنصة رؤيا. كيف يمكنني مساعدتك اليوم؟'
+            ? 'مرحباً! 👋 أنا المساعد الذكي لمنصة نَبضَة. كيف يمكنني مساعدتك اليوم؟'
             : 'Hello! 👋 I\'m Nabda\'s AI assistant. How can I help you today?',
         placeholder: lang === 'ar' ? 'اكتب رسالتك...' : 'Type your message...',
         error: lang === 'ar'
