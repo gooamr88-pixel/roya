@@ -20,7 +20,11 @@
         <a href="/" class="sidebar-logo">
           <img class="logo-for-dark" src="/images/nabda-logo-transparent.svg" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
           <img class="logo-for-light" src="/images/nabda-logo-dark.svg" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
-          <span class="brand-name brand-name-sm">{{ logoAlt }}</span>
+          {% if brandNameIsImage %}
+            <img src="{{ brandNameSrc }}" alt="{{ logoAlt }}" class="brand-name-img" style="height:24px;width:auto;">
+          {% else %}
+            <span class="brand-name brand-name-sm">{{ logoAlt }}</span>
+          {% endif %}
         </a>
         <button type="button" class="sidebar-close" id="sidebarClose" aria-label="{{ t.dashboard.closeSidebar | default('Close Sidebar') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
