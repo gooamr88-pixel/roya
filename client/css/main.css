@@ -91,6 +91,12 @@
   --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.25);
 }
 
+/* ── Logo Theme Adaptation ── */
+.logo-for-dark  { display: block; }
+.logo-for-light { display: none; }
+[data-theme="light"] .logo-for-dark  { display: none; }
+[data-theme="light"] .logo-for-light { display: block; }
+
 /* ── Reset & Base ── */
 *,
 *::before,
