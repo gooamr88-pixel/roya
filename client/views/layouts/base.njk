@@ -13,6 +13,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')</script>
   <title>{{ pageTitle or t.meta.title }}</title>
   <meta name="description" content="{{ pageDescription or t.meta.description }}">
   <meta name="keywords" content="{{ t.meta.keywords }}">
@@ -82,7 +83,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   {# ── Core Styles ── #}
-  <link rel="stylesheet" href="/css/main.css?v=3">
+  <link rel="stylesheet" href="/css/main.css?v=4">
 
   {# ── Page-specific CSS ── #}
   {% block pageCss %}{% endblock %}
