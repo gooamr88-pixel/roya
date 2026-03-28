@@ -10,8 +10,6 @@
 .landing-view {
   display: none;
   animation: fadeInView 0.5s ease-out;
-  min-height: calc(100vh - 80px);
-  /* Fill screen below navbar */
   padding-top: 100px;
   /* Account for fixed navbar */
   padding-bottom: 60px;
