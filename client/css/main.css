@@ -97,6 +97,30 @@
 [data-theme="light"] .logo-for-dark  { display: none; }
 [data-theme="light"] .logo-for-light { display: block; }
 
+/* ── Brand Name (next to logo) ── */
+.brand-name {
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  line-height: 1;
+}
+[dir="rtl"] .brand-name {
+  font-family: var(--font-arabic);
+  font-size: 1.5rem;
+  letter-spacing: 0;
+}
+.brand-name-sm {
+  font-size: 1.1rem;
+}
+[dir="rtl"] .brand-name-sm {
+  font-size: 1.25rem;
+}
+
 /* ── Reset & Base ── */
 *,
 *::before,
