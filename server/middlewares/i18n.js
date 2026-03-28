@@ -32,7 +32,7 @@ const i18nMiddleware = (req, res, next) => {
 
     // 4. Logo — unified transparent SVG (contains both Arabic & English)
     res.locals.logoSrc = '/images/nabda-logo-transparent.svg';
-    res.locals.logoAlt = isRTL ? 'نبضة' : 'Nabda';
+    res.locals.logoAlt = isRTL ? 'نَبْضَة' : 'Nabda';
 
     // brandTextSrc kept for backward compatibility
     res.locals.brandTextSrc = '/images/nabda-logo-transparent.svg';
