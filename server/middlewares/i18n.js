@@ -30,12 +30,12 @@ const i18nMiddleware = (req, res, next) => {
     res.locals.isRTL = isRTL;
     res.locals.t = languages[lang];
 
-    // 4. Logo changes based on language
-    res.locals.logoSrc = isRTL ? '/images/logo-ar.svg' : '/images/logo.svg';
+    // 4. Logo — unified transparent SVG (contains both Arabic & English)
+    res.locals.logoSrc = '/images/nabda-logo-transparent.svg';
     res.locals.logoAlt = isRTL ? 'نبضة' : 'Nabda';
 
-    // New: Handle the separated text logo alongside the emblem
-    res.locals.brandTextSrc = isRTL ? '/images/logo-ar.svg' : '/images/logo.svg';
+    // brandTextSrc kept for backward compatibility
+    res.locals.brandTextSrc = '/images/nabda-logo-transparent.svg';
 
     // 5. Language toggle data (switch to the OTHER language)
     res.locals.langToggle = languages[lang].langToggle;
