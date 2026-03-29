@@ -5,6 +5,9 @@
 // Depends on: api.js, utils.js, admin.init.js, jspdf, jspdf-autotable
 // ═══════════════════════════════════════════════
 
+/* ── i18n Helper ── */
+const _t = (key, fallback) => (window.__t || {})[key] || fallback || key;
+
 /* ── State ── */
 let invoiceState = {
     mode: 'invoice', // 'invoice' | 'quote'
@@ -62,10 +65,12 @@ function switchInvoiceMode(mode) {
     document.querySelectorAll('.inv-mode-tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.inv-mode-tab[data-mode="${mode}"]`)?.classList.add('active');
 
-    // Update badge colours
+    // Update badge
     const badge = document.getElementById('invModeBadge');
     if (badge) {
-        badge.textContent = mode === 'invoice' ? 'فاتورة ضريبية — Tax Invoice' : 'عرض سعر — Quotation';
+        badge.textContent = mode === 'invoice'
+            ? _t('invBadgeInvoice', 'فاتورة ضريبية — Tax Invoice')
+            : _t('invBadgeQuote', 'عرض سعر — Quotation');
         badge.className = `inv-mode-badge ${mode}`;
     }
     generateDocNumber();
@@ -77,16 +82,19 @@ function renderLineItems() {
     const container = document.getElementById('invLineItemsBody');
     if (!container) return;
 
+    const itemPh = _t('invItemPlaceholder', 'Item name');
+    const descPh = _t('invDescPlaceholder', 'Description');
+
     container.innerHTML = invoiceState.lineItems.map((item, i) => `
         <tr class="inv-line-row" data-idx="${i}">
             <td class="inv-line-num">${i + 1}</td>
             <td>
-                <input type="text" class="form-input inv-line-input" placeholder="Item name"
+                <input type="text" class="form-input inv-line-input" placeholder="${itemPh}"
                     value="${esc(item.name)}" data-field="name" data-idx="${i}"
                     oninput="updateLineItem(${i}, 'name', this.value)">
             </td>
             <td>
-                <input type="text" class="form-input inv-line-input" placeholder="Description"
+                <input type="text" class="form-input inv-line-input" placeholder="${descPh}"
                     value="${esc(item.description)}" data-field="description" data-idx="${i}"
                     oninput="updateLineItem(${i}, 'description', this.value)">
             </td>
@@ -228,10 +236,14 @@ function updatePreview() {
 
     // Header
     const titleEl = document.getElementById('prevDocTitle');
-    if (titleEl) titleEl.textContent = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
+    if (titleEl) titleEl.textContent = isInvoice
+        ? (_t('invTaxInvoice', 'Tax Invoice')).toUpperCase()
+        : (_t('invQuotation', 'Quotation')).toUpperCase();
 
     const titleArEl = document.getElementById('prevDocTitleAr');
-    if (titleArEl) titleArEl.textContent = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
+    if (titleArEl) titleArEl.textContent = isInvoice
+        ? _t('invTaxInvoiceAr', 'فاتورة')
+        : _t('invQuotationAr', 'عرض سعر');
 
     const numEl = document.getElementById('prevDocNumber');
     if (numEl) numEl.textContent = invoiceState.docNumber || '—';
@@ -243,11 +255,13 @@ function updatePreview() {
     if (dueEl) dueEl.textContent = invoiceState.dueDate || '—';
 
     const dueLabelEl = document.getElementById('prevDueDateLabel');
-    if (dueLabelEl) dueLabelEl.textContent = isInvoice ? 'Due Date' : 'Valid Until';
+    if (dueLabelEl) dueLabelEl.textContent = isInvoice
+        ? _t('invDueDate', 'Due Date')
+        : _t('invValidUntil', 'Valid Until');
 
     // Client
     const cName = document.getElementById('prevClientName');
-    if (cName) cName.textContent = invoiceState.clientName || 'Client Name';
+    if (cName) cName.textContent = invoiceState.clientName || _t('invClientName', 'Client Name');
     const cEmail = document.getElementById('prevClientEmail');
     if (cEmail) cEmail.textContent = invoiceState.clientEmail || '—';
     const cAddr = document.getElementById('prevClientAddress');
@@ -256,10 +270,11 @@ function updatePreview() {
     if (cPhone) cPhone.textContent = invoiceState.clientPhone || '—';
 
     // Line items
+    const previewPlaceholder = _t('invPreviewPlaceholder', 'Add line items to see them here');
     const tbody = document.getElementById('prevLineItems');
     if (tbody) {
         if (invoiceState.lineItems.length === 0 || (invoiceState.lineItems.length === 1 && !invoiceState.lineItems[0].name)) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px;font-style:italic;">Add line items to see them here</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px;font-style:italic;">${previewPlaceholder}</td></tr>`;
         } else {
             tbody.innerHTML = invoiceState.lineItems.map((item, i) => `
                 <tr>
@@ -285,13 +300,15 @@ function updatePreview() {
     setFinancial('prevGrandTotal', grandTotal);
 
     // Tax / discount labels
+    const vatLabel = _t('invVAT', 'VAT');
+    const discountLabelText = _t('invDiscount', 'Discount');
     const taxLabel = document.getElementById('prevTaxLabel');
-    if (taxLabel) taxLabel.textContent = `VAT (${invoiceState.taxPercent}%)`;
+    if (taxLabel) taxLabel.textContent = `${vatLabel} (${invoiceState.taxPercent}%)`;
     const discountLabel = document.getElementById('prevDiscountLabel');
     if (discountLabel) {
         discountLabel.textContent = invoiceState.discountType === 'percent'
-            ? `Discount (${invoiceState.discountValue}%)`
-            : 'Discount (Fixed)';
+            ? `${discountLabelText} (${invoiceState.discountValue}%)`
+            : `${discountLabelText} (${_t('invDiscountFixed', 'Fixed')})`;
     }
 
     // Notes & Terms
@@ -319,12 +336,12 @@ function updatePreview() {
 async function invoiceSaveAndIssue() {
     // Validation
     if (!invoiceState.clientName.trim()) {
-        Toast.error('Client name is required.');
+        Toast.error(_t('invClientRequired', 'Client name is required.'));
         document.getElementById('invClientName')?.focus();
         return;
     }
     if (invoiceState.lineItems.every(li => !li.name.trim())) {
-        Toast.error('At least one line item is required.');
+        Toast.error(_t('invItemRequired', 'At least one line item is required.'));
         return;
     }
 
@@ -337,17 +354,15 @@ async function invoiceSaveAndIssue() {
     };
 
     try {
-        // Try saving to backend if route exists
         await API.post('/invoices/save', payload);
         Toast.success(invoiceState.mode === 'invoice'
-            ? 'Invoice saved & issued!'
-            : 'Quotation saved successfully!');
+            ? _t('invSavedInvoice', 'Invoice saved & issued!')
+            : _t('invSavedQuote', 'Quotation saved successfully!'));
     } catch (err) {
-        // If no backend route, just show success for offline usage
         if (err.message?.includes('404') || err.message?.includes('Not Found')) {
-            Toast.success('Document saved locally. Backend route not configured yet.');
+            Toast.success(_t('invSavedLocal', 'Document saved locally. Backend route not configured yet.'));
         } else {
-            Toast.error(err.message || 'Failed to save document.');
+            Toast.error(err.message || _t('invSaveFailed', 'Failed to save document.'));
         }
     }
 }
@@ -355,7 +370,7 @@ async function invoiceSaveAndIssue() {
 /* ── PDF / Print ── */
 function invoiceDownloadPDF() {
     if (!window.jspdf) {
-        Toast.error('PDF library not loaded.');
+        Toast.error(_t('invPdfNotLoaded', 'PDF library not loaded.'));
         return;
     }
 
@@ -381,17 +396,24 @@ function invoiceDownloadPDF() {
     // Document Title
     doc.setFontSize(28);
     doc.setTextColor(...accentColor);
-    doc.text(isInvoice ? 'TAX INVOICE' : 'QUOTATION', pageWidth - 14, 22, { align: 'right' });
+    const pdfTitle = isInvoice
+        ? (_t('invTaxInvoice', 'Tax Invoice')).toUpperCase()
+        : (_t('invQuotation', 'Quotation')).toUpperCase();
+    doc.text(pdfTitle, pageWidth - 14, 22, { align: 'right' });
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text(isInvoice ? '\u0641\u0627\u062a\u0648\u0631\u0629 \u0636\u0631\u064a\u0628\u064a\u0629' : '\u0639\u0631\u0636 \u0633\u0639\u0631', pageWidth - 14, 28, { align: 'right' });
+    const pdfTitleAr = isInvoice
+        ? _t('invTaxInvoiceAr', '\u0641\u0627\u062a\u0648\u0631\u0629')
+        : _t('invQuotationAr', '\u0639\u0631\u0636 \u0633\u0639\u0631');
+    doc.text(pdfTitleAr, pageWidth - 14, 28, { align: 'right' });
 
     // Doc number & dates
     doc.setFontSize(9);
     doc.setTextColor(80, 80, 80);
     doc.text(`# ${invoiceState.docNumber}`, pageWidth - 14, 36, { align: 'right' });
-    doc.text(`Issue: ${invoiceState.issueDate}`, pageWidth - 14, 41, { align: 'right' });
-    doc.text(`${isInvoice ? 'Due' : 'Valid Until'}: ${invoiceState.dueDate}`, pageWidth - 14, 46, { align: 'right' });
+    doc.text(`${_t('invIssueDate', 'Issue')}: ${invoiceState.issueDate}`, pageWidth - 14, 41, { align: 'right' });
+    const dueLabel = isInvoice ? _t('invDueDate', 'Due') : _t('invValidUntil', 'Valid Until');
+    doc.text(`${dueLabel}: ${invoiceState.dueDate}`, pageWidth - 14, 46, { align: 'right' });
 
     // Separator
     doc.setDrawColor(220, 220, 220);
@@ -400,10 +422,10 @@ function invoiceDownloadPDF() {
     // Bill To
     doc.setFontSize(8);
     doc.setTextColor(140);
-    doc.text('BILL TO', 14, 60);
+    doc.text(_t('invBillTo', 'BILL TO').toUpperCase(), 14, 60);
     doc.setFontSize(12);
     doc.setTextColor(40);
-    doc.text(invoiceState.clientName || 'Client Name', 14, 67);
+    doc.text(invoiceState.clientName || _t('invClientName', 'Client Name'), 14, 67);
     doc.setFontSize(9);
     doc.setTextColor(100);
     let clientY = 73;
@@ -424,7 +446,13 @@ function invoiceDownloadPDF() {
 
     doc.autoTable({
         startY: clientY + 5,
-        head: [['Item', 'Description', 'Qty', 'Unit Price', 'Total']],
+        head: [[
+            _t('invItem', 'Item'),
+            _t('invDescription', 'Description'),
+            _t('invQty', 'Qty'),
+            _t('invUnitPrice', 'Unit Price'),
+            _t('invTotal', 'Total')
+        ]],
         body: tableData,
         styles: { fontSize: 9, cellPadding: 4, textColor: [60, 60, 60] },
         headStyles: {
@@ -448,12 +476,12 @@ function invoiceDownloadPDF() {
     const summaryX = pageWidth - 80;
 
     const summaryLines = [
-        ['Subtotal', formatMoney(getSubtotal())],
-        [`Discount`, `- ${formatMoney(getDiscountAmount())}`],
-        [`VAT (${invoiceState.taxPercent}%)`, formatMoney(getTaxAmount())],
+        [_t('invSubtotal', 'Subtotal'), formatMoney(getSubtotal())],
+        [_t('invDiscount', 'Discount'), `- ${formatMoney(getDiscountAmount())}`],
+        [`${_t('invVAT', 'VAT')} (${invoiceState.taxPercent}%)`, formatMoney(getTaxAmount())],
     ];
     if (invoiceState.shippingCost > 0) {
-        summaryLines.push(['Shipping', formatMoney(invoiceState.shippingCost)]);
+        summaryLines.push([_t('invShipping', 'Shipping'), formatMoney(invoiceState.shippingCost)]);
     }
 
     doc.setFontSize(9);
@@ -472,7 +500,7 @@ function invoiceDownloadPDF() {
     finalY += 6;
     doc.setFontSize(12);
     doc.setTextColor(...accentColor);
-    doc.text('GRAND TOTAL', summaryX, finalY);
+    doc.text(_t('invGrandTotal', 'GRAND TOTAL').toUpperCase(), summaryX, finalY);
     doc.setFontSize(14);
     doc.setTextColor(40);
     doc.text(formatMoney(getGrandTotal()), pageWidth - 14, finalY, { align: 'right' });
@@ -482,7 +510,7 @@ function invoiceDownloadPDF() {
     if (invoiceState.notes) {
         doc.setFontSize(8);
         doc.setTextColor(140);
-        doc.text('NOTES', 14, finalY);
+        doc.text(_t('invNotes', 'NOTES').toUpperCase(), 14, finalY);
         doc.setFontSize(9);
         doc.setTextColor(100);
         doc.text(invoiceState.notes, 14, finalY + 5, { maxWidth: pageWidth - 28 });
@@ -491,7 +519,7 @@ function invoiceDownloadPDF() {
     if (invoiceState.terms) {
         doc.setFontSize(8);
         doc.setTextColor(140);
-        doc.text('TERMS & CONDITIONS', 14, finalY);
+        doc.text(_t('invTerms', 'TERMS & CONDITIONS').toUpperCase(), 14, finalY);
         doc.setFontSize(9);
         doc.setTextColor(100);
         doc.text(invoiceState.terms, 14, finalY + 5, { maxWidth: pageWidth - 28 });
@@ -505,7 +533,7 @@ function invoiceDownloadPDF() {
     // Save
     const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
     doc.save(filename);
-    Toast.success(`PDF downloaded: ${filename}`);
+    Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
 }
 
 function invoicePrint() {
@@ -560,5 +588,5 @@ function invoiceReset() {
     setTodayDate();
     renderLineItems();
     updatePreview();
-    Toast.success('Form reset.');
+    Toast.success(_t('invFormReset', 'Form reset.'));
 }
