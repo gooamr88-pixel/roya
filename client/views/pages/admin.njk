@@ -71,6 +71,9 @@
           <span class="icon"><i class="fas fa-images"></i></span> {{ t.admin.portfolioNav }}
           <span class="kbd-hint">6</span>
         </button>
+        <button class="sidebar-link" data-view="invoicing">
+          <span class="icon"><i class="fas fa-file-invoice-dollar"></i></span> {{ t.admin.invoicingNav | default('Invoicing') }}
+        </button>
 
         <div class="nav-section">{{ t.admin.supportSection }}</div>
         <button class="sidebar-link" data-view="messages">
@@ -317,6 +320,252 @@
               </tr></thead>
               <tbody id="portfolioTableBody"></tbody>
             </table>
+          </div>
+        </div>
+
+        {# ── INVOICING & QUOTATION ── #}
+        <div class="view-section" id="view-invoicing">
+
+          {# Mode Tabs #}
+          <div class="inv-mode-tabs">
+            <button type="button" class="inv-mode-tab active" data-mode="invoice" onclick="switchInvoiceMode('invoice')">
+              <i class="fas fa-file-invoice-dollar"></i> Tax Invoice · فاتورة
+            </button>
+            <button type="button" class="inv-mode-tab" data-mode="quote" onclick="switchInvoiceMode('quote')">
+              <i class="fas fa-file-signature"></i> Quotation · عرض سعر
+            </button>
+          </div>
+
+          <div class="inv-mode-badge invoice" id="invModeBadge">فاتورة ضريبية — Tax Invoice</div>
+
+          <div class="inv-layout">
+            {# ═══ LEFT: FORM PANEL ═══ #}
+            <div class="inv-form-panel" id="invFormSection">
+
+              {# Document Details #}
+              <div class="inv-section">
+                <div class="inv-section-title"><i class="fas fa-hashtag"></i> Document Details</div>
+                <div class="inv-form-row-3">
+                  <div class="inv-form-group">
+                    <label>Document #</label>
+                    <input class="form-input" type="text" id="invDocNumber" readonly style="font-family:'JetBrains Mono','SF Mono',monospace;font-size:0.8rem;color:var(--text-3);">
+                  </div>
+                  <div class="inv-form-group">
+                    <label>Issue Date</label>
+                    <input class="form-input" type="date" id="invIssueDate">
+                  </div>
+                  <div class="inv-form-group">
+                    <label>Due Date</label>
+                    <input class="form-input" type="date" id="invDueDate">
+                  </div>
+                </div>
+              </div>
+
+              <div class="inv-section-divider"></div>
+
+              {# Client Info #}
+              <div class="inv-section">
+                <div class="inv-section-title"><i class="fas fa-user-tie"></i> Client Information</div>
+                <div class="inv-form-row">
+                  <div class="inv-form-group">
+                    <label>Client Name *</label>
+                    <input class="form-input" type="text" id="invClientName" placeholder="John Doe / شركة نبضة">
+                  </div>
+                  <div class="inv-form-group">
+                    <label>Email</label>
+                    <input class="form-input" type="email" id="invClientEmail" placeholder="client@example.com">
+                  </div>
+                </div>
+                <div class="inv-form-row">
+                  <div class="inv-form-group">
+                    <label>Address</label>
+                    <input class="form-input" type="text" id="invClientAddress" placeholder="City, Country">
+                  </div>
+                  <div class="inv-form-group">
+                    <label>Phone</label>
+                    <input class="form-input" type="tel" id="invClientPhone" placeholder="+20 xxx xxx xxxx">
+                  </div>
+                </div>
+              </div>
+
+              <div class="inv-section-divider"></div>
+
+              {# Line Items #}
+              <div class="inv-section">
+                <div class="inv-section-title"><i class="fas fa-list-check"></i> Line Items</div>
+                <div class="inv-line-items-card">
+                  <table class="inv-line-table">
+                    <thead>
+                      <tr>
+                        <th style="width:32px">#</th>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                        <th style="width:48px"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="invLineItemsBody"></tbody>
+                  </table>
+                  <button type="button" class="inv-add-item-btn" onclick="addLineItem()">
+                    <i class="fas fa-plus"></i> Add Line Item
+                  </button>
+                </div>
+              </div>
+
+              <div class="inv-section-divider"></div>
+
+              {# Financials #}
+              <div class="inv-section">
+                <div class="inv-section-title"><i class="fas fa-calculator"></i> Financials</div>
+                <div class="inv-form-row-3">
+                  <div class="inv-form-group">
+                    <label>Tax %</label>
+                    <input class="form-input" type="number" id="invTaxPercent" min="0" max="100" step="0.5" value="15" placeholder="15">
+                  </div>
+                  <div class="inv-form-group">
+                    <label>Discount Type</label>
+                    <select class="form-select" id="invDiscountType">
+                      <option value="percent">Percentage %</option>
+                      <option value="fixed">Fixed Amount</option>
+                    </select>
+                  </div>
+                  <div class="inv-form-group">
+                    <label>Discount Value</label>
+                    <input class="form-input" type="number" id="invDiscountValue" min="0" step="0.01" value="0" placeholder="0">
+                  </div>
+                </div>
+                <div class="inv-form-group">
+                  <label>Shipping Cost</label>
+                  <input class="form-input" type="number" id="invShippingCost" min="0" step="0.01" value="0" placeholder="0.00">
+                </div>
+              </div>
+
+              <div class="inv-section-divider"></div>
+
+              {# Additional Info #}
+              <div class="inv-section">
+                <div class="inv-section-title"><i class="fas fa-note-sticky"></i> Additional Information</div>
+                <div class="inv-form-group">
+                  <label>Notes</label>
+                  <textarea class="form-textarea" id="invNotes" rows="2" placeholder="Thank you for your business!"></textarea>
+                </div>
+                <div class="inv-form-group">
+                  <label>Terms & Conditions</label>
+                  <textarea class="form-textarea" id="invTerms" rows="2" placeholder="Payment due within 30 days of issue date."></textarea>
+                </div>
+              </div>
+
+              {# Action Buttons #}
+              <div class="inv-actions">
+                <button type="button" class="inv-btn-save" onclick="invoiceSaveAndIssue()">
+                  <i class="fas fa-paper-plane"></i> Save & Issue
+                </button>
+                <button type="button" class="inv-btn-pdf" onclick="invoiceDownloadPDF()">
+                  <i class="fas fa-file-pdf"></i> Download PDF
+                </button>
+                <button type="button" class="inv-btn-pdf" onclick="invoicePrint()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+                <button type="button" class="inv-btn-reset" onclick="invoiceReset()">
+                  <i class="fas fa-rotate-right"></i> Reset
+                </button>
+              </div>
+            </div>
+
+            {# ═══ RIGHT: LIVE PREVIEW PANEL ═══ #}
+            <div class="inv-preview-panel">
+              <div class="inv-preview-card" id="invPreviewCard">
+                <div class="inv-preview-accent" id="prevAccentStripe"></div>
+                <div class="inv-preview-body">
+
+                  {# Preview Header #}
+                  <div class="inv-prev-header">
+                    <div class="inv-prev-brand">
+                      <div class="inv-prev-brand-name">NABDA</div>
+                      <div class="inv-prev-brand-sub">Advertising · Marketing · Events</div>
+                    </div>
+                    <div class="inv-prev-doc-info">
+                      <div class="inv-prev-doc-title" id="prevDocTitle" style="color:var(--gold)">TAX INVOICE</div>
+                      <div class="inv-prev-doc-title-ar" id="prevDocTitleAr">فاتورة ضريبية</div>
+                      <div class="inv-prev-doc-number"># <span id="prevDocNumber">—</span></div>
+                      <div class="inv-prev-doc-dates">
+                        <span>Issue: <strong id="prevIssueDate">—</strong></span>
+                        <span><span id="prevDueDateLabel">Due Date</span>: <strong id="prevDueDate">—</strong></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {# Preview Client #}
+                  <div class="inv-prev-client">
+                    <div class="inv-prev-client-label">Bill To</div>
+                    <div class="inv-prev-client-name" id="prevClientName">Client Name</div>
+                    <div class="inv-prev-client-details">
+                      <span id="prevClientEmail">—</span>
+                      <span id="prevClientAddress">—</span>
+                      <span id="prevClientPhone">—</span>
+                    </div>
+                  </div>
+
+                  {# Preview Line Items #}
+                  <table class="inv-prev-table">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody id="prevLineItems">
+                      <tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px;font-style:italic;">Add line items to see them here</td></tr>
+                    </tbody>
+                  </table>
+
+                  {# Preview Summary #}
+                  <div class="inv-prev-summary">
+                    <div class="inv-prev-summary-row">
+                      <span class="label">Subtotal</span>
+                      <span class="value" id="prevSubtotal">$0.00</span>
+                    </div>
+                    <div class="inv-prev-summary-row">
+                      <span class="label" id="prevDiscountLabel">Discount (0%)</span>
+                      <span class="value" id="prevDiscount">$0.00</span>
+                    </div>
+                    <div class="inv-prev-summary-row">
+                      <span class="label" id="prevTaxLabel">VAT (15%)</span>
+                      <span class="value" id="prevTax">$0.00</span>
+                    </div>
+                    <div class="inv-prev-summary-row">
+                      <span class="label">Shipping</span>
+                      <span class="value" id="prevShipping">$0.00</span>
+                    </div>
+                    <div class="inv-prev-summary-row total">
+                      <span class="label">Grand Total</span>
+                      <span class="value" id="prevGrandTotal">$0.00</span>
+                    </div>
+                  </div>
+
+                  {# Notes & Terms (hidden until filled) #}
+                  <div class="inv-prev-notes-section" style="display:none">
+                    <div class="inv-prev-notes-label">Notes</div>
+                    <div class="inv-prev-notes-text" id="prevNotes"></div>
+                  </div>
+                  <div class="inv-prev-notes-section" style="display:none">
+                    <div class="inv-prev-notes-label">Terms & Conditions</div>
+                    <div class="inv-prev-notes-text" id="prevTerms"></div>
+                  </div>
+
+                  {# Footer #}
+                  <div class="inv-prev-footer">
+                    <div class="inv-prev-footer-text">Generated by Nabda Platform · nabda.com</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -1008,4 +1257,5 @@
   <script src="/js/admin/admin.exhibitions.js" defer></script>
   <script src="/js/admin/admin.jobs.js" defer></script>
   <script src="/js/admin/admin.portfolio.js" defer></script>
+  <script src="/js/admin/admin.invoicing.js" defer></script>
 {% endblock %}

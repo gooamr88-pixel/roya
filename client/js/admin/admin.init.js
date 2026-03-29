@@ -19,7 +19,7 @@ function hasMinRole(minRole) {
     return (ROLE_WEIGHT[adminUser?.role] || 0) >= (ROLE_WEIGHT[minRole] || 0);
 }
 
-const ADMIN_VIEW_KEYS = ['stats', 'orders', 'services', 'exhibitions', 'jobs', 'portfolio', 'messages', 'users', 'roles', 'logs'];
+const ADMIN_VIEW_KEYS = ['stats', 'orders', 'services', 'exhibitions', 'jobs', 'portfolio', 'invoicing', 'messages', 'users', 'roles', 'logs'];
 
 document.addEventListener('DOMContentLoaded', () => {
     initAdminAuth();
@@ -93,6 +93,7 @@ const adminViewTitles = {
     exhibitions: document.querySelector('[data-view="exhibitions"]')?.textContent?.trim() || 'Exhibitions',
     jobs: document.querySelector('[data-view="jobs"]')?.textContent?.trim() || 'Jobs',
     portfolio: document.querySelector('[data-view="portfolio"]')?.textContent?.trim() || 'Portfolio',
+    invoicing: document.querySelector('[data-view="invoicing"]')?.textContent?.trim() || 'Invoicing',
     messages: document.querySelector('[data-view="messages"]')?.textContent?.trim() || 'Ticket Center',
     users: document.querySelector('[data-view="users"]')?.textContent?.trim() || 'User Management',
     roles: document.querySelector('[data-view="roles"]')?.textContent?.trim() || 'Roles',
@@ -120,7 +121,7 @@ function switchAdminView(viewName) {
     const loaders = {
         stats: loadStats, orders: loadAdminOrders, services: loadAdminServices,
         exhibitions: loadAdminExhibitions, jobs: loadAdminJobs,
-        portfolio: loadAdminPortfolio,
+        portfolio: loadAdminPortfolio, invoicing: initInvoicing,
         messages: loadAdminMessages, users: loadAdminUsers,
         roles: loadAdminRoles, logs: loadAdminLogs,
     };
@@ -414,7 +415,7 @@ function initCommandPalette() {
 
     const commands = ADMIN_VIEW_KEYS.map((key, i) => ({
         label: adminViewTitles[key] || key,
-        icon: ['fa-chart-line', 'fa-shopping-bag', 'fa-concierge-bell', 'fa-calendar', 'fa-briefcase', 'fa-images', 'fa-headset', 'fa-users-cog', 'fa-shield-halved', 'fa-file-lines'][i],
+        icon: ['fa-chart-line', 'fa-shopping-bag', 'fa-concierge-bell', 'fa-calendar', 'fa-briefcase', 'fa-images', 'fa-file-invoice-dollar', 'fa-headset', 'fa-users-cog', 'fa-shield-halved', 'fa-file-lines'][i],
         action: () => switchAdminView(key),
         shortcut: i < 9 ? String(i + 1) : '0',
     }));
