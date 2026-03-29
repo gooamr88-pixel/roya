@@ -426,8 +426,10 @@ async function loadLandingJobs() {
 }
 
 // ══════════════════════════════════════════
-//  DYNAMIC PORTFOLIO
+//  DYNAMIC PORTFOLIO — Premium Cards + Filters + Lightbox
 // ══════════════════════════════════════════
+let __portfolioItems = []; // Store for filter/lightbox
+
 async function loadLandingPortfolio() {
     const grid = document.getElementById('portfolioGrid');
     if (!grid) return;
@@ -437,31 +439,215 @@ async function loadLandingPortfolio() {
     try {
         const response = await fetch('/api/portfolio?limit=50');
         const data = await response.json();
-        if (!response.ok || !data.data?.portfolio?.length && !data.data?.items?.length) {
-            grid.innerHTML = `<div class="empty-state-wrapper">
-            <i class="fas fa-images" style="margin-bottom:1rem;color:var(--text-muted);font-size:2rem;"></i><br>
-            <span data-i18n="portfolio.noWorks">${typeof i18n !== 'undefined' ? i18n.t('No works available at the moment', 'لا توجد أعمال لعرضها حالياً') : 'No works available at the moment'}</span>
-        </div>`;
+        const rawItems = data.data?.portfolio || data.data?.items || [];
+
+        if (!response.ok || !rawItems.length) {
+            grid.innerHTML = `<div class="portfolio-empty">
+                <i class="fas fa-images"></i>
+                <p data-i18n="portfolio.noWorks">${typeof i18n !== 'undefined' ? i18n.t('No works available at the moment', 'لا توجد أعمال لعرضها حالياً') : 'No works available at the moment'}</p>
+            </div>`;
             return;
         }
 
-        const items = data.data.portfolio || data.data.items;
+        // Parse images for each item once
+        __portfolioItems = rawItems.map(item => {
+            let images = [];
+            if (Array.isArray(item.images)) {
+                images = item.images;
+            } else if (typeof item.images === 'string') {
+                try { images = JSON.parse(item.images); } catch { images = []; }
+            }
+            return { ...item, _images: images };
+        });
 
-        grid.innerHTML = items.map(item => {
-            const images = Array.isArray(item.images) ? item.images : (JSON.parse(item.images || '[]'));
-            const img = images?.[0] || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80';
-            return `
-        <div class="exhibition-card fade-in">
-          <div style="width:100%;height:180px;border-radius:12px;overflow:hidden;margin-bottom:12px">
-            <img src="${esc(img)}" alt="${esc(item.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">
-          </div>
-          <h3 style="margin-bottom:6px">${esc(localize(item, 'title'))}</h3>
-          <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:8px">${esc(localize(item, 'description'))}</p>
-          ${localize(item, 'category') ? `<span class="badge badge-primary">${esc(localize(item, 'category'))}</span>` : ''}
+        // Build dynamic filter buttons
+        buildPortfolioFilters(__portfolioItems);
+
+        // Render all cards
+        renderPortfolioCards(__portfolioItems);
+
+    } catch (err) {
+        console.error('Portfolio load error:', err);
+        grid.innerHTML = `<div class="portfolio-empty">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>${typeof i18n !== 'undefined' ? i18n.t('Failed to load portfolio', 'فشل في تحميل الأعمال') : 'Failed to load portfolio'}</p>
         </div>`;
-        }).join('');
-    } catch (err) { console.error('Portfolio load error:', err); }
+    }
 }
+
+function buildPortfolioFilters(items) {
+    const filtersContainer = document.getElementById('portfolioFilters');
+    if (!filtersContainer) return;
+
+    // Extract unique categories
+    const categories = new Set();
+    items.forEach(item => {
+        const cat = localize(item, 'category');
+        if (cat && cat !== 'general') categories.add(cat);
+    });
+
+    const allLabel = typeof i18n !== 'undefined' ? i18n.t('All Works', 'جميع الأعمال') : 'All Works';
+    let html = `<button class="filter-btn active" data-filter="all">${esc(allLabel)}</button>`;
+    categories.forEach(cat => {
+        html += `<button class="filter-btn" data-filter="${esc(cat)}">${esc(cat)}</button>`;
+    });
+
+    filtersContainer.innerHTML = html;
+
+    // Attach filter click handlers
+    filtersContainer.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            filtersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            if (filter === 'all') {
+                renderPortfolioCards(__portfolioItems);
+            } else {
+                const filtered = __portfolioItems.filter(item => localize(item, 'category') === filter);
+                renderPortfolioCards(filtered);
+            }
+        });
+    });
+}
+
+function renderPortfolioCards(items) {
+    const grid = document.getElementById('portfolioGrid');
+    if (!grid) return;
+
+    const fallbackImg = 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80';
+
+    grid.innerHTML = items.map((item, idx) => {
+        const img = item._images?.[0] || fallbackImg;
+        const imageCount = item._images?.length || 0;
+        const title = localize(item, 'title') || item.title || '';
+        const desc = localize(item, 'description') || item.description || '';
+        const category = localize(item, 'category') || '';
+        const dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString() : '';
+
+        return `
+        <div class="portfolio-card fade-in" data-portfolio-idx="${idx}" data-category="${esc(category)}">
+          <div class="portfolio-card-image">
+            <img src="${esc(img)}" alt="${esc(title)}" loading="lazy" decoding="async">
+            ${category ? `<span class="portfolio-card-badge">${esc(category)}</span>` : ''}
+            <div class="portfolio-card-overlay">
+              <i class="fas fa-expand"></i>
+            </div>
+          </div>
+          <div class="portfolio-card-body">
+            <h3>${esc(title)}</h3>
+            ${desc ? `<p>${esc(desc)}</p>` : ''}
+            <div class="portfolio-card-meta">
+              ${dateStr ? `<span class="portfolio-date"><i class="fas fa-calendar-alt"></i> ${dateStr}</span>` : '<span></span>'}
+              ${imageCount > 1 ? `<span class="portfolio-images-count"><i class="fas fa-images"></i> ${imageCount}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    // Attach click listeners for lightbox
+    grid.querySelectorAll('.portfolio-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const idx = parseInt(card.dataset.portfolioIdx);
+            openPortfolioLightbox(__portfolioItems[idx]);
+        });
+    });
+
+    // Re-observe for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    grid.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+// ── Portfolio Lightbox ──
+function openPortfolioLightbox(item) {
+    document.getElementById('portfolioLightbox')?.remove();
+
+    const images = item._images || [];
+    const fallbackImg = 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80';
+    const allImages = images.length ? images : [fallbackImg];
+    const title = localize(item, 'title') || item.title || '';
+    const desc = localize(item, 'description') || item.description || '';
+    const category = localize(item, 'category') || '';
+    const dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString() : '';
+
+    const dotsHtml = allImages.length > 1
+        ? `<div class="gallery-dots">${allImages.map((_, i) => `<button class="gallery-dot${i === 0 ? ' active' : ''}" data-slide="${i}"></button>`).join('')}</div>`
+        : '';
+
+    const navHtml = allImages.length > 1
+        ? `<button class="gallery-nav gallery-prev" onclick="navigatePortfolioGallery(-1)"><i class="fas fa-chevron-left"></i></button>
+           <button class="gallery-nav gallery-next" onclick="navigatePortfolioGallery(1)"><i class="fas fa-chevron-right"></i></button>`
+        : '';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'portfolioLightbox';
+    overlay.className = 'portfolio-lightbox-overlay';
+    overlay.innerHTML = `
+        <div class="portfolio-lightbox-backdrop" onclick="closePortfolioLightbox()"></div>
+        <div class="portfolio-lightbox-content">
+            <button class="portfolio-lightbox-close" onclick="closePortfolioLightbox()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="portfolio-lightbox-gallery" data-current="0">
+                <img src="${esc(allImages[0])}" alt="${esc(title)}">
+                ${navHtml}
+                ${dotsHtml}
+            </div>
+            <div class="portfolio-lightbox-body">
+                <h2>${esc(title)}</h2>
+                ${desc ? `<p>${esc(desc)}</p>` : ''}
+                <div class="lightbox-meta">
+                    ${category ? `<span><i class="fas fa-tag"></i> ${esc(category)}</span>` : ''}
+                    ${dateStr ? `<span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>` : ''}
+                    ${allImages.length > 1 ? `<span><i class="fas fa-images"></i> ${allImages.length} ${typeof i18n !== 'undefined' ? i18n.t('images', 'صور') : 'images'}</span>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Store images on the element for gallery navigation
+    overlay._images = allImages;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => overlay.classList.add('show'));
+}
+
+function closePortfolioLightbox() {
+    const overlay = document.getElementById('portfolioLightbox');
+    if (!overlay) return;
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+    setTimeout(() => overlay.remove(), 400);
+}
+
+function navigatePortfolioGallery(direction) {
+    const overlay = document.getElementById('portfolioLightbox');
+    if (!overlay) return;
+    const gallery = overlay.querySelector('.portfolio-lightbox-gallery');
+    const images = overlay._images || [];
+    if (images.length <= 1) return;
+
+    let current = parseInt(gallery.dataset.current) || 0;
+    current = (current + direction + images.length) % images.length;
+    gallery.dataset.current = current;
+    gallery.querySelector('img').src = images[current];
+
+    // Update dots
+    gallery.querySelectorAll('.gallery-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === current);
+    });
+}
+
+// Close lightbox on Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePortfolioLightbox();
+});
 
 // ══════════════════════════════════════════
 //  DYNAMIC EXHIBITIONS

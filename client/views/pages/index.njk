@@ -4,7 +4,7 @@
 {% extends "layouts/landing.njk" %}
 
 {% block pageCss %}
-  <link rel="stylesheet" href="/css/landing.css?v=6">
+  <link rel="stylesheet" href="/css/landing.css?v=7">
 {% endblock %}
 
 {% block content %}
@@ -201,15 +201,16 @@
         </p>
       </div>
 
-      <div class="portfolio-filters" id="portfolioFilters" style="display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:40px 0 30px;">
+      <div class="portfolio-filters" id="portfolioFilters">
         <button class="filter-btn active" data-filter="all">{{ t.portfolio.allWorks | default('All Works') }}</button>
       </div>
 
-      <div class="services-grid" id="portfolioGrid">
+      <div class="portfolio-grid" id="portfolioGrid">
         <!-- Loaded dynamically by landing.js -->
       </div>
     </div>
   </section>
+
 
 
 
@@ -283,5 +284,5 @@
 {% endblock %}
 
 {% block pageScripts %}
-  <script src="/js/landing.js?v=4" defer></script>
+  <script src="/js/landing.js?v=5" defer></script>
 {% endblock %}
