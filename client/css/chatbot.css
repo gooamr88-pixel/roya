@@ -382,3 +382,67 @@
 }
 
 .ai-tour-next:hover { opacity: 0.85; }
+
+/* ═══════════════════════════════════════
+   CHATBOT — LIGHT THEME OVERRIDES
+   ═══════════════════════════════════════ */
+[data-theme="light"] .chatbot-window {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .chatbot-header {
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.08), rgba(184, 134, 11, 0.03));
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .chatbot-header-info h4 {
+    color: #1e293b;
+}
+
+[data-theme="light"] .chatbot-messages {
+    background: #ffffff;
+}
+
+[data-theme="light"] .chatbot-msg.bot {
+    background: #f1f5f9;
+    color: #374151;
+}
+
+[data-theme="light"] .chatbot-typing {
+    background: #f1f5f9;
+}
+
+[data-theme="light"] .chatbot-input-area {
+    border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .chatbot-input {
+    background: #f8f9fa;
+    border-color: #d1d5db;
+    color: #1e293b;
+}
+
+[data-theme="light"] .chatbot-input:focus {
+    border-color: #B8860B;
+}
+
+[data-theme="light"] .chatbot-input::placeholder {
+    color: #9ca3af;
+}
+
+/* ── AI Tour Light Theme ── */
+[data-theme="light"] .ai-tour-tooltip {
+    background: #ffffff;
+    border-color: rgba(184, 134, 11, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .ai-tour-tooltip p {
+    color: #475569;
+}
+
+[data-theme="light"] .ai-tour-dots .dot {
+    background: #d1d5db;
+}

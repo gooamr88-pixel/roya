@@ -91,6 +91,172 @@
 [data-theme="light"] .mobile-menu {
   background: rgba(255, 255, 255, 0.98);
 }
+[data-theme="light"] .mobile-menu a {
+  color: #1e293b;
+}
+[data-theme="light"] .mobile-menu .close-btn {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Hero ── */
+[data-theme="light"] .hero-badge {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ── Light Theme: About ── */
+[data-theme="light"] .about-feature {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .about-feature span {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Service Cards ── */
+[data-theme="light"] .service-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .service-card:hover {
+  border-color: rgba(184, 134, 11, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+[data-theme="light"] .service-card-body h3 {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Exhibition Cards ── */
+[data-theme="light"] .exhibition-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .exhibition-card h3 {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Portfolio Cards ── */
+[data-theme="light"] .portfolio-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .portfolio-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  border-color: rgba(184, 134, 11, 0.3);
+}
+[data-theme="light"] .portfolio-card-body h3 {
+  color: #1e293b;
+}
+[data-theme="light"] .portfolio-lightbox-content {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme="light"] .portfolio-lightbox-gallery {
+  background: #f1f5f9;
+}
+[data-theme="light"] .portfolio-lightbox-body h2 {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Property Cards ── */
+[data-theme="light"] .property-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .property-card-image {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+[data-theme="light"] .property-card-body h3 {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Contact Form ── */
+[data-theme="light"] .contact-form {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .contact-info-item h3,
+[data-theme="light"] .contact-info-item h4 {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Footer ── */
+[data-theme="light"] .footer {
+  background: #f8f9fa;
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .footer h4 {
+  color: #1e293b;
+}
+[data-theme="light"] .footer-social a {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #475569;
+}
+[data-theme="light"] .footer-bottom {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Light Theme: Glass Modal (Service Detail) ── */
+[data-theme="light"] .glass-modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+[data-theme="light"] .glass-modal-close {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #1e293b;
+}
+[data-theme="light"] .glass-modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+[data-theme="light"] .glass-modal-body h2 {
+  color: #1e293b;
+}
+[data-theme="light"] .glass-modal-desc {
+  color: #475569;
+}
+[data-theme="light"] .glass-modal-price {
+  background: rgba(184, 134, 11, 0.06);
+  border-color: rgba(184, 134, 11, 0.15);
+}
+
+/* ── Light Theme: Pro Cards ── */
+[data-theme="light"] .pro-card-body h3 {
+  color: #1e293b;
+}
+
+/* ── Light Theme: Filter Buttons ── */
+[data-theme="light"] .filter-btn {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #475569;
+}
+[data-theme="light"] .filter-btn:hover {
+  background: rgba(184, 134, 11, 0.06);
+  color: var(--accent-primary);
+}
+[data-theme="light"] .filter-btn.active {
+  color: #fff;
+}
+
+/* ── Light Theme: Location Map ── */
+[data-theme="light"] .location-map-frame {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Light Theme: Floating Contact ── */
+[data-theme="light"] .contact-item {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #1e293b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
 
 .navbar .container {
   display: flex;
