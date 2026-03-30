@@ -3451,15 +3451,15 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 
 /* ── Buttons ── */
 [data-theme="light"] .btn-primary {
-    background: #111827;
-    /* gray-900 — strong contrast on white */
+    background: linear-gradient(135deg, #B8860B 0%, #9A7209 100%);
     color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(184, 134, 11, 0.25);
 }
 
 [data-theme="light"] .btn-primary:hover {
-    background: #1F2937;
-    /* gray-800 */
+    background: linear-gradient(135deg, #A07608 0%, #8A6507 100%);
     color: #FFFFFF;
+    box-shadow: 0 4px 16px rgba(184, 134, 11, 0.35);
 }
 
 [data-theme="light"] .btn-outline,
