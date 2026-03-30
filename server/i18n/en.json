@@ -172,7 +172,8 @@
         "register": "Register",
         "dashboard": "Dashboard",
         "copyright": "© 2026 Nabda Platform — All rights reserved.",
-        "createdBy": "Designed & Developed by"
+        "createdBy": "Designed & Developed by",
+        "viewOnMap": "View on Google Maps"
     },
     "login": {
         "title": "Sign In — Nabda Platform",
