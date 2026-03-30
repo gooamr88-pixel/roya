@@ -4083,6 +4083,380 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 [data-theme="light"] [dir="rtl"] .sidebar {
     border-left-color: var(--border);
 }
+
+/* ═══════════════════════════════════════════
+   LIGHT THEME — EXTENDED COVERAGE
+   Remaining elements not yet overridden
+   ═══════════════════════════════════════════ */
+
+/* ── Global Search (focus border was hardcoded white-alpha) ── */
+[data-theme="light"] .global-search input {
+    background: #F8F9FA;
+    border-color: var(--border);
+}
+[data-theme="light"] .global-search input:focus {
+    border-color: var(--gold);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.12);
+}
+
+/* ── Sidebar Toggle / Close ── */
+[data-theme="light"] .sidebar-toggle,
+[data-theme="light"] .sidebar-close {
+    color: var(--text-2);
+}
+[data-theme="light"] .sidebar-toggle:hover,
+[data-theme="light"] .sidebar-close:hover {
+    color: var(--text-1);
+    background: #F1F5F9;
+}
+
+/* ── Sidebar Overlay ── */
+[data-theme="light"] .sidebar-overlay {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Live Clock ── */
+[data-theme="light"] .live-clock {
+    color: var(--text-3);
+}
+
+/* ── Modal Content (add/edit forms) ── */
+[data-theme="light"] .modal-content,
+[data-theme="light"] .modal {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="light"] .modal-header h3 {
+    color: var(--text-1);
+}
+
+[data-theme="light"] .modal-close {
+    color: var(--text-3);
+}
+[data-theme="light"] .modal-close:hover {
+    color: var(--text-1);
+    background: #F1F5F9;
+}
+
+/* ── Confirm Dialog ── */
+[data-theme="light"] .confirm-dialog {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="light"] .confirm-dialog h3 {
+    color: var(--text-1);
+}
+
+[data-theme="light"] .confirm-dialog p {
+    color: var(--text-2);
+}
+
+/* ── Form Tabs ── */
+[data-theme="light"] .form-tabs {
+    border-bottom-color: var(--border);
+}
+
+[data-theme="light"] .form-tab-btn {
+    color: var(--text-3);
+}
+[data-theme="light"] .form-tab-btn:hover {
+    color: var(--text-2);
+}
+[data-theme="light"] .form-tab-btn.active {
+    color: var(--text-1);
+    border-bottom-color: var(--gold);
+}
+
+/* ── Drop Zone Icon & Hint ── */
+[data-theme="light"] .drop-zone-icon {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .drop-zone-hint {
+    color: var(--text-3);
+    background: #F1F5F9;
+}
+
+/* ── Image Preview Grid ── */
+[data-theme="light"] .image-preview-grid .img-thumb {
+    border-color: var(--border);
+    background: #F8F9FA;
+}
+
+[data-theme="light"] .img-thumb-remove {
+    background: #FFFFFF;
+    border-color: var(--border);
+    color: var(--text-3);
+}
+
+/* ── Breadcrumb Separator ── */
+[data-theme="light"] .breadcrumb-strip .separator {
+    color: var(--text-3);
+}
+
+/* ── Chart Subtitle ── */
+[data-theme="light"] .chart-subtitle {
+    color: var(--text-3);
+}
+
+/* ── Exhibition Admin Grid ── */
+[data-theme="light"] .exhibition-admin-grid {
+    color: var(--text-2);
+}
+
+/* ── Filters Bar ── */
+[data-theme="light"] .filters-bar {
+    color: var(--text-2);
+}
+
+/* ── Invoice Module — ALL elements ── */
+[data-theme="light"] .inv-mode-tabs {
+    background: #F1F5F9;
+    border-color: var(--border);
+}
+
+[data-theme="light"] .inv-mode-tab {
+    color: var(--text-3);
+    background: transparent;
+}
+[data-theme="light"] .inv-mode-tab:hover {
+    color: var(--text-2);
+}
+[data-theme="light"] .inv-mode-tab.active {
+    color: var(--text-1);
+    background: #FFFFFF;
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .inv-mode-badge {
+    background: #F8F9FA;
+    border-color: var(--border);
+    color: var(--text-2);
+}
+
+[data-theme="light"] .inv-form-panel,
+[data-theme="light"] .inv-preview-panel {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .inv-section-title {
+    color: var(--text-1);
+}
+
+[data-theme="light"] .inv-section-title i {
+    color: var(--gold);
+}
+
+[data-theme="light"] .inv-section-divider {
+    background: var(--border);
+}
+
+[data-theme="light"] .inv-form-group label {
+    color: var(--text-2);
+}
+
+[data-theme="light"] .inv-line-items-card {
+    background: #FAFAFA;
+    border-color: var(--border);
+}
+
+[data-theme="light"] .inv-line-table thead th {
+    background: #F8F9FA;
+    color: var(--text-3);
+    border-color: var(--border);
+}
+
+[data-theme="light"] .inv-line-table tbody td {
+    color: var(--text-2);
+    border-color: var(--border-light);
+}
+
+[data-theme="light"] .inv-line-table input {
+    background: #FFFFFF;
+    border-color: #D1D5DB;
+    color: var(--text-1);
+}
+
+[data-theme="light"] .inv-add-item-btn {
+    color: var(--gold);
+    border-color: var(--border);
+    background: #FAFAFA;
+}
+[data-theme="light"] .inv-add-item-btn:hover {
+    background: #F1F5F9;
+    border-color: var(--gold);
+}
+
+[data-theme="light"] .inv-btn-save {
+    background: linear-gradient(135deg, #B8860B 0%, #9A7209 100%);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(184, 134, 11, 0.25);
+}
+[data-theme="light"] .inv-btn-save:hover {
+    background: linear-gradient(135deg, #A07608 0%, #8A6507 100%);
+    box-shadow: 0 4px 16px rgba(184, 134, 11, 0.35);
+}
+
+[data-theme="light"] .inv-btn-pdf {
+    background: #FFFFFF;
+    border-color: var(--border);
+    color: var(--text-2);
+}
+[data-theme="light"] .inv-btn-pdf:hover {
+    background: #F1F5F9;
+    color: var(--text-1);
+}
+
+[data-theme="light"] .inv-btn-reset {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-3);
+}
+[data-theme="light"] .inv-btn-reset:hover {
+    color: #EF4444;
+    border-color: #FCA5A5;
+    background: #FEF2F2;
+}
+
+/* ── Invoice Preview ── */
+[data-theme="light"] .inv-preview-card {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .inv-preview-body {
+    background: #FFFFFF;
+    color: var(--text-2);
+}
+
+[data-theme="light"] .inv-prev-brand-name {
+    color: var(--text-1);
+}
+
+[data-theme="light"] .inv-prev-brand-sub {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .inv-prev-doc-title-ar {
+    color: var(--text-2);
+}
+
+[data-theme="light"] .inv-prev-doc-number {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .inv-prev-doc-dates {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .inv-prev-client-label {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .inv-prev-client-name {
+    color: var(--text-1);
+}
+
+[data-theme="light"] .inv-prev-client-details {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .inv-prev-table th {
+    background: #F8F9FA;
+    color: var(--text-3);
+    border-color: var(--border);
+}
+
+[data-theme="light"] .inv-prev-table td {
+    color: var(--text-2);
+    border-color: var(--border-light);
+}
+
+[data-theme="light"] .inv-prev-summary {
+    border-top-color: var(--border);
+}
+
+[data-theme="light"] .inv-prev-summary-row .label {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .inv-prev-summary-row .value {
+    color: var(--text-1);
+}
+
+[data-theme="light"] .inv-prev-summary-row.total {
+    border-top-color: var(--border);
+}
+
+[data-theme="light"] .inv-prev-summary-row.total .value {
+    color: var(--gold);
+}
+
+[data-theme="light"] .inv-prev-notes-label {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .inv-prev-notes-text {
+    color: var(--text-2);
+}
+
+[data-theme="light"] .inv-prev-footer {
+    color: var(--text-3);
+    border-top-color: var(--border);
+}
+
+/* ── Checkbox styling ── */
+[data-theme="light"] input[type="checkbox"] {
+    accent-color: var(--gold);
+}
+
+/* ── Empty State ── */
+[data-theme="light"] .empty-state {
+    color: var(--text-3);
+}
+
+[data-theme="light"] .empty-state .icon {
+    color: var(--text-3);
+    opacity: 0.5;
+}
+
+[data-theme="light"] .empty-state h3 {
+    color: var(--text-2);
+}
+
+/* ── AI Modal ── */
+[data-theme="light"] .ai-modal {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="light"] .ai-modal-overlay {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* ── Data tooltip ── */
+[data-theme="light"] [data-tooltip]::after {
+    background: #FFFFFF;
+    color: var(--text-1);
+    border-color: var(--border);
+    box-shadow: var(--shadow-md);
+}
+
+/* ── View Section text ── */
+[data-theme="light"] .view-section {
+    color: var(--text-2);
+}
+
+
 /* ══════════════════════════════════════
    MOBILE RESPONSIVENESS
    ══════════════════════════════════════ */
