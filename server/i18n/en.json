@@ -163,6 +163,13 @@
         "form_message_placeholder": "Tell us about your project...",
         "form_submit": "Send Message"
     },
+    "location": {
+        "label": "Our Location",
+        "title_before": "Company",
+        "title_highlight": "Headquarters",
+        "desc": "Visit us at our office or find us on the map.",
+        "openInMaps": "📍 Open Location in Google Maps"
+    },
     "footer": {
         "brand_desc": "Professional business solutions in Advertising, Marketing, Real Estate, and Exhibition Management.",
         "quickLinks": "Quick Links",
