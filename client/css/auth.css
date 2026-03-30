@@ -112,6 +112,62 @@
   color: #334155;
 }
 
+/* ── Light Theme: Auth Form Side ── */
+[data-theme="light"] .auth-form-side {
+  background: #ffffff;
+}
+
+[data-theme="light"] .auth-form-wrapper h1 {
+  color: #1e293b;
+}
+
+[data-theme="light"] .auth-form-wrapper .subtitle {
+  color: #64748b;
+}
+
+[data-theme="light"] .auth-form-wrapper .back-link {
+  color: #64748b;
+}
+
+[data-theme="light"] .auth-footer {
+  color: #64748b;
+}
+
+/* ── Light Theme: OTP Inputs ── */
+[data-theme="light"] .otp-input {
+  background: #f8f9fa;
+  border-color: #d1d5db;
+  color: #1e293b;
+}
+
+[data-theme="light"] .otp-input:focus {
+  border-color: #B8860B;
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.12);
+}
+
+/* ── Light Theme: Phone Input ── */
+[data-theme="light"] .iti .iti__tel-input,
+[data-theme="light"] .iti input[type="tel"] {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #1e293b;
+}
+
+[data-theme="light"] .iti__country-list {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .iti__country:hover,
+[data-theme="light"] .iti__country.iti__highlight {
+  background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .iti__country-name {
+  color: #1e293b !important;
+}
+
 /* Form Side */
 .auth-form-side {
   flex: 1;

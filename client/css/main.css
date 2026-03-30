@@ -78,8 +78,8 @@
   --bg-card: #ffffff;
   --bg-card-hover: #f1f5f9;
   --bg-glass: rgba(255, 255, 255, 0.85);
-  --bg-glass-border: rgba(212, 175, 55, 0.2);
-  --bg-overlay: rgba(255, 255, 255, 0.8);
+  --bg-glass-border: rgba(0, 0, 0, 0.08);
+  --bg-overlay: rgba(0, 0, 0, 0.3);
   --bg-navbar-scrolled: rgba(255, 255, 255, 0.95);
 
   --text-primary: #1e293b;
@@ -88,7 +88,95 @@
 
   --border-color: rgba(0, 0, 0, 0.1);
   --border-light: rgba(0, 0, 0, 0.05);
-  --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.25);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(184, 134, 11, 0.15);
+}
+
+/* ── Form inputs on light ── */
+[data-theme="light"] .form-input,
+[data-theme="light"] .form-textarea,
+[data-theme="light"] .form-select {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #1e293b;
+}
+
+[data-theme="light"] .form-input:focus,
+[data-theme="light"] .form-textarea:focus,
+[data-theme="light"] .form-select:focus {
+  border-color: #B8860B;
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.12);
+}
+
+[data-theme="light"] .form-input::placeholder,
+[data-theme="light"] .form-textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* ── Cards on light ── */
+[data-theme="light"] .card,
+[data-theme="light"] .glass-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .card:hover {
+  border-color: rgba(184, 134, 11, 0.3);
+  box-shadow: 0 0 20px rgba(184, 134, 11, 0.15);
+}
+
+/* ── Tables on light ── */
+[data-theme="light"] .data-table th {
+  background: #f8f9fa;
+  color: #64748b;
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .data-table td {
+  color: #475569;
+  border-bottom-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .data-table tr:hover td {
+  background: #f8f9fa;
+}
+
+/* ── Toast on light ── */
+[data-theme="light"] .toast {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #1e293b;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Pagination on light ── */
+[data-theme="light"] .pagination button {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #475569;
+}
+
+/* ── Scrollbar on light ── */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f8f9fa;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* ── Empty state on light ── */
+[data-theme="light"] .empty-state-wrapper {
+  background: #fafafa;
+  border-color: #e5e7eb;
 }
 
 /* ── Logo Theme Adaptation ── */
