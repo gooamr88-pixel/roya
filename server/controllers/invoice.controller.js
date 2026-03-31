@@ -6,6 +6,7 @@ const { asyncHandler } = require('../utils/helpers');
 const pdfService = require('../services/pdf.service');
 const emailService = require('../services/email.service');
 const invoiceRepo = require('../repositories/invoice.repository');
+const { query } = require('../config/database');
 
 /**
  * POST /api/invoices/:orderId/generate
@@ -93,4 +94,117 @@ const getAll = asyncHandler(async (req, res) => {
     res.json({ success: true, data: { invoices: rows, pagination } });
 });
 
-module.exports = { generate, download, getAll };
+/**
+ * GET /api/invoices/catalog
+ * Returns a unified list of services, jobs, and portfolio items
+ * so the invoice builder can auto-fill name + price from the DB.
+ */
+const getCatalog = asyncHandler(async (req, res) => {
+    const [servicesResult, jobsResult, portfolioResult] = await Promise.all([
+        query(
+            `SELECT id, title, title_ar, price, category
+             FROM services
+             WHERE is_active = TRUE
+             ORDER BY title ASC`,
+            []
+        ),
+        query(
+            `SELECT id, title, salary_range
+             FROM jobs
+             WHERE is_active = TRUE
+             ORDER BY title ASC`,
+            []
+        ),
+        query(
+            `SELECT id, title, title_ar, category
+             FROM portfolio_items
+             WHERE is_active IS NOT FALSE
+             ORDER BY title ASC`,
+            []
+        ),
+    ]);
+
+    // Normalize each source into a common shape:
+    // { id, type, title, title_ar, price, category, description }
+    const services = servicesResult.rows.map(s => ({
+        id:        s.id,
+        type:      'service',
+        title:     s.title,
+        title_ar:  s.title_ar || '',
+        price:     parseFloat(s.price) || 0,
+        category:  s.category || 'general',
+        description: '',
+    }));
+
+    const jobs = jobsResult.rows.map(j => ({
+        id:        j.id,
+        type:      'job',
+        title:     j.title,
+        title_ar:  '',
+        price:     0,  // Jobs typically don't have a fixed price
+        category:  'recruitment',
+        description: j.salary_range || '',
+    }));
+
+    const portfolio = portfolioResult.rows.map(p => ({
+        id:        p.id,
+        type:      'portfolio',
+        title:     p.title,
+        title_ar:  p.title_ar || '',
+        price:     0,
+        category:  p.category || 'design',
+        description: '',
+    }));
+
+    res.json({
+        success: true,
+        data: {
+            catalog: { services, jobs, portfolio },
+            totals:  { services: services.length, jobs: jobs.length, portfolio: portfolio.length },
+        },
+    });
+});
+
+/**
+ * POST /api/invoices/save
+ * Persists a manually-built invoice from the Admin Dashboard.
+ * Stores JSON payload in a dedicated column; does not require an orderId.
+ */
+const save = asyncHandler(async (req, res) => {
+    const {
+        mode, docNumber, issueDate, dueDate,
+        clientName, clientEmail, clientAddress, clientPhone,
+        lineItems, taxPercent, discountType, discountValue,
+        shippingCost, notes, terms,
+        subtotal, discountAmount, taxAmount, grandTotal,
+    } = req.body;
+
+    if (!clientName?.trim()) throw new AppError('Client name is required.', 400);
+    if (!lineItems?.length || lineItems.every(li => !li.name?.trim()))
+        throw new AppError('At least one line item is required.', 400);
+
+    const result = await query(
+        `INSERT INTO invoices
+             (invoice_number, total_amount, tax_amount, status, payload_json)
+         VALUES ($1, $2, $3, 'draft', $4)
+         RETURNING id, invoice_number, total_amount, tax_amount, status, created_at`,
+        [
+            docNumber || `${mode === 'invoice' ? 'INV' : 'QTE'}-${Date.now()}`,
+            parseFloat(grandTotal) || 0,
+            parseFloat(taxAmount)  || 0,
+            JSON.stringify({
+                mode, docNumber, issueDate, dueDate,
+                clientName, clientEmail, clientAddress, clientPhone,
+                lineItems, taxPercent, discountType, discountValue,
+                shippingCost, notes, terms,
+                subtotal, discountAmount, taxAmount, grandTotal,
+                savedBy: req.user.id,
+                savedAt: new Date().toISOString(),
+            }),
+        ]
+    );
+
+    res.status(201).json({ success: true, data: { invoice: result.rows[0] } });
+});
+
+module.exports = { generate, download, getAll, getCatalog, save };

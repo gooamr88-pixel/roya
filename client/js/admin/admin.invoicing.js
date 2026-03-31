@@ -1,7 +1,8 @@
 // ═══════════════════════════════════════════════
 // Admin V2.0 — Invoicing & Quotation Generator
 // Premium module with real-time A4 preview,
-// dynamic line items, auto-calculations, and PDF export.
+// dynamic line items, auto-calculations, PDF export,
+// and Smart Item Picker linked to the platform DB.
 // Depends on: api.js, utils.js, admin.init.js, jspdf, jspdf-autotable
 // ═══════════════════════════════════════════════
 
@@ -27,6 +28,18 @@ let invoiceState = {
     terms: '',
 };
 
+/* ── Catalog State ── */
+let catalogState = {
+    loaded: false,
+    loading: false,
+    services: [],
+    jobs: [],
+    portfolio: [],
+    activeTab: 'services', // 'services' | 'jobs' | 'portfolio'
+    searchQuery: '',
+    targetLineIdx: null, // which line item we're picking for
+};
+
 /* ── Init ── */
 function initInvoicing() {
     generateDocNumber();
@@ -34,6 +47,8 @@ function initInvoicing() {
     renderLineItems();
     bindInvoiceFormEvents();
     updatePreview();
+    // Pre-load catalog in background for instant picker response
+    loadInvoiceCatalog();
 }
 
 /* ── Auto-generate document number ── */
@@ -51,7 +66,6 @@ function setTodayDate() {
     invoiceState.issueDate = today;
     const el = document.getElementById('invIssueDate');
     if (el) el.value = today;
-    // Default due date = 30 days out
     const due = new Date();
     due.setDate(due.getDate() + 30);
     invoiceState.dueDate = due.toISOString().slice(0, 10);
@@ -64,8 +78,6 @@ function switchInvoiceMode(mode) {
     invoiceState.mode = mode;
     document.querySelectorAll('.inv-mode-tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.inv-mode-tab[data-mode="${mode}"]`)?.classList.add('active');
-
-    // Update badge
     const badge = document.getElementById('invModeBadge');
     if (badge) {
         badge.textContent = mode === 'invoice'
@@ -77,6 +89,205 @@ function switchInvoiceMode(mode) {
     updatePreview();
 }
 
+/* ══════════════════════════════════════════════════════
+   CATALOG — Smart Item Picker
+   Fetches services/jobs/portfolio from the platform DB
+   and lets admin auto-fill line items with one click.
+══════════════════════════════════════════════════════ */
+async function loadInvoiceCatalog() {
+    if (catalogState.loaded || catalogState.loading) return;
+    catalogState.loading = true;
+    try {
+        const res = await API.get('/invoices/catalog');
+        catalogState.services  = res.data.catalog.services  || [];
+        catalogState.jobs      = res.data.catalog.jobs      || [];
+        catalogState.portfolio = res.data.catalog.portfolio || [];
+        catalogState.loaded    = true;
+    } catch (err) {
+        console.warn('[Invoicing] Catalog load failed:', err.message);
+        // Non-fatal — picker will show empty state with reload button
+    } finally {
+        catalogState.loading = false;
+    }
+}
+
+/**
+ * Open the Smart Item Picker for a specific line index.
+ */
+function openItemPicker(lineIdx) {
+    catalogState.targetLineIdx = lineIdx;
+    catalogState.searchQuery = '';
+    catalogState.activeTab = 'services';
+
+    const modal = document.getElementById('itemPickerModal');
+    if (!modal) return;
+
+    // Reset search
+    const searchEl = document.getElementById('pickerSearch');
+    if (searchEl) { searchEl.value = ''; searchEl.focus(); }
+
+    // Reset tabs
+    _pickerSwitchTab('services');
+    renderPickerItems();
+
+    modal.classList.add('show');
+
+    // If catalog not loaded yet trigger load + render when done
+    if (!catalogState.loaded && !catalogState.loading) {
+        loadInvoiceCatalog().then(renderPickerItems);
+    }
+}
+
+function closeItemPicker() {
+    document.getElementById('itemPickerModal')?.classList.remove('show');
+    catalogState.targetLineIdx = null;
+}
+
+function _pickerSwitchTab(tab) {
+    catalogState.activeTab = tab;
+    document.querySelectorAll('.picker-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.picker-tab[data-tab="${tab}"]`)?.classList.add('active');
+    renderPickerItems();
+}
+
+function _pickerSearch(q) {
+    catalogState.searchQuery = q.trim().toLowerCase();
+    renderPickerItems();
+}
+
+function renderPickerItems() {
+    const container = document.getElementById('pickerItemsList');
+    if (!container) return;
+
+    const tab = catalogState.activeTab;
+    const q   = catalogState.searchQuery;
+
+    // Update tab counts when catalog is loaded
+    if (catalogState.loaded) {
+        const countEls = {
+            services:  document.getElementById('pickerCountServices'),
+            jobs:      document.getElementById('pickerCountJobs'),
+            portfolio: document.getElementById('pickerCountPortfolio'),
+        };
+        if (countEls.services)  countEls.services.textContent  = catalogState.services.length;
+        if (countEls.jobs)      countEls.jobs.textContent      = catalogState.jobs.length;
+        if (countEls.portfolio) countEls.portfolio.textContent = catalogState.portfolio.length;
+    }
+
+    // Loading state
+    if (catalogState.loading) {
+        container.innerHTML = `
+            <div class="picker-empty">
+                <i class="fas fa-spinner fa-spin" style="font-size:1.8rem;color:var(--gold);margin-bottom:12px"></i>
+                <div>جاري تحميل الكتالوج...</div>
+            </div>`;
+        return;
+    }
+
+    // Failed state
+    if (!catalogState.loaded) {
+        container.innerHTML = `
+            <div class="picker-empty">
+                <i class="fas fa-exclamation-circle" style="font-size:1.8rem;color:var(--danger);margin-bottom:12px"></i>
+                <div style="margin-bottom:12px">فشل تحميل الكتالوج</div>
+                <button class="btn btn-outline btn-sm" onclick="loadInvoiceCatalog().then(renderPickerItems)">
+                    <i class="fas fa-redo"></i> إعادة المحاولة
+                </button>
+            </div>`;
+        return;
+    }
+
+    const sourceMap = {
+        services:  catalogState.services,
+        jobs:      catalogState.jobs,
+        portfolio: catalogState.portfolio,
+    };
+
+    let items = sourceMap[tab] || [];
+    if (q) {
+        items = items.filter(it =>
+            it.title?.toLowerCase().includes(q) ||
+            it.title_ar?.toLowerCase().includes(q) ||
+            it.category?.toLowerCase().includes(q) ||
+            it.description?.toLowerCase().includes(q)
+        );
+    }
+
+    if (items.length === 0) {
+        const emptyMsg = q ? `لا توجد نتائج لـ "${q}"` : 'لا توجد بنود في هذه الفئة بعد.';
+        container.innerHTML = `
+            <div class="picker-empty">
+                <i class="fas fa-inbox" style="font-size:1.8rem;color:var(--text-3);margin-bottom:12px"></i>
+                <div>${emptyMsg}</div>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = items.map(item => {
+        const icon = tab === 'services' ? 'fa-concierge-bell'
+                   : tab === 'jobs'     ? 'fa-briefcase'
+                   : 'fa-images';
+        const accentCls = tab === 'services' ? 'picker-card--service'
+                        : tab === 'jobs'     ? 'picker-card--job'
+                        : 'picker-card--portfolio';
+        const priceLabel = item.price > 0
+            ? `<span class="picker-card-price">${formatMoney(item.price)}</span>`
+            : item.description
+                ? `<span class="picker-card-price picker-card-price--muted">${esc(item.description)}</span>`
+                : `<span class="picker-card-price picker-card-price--muted">—</span>`;
+        const arLabel = item.title_ar
+            ? `<span class="picker-card-ar">${esc(item.title_ar)}</span>`
+            : '';
+        const catBadge = item.category
+            ? `<span class="picker-card-cat">${esc(item.category)}</span>`
+            : '';
+
+        return `
+            <div class="picker-card ${accentCls}" onclick="applyPickedItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                <div class="picker-card-icon"><i class="fas ${icon}"></i></div>
+                <div class="picker-card-body">
+                    <div class="picker-card-title">${esc(item.title)}</div>
+                    ${arLabel}
+                    ${catBadge}
+                </div>
+                ${priceLabel}
+                <div class="picker-card-arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>`;
+    }).join('');
+}
+
+/**
+ * Apply a picked catalog item to the target line.
+ */
+function applyPickedItem(item) {
+    const idx = catalogState.targetLineIdx;
+    if (idx === null || idx === undefined) return;
+
+    // Populate the line
+    invoiceState.lineItems[idx].name        = item.title || '';
+    invoiceState.lineItems[idx].description = item.title_ar || item.description || '';
+    invoiceState.lineItems[idx].unitPrice   = item.price || 0;
+    // Keep quantity as-is (user controls it)
+
+    // Close modal
+    closeItemPicker();
+
+    // Re-render line items to reflect new values
+    renderLineItems();
+    updatePreview();
+
+    // Flash the populated row for feedback
+    setTimeout(() => {
+        const row = document.querySelector(`#invLineItemsBody .inv-line-row[data-idx="${idx}"]`);
+        if (row) {
+            row.classList.add('inv-line-flash');
+            setTimeout(() => row.classList.remove('inv-line-flash'), 800);
+        }
+    }, 50);
+
+    Toast.success(_t('invItemPicked', `تم إضافة: ${item.title}`));
+}
+
 /* ── Line Items ── */
 function renderLineItems() {
     const container = document.getElementById('invLineItemsBody');
@@ -84,14 +295,20 @@ function renderLineItems() {
 
     const itemPh = _t('invItemPlaceholder', 'Item name');
     const descPh = _t('invDescPlaceholder', 'Description');
+    const pickTip = _t('invPickTip', 'اختر من الكتالوج');
 
     container.innerHTML = invoiceState.lineItems.map((item, i) => `
         <tr class="inv-line-row" data-idx="${i}">
             <td class="inv-line-num">${i + 1}</td>
-            <td>
-                <input type="text" class="form-input inv-line-input" placeholder="${itemPh}"
-                    value="${esc(item.name)}" data-field="name" data-idx="${i}"
-                    oninput="updateLineItem(${i}, 'name', this.value)">
+            <td class="inv-line-name-cell">
+                <div class="inv-line-name-wrap">
+                    <button type="button" class="inv-pick-btn" onclick="openItemPicker(${i})" title="${pickTip}">
+                        <i class="fas fa-layer-group"></i>
+                    </button>
+                    <input type="text" class="form-input inv-line-input" placeholder="${itemPh}"
+                        value="${esc(item.name)}" data-field="name" data-idx="${i}"
+                        oninput="updateLineItem(${i}, 'name', this.value)">
+                </div>
             </td>
             <td>
                 <input type="text" class="form-input inv-line-input" placeholder="${descPh}"
@@ -125,7 +342,6 @@ function addLineItem() {
     invoiceState.lineItems.push({ name: '', description: '', quantity: 1, unitPrice: 0 });
     renderLineItems();
     updatePreview();
-    // Focus the new item name
     setTimeout(() => {
         const inputs = document.querySelectorAll('.inv-line-input[data-field="name"]');
         inputs[inputs.length - 1]?.focus();
@@ -147,7 +363,6 @@ function updateLineItem(idx, field, value) {
     } else {
         invoiceState.lineItems[idx][field] = value;
     }
-    // Update row total
     const total = invoiceState.lineItems[idx].quantity * invoiceState.lineItems[idx].unitPrice;
     const totalEl = document.getElementById(`lineTotal-${idx}`);
     if (totalEl) totalEl.textContent = formatMoney(total);
@@ -182,7 +397,6 @@ function bindInvoiceFormEvents() {
         });
     });
 
-    // Discount type select
     const discountTypeEl = document.getElementById('invDiscountType');
     if (discountTypeEl) {
         discountTypeEl.addEventListener('change', () => {
@@ -190,6 +404,31 @@ function bindInvoiceFormEvents() {
             updatePreview();
         });
     }
+
+    // Picker search binding
+    const pickerSearch = document.getElementById('pickerSearch');
+    if (pickerSearch) {
+        pickerSearch.addEventListener('input', () => _pickerSearch(pickerSearch.value));
+    }
+
+    // Picker modal close on overlay click
+    const pickerModal = document.getElementById('itemPickerModal');
+    if (pickerModal) {
+        pickerModal.addEventListener('click', (e) => {
+            if (e.target === pickerModal) closeItemPicker();
+        });
+    }
+
+    // Close picker on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const picker = document.getElementById('itemPickerModal');
+            if (picker?.classList.contains('show')) {
+                e.stopPropagation();
+                closeItemPicker();
+            }
+        }
+    }, true);
 }
 
 /* ── Calculations ── */
@@ -234,7 +473,6 @@ function updatePreview() {
     const tax = getTaxAmount();
     const grandTotal = getGrandTotal();
 
-    // Header
     const titleEl = document.getElementById('prevDocTitle');
     if (titleEl) titleEl.textContent = isInvoice
         ? (_t('invTaxInvoice', 'Tax Invoice')).toUpperCase()
@@ -259,7 +497,6 @@ function updatePreview() {
         ? _t('invDueDate', 'Due Date')
         : _t('invValidUntil', 'Valid Until');
 
-    // Client
     const cName = document.getElementById('prevClientName');
     if (cName) cName.textContent = invoiceState.clientName || _t('invClientName', 'Client Name');
     const cEmail = document.getElementById('prevClientEmail');
@@ -269,14 +506,13 @@ function updatePreview() {
     const cPhone = document.getElementById('prevClientPhone');
     if (cPhone) cPhone.textContent = invoiceState.clientPhone || '—';
 
-    // Line items
     const previewPlaceholder = _t('invPreviewPlaceholder', 'Add line items to see them here');
     const tbody = document.getElementById('prevLineItems');
     if (tbody) {
         if (invoiceState.lineItems.length === 0 || (invoiceState.lineItems.length === 1 && !invoiceState.lineItems[0].name)) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px;font-style:italic;">${previewPlaceholder}</td></tr>`;
         } else {
-            tbody.innerHTML = invoiceState.lineItems.map((item, i) => `
+            tbody.innerHTML = invoiceState.lineItems.map((item) => `
                 <tr>
                     <td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-1);font-weight:500;">${esc(item.name) || '—'}</td>
                     <td style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-2);font-size:0.8rem;">${esc(item.description) || ''}</td>
@@ -288,7 +524,6 @@ function updatePreview() {
         }
     }
 
-    // Financials
     const setFinancial = (id, value) => {
         const el = document.getElementById(id);
         if (el) el.textContent = formatMoney(value);
@@ -299,7 +534,6 @@ function updatePreview() {
     setFinancial('prevShipping', invoiceState.shippingCost);
     setFinancial('prevGrandTotal', grandTotal);
 
-    // Tax / discount labels
     const vatLabel = _t('invVAT', 'VAT');
     const discountLabelText = _t('invDiscount', 'Discount');
     const taxLabel = document.getElementById('prevTaxLabel');
@@ -311,7 +545,6 @@ function updatePreview() {
             : `${discountLabelText} (${_t('invDiscountFixed', 'Fixed')})`;
     }
 
-    // Notes & Terms
     const notesEl = document.getElementById('prevNotes');
     if (notesEl) {
         notesEl.textContent = invoiceState.notes || '';
@@ -323,7 +556,6 @@ function updatePreview() {
         termsEl.parentElement.style.display = invoiceState.terms ? 'block' : 'none';
     }
 
-    // Accent stripe
     const stripe = document.getElementById('prevAccentStripe');
     if (stripe) {
         stripe.style.background = isInvoice
@@ -334,7 +566,6 @@ function updatePreview() {
 
 /* ── Save & Issue ── */
 async function invoiceSaveAndIssue() {
-    // Validation
     if (!invoiceState.clientName.trim()) {
         Toast.error(_t('invClientRequired', 'Client name is required.'));
         document.getElementById('invClientName')?.focus();
@@ -381,11 +612,9 @@ function invoiceDownloadPDF() {
     const accentColor = isInvoice ? [212, 175, 55] : [16, 185, 129];
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Accent stripe
     doc.setFillColor(...accentColor);
     doc.rect(0, 0, pageWidth, 6, 'F');
 
-    // Logo area / Brand
     doc.setFontSize(22);
     doc.setTextColor(40, 40, 40);
     doc.text('NABDA', 14, 22);
@@ -393,7 +622,6 @@ function invoiceDownloadPDF() {
     doc.setTextColor(140, 140, 140);
     doc.text('Nabda Platform — Advertising & Marketing', 14, 28);
 
-    // Document Title
     doc.setFontSize(28);
     doc.setTextColor(...accentColor);
     const pdfTitle = isInvoice
@@ -407,7 +635,6 @@ function invoiceDownloadPDF() {
         : _t('invQuotationAr', '\u0639\u0631\u0636 \u0633\u0639\u0631');
     doc.text(pdfTitleAr, pageWidth - 14, 28, { align: 'right' });
 
-    // Doc number & dates
     doc.setFontSize(9);
     doc.setTextColor(80, 80, 80);
     doc.text(`# ${invoiceState.docNumber}`, pageWidth - 14, 36, { align: 'right' });
@@ -415,11 +642,9 @@ function invoiceDownloadPDF() {
     const dueLabel = isInvoice ? _t('invDueDate', 'Due') : _t('invValidUntil', 'Valid Until');
     doc.text(`${dueLabel}: ${invoiceState.dueDate}`, pageWidth - 14, 46, { align: 'right' });
 
-    // Separator
     doc.setDrawColor(220, 220, 220);
     doc.line(14, 52, pageWidth - 14, 52);
 
-    // Bill To
     doc.setFontSize(8);
     doc.setTextColor(140);
     doc.text(_t('invBillTo', 'BILL TO').toUpperCase(), 14, 60);
@@ -433,7 +658,6 @@ function invoiceDownloadPDF() {
     if (invoiceState.clientAddress) { doc.text(invoiceState.clientAddress, 14, clientY); clientY += 5; }
     if (invoiceState.clientPhone) { doc.text(invoiceState.clientPhone, 14, clientY); clientY += 5; }
 
-    // Line items table
     const tableData = invoiceState.lineItems
         .filter(li => li.name.trim())
         .map(li => [
@@ -471,7 +695,6 @@ function invoiceDownloadPDF() {
         margin: { left: 14, right: 14 },
     });
 
-    // Financials summary
     let finalY = doc.lastAutoTable.finalY + 10;
     const summaryX = pageWidth - 80;
 
@@ -493,7 +716,6 @@ function invoiceDownloadPDF() {
         finalY += 6;
     });
 
-    // Grand Total
     doc.setDrawColor(...accentColor);
     doc.setLineWidth(0.5);
     doc.line(summaryX, finalY, pageWidth - 14, finalY);
@@ -505,7 +727,6 @@ function invoiceDownloadPDF() {
     doc.setTextColor(40);
     doc.text(formatMoney(getGrandTotal()), pageWidth - 14, finalY, { align: 'right' });
 
-    // Notes & Terms
     finalY += 14;
     if (invoiceState.notes) {
         doc.setFontSize(8);
@@ -525,12 +746,10 @@ function invoiceDownloadPDF() {
         doc.text(invoiceState.terms, 14, finalY + 5, { maxWidth: pageWidth - 28 });
     }
 
-    // Footer stripe
     const pageH = doc.internal.pageSize.getHeight();
     doc.setFillColor(...accentColor);
     doc.rect(0, pageH - 4, pageWidth, 4, 'F');
 
-    // Save
     const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
     doc.save(filename);
     Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
@@ -579,7 +798,6 @@ function invoiceReset() {
         notes: '',
         terms: '',
     };
-    // Reset form inputs
     document.querySelectorAll('#invFormSection input, #invFormSection textarea, #invFormSection select').forEach(el => {
         if (el.type === 'select-one') el.selectedIndex = 0;
         else el.value = '';

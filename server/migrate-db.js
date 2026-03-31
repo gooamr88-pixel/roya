@@ -445,6 +445,34 @@ const migrations = [
         name: 'Index: refresh_tokens.user_id',
         sql: `CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id)`
     },
+
+    // ══════════════════════════════════════════
+    //  12. INVOICES TABLE (Admin Dashboard builder)
+    //  Supports both order-linked and standalone invoices
+    // ══════════════════════════════════════════
+    {
+        name: 'Create invoices table',
+        sql: `CREATE TABLE IF NOT EXISTS invoices (
+            id SERIAL PRIMARY KEY,
+            order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+            invoice_number VARCHAR(100) UNIQUE,
+            total_amount DECIMAL(14,2) DEFAULT 0,
+            tax_amount DECIMAL(14,2) DEFAULT 0,
+            status VARCHAR(30) DEFAULT 'draft',
+            pdf_data BYTEA,
+            payload_json JSONB DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`
+    },
+    {
+        name: 'Add payload_json to invoices (if missing)',
+        sql: `ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payload_json JSONB DEFAULT NULL`
+    },
+    {
+        name: 'Index: invoices.order_id',
+        sql: `CREATE INDEX IF NOT EXISTS idx_invoices_order_id ON invoices(order_id)`
+    },
 ];
 
 async function migrate() {

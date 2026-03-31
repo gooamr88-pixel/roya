@@ -398,7 +398,7 @@
                     <thead>
                       <tr>
                         <th style="width:32px">#</th>
-                        <th>{{ t.admin.invItem }}</th>
+                        <th>{{ t.admin.invItem }} <span style="font-size:0.7rem;color:var(--text-3);font-weight:400">({{ t.admin.invPickHint | default('اختر من الكتالوج أو اكتب يدوياً') }})</span></th>
                         <th>{{ t.admin.invDescription }}</th>
                         <th>{{ t.admin.invQty }}</th>
                         <th>{{ t.admin.invUnitPrice }}</th>
@@ -633,6 +633,73 @@
         <span><kbd>↵</kbd> {{ t.admin.cmdSelect }}</span>
         <span><kbd>Esc</kbd> {{ t.admin.cmdClose }}</span>
       </div>
+    </div>
+  </div>
+
+  {# ══════ SMART ITEM PICKER MODAL ══════ #}
+  {# Linked to Invoice builder — auto-fills name + price from DB #}
+  <div class="modal-overlay picker-modal-overlay" id="itemPickerModal" role="dialog" aria-modal="true" aria-labelledby="pickerModalTitle">
+    <div class="picker-modal">
+
+      {# Header #}
+      <div class="picker-modal-header">
+        <div class="picker-modal-title-wrap">
+          <div class="picker-modal-icon">
+            <i class="fas fa-layer-group"></i>
+          </div>
+          <div>
+            <h3 class="picker-modal-title" id="pickerModalTitle">{{ t.admin.invPickTitle | default('اختر بنداً من الكتالوج') }}</h3>
+            <p class="picker-modal-sub">{{ t.admin.invPickSubtitle | default('سيُعبّأ الاسم والسعر تلقائياً في الفاتورة') }}</p>
+          </div>
+        </div>
+        <button type="button" class="picker-modal-close" onclick="closeItemPicker()" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      {# Search #}
+      <div class="picker-search-wrap">
+        <i class="fas fa-search picker-search-icon"></i>
+        <input type="text" id="pickerSearch" class="picker-search-input"
+               placeholder="{{ t.admin.invPickSearch | default('ابحث في الكتالوج...') }}"
+               autocomplete="off" oninput="_pickerSearch(this.value)">
+      </div>
+
+      {# Tabs #}
+      <div class="picker-tabs">
+        <button type="button" class="picker-tab active" data-tab="services"
+                onclick="_pickerSwitchTab('services')">
+          <i class="fas fa-concierge-bell"></i>
+          {{ t.admin.services | default('الخدمات') }}
+          <span class="picker-tab-count" id="pickerCountServices"></span>
+        </button>
+        <button type="button" class="picker-tab" data-tab="jobs"
+                onclick="_pickerSwitchTab('jobs')">
+          <i class="fas fa-briefcase"></i>
+          {{ t.admin.jobsNav | default('الوظائف') }}
+          <span class="picker-tab-count" id="pickerCountJobs"></span>
+        </button>
+        <button type="button" class="picker-tab" data-tab="portfolio"
+                onclick="_pickerSwitchTab('portfolio')">
+          <i class="fas fa-images"></i>
+          {{ t.admin.portfolioNav | default('المعارض') }}
+          <span class="picker-tab-count" id="pickerCountPortfolio"></span>
+        </button>
+      </div>
+
+      {# Items List #}
+      <div class="picker-items-list" id="pickerItemsList">
+        <div class="picker-empty">
+          <i class="fas fa-spinner fa-spin" style="font-size:1.8rem;color:var(--gold);margin-bottom:12px"></i>
+          <div>{{ t.admin.loading | default('جاري التحميل...') }}</div>
+        </div>
+      </div>
+
+      {# Footer hint #}
+      <div class="picker-modal-footer">
+        <span><i class="fas fa-info-circle" style="color:var(--gold);margin-inline-end:6px"></i>{{ t.admin.invPickFooter | default('يمكنك تعديل السعر والكمية يدوياً بعد الاختيار') }}</span>
+      </div>
+
     </div>
   </div>
 
@@ -1307,6 +1374,10 @@
       invPdfNotLoaded:   {{ t.admin.invPdfNotLoaded   | default('PDF library not loaded.') | dump | safe }},
       invFormReset:      {{ t.admin.invFormReset      | default('Form reset.') | dump | safe }},
       invLivePreview:    {{ t.admin.invLivePreview    | default('Live Preview') | dump | safe }},
+      invItemPicked:     {{ t.admin.invItemPicked     | default('تم إضافة البند بنجاح') | dump | safe }},
+      invPickTip:        {{ t.admin.invPickTip        | default('اختر من الكتالوج') | dump | safe }},
+      invPickTitle:      {{ t.admin.invPickTitle      | default('اختر بنداً من الكتالوج') | dump | safe }},
+      invPickHint:       {{ t.admin.invPickHint       | default('اختر من الكتالوج أو اكتب يدوياً') | dump | safe }},
     };
   </script>
   <script src="/js/admin/admin.init.js" defer></script>
