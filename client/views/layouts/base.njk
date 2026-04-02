@@ -93,6 +93,9 @@
   <link rel="stylesheet" href="/css/rtl.css?v=3">
   {% endif %}
 
+  {# ── Facebook Domain Verification ── #}
+  <meta name="facebook-domain-verification" content="g1ptepke3cxf74eljssgqz2gkhlk5b" />
+
   {# ── Facebook Meta Pixel ── #}
   <script>
     !function(f,b,e,v,n,t,s)
@@ -105,6 +108,19 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1295164489221044');
     fbq('track', 'PageView');
+  </script>
+
+  {# ── Snap Pixel ── #}
+  <script type='text/javascript'>
+    (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+    {a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+    a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
+    r.src=n;var u=t.getElementsByTagName(s)[0];
+    u.parentNode.insertBefore(r,u);})(window,document,
+    'https://sc-static.net/scevent.min.js');
+
+    snaptr('init', '0ee2afbf-3897-4091-a52a-79a507bc5be9', {});
+    snaptr('track', 'PAGE_VIEW');
   </script>
 
   {# ── Extra head content ── #}
