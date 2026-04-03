@@ -852,7 +852,7 @@
     },
     "langToggle": {
         "text": "English",
-        "flag": "https://flagcdn.com/w40/us.png",
+        "label": "EN",
         "switchTo": "en"
     }
 }

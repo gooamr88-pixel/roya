@@ -59,7 +59,6 @@ app.use(helmet({
                 "data:",
                 "https://images.unsplash.com",
                 "https://res.cloudinary.com",
-                "https://flagcdn.com",
                 "https://cdnjs.cloudflare.com",
                 "https://www.facebook.com",
                 "https://tr.snapchat.com",

@@ -28,7 +28,7 @@
       <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect={{ currentPath or '/' }}"
          class="lang-toggle" title="{{ langToggle.text }}"
          style="margin-inline-end: 8px;">
-        <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}">
+        <span class="lang-toggle-label">{{ langToggle.label }}</span>
       </a>
 
       {# Theme Toggle #}
