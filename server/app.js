@@ -46,6 +46,7 @@ app.use(helmet({
                 "https://cdnjs.cloudflare.com",
                 "https://connect.facebook.net",
                 "https://sc-static.net",
+                "https://analytics.tiktok.com",
             ],
             styleSrc: [
                 "'self'",
@@ -63,6 +64,7 @@ app.use(helmet({
                 "https://www.facebook.com",
                 "https://tr.snapchat.com",
                 "https://ct.snap.com",
+                "https://analytics.tiktok.com",
             ],
             fontSrc: [
                 "'self'",
@@ -74,6 +76,7 @@ app.use(helmet({
                 "https://www.facebook.com",
                 "https://tr.snapchat.com",
                 "https://ct.snap.com",
+                "https://analytics.tiktok.com",
             ],
             scriptSrcAttr: ["'unsafe-inline'"],
             frameSrc: ["'none'"],
