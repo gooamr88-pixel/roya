@@ -713,54 +713,54 @@ async function invoiceSaveAndIssue() {
     }
 }
 
-/* ── Shared invoice CSS for print/PDF ── */
+/* ── Shared invoice CSS for print ── */
 function _getInvoiceCSS() {
     return `
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Cairo', 'Inter', system-ui, sans-serif; padding: 24px 20px; background: #fff; color: #1a1a1a; direction: rtl; }
-        .inv-preview-card, .inv-preview-body { background: #fff !important; color: #1a1a1a !important; direction: rtl; display:flex;flex-direction:column;gap:16px; }
-        .inv-preview-card *, .inv-preview-body * { color: #1a1a1a !important; }
-        .inv-new-header { display: flex; align-items: center; justify-content: flex-start; padding: 12px 0; direction: rtl; gap: 0; }
+        body { font-family: 'Cairo', 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif; padding: 24px 20px; background: #fff; color: #1a1a1a; direction: rtl; }
+        .inv-preview-body { background: #fff !important; color: #1a1a1a !important; direction: rtl; display:flex;flex-direction:column;gap:14px; }
+        .inv-preview-body * { color: #1a1a1a !important; }
+        .inv-new-header { display: flex; align-items: center; justify-content: flex-start; padding: 10px 0; direction: rtl; }
         .inv-new-header-logo { flex-shrink: 0; }
-        .inv-new-logo { width: 75px; height: 75px; object-fit: contain; }
-        .inv-new-header-info { flex: 1; text-align: center; padding: 0 16px; }
-        .inv-company-name-ar { font-size: 1.1rem; font-weight: 700; color: #1a1a1a !important; }
-        .inv-company-name-en { font-size: 0.62rem; color: #888 !important; margin-top: 2px; }
-        .inv-doc-type-badge { text-align: center; padding: 6px 0; margin: 4px 0 10px; border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37; font-weight: 700; font-size: 0.9rem; }
-        .inv-doc-type-divider { margin: 0 10px; color: #ccc !important; font-weight: 300; }
-        .inv-doc-type-en { font-size: 0.78rem; letter-spacing: 0.08em; }
-        .inv-new-meta { background: #fafafa; border: 1px solid #eee; padding: 10px 12px; border-radius: 6px; direction: rtl; }
-        .inv-new-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
-        .inv-new-meta-item { display: flex; gap: 6px; align-items: baseline; }
-        .inv-meta-label { font-weight: 600; font-size: 0.75rem; color: #333 !important; white-space: nowrap; }
-        .inv-meta-value { font-size: 0.75rem; color: #555 !important; }
-        table { width: 100%; border-collapse: collapse; margin: 0; direction: rtl; }
-        th { background: #f0f0f0 !important; padding: 6px 8px; text-align: center; font-size: 0.72rem; font-weight: 700; border: 1px solid #bbb; line-height:1.3; white-space:nowrap; }
-        th small { display: block; font-weight: 400; font-size: 0.58rem; color: #888 !important; margin-top:1px; }
-        td { padding: 7px 10px; border: 1px solid #ccc; text-align: center; font-size: 0.76rem; color: #333 !important; }
-        tr:nth-child(even) { background: #fafafa; }
-        .inv-new-bottom { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items:start; padding-top: 12px; border-top: 1px solid #ddd; direction: rtl; }
+        .inv-new-logo { width: 72px; height: 72px; object-fit: contain; }
+        .inv-new-header-info { flex: 1; text-align: center; padding: 0 14px; }
+        .inv-company-name-ar { font-size: 1.05rem; font-weight: 700; color: #1a1a1a !important; }
+        .inv-company-name-en { font-size: 0.6rem; color: #888 !important; margin-top: 1px; letter-spacing: 0.03em; }
+        .inv-doc-type-badge { text-align: center; padding: 5px 0; margin: 2px 0 8px; border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37; font-weight: 700; font-size: 0.85rem; }
+        .inv-doc-type-divider { margin: 0 8px; color: #ccc !important; font-weight: 300; }
+        .inv-doc-type-en { font-size: 0.75rem; letter-spacing: 0.06em; }
+        .inv-new-meta { background: #fafafa; border: 1px solid #eee; padding: 8px 10px; border-radius: 5px; direction: rtl; }
+        .inv-new-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 3px; }
+        .inv-new-meta-item { display: flex; gap: 5px; align-items: baseline; }
+        .inv-meta-label { font-weight: 600; font-size: 0.72rem; color: #333 !important; white-space: nowrap; }
+        .inv-meta-value { font-size: 0.72rem; color: #555 !important; }
+        .inv-new-table { width: 100%; border-collapse: collapse; direction: rtl; border: 1px solid #bbb; }
+        .inv-new-table th { background: #f0f0f0 !important; padding: 5px 6px; text-align: center; font-size: 0.68rem; font-weight: 700; border: 1px solid #bbb; line-height:1.3; white-space:nowrap; }
+        .inv-new-table th small { display: block; font-weight: 400; font-size: 0.55rem; color: #888 !important; margin-top:1px; }
+        .inv-new-table td { padding: 5px 8px; border: 1px solid #ccc; text-align: center; font-size: 0.72rem; color: #333 !important; }
+        .inv-new-table tr:nth-child(even) { background: #fafafa; }
+        .inv-new-bottom { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items:start; padding-top: 10px; border-top: 1px solid #ddd; direction: rtl; }
         .inv-new-qr { order: 2; }
-        .inv-new-qr img { width: 110px; height: 110px; border: 1px solid #ddd; border-radius: 4px; }
-        .inv-new-summary { order: 1; display:flex;flex-direction:column;gap:4px; }
-        .inv-new-summary-row { display: flex; justify-content: space-between; padding: 4px 12px; border-bottom: 1px solid #eee; font-size: 0.78rem; align-items:center; }
-        .inv-new-summary-row small { font-size: 0.58rem; color: #999 !important; margin-right: 4px; }
+        .inv-new-qr img { width: 100px; height: 100px; border: 1px solid #ddd; border-radius: 4px; }
+        .inv-new-summary { order: 1; display:flex;flex-direction:column;gap:3px; }
+        .inv-new-summary-row { display: flex; justify-content: space-between; padding: 3px 10px; border-bottom: 1px solid #eee; font-size: 0.72rem; align-items:center; }
+        .inv-new-summary-row small { font-size: 0.55rem; color: #999 !important; margin-right: 3px; }
         .inv-summary-lbl { font-weight: 600; color: #333 !important; }
         .inv-summary-val { font-weight: 500; color: #555 !important; direction: ltr; }
-        .inv-summary-total { background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; margin-top: 4px; }
+        .inv-summary-total { background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem; margin-top: 3px; }
         .inv-summary-total .inv-summary-lbl, .inv-summary-total .inv-summary-val { font-weight: 800; color: #1a1a1a !important; }
-        .inv-summary-total .inv-summary-val { font-size: 0.9rem; }
+        .inv-summary-total .inv-summary-val { font-size: 0.85rem; }
         .inv-summary-paid { background: #f0fdf4; border-radius: 3px; }
         .inv-summary-paid .inv-summary-val { color: #166534 !important; font-weight: 600; }
         .inv-summary-remaining { background: #fef2f2; border-radius: 3px; margin-top: 2px; }
         .inv-summary-remaining .inv-summary-val { color: #b91c1c !important; font-weight: 700; }
-        .inv-prev-notes-section { margin-top: 8px; padding: 6px 8px; border: 1px solid #eee; border-radius: 4px; font-size: 0.75rem; background: #fafafa; }
-        .inv-prev-notes-label { font-weight: 600; font-size: 0.7rem; color: #555 !important; }
+        .inv-prev-notes-section { margin-top: 6px; padding: 5px 7px; border: 1px solid #eee; border-radius: 4px; font-size: 0.7rem; background: #fafafa; }
+        .inv-prev-notes-label { font-weight: 600; font-size: 0.65rem; color: #555 !important; }
         .inv-prev-notes-label small { color: #999 !important; }
         .inv-prev-notes-text { color: #333 !important; }
-        .inv-new-footer { text-align: center; padding-top: 12px; border-top: 1px solid #ddd; }
-        .inv-new-footer-page { font-size: 0.65rem; color: #999 !important; }
-        .inv-new-footer-branch { font-size: 0.72rem; color: #555 !important; font-weight: 500; }
+        .inv-new-footer { text-align: center; padding-top: 10px; border-top: 1px solid #ddd; }
+        .inv-new-footer-page { font-size: 0.6rem; color: #999 !important; }
+        .inv-new-footer-branch { font-size: 0.68rem; color: #555 !important; font-weight: 500; }
         [style*="display: none"], [style*="display:none"] { display: none !important; }
     `;
 }
@@ -776,98 +776,103 @@ function _getPreviewHTMLForExport() {
             const qrDataUrl = qrCanvas.toDataURL('image/png');
             html = html.replace(
                 /<canvas[^>]*id="invQRCode"[^>]*>[^<]*<\/canvas>/i,
-                `<img src="${qrDataUrl}" style="width:110px;height:110px;border:1px solid #ddd;border-radius:4px;" alt="QR">`
+                `<img src="${qrDataUrl}" style="width:100px;height:100px;border:1px solid #ddd;border-radius:4px;" alt="QR">`
             );
         } catch (e) {}
     }
     return html;
 }
 
-/* ── PDF — renders in hidden iframe then captures with html2canvas ── */
+/* ── PDF — directly captures the live preview after expanding it ── */
 function invoiceDownloadPDF() {
-    if (!window.html2canvas) {
-        Toast.error('html2canvas library not loaded.');
-        return;
-    }
-    if (!window.jspdf) {
-        Toast.error(_t('invPdfNotLoaded', 'PDF library not loaded.'));
-        return;
-    }
+    if (!window.html2canvas) { Toast.error('html2canvas not loaded.'); return; }
+    if (!window.jspdf) { Toast.error(_t('invPdfNotLoaded', 'PDF not loaded.')); return; }
 
-    const previewHTML = _getPreviewHTMLForExport();
-    if (!previewHTML) return;
+    const card = document.getElementById('invPreviewCard');
+    if (!card) return;
 
     Toast.success(_t('invPdfGenerating', 'جاري إنشاء PDF...'));
 
-    // Create hidden iframe with full self-contained CSS
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;';
-    document.body.appendChild(iframe);
+    // 1. Replace QR canvas with rendered img (canvas loses pixels on capture)
+    const qrCanvas = document.getElementById('invQRCode');
+    let qrRestore = null;
+    if (qrCanvas) {
+        try {
+            const qrImg = document.createElement('img');
+            qrImg.src = qrCanvas.toDataURL('image/png');
+            qrImg.style.cssText = 'width:100px;height:100px;border:1px solid #ddd;border-radius:4px';
+            const p = qrCanvas.parentElement;
+            p.replaceChild(qrImg, qrCanvas);
+            qrRestore = { parent: p, img: qrImg, canvas: qrCanvas };
+        } catch(e) {}
+    }
 
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    iframeDoc.open();
-    iframeDoc.write(`<!DOCTYPE html><html dir="rtl"><head>
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-        <style>${_getInvoiceCSS()}</style>
-        </head><body>${previewHTML}</body></html>`);
-    iframeDoc.close();
+    // 2. Temporarily move preview panel off-screen at A4 width
+    const panel = card.closest('.inv-preview-panel') || card.parentElement;
+    const origPanelStyle = panel.style.cssText;
+    panel.style.cssText = 'position:fixed !important;left:-9999px !important;top:0 !important;width:794px !important;z-index:-1 !important;background:#fff !important;';
 
-    // Wait for fonts and images to load, then capture
+    // 3. Wait for reflow then capture
     setTimeout(() => {
-        html2canvas(iframeDoc.body, {
-            scale: 2,
+        html2canvas(card, {
+            scale: 2.5,
             useCORS: true,
-            allowTaint: true,
             backgroundColor: '#ffffff',
             logging: false,
-            width: 794,
         }).then(canvas => {
-            document.body.removeChild(iframe);
-            const imgData = canvas.toDataURL('image/png');
+            // 4. Restore everything
+            panel.style.cssText = origPanelStyle;
+            if (qrRestore) {
+                qrRestore.parent.replaceChild(qrRestore.canvas, qrRestore.img);
+                generateInvoiceQR();
+            }
+            // 5. Build PDF
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
             const pageW = doc.internal.pageSize.getWidth();
             const pageH = doc.internal.pageSize.getHeight();
-            const mx = 6, my = 6;
+            const mx = 5, my = 5;
             const imgW = pageW - (mx * 2);
             const imgH = (canvas.height * imgW) / canvas.width;
             if (imgH <= pageH - (my * 2)) {
-                doc.addImage(imgData, 'PNG', mx, my, imgW, imgH);
+                doc.addImage(imgData, 'JPEG', mx, my, imgW, imgH);
             } else {
                 const fitH = pageH - (my * 2);
                 const fitW = (canvas.width * fitH) / canvas.height;
-                doc.addImage(imgData, 'PNG', (pageW - fitW) / 2, my, fitW, fitH);
+                doc.addImage(imgData, 'JPEG', (pageW - fitW) / 2, my, fitW, fitH);
             }
             const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
             doc.save(filename);
             Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
         }).catch(err => {
-            document.body.removeChild(iframe);
-            console.error('PDF generation error:', err);
+            panel.style.cssText = origPanelStyle;
+            if (qrRestore) {
+                qrRestore.parent.replaceChild(qrRestore.canvas, qrRestore.img);
+                generateInvoiceQR();
+            }
+            console.error('PDF error:', err);
             Toast.error('PDF generation failed.');
         });
-    }, 1500);
+    }, 400);
 }
 
 /* ── Print — exact copy of preview ── */
 function invoicePrint() {
     const previewHTML = _getPreviewHTMLForExport();
     if (!previewHTML) return;
-
     const printWindow = window.open('', '_blank', 'width=800,height=1100');
-    printWindow.document.write(`
-        <!DOCTYPE html>
+    printWindow.document.write(`<!DOCTYPE html>
         <html dir="rtl"><head><title>${invoiceState.docNumber}</title>
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-        <style>
-            ${_getInvoiceCSS()}
+        <style>${_getInvoiceCSS()}
             @media print { body { padding: 12px; } @page { margin: 10mm; } }
         </style>
-        </head><body>${previewHTML}</body></html>
-    `);
+        </head><body>${previewHTML}</body></html>`);
     printWindow.document.close();
-    setTimeout(() => { printWindow.print(); }, 600);
+    setTimeout(() => { printWindow.print(); }, 800);
 }
+
 
 /* ── Reset Form ── */
 function invoiceReset() {
