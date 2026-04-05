@@ -729,26 +729,60 @@ function invoiceDownloadPDF() {
 
     Toast.success(_t('invPdfGenerating', 'جاري إنشاء PDF...'));
 
-    html2canvas(previewCard, {
+    // Clone preview into a temp off-screen container at A4 width to avoid text overlap
+    const clone = previewCard.cloneNode(true);
+    clone.id = '';
+
+    // Convert QR canvas to img in clone (canvas doesn't clone pixel data)
+    const origCanvas = previewCard.querySelector('#invQRCode');
+    const cloneCanvas = clone.querySelector('#invQRCode');
+    if (origCanvas && cloneCanvas) {
+        try {
+            const img = document.createElement('img');
+            img.src = origCanvas.toDataURL('image/png');
+            img.style.width = '110px';
+            img.style.height = '110px';
+            img.style.border = '1px solid #ddd';
+            img.style.borderRadius = '4px';
+            cloneCanvas.replaceWith(img);
+        } catch(e) {}
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-1;padding:24px 20px;direction:rtl;font-family:Cairo,Inter,system-ui,sans-serif;color:#1a1a1a;';
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    // Force all text colors to dark (override dashboard dark theme)
+    wrapper.querySelectorAll('*').forEach(el => {
+        const cs = getComputedStyle(el);
+        if (cs.color === 'rgb(255, 255, 255)' || cs.color === 'rgba(255, 255, 255, 1)') {
+            el.style.color = '#1a1a1a';
+        }
+    });
+
+    html2canvas(wrapper, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
+        width: 794,
     }).then(canvas => {
+        document.body.removeChild(wrapper);
+
         const imgData = canvas.toDataURL('image/png');
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         const pageW = doc.internal.pageSize.getWidth();
         const pageH = doc.internal.pageSize.getHeight();
-        const marginX = 10;
-        const marginY = 10;
+        const marginX = 8;
+        const marginY = 8;
         const imgW = pageW - (marginX * 2);
         const imgH = (canvas.height * imgW) / canvas.width;
 
         if (imgH <= pageH - (marginY * 2)) {
             doc.addImage(imgData, 'PNG', marginX, marginY, imgW, imgH);
         } else {
-            // Scale to fit page
             const fitH = pageH - (marginY * 2);
             const fitW = (canvas.width * fitH) / canvas.height;
             doc.addImage(imgData, 'PNG', (pageW - fitW) / 2, marginY, fitW, fitH);
@@ -758,6 +792,7 @@ function invoiceDownloadPDF() {
         doc.save(filename);
         Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
     }).catch(err => {
+        document.body.removeChild(wrapper);
         console.error('PDF generation error:', err);
         Toast.error('PDF generation failed.');
     });

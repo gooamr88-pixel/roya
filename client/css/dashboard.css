@@ -6279,8 +6279,13 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    color: #1a1a1a;
+    color: #1a1a1a !important;
+    background: #ffffff !important;
     direction: rtl;
+}
+
+.inv-preview-body * {
+    color: inherit;
 }
 
 /* ── Invoice Header: Logo + Company Info ── */
