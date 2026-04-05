@@ -831,13 +831,59 @@ function invoiceDownloadPDF() {
 
     let finalY = doc.lastAutoTable.finalY + 6;
 
-    // ── QR Code + Summary side by side ──
-    const qrCanvas = document.getElementById('invQRCode');
-    if (qrCanvas) {
-        try {
-            const qrDataUrl = qrCanvas.toDataURL('image/png');
-            doc.addImage(qrDataUrl, 'PNG', margin, finalY, 30, 30);
-        } catch (e) { console.warn('QR embed error:', e); }
+    // ── QR Code for PDF — generated fresh to guarantee it appears ──
+    let qrImageData = null;
+    try {
+        const qrData = [
+            `Invoice: ${invoiceState.docNumber}`,
+            `Date: ${invoiceState.issueDate}`,
+            `Client: ${invoiceState.clientName || 'N/A'}`,
+            `Total: ${grandTotal.toFixed(2)}`,
+            invoiceState.taxNumber ? `Tax#: ${invoiceState.taxNumber}` : '',
+            invoiceState.clientPhone ? `Phone: ${invoiceState.clientPhone}` : '',
+            `VAT: ${getTaxAmount().toFixed(2)}`,
+            `Paid: ${invoiceState.amountPaid.toFixed(2)}`,
+            `Due: ${remaining.toFixed(2)}`,
+        ].filter(Boolean).join('\n');
+
+        if (typeof qrcode !== 'undefined') {
+            const qr = qrcode(0, 'M');
+            qr.addData(qrData);
+            qr.make();
+
+            // Draw QR onto a temporary canvas
+            const tempCanvas = document.createElement('canvas');
+            const qrSize = 300;
+            tempCanvas.width = qrSize;
+            tempCanvas.height = qrSize;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, qrSize, qrSize);
+
+            const moduleCount = qr.getModuleCount();
+            const cellSize = qrSize / (moduleCount + 8);
+            const offset = (qrSize - moduleCount * cellSize) / 2;
+
+            ctx.fillStyle = '#000000';
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (qr.isDark(row, col)) {
+                        ctx.fillRect(
+                            offset + col * cellSize,
+                            offset + row * cellSize,
+                            cellSize + 0.5,
+                            cellSize + 0.5
+                        );
+                    }
+                }
+            }
+
+            qrImageData = tempCanvas.toDataURL('image/png');
+        }
+    } catch (e) { console.warn('QR PDF generation error:', e); }
+
+    if (qrImageData) {
+        doc.addImage(qrImageData, 'PNG', margin, finalY, 32, 32);
     }
 
     // ── Summary Section (right side) ──
