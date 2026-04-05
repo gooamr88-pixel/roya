@@ -595,40 +595,52 @@ function formatNum(amount) {
     }).format(amount);
 }
 
-/* ── Real QR Code Generator using qrcode-generator ── */
+/* ── Build invoice viewer URL ── */
+function getInvoiceViewerURL() {
+    const data = {
+        mode: invoiceState.mode,
+        docNumber: invoiceState.docNumber,
+        issueDate: invoiceState.issueDate,
+        dueDate: invoiceState.dueDate,
+        clientName: invoiceState.clientName,
+        clientEmail: invoiceState.clientEmail,
+        clientAddress: invoiceState.clientAddress,
+        clientPhone: invoiceState.clientPhone,
+        taxNumber: invoiceState.taxNumber,
+        lineItems: invoiceState.lineItems.filter(li => li.name && li.name.trim()),
+        taxPercent: invoiceState.taxPercent,
+        discountType: invoiceState.discountType,
+        discountValue: invoiceState.discountValue,
+        shippingCost: invoiceState.shippingCost,
+        amountPaid: invoiceState.amountPaid,
+        branchInfo: invoiceState.branchInfo,
+        notes: invoiceState.notes,
+        terms: invoiceState.terms,
+    };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    return `${window.location.origin}/invoice-view.html?d=${encoded}`;
+}
+
+/* ── QR Code — generates URL to invoice viewer page ── */
 function generateInvoiceQR() {
     const canvas = document.getElementById('invQRCode');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const size = canvas.width;
 
-    // Clear canvas
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, size, size);
 
-    // Build invoice data string (structured for scanning)
-    const grandTotal = getGrandTotal();
-    const qrData = [
-        `Invoice: ${invoiceState.docNumber}`,
-        `Date: ${invoiceState.issueDate}`,
-        `Client: ${invoiceState.clientName || 'N/A'}`,
-        `Total: ${grandTotal.toFixed(2)}`,
-        invoiceState.taxNumber ? `Tax#: ${invoiceState.taxNumber}` : '',
-        invoiceState.clientPhone ? `Phone: ${invoiceState.clientPhone}` : '',
-        `VAT: ${getTaxAmount().toFixed(2)}`,
-        `Paid: ${invoiceState.amountPaid.toFixed(2)}`,
-        `Due: ${Math.max(0, grandTotal - invoiceState.amountPaid).toFixed(2)}`,
-    ].filter(Boolean).join('\n');
+    const viewerURL = getInvoiceViewerURL();
 
-    // Use qrcode-generator library if available
     if (typeof qrcode !== 'undefined') {
         try {
-            const qr = qrcode(0, 'M');
-            qr.addData(qrData);
+            const qr = qrcode(0, 'L');
+            qr.addData(viewerURL);
             qr.make();
 
             const moduleCount = qr.getModuleCount();
-            const cellSize = size / (moduleCount + 8); // padding
+            const cellSize = size / (moduleCount + 8);
             const offset = (size - moduleCount * cellSize) / 2;
 
             ctx.fillStyle = '#000000';
@@ -646,43 +658,24 @@ function generateInvoiceQR() {
             }
         } catch (e) {
             console.warn('QR generation error:', e);
-            drawFallbackQR(ctx, size, qrData);
+            _drawQRFallback(ctx, size, viewerURL);
         }
     } else {
-        drawFallbackQR(ctx, size, qrData);
+        _drawQRFallback(ctx, size, viewerURL);
     }
 }
 
-/* ── Fallback QR pattern if library not loaded ── */
-function drawFallbackQR(ctx, size, data) {
-    ctx.fillStyle = '#000000';
+function _drawQRFallback(ctx, size, data) {
+    ctx.fillStyle = '#000';
     let hash = 0;
-    for (let i = 0; i < data.length; i++) {
-        hash = ((hash << 5) - hash) + data.charCodeAt(i);
-        hash |= 0;
-    }
-    const cellSize = Math.floor(size / 25);
-    const drawFinder = (x, y) => {
-        for (let i = 0; i < 7; i++) {
-            for (let j = 0; j < 7; j++) {
-                if (i === 0 || i === 6 || j === 0 || j === 6 ||
-                    (i >= 2 && i <= 4 && j >= 2 && j <= 4)) {
-                    ctx.fillRect((x + i) * cellSize, (y + j) * cellSize, cellSize, cellSize);
-                }
-            }
-        }
-    };
-    drawFinder(1, 1);
-    drawFinder(17, 1);
-    drawFinder(1, 17);
-    const rng = Math.abs(hash);
-    for (let row = 0; row < 25; row++) {
-        for (let col = 0; col < 25; col++) {
-            if ((row < 9 && col < 9) || (row < 9 && col > 15) || (row > 15 && col < 9)) continue;
-            if (((rng * (row * 25 + col + 1)) % 7) < 3) {
-                ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-            }
-        }
+    for (let i = 0; i < data.length; i++) { hash = ((hash << 5) - hash) + data.charCodeAt(i); hash |= 0; }
+    const cs = Math.floor(size / 25);
+    const df = (x, y) => { for (let i=0;i<7;i++) for (let j=0;j<7;j++) if (i===0||i===6||j===0||j===6||(i>=2&&i<=4&&j>=2&&j<=4)) ctx.fillRect((x+i)*cs,(y+j)*cs,cs,cs); };
+    df(1,1); df(17,1); df(1,17);
+    const r = Math.abs(hash);
+    for (let row=0;row<25;row++) for (let col=0;col<25;col++) {
+        if ((row<9&&col<9)||(row<9&&col>15)||(row>15&&col<9)) continue;
+        if (((r*(row*25+col+1))%7)<3) ctx.fillRect(col*cs,row*cs,cs,cs);
     }
 }
 
@@ -720,250 +713,62 @@ async function invoiceSaveAndIssue() {
     }
 }
 
-/* ── PDF / Print ── */
+/* ── PDF — captures the exact preview using html2canvas ── */
 function invoiceDownloadPDF() {
+    const previewCard = document.getElementById('invPreviewCard');
+    if (!previewCard) return;
+
+    if (!window.html2canvas) {
+        Toast.error('html2canvas library not loaded.');
+        return;
+    }
     if (!window.jspdf) {
         Toast.error(_t('invPdfNotLoaded', 'PDF library not loaded.'));
         return;
     }
 
-    const { jsPDF } = window.jspdf;
-    const isInvoice = invoiceState.mode === 'invoice';
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    Toast.success(_t('invPdfGenerating', 'جاري إنشاء PDF...'));
 
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 14;
-    const grandTotal = getGrandTotal();
-    const remaining = Math.max(0, grandTotal - invoiceState.amountPaid);
+    html2canvas(previewCard, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+        const pageH = doc.internal.pageSize.getHeight();
+        const marginX = 10;
+        const marginY = 10;
+        const imgW = pageW - (marginX * 2);
+        const imgH = (canvas.height * imgW) / canvas.width;
 
-    // ── Logo area (centered top) ──
-    doc.setFillColor(17, 17, 17);
-    doc.roundedRect(pageWidth / 2 - 35, 8, 70, 22, 3, 3, 'F');
-    doc.setFontSize(14);
-    doc.setTextColor(212, 175, 55);
-    doc.text('NABDA', pageWidth / 2, 18, { align: 'center' });
-    doc.setFontSize(5);
-    doc.setTextColor(200, 200, 200);
-    doc.text('Advertising, Publicity & Marketing', pageWidth / 2, 23, { align: 'center' });
-    doc.setFontSize(5);
-    doc.setTextColor(180, 180, 180);
-    doc.text('للدعاية والإعلان والتسويق', pageWidth / 2, 27, { align: 'center' });
-
-    // ── Document type badge ──
-    let yPos = 35;
-    doc.setFontSize(10);
-    doc.setTextColor(40, 40, 40);
-    const docTypeAr = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
-    const docTypeEn = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
-    doc.text(`${docTypeAr}  |  ${docTypeEn}`, pageWidth / 2, yPos, { align: 'center' });
-
-    // ── Document info box ──
-    yPos = 42;
-    doc.setFontSize(7.5);
-    doc.setDrawColor(200, 200, 200);
-    doc.setLineWidth(0.3);
-    const infoBoxHeight = invoiceState.taxNumber ? 38 : 30;
-    doc.rect(margin, yPos, pageWidth - 2 * margin, infoBoxHeight);
-
-    // Row 1: Date / Invoice Number
-    doc.setTextColor(60, 60, 60);
-    doc.text(`التاريخ Date: ${invoiceState.issueDate || '—'}`, pageWidth - margin - 2, yPos + 6, { align: 'right' });
-    doc.text(`رقم الفاتورة Invoice #: ${invoiceState.docNumber}`, margin + 2, yPos + 6);
-
-    // Row 2: Client / Phone
-    doc.text(`اسم العميل Client: ${invoiceState.clientName || '—'}`, pageWidth - margin - 2, yPos + 14, { align: 'right' });
-    doc.text(`التلفون Phone: ${invoiceState.clientPhone || '—'}`, margin + 2, yPos + 14);
-
-    // Row 3: Address / Email
-    doc.text(`العنوان Address: ${invoiceState.clientAddress || '—'}`, pageWidth - margin - 2, yPos + 22, { align: 'right' });
-    doc.text(`البريد Email: ${invoiceState.clientEmail || '—'}`, margin + 2, yPos + 22);
-
-    // Row 4: Tax Number / Due Date (if applicable)
-    if (invoiceState.taxNumber) {
-        doc.text(`الرقم الضريبي Tax #: ${invoiceState.taxNumber}`, pageWidth - margin - 2, yPos + 30, { align: 'right' });
-        doc.text(`الاستحقاق Due: ${invoiceState.dueDate || '—'}`, margin + 2, yPos + 30);
-    }
-
-    // ── Line Items Table ──
-    const tableData = invoiceState.lineItems
-        .filter(li => li.name.trim())
-        .map((li, idx) => [
-            formatNum(li.quantity * li.unitPrice),
-            formatNum(li.unitPrice),
-            li.quantity.toString(),
-            li.description,
-            li.name,
-            (idx + 1).toString()
-        ]);
-
-    doc.autoTable({
-        startY: yPos + infoBoxHeight + 4,
-        head: [['المبلغ\nAmount', 'السعر\nPrice', 'الكمية\nQty', 'الوصف\nDescription', 'الصنف\nItem', 'م\nNo']],
-        body: tableData,
-        styles: {
-            fontSize: 7.5,
-            cellPadding: 3,
-            textColor: [40, 40, 40],
-            lineColor: [180, 180, 180],
-            lineWidth: 0.3,
-            halign: 'center',
-        },
-        headStyles: {
-            fillColor: [240, 240, 240],
-            textColor: [30, 30, 30],
-            fontStyle: 'bold',
-            fontSize: 6.5,
-            halign: 'center',
-        },
-        alternateRowStyles: { fillColor: [250, 250, 250] },
-        columnStyles: {
-            0: { cellWidth: 28, halign: 'center' },
-            1: { cellWidth: 25, halign: 'center' },
-            2: { cellWidth: 18, halign: 'center' },
-            4: { cellWidth: 35 },
-            5: { cellWidth: 12, halign: 'center' },
-        },
-        margin: { left: margin, right: margin },
-        tableLineColor: [180, 180, 180],
-        tableLineWidth: 0.3,
-    });
-
-    let finalY = doc.lastAutoTable.finalY + 6;
-
-    // ── QR Code for PDF — generated fresh to guarantee it appears ──
-    let qrImageData = null;
-    try {
-        const qrData = [
-            `Invoice: ${invoiceState.docNumber}`,
-            `Date: ${invoiceState.issueDate}`,
-            `Client: ${invoiceState.clientName || 'N/A'}`,
-            `Total: ${grandTotal.toFixed(2)}`,
-            invoiceState.taxNumber ? `Tax#: ${invoiceState.taxNumber}` : '',
-            invoiceState.clientPhone ? `Phone: ${invoiceState.clientPhone}` : '',
-            `VAT: ${getTaxAmount().toFixed(2)}`,
-            `Paid: ${invoiceState.amountPaid.toFixed(2)}`,
-            `Due: ${remaining.toFixed(2)}`,
-        ].filter(Boolean).join('\n');
-
-        if (typeof qrcode !== 'undefined') {
-            const qr = qrcode(0, 'M');
-            qr.addData(qrData);
-            qr.make();
-
-            // Draw QR onto a temporary canvas
-            const tempCanvas = document.createElement('canvas');
-            const qrSize = 300;
-            tempCanvas.width = qrSize;
-            tempCanvas.height = qrSize;
-            const ctx = tempCanvas.getContext('2d');
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, qrSize, qrSize);
-
-            const moduleCount = qr.getModuleCount();
-            const cellSize = qrSize / (moduleCount + 8);
-            const offset = (qrSize - moduleCount * cellSize) / 2;
-
-            ctx.fillStyle = '#000000';
-            for (let row = 0; row < moduleCount; row++) {
-                for (let col = 0; col < moduleCount; col++) {
-                    if (qr.isDark(row, col)) {
-                        ctx.fillRect(
-                            offset + col * cellSize,
-                            offset + row * cellSize,
-                            cellSize + 0.5,
-                            cellSize + 0.5
-                        );
-                    }
-                }
-            }
-
-            qrImageData = tempCanvas.toDataURL('image/png');
+        if (imgH <= pageH - (marginY * 2)) {
+            doc.addImage(imgData, 'PNG', marginX, marginY, imgW, imgH);
+        } else {
+            // Scale to fit page
+            const fitH = pageH - (marginY * 2);
+            const fitW = (canvas.width * fitH) / canvas.height;
+            doc.addImage(imgData, 'PNG', (pageW - fitW) / 2, marginY, fitW, fitH);
         }
-    } catch (e) { console.warn('QR PDF generation error:', e); }
 
-    if (qrImageData) {
-        doc.addImage(qrImageData, 'PNG', margin, finalY, 32, 32);
-    }
-
-    // ── Summary Section (right side) ──
-    const summaryX = pageWidth - margin;
-    const summaryLabelX = summaryX - 50;
-
-    const summaryLines = [
-        ['الاجمالي Subtotal', formatNum(getSubtotal())],
-        ['الخصم Discount', formatNum(getDiscountAmount())],
-        [`القيمة المضافة VAT ${invoiceState.taxPercent}%`, formatNum(getTaxAmount())],
-    ];
-    if (invoiceState.shippingCost > 0) {
-        summaryLines.push(['الشحن Shipping', formatNum(invoiceState.shippingCost)]);
-    }
-
-    doc.setFontSize(7.5);
-    summaryLines.forEach(([label, value]) => {
-        doc.setTextColor(80, 80, 80);
-        doc.text(label, summaryX, finalY, { align: 'right' });
-        doc.setTextColor(40, 40, 40);
-        doc.text(value, summaryLabelX, finalY, { align: 'right' });
-        finalY += 5.5;
+        const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        doc.save(filename);
+        Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
+    }).catch(err => {
+        console.error('PDF generation error:', err);
+        Toast.error('PDF generation failed.');
     });
-
-    // Total separator line
-    doc.setDrawColor(150, 150, 150);
-    doc.setLineWidth(0.5);
-    doc.line(summaryLabelX - 20, finalY - 1, summaryX, finalY - 1);
-    finalY += 3;
-
-    // Grand total
-    doc.setFontSize(9);
-    doc.setTextColor(30, 30, 30);
-    doc.text('المستحق Total Due', summaryX, finalY, { align: 'right' });
-    doc.text(formatNum(grandTotal), summaryLabelX, finalY, { align: 'right' });
-
-    // Paid
-    finalY += 5.5;
-    doc.setFontSize(7.5);
-    doc.setTextColor(60, 60, 60);
-    doc.text('المدفوع Paid', summaryX, finalY, { align: 'right' });
-    doc.text(formatNum(invoiceState.amountPaid), summaryLabelX, finalY, { align: 'right' });
-
-    // Remaining
-    finalY += 5.5;
-    doc.setTextColor(remaining > 0 ? 180 : 60, remaining > 0 ? 40 : 60, remaining > 0 ? 40 : 60);
-    doc.text('المتبقي Remaining', summaryX, finalY, { align: 'right' });
-    doc.text(formatNum(remaining), summaryLabelX, finalY, { align: 'right' });
-
-    // ── Notes ──
-    finalY += 10;
-    if (invoiceState.notes) {
-        doc.setFontSize(6.5);
-        doc.setTextColor(120, 120, 120);
-        doc.text('ملاحظات Notes', pageWidth - margin, finalY, { align: 'right' });
-        doc.setFontSize(7.5);
-        doc.setTextColor(80, 80, 80);
-        doc.text(invoiceState.notes, pageWidth - margin, finalY + 4, { maxWidth: pageWidth - 28, align: 'right' });
-        finalY += 12;
-    }
-
-    // ── Footer ──
-    doc.setFontSize(6.5);
-    doc.setTextColor(150, 150, 150);
-    doc.text('الصفحة 1 من 1  |  Page 1 of 1', pageWidth / 2, pageHeight - 12, { align: 'center' });
-    doc.setFontSize(7.5);
-    doc.setTextColor(100, 100, 100);
-    const branchText = invoiceState.branchInfo || _t('invBranchInfoPlaceholder', 'الفرع الرئيسي');
-    doc.text(branchText, pageWidth / 2, pageHeight - 7, { align: 'center' });
-
-    const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
-    doc.save(filename);
-    Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
 }
 
+/* ── Print — exact copy of preview ── */
 function invoicePrint() {
     const preview = document.getElementById('invPreviewCard');
     if (!preview) return;
 
-    // Clone preview and convert QR canvas to img so it survives innerHTML copy
+    // Convert QR canvas to img so it survives innerHTML copy
     let previewHTML = preview.innerHTML;
     const qrCanvas = document.getElementById('invQRCode');
     if (qrCanvas) {
@@ -980,40 +785,53 @@ function invoicePrint() {
     printWindow.document.write(`
         <!DOCTYPE html>
         <html dir="rtl"><head><title>${invoiceState.docNumber}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Cairo', 'Inter', system-ui, sans-serif; padding: 20px; background: #fff; color: #1a1a1a; direction: rtl; }
-            .inv-preview-card, .inv-preview-body { background: #fff !important; color: #1a1a1a !important; direction: rtl; }
+            body { font-family: 'Cairo', 'Inter', system-ui, sans-serif; padding: 24px; background: #fff; color: #1a1a1a; direction: rtl; }
+            .inv-preview-card, .inv-preview-body { background: #fff !important; color: #1a1a1a !important; direction: rtl; display:flex;flex-direction:column;gap:16px; }
             .inv-preview-card *, .inv-preview-body * { color: #1a1a1a !important; }
-            .inv-new-header { display: flex; align-items: center; justify-content: flex-start; margin-bottom: 12px; padding: 12px 0; direction: rtl; gap: 0; }
+            .inv-new-header { display: flex; align-items: center; justify-content: flex-start; padding: 12px 0; direction: rtl; gap: 0; }
             .inv-new-header-logo { flex-shrink: 0; }
             .inv-new-logo { width: 75px; height: 75px; object-fit: contain; }
             .inv-new-header-info { flex: 1; text-align: center; padding: 0 16px; }
             .inv-company-name-ar { font-size: 1.1rem; font-weight: 700; }
-            .inv-company-name-en { font-size: 0.65rem; color: #888 !important; margin-top: 2px; }
-            .inv-doc-type-badge { text-align: center; padding: 6px 0; margin-bottom: 10px; border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37; font-weight: 700; font-size: 0.9rem; }
-            .inv-doc-type-divider { margin: 0 8px; color: #ccc !important; }
-            .inv-new-meta { background: #fafafa; border: 1px solid #eee; padding: 8px 12px; border-radius: 4px; margin: 10px 0; direction: rtl; }
-            .inv-new-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
-            .inv-meta-label { font-weight: 600; font-size: 0.75rem; }
-            .inv-meta-value { font-size: 0.75rem; }
-            table { width: 100%; border-collapse: collapse; margin: 10px 0; direction: rtl; }
-            th { background: #f0f0f0 !important; padding: 6px 8px; text-align: center; font-size: 0.7rem; border: 1px solid #bbb; }
-            th small { display: block; font-weight: 400; font-size: 0.6rem; color: #888 !important; }
-            td { padding: 5px 8px; border: 1px solid #ccc; text-align: center; font-size: 0.75rem; }
-            .inv-new-bottom { display: grid; grid-template-columns: auto 1fr; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd; direction: rtl; }
+            .inv-company-name-en { font-size: 0.62rem; color: #888 !important; margin-top: 2px; }
+            .inv-doc-type-badge { text-align: center; padding: 6px 0; margin: 4px 0 10px; border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37; font-weight: 700; font-size: 0.9rem; }
+            .inv-doc-type-divider { margin: 0 10px; color: #ccc !important; font-weight: 300; }
+            .inv-doc-type-en { font-size: 0.78rem; letter-spacing: 0.08em; }
+            .inv-new-meta { background: #fafafa; border: 1px solid #eee; padding: 10px 12px; border-radius: 6px; direction: rtl; }
+            .inv-new-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
+            .inv-new-meta-item { display: flex; gap: 6px; align-items: baseline; }
+            .inv-meta-label { font-weight: 600; font-size: 0.75rem; color: #333; white-space: nowrap; }
+            .inv-meta-value { font-size: 0.75rem; color: #555; }
+            table { width: 100%; border-collapse: collapse; margin: 0; direction: rtl; }
+            th { background: #f0f0f0 !important; padding: 6px 8px; text-align: center; font-size: 0.72rem; font-weight: 700; border: 1px solid #bbb; line-height:1.3; white-space:nowrap; }
+            th small { display: block; font-weight: 400; font-size: 0.58rem; color: #888 !important; margin-top:1px; }
+            td { padding: 7px 10px; border: 1px solid #ccc; text-align: center; font-size: 0.76rem; color: #333; }
+            tr:nth-child(even) { background: #fafafa; }
+            .inv-new-bottom { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items:start; padding-top: 12px; border-top: 1px solid #ddd; direction: rtl; }
             .inv-new-qr { order: 2; }
             .inv-new-qr img { width: 110px; height: 110px; border: 1px solid #ddd; border-radius: 4px; }
-            .inv-new-summary { order: 1; }
-            .inv-new-summary-row { display: flex; justify-content: space-between; padding: 3px 8px; border-bottom: 1px solid #eee; font-size: 0.8rem; }
-            .inv-new-summary-row small { font-size: 0.6rem; color: #999 !important; margin-right: 4px; }
-            .inv-summary-total { background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-weight: 800; margin-top: 4px; }
-            .inv-summary-paid { background: #f0fff0; }
-            .inv-summary-remaining { background: #fff5f5; font-weight: 700; }
-            .inv-new-footer { text-align: center; margin-top: 16px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 0.7rem; color: #999 !important; }
-            .inv-prev-notes-section { margin-top: 8px; padding: 6px 8px; border: 1px solid #eee; border-radius: 4px; font-size: 0.75rem; }
-            .inv-prev-notes-label { font-weight: 600; font-size: 0.7rem; margin-bottom: 2px; }
+            .inv-new-summary { order: 1; display:flex;flex-direction:column;gap:4px; }
+            .inv-new-summary-row { display: flex; justify-content: space-between; padding: 4px 12px; border-bottom: 1px solid #eee; font-size: 0.78rem; align-items:center; }
+            .inv-new-summary-row small { font-size: 0.58rem; color: #999 !important; margin-right: 4px; }
+            .inv-summary-lbl { font-weight: 600; color: #333; }
+            .inv-summary-val { font-weight: 500; color: #555; direction: ltr; }
+            .inv-summary-total { background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; margin-top: 4px; }
+            .inv-summary-total .inv-summary-lbl, .inv-summary-total .inv-summary-val { font-weight: 800; color: #1a1a1a; }
+            .inv-summary-total .inv-summary-val { font-size: 0.9rem; }
+            .inv-summary-paid { background: #f0fdf4; border-radius: 3px; }
+            .inv-summary-paid .inv-summary-val { color: #166534; font-weight: 600; }
+            .inv-summary-remaining { background: #fef2f2; border-radius: 3px; margin-top: 2px; }
+            .inv-summary-remaining .inv-summary-val { color: #b91c1c; font-weight: 700; }
+            .inv-prev-notes-section { margin-top: 8px; padding: 6px 8px; border: 1px solid #eee; border-radius: 4px; font-size: 0.75rem; background: #fafafa; }
+            .inv-prev-notes-label { font-weight: 600; font-size: 0.7rem; color: #555; }
             .inv-prev-notes-label small { color: #999 !important; }
+            .inv-prev-notes-text { color: #333; }
+            .inv-new-footer { text-align: center; padding-top: 12px; border-top: 1px solid #ddd; }
+            .inv-new-footer-page { font-size: 0.65rem; color: #999; }
+            .inv-new-footer-branch { font-size: 0.72rem; color: #555; font-weight: 500; }
             [style*="display: none"], [style*="display:none"] { display: none !important; }
             @media print { body { padding: 10px; } @page { margin: 12mm; } }
         </style>
