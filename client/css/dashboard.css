@@ -6275,286 +6275,303 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 }
 
 .inv-preview-body {
-    padding: 28px 22px;
+    padding: 24px 20px;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 16px;
     color: #1a1a1a;
     direction: rtl;
-    font-family: 'Cairo', 'Inter', system-ui, sans-serif;
 }
 
-/* ═══ HEADER: Logo + Company ═══ */
-.inv-hdr {
+/* ── Invoice Header: Logo + Company Info ── */
+.inv-new-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 10px;
+    padding: 12px 0;
+    border-bottom: none;
+    direction: rtl;
 }
-.inv-hdr-logo { flex-shrink: 0; }
-.inv-logo-img {
-    width: 82px;
-    height: 82px;
+
+.inv-new-header-logo {
+    flex-shrink: 0;
+    order: 1;
+}
+
+.inv-new-logo {
+    width: 80px;
+    height: 80px;
     object-fit: contain;
-    display: block;
+    filter: none;
 }
-.inv-hdr-text {
+
+.inv-new-header-info {
     flex: 1;
-    min-width: 0;
+    text-align: center;
+    order: 2;
+    padding: 0 12px;
 }
-.inv-hdr-ar {
+
+.inv-company-name-ar {
     font-size: 1.1rem;
-    font-weight: 800;
-    color: #111;
+    font-weight: 700;
+    color: #1a1a1a;
     line-height: 1.5;
 }
-.inv-hdr-en {
+
+.inv-company-name-en {
     font-size: 0.62rem;
     color: #888;
     letter-spacing: 0.03em;
     margin-top: 2px;
 }
 
-/* ═══ DOC TYPE BAR ═══ */
-.inv-type-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 5px 0;
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, #d4af37 0%, #c7932a 100%);
-    border-radius: 3px;
-    color: #fff;
-}
-.inv-type-ar {
-    font-size: 0.82rem;
+/* ── Document Type Badge ── */
+.inv-doc-type-badge {
+    text-align: center;
+    padding: 6px 0;
+    margin: 4px 0 10px 0;
+    border-top: 2px solid #d4af37;
+    border-bottom: 2px solid #d4af37;
+    font-size: 0.85rem;
     font-weight: 700;
-}
-.inv-type-sep {
-    width: 1px;
-    height: 14px;
-    background: rgba(255,255,255,0.5);
-}
-.inv-type-en {
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    color: #1a1a1a;
+    letter-spacing: 0.03em;
 }
 
-/* ═══ INFO GRID ═══ */
-.inv-info-grid {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 10px;
+.inv-doc-type-divider {
+    margin: 0 10px;
+    color: #ccc;
+    font-weight: 300;
 }
-.inv-info-row {
+
+.inv-doc-type-en {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+}
+
+/* ── Document Meta ── */
+.inv-new-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.78rem;
+    padding: 10px 12px;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 6px;
+}
+
+.inv-new-meta-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-}
-.inv-info-row:not(:last-child) {
-    border-bottom: 1px solid #e0e0e0;
-}
-.inv-info-cell {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 10px;
-    font-size: 0.73rem;
-}
-.inv-info-cell:first-child {
-    border-left: 1px solid #e0e0e0;
-}
-.inv-info-lbl {
-    font-weight: 600;
-    color: #444;
-    white-space: nowrap;
-}
-.inv-info-lbl small {
-    font-weight: 400;
-    color: #aaa;
-    font-size: 0.58rem;
-    margin-right: 3px;
-}
-.inv-info-val {
-    color: #222;
-    font-weight: 500;
-    text-align: left;
-    direction: ltr;
-    font-size: 0.73rem;
+    gap: 12px;
 }
 
-/* ═══ TABLE ═══ */
-.inv-tbl {
+.inv-new-meta-item {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+}
+
+.inv-meta-label {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    font-size: 0.75rem;
+}
+
+.inv-meta-value {
+    color: #555;
+    font-size: 0.75rem;
+}
+
+/* ── Table — Bilingual Invoice Style ── */
+.inv-new-table {
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #bbb;
-    margin-bottom: 10px;
-    font-size: 0.75rem;
+    font-size: 0.78rem;
 }
-.inv-tbl thead th {
-    background: #f5f5f5;
-    color: #222;
-    padding: 5px 6px;
-    text-align: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-    border: 1px solid #bbb;
-    line-height: 1.25;
+
+.inv-new-table thead th {
+    background: #f0f0f0 !important;
+    color: #1a1a1a !important;
+    padding: 6px 8px !important;
+    text-align: center !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    border: 1px solid #bbb !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap;
+    line-height: 1.3;
 }
-.inv-tbl thead th small {
+
+.inv-new-table thead th small {
     display: block;
     font-weight: 400;
-    font-size: 0.55rem;
-    color: #999;
+    font-size: 0.58rem;
+    color: #888;
     margin-top: 1px;
 }
-.inv-tbl tbody td {
-    padding: 5px 8px;
+
+.inv-th-num { width: 35px !important; }
+.inv-th-qty { width: 55px !important; }
+.inv-th-price { width: 70px !important; }
+.inv-th-total { width: 75px !important; }
+
+.inv-new-table tbody td {
+    padding: 7px 10px;
     border: 1px solid #ccc;
     text-align: center;
     color: #333;
-    font-size: 0.73rem;
+    font-size: 0.76rem;
 }
-.inv-tbl tbody tr:nth-child(even) {
+
+.inv-new-table tbody tr:nth-child(even) {
     background: #fafafa;
 }
-.inv-tbl-empty {
-    text-align: center !important;
-    color: #aaa !important;
-    padding: 18px !important;
-    font-style: italic;
-}
 
-/* ═══ BOTTOM: Summary + QR ═══ */
-.inv-bottom {
+/* ── Bottom: QR + Summary ── */
+.inv-new-bottom {
     display: grid;
-    grid-template-columns: 1fr 130px;
-    gap: 14px;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
     align-items: start;
-    padding-top: 10px;
+    padding-top: 12px;
     border-top: 1px solid #ddd;
-    margin-bottom: 8px;
-}
-.inv-bottom-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-.inv-sum-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.75rem;
-}
-.inv-sum-lbl {
-    font-weight: 600;
-    color: #444;
-}
-.inv-sum-lbl small {
-    font-weight: 400;
-    font-size: 0.55rem;
-    color: #aaa;
-    margin-right: 4px;
-}
-.inv-sum-val {
-    font-weight: 500;
-    color: #222;
-    direction: ltr;
-    text-align: left;
-    min-width: 60px;
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 0.72rem;
+    direction: rtl;
 }
 
-/* Total */
-.inv-sum-total {
-    background: #f5f0e0;
-    border: 1px solid #d4af37;
-    border-radius: 3px;
-    margin-top: 4px;
-    padding: 5px 10px;
-}
-.inv-sum-total .inv-sum-lbl {
-    font-weight: 800;
-    color: #111;
-}
-.inv-sum-total .inv-sum-val {
-    font-weight: 800;
-    color: #111;
-    font-size: 0.82rem;
-}
-/* Paid */
-.inv-sum-paid {
-    background: #f0fdf4;
-    border-radius: 3px;
-}
-.inv-sum-paid .inv-sum-val {
-    color: #166534;
-    font-weight: 600;
-}
-/* Remaining */
-.inv-sum-remaining {
-    background: #fef2f2;
-    border-radius: 3px;
-}
-.inv-sum-remaining .inv-sum-val {
-    color: #b91c1c;
-    font-weight: 700;
-}
-
-/* QR */
-.inv-bottom-qr {
+.inv-new-qr {
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    order: 2;
 }
-.inv-bottom-qr canvas {
-    width: 115px;
-    height: 115px;
+
+.inv-new-qr canvas {
+    width: 110px;
+    height: 110px;
     border: 1px solid #ddd;
     border-radius: 4px;
     background: #fff;
 }
 
-/* ═══ NOTES ═══ */
-.inv-notes-block {
-    background: #fafafa;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 6px 10px;
-    margin-bottom: 6px;
-}
-.inv-notes-title {
-    font-weight: 600;
-    font-size: 0.7rem;
-    color: #555;
-    margin-bottom: 3px;
-}
-.inv-notes-title small {
-    font-weight: 400;
-    color: #aaa;
-    margin-right: 4px;
-}
-.inv-notes-text {
-    font-size: 0.72rem;
-    color: #333;
-    line-height: 1.5;
+.inv-new-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    order: 1;
 }
 
-/* ═══ FOOTER ═══ */
-.inv-footer {
+.inv-new-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.78rem;
+}
+
+.inv-new-summary-row small {
+    font-size: 0.58rem;
+    color: #999;
+    margin-right: 4px;
+}
+
+.inv-summary-lbl {
+    font-weight: 600;
+    color: #333;
+    text-align: right;
+}
+
+.inv-summary-val {
+    font-weight: 500;
+    color: #555;
+    direction: ltr;
+    text-align: left;
+}
+
+.inv-new-summary-row.inv-summary-total {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.inv-new-summary-row.inv-summary-total .inv-summary-lbl {
+    font-weight: 800;
+    color: #1a1a1a;
+}
+
+.inv-new-summary-row.inv-summary-total .inv-summary-val {
+    font-weight: 800;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+}
+
+.inv-new-summary-row.inv-summary-paid {
+    background: #f0fdf4;
+    border-radius: 3px;
+}
+
+.inv-new-summary-row.inv-summary-paid .inv-summary-val {
+    color: #166534;
+    font-weight: 600;
+}
+
+.inv-new-summary-row.inv-summary-remaining {
+    background: #fef2f2;
+    border-radius: 3px;
+    margin-top: 2px;
+}
+
+.inv-new-summary-row.inv-summary-remaining .inv-summary-val {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+/* ── Footer ── */
+.inv-new-footer {
     text-align: center;
-    padding-top: 10px;
+    padding-top: 12px;
     border-top: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.inv-new-footer-page {
     font-size: 0.65rem;
     color: #999;
 }
-.inv-footer-dot {
-    margin: 0 6px;
+
+.inv-new-footer-branch {
+    font-size: 0.72rem;
+    color: #555;
+    font-weight: 500;
+}
+
+/* ── Notes styling inside new layout ── */
+.inv-rtl-layout .inv-prev-notes-section {
+    background: #fafafa;
+    border: 1px solid #eee;
+}
+
+.inv-rtl-layout .inv-prev-notes-label {
+    color: #555;
+}
+
+.inv-rtl-layout .inv-prev-notes-label small {
+    color: #999;
+    margin-right: 4px;
+}
+
+.inv-rtl-layout .inv-prev-notes-text {
+    color: #333;
 }
 
 /* ══════════════════════════════════════
@@ -6588,22 +6605,12 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     .inv-actions button {
         width: 100%;
     }
-    .inv-hdr {
+    .inv-prev-header {
         flex-direction: column;
-        text-align: center;
+        gap: 16px;
     }
-    .inv-info-row {
-        grid-template-columns: 1fr;
-    }
-    .inv-info-cell:first-child {
-        border-left: none;
-        border-bottom: 1px solid #e0e0e0;
-    }
-    .inv-bottom {
-        grid-template-columns: 1fr;
-    }
-    .inv-bottom-qr {
-        order: -1;
+    .inv-prev-doc-info {
+        text-align: left;
     }
     .inv-mode-tabs {
         width: 100%;
