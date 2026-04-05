@@ -625,6 +625,11 @@ function getInvoiceViewerURL() {
 function generateInvoiceQR() {
     const canvas = document.getElementById('invQRCode');
     if (!canvas) return;
+    
+    // Set high-res dimensions for crisp PDF/Print rendering
+    canvas.width = 1024;
+    canvas.height = 1024;
+    
     const ctx = canvas.getContext('2d');
     const size = canvas.width;
 
@@ -717,7 +722,7 @@ async function invoiceSaveAndIssue() {
 function _getInvoiceCSS() {
     return `
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Cairo', 'Inter', system-ui, sans-serif; padding: 24px 20px; background: #fff; color: #1a1a1a; direction: rtl; }
+        body { font-family: 'Tajawal', 'Cairo', system-ui, sans-serif; padding: 24px 20px; background: #fff; color: #1a1a1a; direction: rtl; }
         .inv-preview-card, .inv-preview-body { background: #fff !important; color: #1a1a1a !important; direction: rtl; display:flex;flex-direction:column;gap:16px; }
         .inv-preview-card *, .inv-preview-body * { color: #1a1a1a !important; }
         .inv-new-header { display: flex; align-items: center; justify-content: flex-start; padding: 12px 0; direction: rtl; gap: 0; }
@@ -806,14 +811,22 @@ function invoiceDownloadPDF() {
 
     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
     iframeDoc.open();
-    iframeDoc.write(`<!DOCTYPE html><html dir="rtl"><head>
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-        <style>${_getInvoiceCSS()}</style>
-        </head><body>${previewHTML}</body></html>`);
+    iframeDoc.write(\`<!DOCTYPE html><html dir="rtl"><head>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+        <style>\${_getInvoiceCSS()}</style>
+        </head><body>\${previewHTML}</body></html>\`);
     iframeDoc.close();
 
     // Wait for fonts and images to load, then capture
     setTimeout(() => {
+        if (iframeDoc.fonts && iframeDoc.fonts.ready) {
+            iframeDoc.fonts.ready.then(capturePDF);
+        } else {
+            capturePDF();
+        }
+    }, 1000);
+
+    function capturePDF() {
         html2canvas(iframeDoc.body, {
             scale: 2,
             useCORS: true,
@@ -838,15 +851,15 @@ function invoiceDownloadPDF() {
                 const fitW = (canvas.width * fitH) / canvas.height;
                 doc.addImage(imgData, 'PNG', (pageW - fitW) / 2, my, fitW, fitH);
             }
-            const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
+            const filename = \`\${invoiceState.docNumber || 'document'}_\${new Date().toISOString().slice(0, 10)}.pdf\`;
             doc.save(filename);
-            Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
+            Toast.success(\`\${_t('invPdfDownloaded', 'PDF downloaded')}: \${filename}\`);
         }).catch(err => {
             document.body.removeChild(iframe);
             console.error('PDF generation error:', err);
             Toast.error('PDF generation failed.');
         });
-    }, 1500);
+    }
 }
 
 /* ── Print — exact copy of preview ── */
@@ -855,16 +868,16 @@ function invoicePrint() {
     if (!previewHTML) return;
 
     const printWindow = window.open('', '_blank', 'width=800,height=1100');
-    printWindow.document.write(`
+    printWindow.document.write(\`
         <!DOCTYPE html>
-        <html dir="rtl"><head><title>${invoiceState.docNumber}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+        <html dir="rtl"><head><title>\${invoiceState.docNumber}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
-            ${_getInvoiceCSS()}
+            \${_getInvoiceCSS()}
             @media print { body { padding: 12px; } @page { margin: 10mm; } }
         </style>
-        </head><body>${previewHTML}</body></html>
-    `);
+        </head><body>\${previewHTML}</body></html>
+    \`);
     printWindow.document.close();
     setTimeout(() => { printWindow.print(); }, 600);
 }
