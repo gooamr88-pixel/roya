@@ -917,6 +917,19 @@ function invoicePrint() {
     const preview = document.getElementById('invPreviewCard');
     if (!preview) return;
 
+    // Clone preview and convert QR canvas to img so it survives innerHTML copy
+    let previewHTML = preview.innerHTML;
+    const qrCanvas = document.getElementById('invQRCode');
+    if (qrCanvas) {
+        try {
+            const qrDataUrl = qrCanvas.toDataURL('image/png');
+            previewHTML = previewHTML.replace(
+                /<canvas[^>]*id="invQRCode"[^>]*>[^<]*<\/canvas>/i,
+                `<img src="${qrDataUrl}" style="width:110px;height:110px;border:1px solid #ddd;border-radius:4px;" alt="QR">`
+            );
+        } catch (e) { console.warn('QR print error:', e); }
+    }
+
     const printWindow = window.open('', '_blank', 'width=800,height=1100');
     printWindow.document.write(`
         <!DOCTYPE html>
@@ -926,10 +939,10 @@ function invoicePrint() {
             body { font-family: 'Cairo', 'Inter', system-ui, sans-serif; padding: 20px; background: #fff; color: #1a1a1a; direction: rtl; }
             .inv-preview-card, .inv-preview-body { background: #fff !important; color: #1a1a1a !important; direction: rtl; }
             .inv-preview-card *, .inv-preview-body * { color: #1a1a1a !important; }
-            .inv-new-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 12px 0; direction: rtl; }
-            .inv-new-header-logo { flex-shrink: 0; order: 1; }
+            .inv-new-header { display: flex; align-items: center; justify-content: flex-start; margin-bottom: 12px; padding: 12px 0; direction: rtl; gap: 0; }
+            .inv-new-header-logo { flex-shrink: 0; }
             .inv-new-logo { width: 75px; height: 75px; object-fit: contain; }
-            .inv-new-header-info { flex: 1; text-align: center; order: 2; padding: 0 12px; }
+            .inv-new-header-info { flex: 1; text-align: center; padding: 0 16px; }
             .inv-company-name-ar { font-size: 1.1rem; font-weight: 700; }
             .inv-company-name-en { font-size: 0.65rem; color: #888 !important; margin-top: 2px; }
             .inv-doc-type-badge { text-align: center; padding: 6px 0; margin-bottom: 10px; border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37; font-weight: 700; font-size: 0.9rem; }
@@ -943,9 +956,9 @@ function invoicePrint() {
             th small { display: block; font-weight: 400; font-size: 0.6rem; color: #888 !important; }
             td { padding: 5px 8px; border: 1px solid #ccc; text-align: center; font-size: 0.75rem; }
             .inv-new-bottom { display: grid; grid-template-columns: auto 1fr; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd; direction: rtl; }
-            .inv-new-qr { flex-shrink: 0; order: 2; }
-            .inv-new-qr canvas { width: 100px; height: 100px; border: 1px solid #ddd; }
-            .inv-new-summary { flex: 1; order: 1; }
+            .inv-new-qr { order: 2; }
+            .inv-new-qr img { width: 110px; height: 110px; border: 1px solid #ddd; border-radius: 4px; }
+            .inv-new-summary { order: 1; }
             .inv-new-summary-row { display: flex; justify-content: space-between; padding: 3px 8px; border-bottom: 1px solid #eee; font-size: 0.8rem; }
             .inv-new-summary-row small { font-size: 0.6rem; color: #999 !important; margin-right: 4px; }
             .inv-summary-total { background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-weight: 800; margin-top: 4px; }
@@ -958,7 +971,7 @@ function invoicePrint() {
             [style*="display: none"], [style*="display:none"] { display: none !important; }
             @media print { body { padding: 10px; } @page { margin: 12mm; } }
         </style>
-        </head><body>${preview.innerHTML}</body></html>
+        </head><body>${previewHTML}</body></html>
     `);
     printWindow.document.close();
     setTimeout(() => { printWindow.print(); }, 500);

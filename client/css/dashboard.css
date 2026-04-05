@@ -6286,16 +6286,16 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 /* ── Invoice Header: Logo + Company Info ── */
 .inv-new-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: 12px 0;
     border-bottom: none;
     direction: rtl;
+    gap: 0;
 }
 
 .inv-new-header-logo {
     flex-shrink: 0;
-    order: 1;
 }
 
 .inv-new-logo {
@@ -6308,8 +6308,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 .inv-new-header-info {
     flex: 1;
     text-align: center;
-    order: 2;
-    padding: 0 12px;
+    padding: 0 16px;
 }
 
 .inv-company-name-ar {
