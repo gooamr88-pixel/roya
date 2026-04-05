@@ -494,144 +494,146 @@
             {# ═══ RIGHT: LIVE PREVIEW PANEL ═══ #}
             <div class="inv-preview-panel">
               <div class="inv-preview-card" id="invPreviewCard">
-                <div class="inv-preview-body inv-rtl-layout">
+                <div class="inv-preview-body" dir="rtl">
 
-                  {# ── Invoice Header: Logo + Company Info ── #}
-                  <div class="inv-new-header">
-                    <div class="inv-new-header-logo">
-                      <img src="/images/nabda-logo-dark.svg" alt="Nabda" class="inv-new-logo">
+                  {# ── Header: Logo right + Company info left ── #}
+                  <div class="inv-hdr">
+                    <div class="inv-hdr-logo">
+                      <img src="/images/nabda-logo-dark.svg" alt="Nabda" class="inv-logo-img">
                     </div>
-                    <div class="inv-new-header-info">
-                      <div class="inv-company-name-ar">{{ t.admin.invCompanyNameAr | default('نبضة للدعاية والإعلان والتسويق') }}</div>
-                      <div class="inv-company-name-en">{{ t.admin.invCompanyName | default('Nabda for Advertising, Publicity & Marketing') }}</div>
+                    <div class="inv-hdr-text">
+                      <div class="inv-hdr-ar">نبضة للدعاية والإعلان والتسويق</div>
+                      <div class="inv-hdr-en">Nabda for Advertising, Publicity & Marketing</div>
                     </div>
                   </div>
 
-                  {# ── Document Type Badge ── #}
-                  <div class="inv-doc-type-badge" id="prevDocTypeBadge">
-                    <span class="inv-doc-type-ar" id="prevDocTypeAr">فاتورة ضريبية</span>
-                    <span class="inv-doc-type-divider">|</span>
-                    <span class="inv-doc-type-en" id="prevDocTypeEn">TAX INVOICE</span>
+                  {# ── Document Type Bar ── #}
+                  <div class="inv-type-bar" id="prevDocTypeBadge">
+                    <span class="inv-type-ar" id="prevDocTypeAr">فاتورة ضريبية</span>
+                    <span class="inv-type-sep"></span>
+                    <span class="inv-type-en" id="prevDocTypeEn">TAX INVOICE</span>
                   </div>
 
-                  {# ── Document Meta Row ── #}
-                  <div class="inv-new-meta">
-                    <div class="inv-new-meta-row">
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invIssueDate | default('التاريخ') }}:</span>
-                        <span class="inv-meta-value" id="prevIssueDate">—</span>
+                  {# ── Info Grid ── #}
+                  <div class="inv-info-grid">
+                    <div class="inv-info-row">
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">التاريخ <small>Date</small></span>
+                        <span class="inv-info-val" id="prevIssueDate">—</span>
                       </div>
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invDocNumber | default('رقم الفاتورة') }}:</span>
-                        <span class="inv-meta-value" id="prevDocNumber">—</span>
-                      </div>
-                    </div>
-                    <div class="inv-new-meta-row">
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invClientName | default('اسم العميل') }}:</span>
-                        <span class="inv-meta-value" id="prevClientName">—</span>
-                      </div>
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invPhone | default('التلفون') }}:</span>
-                        <span class="inv-meta-value" id="prevClientPhone">—</span>
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">رقم الفاتورة <small>Invoice #</small></span>
+                        <span class="inv-info-val" id="prevDocNumber">—</span>
                       </div>
                     </div>
-                    <div class="inv-new-meta-row">
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invAddress | default('العنوان') }}:</span>
-                        <span class="inv-meta-value" id="prevClientAddress">—</span>
+                    <div class="inv-info-row">
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">اسم العميل <small>Client</small></span>
+                        <span class="inv-info-val" id="prevClientName">—</span>
                       </div>
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invEmail | default('البريد') }}:</span>
-                        <span class="inv-meta-value" id="prevClientEmail">—</span>
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">التلفون <small>Phone</small></span>
+                        <span class="inv-info-val" id="prevClientPhone">—</span>
                       </div>
                     </div>
-                    <div class="inv-new-meta-row">
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invTaxNumber | default('الرقم الضريبي') }}:</span>
-                        <span class="inv-meta-value" id="prevTaxNumber">—</span>
+                    <div class="inv-info-row">
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">العنوان <small>Address</small></span>
+                        <span class="inv-info-val" id="prevClientAddress">—</span>
                       </div>
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invDueDateLabel | default('تاريخ الاستحقاق') }}:</span>
-                        <span class="inv-meta-value" id="prevDueDate">—</span>
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">البريد <small>Email</small></span>
+                        <span class="inv-info-val" id="prevClientEmail">—</span>
+                      </div>
+                    </div>
+                    <div class="inv-info-row">
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">الرقم الضريبي <small>Tax #</small></span>
+                        <span class="inv-info-val" id="prevTaxNumber">—</span>
+                      </div>
+                      <div class="inv-info-cell">
+                        <span class="inv-info-lbl">تاريخ الاستحقاق <small>Due Date</small></span>
+                        <span class="inv-info-val" id="prevDueDate">—</span>
                       </div>
                     </div>
                   </div>
 
-                  {# ── Line Items Table (Bilingual) ── #}
-                  <table class="inv-prev-table inv-new-table">
+                  {# ── Line Items Table ── #}
+                  <table class="inv-tbl">
                     <thead>
                       <tr>
-                        <th class="inv-th-num">م<br><small>No</small></th>
-                        <th class="inv-th-item">الصنف<br><small>Item</small></th>
-                        <th class="inv-th-desc">الوصف<br><small>Description</small></th>
-                        <th class="inv-th-qty">الكمية<br><small>Qty</small></th>
-                        <th class="inv-th-price">السعر<br><small>Price</small></th>
-                        <th class="inv-th-total">المبلغ<br><small>Amount</small></th>
+                        <th style="width:32px">م<br><small>No</small></th>
+                        <th>الصنف<br><small>Item</small></th>
+                        <th>الوصف<br><small>Desc</small></th>
+                        <th style="width:55px">الكمية<br><small>Qty</small></th>
+                        <th style="width:70px">السعر<br><small>Price</small></th>
+                        <th style="width:80px">المبلغ<br><small>Amount</small></th>
                       </tr>
                     </thead>
                     <tbody id="prevLineItems">
-                      <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;font-style:italic;">{{ t.admin.invPreviewPlaceholder }}</td></tr>
+                      <tr><td colspan="6" class="inv-tbl-empty">{{ t.admin.invPreviewPlaceholder }}</td></tr>
                     </tbody>
                   </table>
 
-                  {# ── Bottom Section: QR + Summary ── #}
-                  <div class="inv-new-bottom">
-                    <div class="inv-new-qr">
-                      <canvas id="invQRCode" width="150" height="150"></canvas>
+                  {# ── Bottom: Summary right + QR left ── #}
+                  <div class="inv-bottom">
+                    <div class="inv-bottom-summary">
+                      <div class="inv-sum-row">
+                        <span class="inv-sum-lbl">الاجمالي <small>Subtotal</small></span>
+                        <span class="inv-sum-val" id="prevSubtotal">0.00</span>
+                      </div>
+                      <div class="inv-sum-row">
+                        <span class="inv-sum-lbl" id="prevDiscountLabel">الخصم <small>Discount</small></span>
+                        <span class="inv-sum-val" id="prevDiscount">0.00</span>
+                      </div>
+                      <div class="inv-sum-row">
+                        <span class="inv-sum-lbl" id="prevTaxLabel">القيمة المضافة <small>VAT</small></span>
+                        <span class="inv-sum-val" id="prevTax">0.00</span>
+                      </div>
+                      <div class="inv-sum-row">
+                        <span class="inv-sum-lbl">الشحن <small>Shipping</small></span>
+                        <span class="inv-sum-val" id="prevShipping">0.00</span>
+                      </div>
+                      <div class="inv-sum-row inv-sum-total">
+                        <span class="inv-sum-lbl">المستحق <small>Total Due</small></span>
+                        <span class="inv-sum-val" id="prevGrandTotal">0.00</span>
+                      </div>
+                      <div class="inv-sum-row inv-sum-paid">
+                        <span class="inv-sum-lbl">المدفوع <small>Paid</small></span>
+                        <span class="inv-sum-val" id="prevAmountPaid">0.00</span>
+                      </div>
+                      <div class="inv-sum-row inv-sum-remaining">
+                        <span class="inv-sum-lbl">المتبقي <small>Balance</small></span>
+                        <span class="inv-sum-val" id="prevRemaining">0.00</span>
+                      </div>
                     </div>
-                    <div class="inv-new-summary">
-                      <div class="inv-new-summary-row">
-                        <span class="inv-summary-val" id="prevSubtotal">0.00</span>
-                        <span class="inv-summary-lbl">الاجمالي <small>Subtotal</small></span>
-                      </div>
-                      <div class="inv-new-summary-row">
-                        <span class="inv-summary-val" id="prevDiscount">0.00</span>
-                        <span class="inv-summary-lbl" id="prevDiscountLabel">الخصم <small>Discount</small></span>
-                      </div>
-                      <div class="inv-new-summary-row">
-                        <span class="inv-summary-val" id="prevTax">0.00</span>
-                        <span class="inv-summary-lbl" id="prevTaxLabel">القيمة المضافة <small>VAT</small></span>
-                      </div>
-                      <div class="inv-new-summary-row">
-                        <span class="inv-summary-val" id="prevShipping">0.00</span>
-                        <span class="inv-summary-lbl">الشحن <small>Shipping</small></span>
-                      </div>
-                      <div class="inv-new-summary-row inv-summary-total">
-                        <span class="inv-summary-val" id="prevGrandTotal">0.00</span>
-                        <span class="inv-summary-lbl">المستحق <small>Total Due</small></span>
-                      </div>
-                      <div class="inv-new-summary-row inv-summary-paid">
-                        <span class="inv-summary-val" id="prevAmountPaid">0.00</span>
-                        <span class="inv-summary-lbl">المدفوع <small>Paid</small></span>
-                      </div>
-                      <div class="inv-new-summary-row inv-summary-remaining">
-                        <span class="inv-summary-val" id="prevRemaining">0.00</span>
-                        <span class="inv-summary-lbl">المتبقي <small>Remaining</small></span>
-                      </div>
+                    <div class="inv-bottom-qr">
+                      <canvas id="invQRCode" width="150" height="150"></canvas>
                     </div>
                   </div>
 
-                  {# Hidden elements for PDF title #}
+                  {# Hidden elements for PDF #}
                   <span id="prevDocTitle" style="display:none">{{ t.admin.invTaxInvoice | upper }}</span>
                   <span id="prevDocTitleAr" style="display:none">{{ t.admin.invTaxInvoiceAr }}</span>
                   <span id="prevDueDateLabel" style="display:none">{{ t.admin.invDueDate }}</span>
 
-                  {# Notes & Terms (hidden until filled) #}
-                  <div class="inv-prev-notes-section" style="display:none">
-                    <div class="inv-prev-notes-label">{{ t.admin.invNotes }} <small>Notes</small></div>
-                    <div class="inv-prev-notes-text" id="prevNotes"></div>
+                  {# Notes & Terms #}
+                  <div class="inv-notes-block" style="display:none">
+                    <div class="inv-notes-title">ملاحظات <small>Notes</small></div>
+                    <div class="inv-notes-text" id="prevNotes"></div>
                   </div>
-                  <div class="inv-prev-notes-section" style="display:none">
-                    <div class="inv-prev-notes-label">{{ t.admin.invTerms }} <small>Terms</small></div>
-                    <div class="inv-prev-notes-text" id="prevTerms"></div>
+                  <div class="inv-notes-block" style="display:none">
+                    <div class="inv-notes-title">الشروط <small>Terms</small></div>
+                    <div class="inv-notes-text" id="prevTerms"></div>
                   </div>
 
                   {# Footer #}
-                  <div class="inv-new-footer">
-                    <div class="inv-new-footer-page" id="prevPageInfo">{{ t.admin.invPageInfo | default('الصفحة 1 من 1') }}</div>
-                    <div class="inv-new-footer-branch" id="prevBranchInfo">{{ t.admin.invBranchInfoPlaceholder | default('الفرع الرئيسي') }}</div>
+                  <div class="inv-footer">
+                    <span id="prevPageInfo">الصفحة 1 من 1</span>
+                    <span class="inv-footer-dot">·</span>
+                    <span id="prevBranchInfo">{{ t.admin.invBranchInfoPlaceholder | default('الفرع الرئيسي') }}</span>
                   </div>
+
                 </div>
               </div>
             </div>
