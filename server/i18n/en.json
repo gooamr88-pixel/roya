@@ -640,7 +640,17 @@
         "invPdfDownloaded": "PDF downloaded",
         "invPdfNotLoaded": "PDF library not loaded.",
         "invFormReset": "Form reset.",
-        "invLivePreview": "Live Preview"
+        "invLivePreview": "Live Preview",
+        "invTaxNumber": "Tax Number",
+        "invTaxNumberPlaceholder": "e.g. 310000014100000",
+        "invAmountPaid": "Amount Paid",
+        "invRemaining": "Remaining",
+        "invBranchInfo": "Branch Info",
+        "invBranchInfoPlaceholder": "Main Branch",
+        "invPageInfo": "Page 1 of 1",
+        "invDueDateLabel": "Due Date",
+        "invCompanyName": "Nabda for Advertising, Publicity & Marketing",
+        "invCompanyNameAr": "نبضة للدعاية والإعلان والتسويق"
     },
     "onboarding": {
         "welcomeTitle": "Welcome to Nabda!",

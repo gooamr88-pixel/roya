@@ -19,11 +19,14 @@ let invoiceState = {
     clientEmail: '',
     clientAddress: '',
     clientPhone: '',
+    taxNumber: '',
     lineItems: [{ name: '', description: '', quantity: 1, unitPrice: 0 }],
     taxPercent: 15,
     discountType: 'percent', // 'percent' | 'fixed'
     discountValue: 0,
     shippingCost: 0,
+    amountPaid: 0,
+    branchInfo: '',
     notes: '',
     terms: '',
 };
@@ -379,9 +382,12 @@ function bindInvoiceFormEvents() {
         invClientEmail: 'clientEmail',
         invClientAddress: 'clientAddress',
         invClientPhone: 'clientPhone',
+        invTaxNumber: 'taxNumber',
         invTaxPercent: 'taxPercent',
         invDiscountValue: 'discountValue',
         invShippingCost: 'shippingCost',
+        invAmountPaid: 'amountPaid',
+        invBranchInfo: 'branchInfo',
         invNotes: 'notes',
         invTerms: 'terms',
     };
@@ -389,7 +395,7 @@ function bindInvoiceFormEvents() {
         const el = document.getElementById(elId);
         if (!el) return;
         el.addEventListener('input', () => {
-            const numFields = ['taxPercent', 'discountValue', 'shippingCost'];
+            const numFields = ['taxPercent', 'discountValue', 'shippingCost', 'amountPaid'];
             invoiceState[stateKey] = numFields.includes(stateKey)
                 ? parseFloat(el.value) || 0
                 : el.value;
@@ -472,6 +478,13 @@ function updatePreview() {
     const discount = getDiscountAmount();
     const tax = getTaxAmount();
     const grandTotal = getGrandTotal();
+    const remaining = Math.max(0, grandTotal - invoiceState.amountPaid);
+
+    // Document type badge
+    const docTypeAr = document.getElementById('prevDocTypeAr');
+    const docTypeEn = document.getElementById('prevDocTypeEn');
+    if (docTypeAr) docTypeAr.textContent = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
+    if (docTypeEn) docTypeEn.textContent = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
 
     const titleEl = document.getElementById('prevDocTitle');
     if (titleEl) titleEl.textContent = isInvoice
@@ -497,6 +510,7 @@ function updatePreview() {
         ? _t('invDueDate', 'Due Date')
         : _t('invValidUntil', 'Valid Until');
 
+    // Client fields
     const cName = document.getElementById('prevClientName');
     if (cName) cName.textContent = invoiceState.clientName || '—';
     const cEmail = document.getElementById('prevClientEmail');
@@ -505,7 +519,14 @@ function updatePreview() {
     if (cAddr) cAddr.textContent = invoiceState.clientAddress || '—';
     const cPhone = document.getElementById('prevClientPhone');
     if (cPhone) cPhone.textContent = invoiceState.clientPhone || '—';
+    const cTax = document.getElementById('prevTaxNumber');
+    if (cTax) cTax.textContent = invoiceState.taxNumber || '—';
 
+    // Branch info
+    const branchEl = document.getElementById('prevBranchInfo');
+    if (branchEl) branchEl.textContent = invoiceState.branchInfo || _t('invBranchInfoPlaceholder', 'الفرع الرئيسي');
+
+    // Line items table
     const previewPlaceholder = _t('invPreviewPlaceholder', 'أضف بنوداً لعرضها هنا');
     const tbody = document.getElementById('prevLineItems');
     if (tbody) {
@@ -525,6 +546,7 @@ function updatePreview() {
         }
     }
 
+    // Financial summary
     const setFinancial = (id, value) => {
         const el = document.getElementById(id);
         if (el) el.textContent = formatNum(value);
@@ -534,22 +556,22 @@ function updatePreview() {
     setFinancial('prevTax', tax);
     setFinancial('prevShipping', invoiceState.shippingCost);
     setFinancial('prevGrandTotal', grandTotal);
+    setFinancial('prevAmountPaid', invoiceState.amountPaid);
+    setFinancial('prevRemaining', remaining);
 
-    // Remaining = 0 for now (can be extended with payment tracking)
-    const remainEl = document.getElementById('prevRemaining');
-    if (remainEl) remainEl.textContent = '0';
-
+    // Labels
     const vatLabel = _t('invVAT', 'القيمة المضافة');
     const discountLabelText = _t('invDiscount', 'الخصم');
     const taxLabel = document.getElementById('prevTaxLabel');
-    if (taxLabel) taxLabel.textContent = `${vatLabel} ${invoiceState.taxPercent}%`;
+    if (taxLabel) taxLabel.innerHTML = `${vatLabel} ${invoiceState.taxPercent}% <small>VAT</small>`;
     const discountLabel = document.getElementById('prevDiscountLabel');
     if (discountLabel) {
-        discountLabel.textContent = invoiceState.discountType === 'percent'
-            ? `${discountLabelText} (${invoiceState.discountValue}%)`
-            : `${discountLabelText}`;
+        discountLabel.innerHTML = invoiceState.discountType === 'percent'
+            ? `${discountLabelText} (${invoiceState.discountValue}%) <small>Discount</small>`
+            : `${discountLabelText} <small>Discount</small>`;
     }
 
+    // Notes & Terms
     const notesEl = document.getElementById('prevNotes');
     if (notesEl) {
         notesEl.textContent = invoiceState.notes || '';
@@ -573,33 +595,77 @@ function formatNum(amount) {
     }).format(amount);
 }
 
-/* ── QR Code Generator ── */
+/* ── Real QR Code Generator using qrcode-generator ── */
 function generateInvoiceQR() {
     const canvas = document.getElementById('invQRCode');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const size = canvas.width;
 
-    // Generate a simple QR-like pattern based on invoice data
+    // Clear canvas
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, size, size);
 
-    const data = `${invoiceState.docNumber}|${invoiceState.clientName}|${getGrandTotal().toFixed(2)}|${invoiceState.issueDate}`;
-    const cellSize = Math.floor(size / 25);
-    
-    // Create pseudo-QR pattern from data hash
+    // Build invoice data string (structured for scanning)
+    const grandTotal = getGrandTotal();
+    const qrData = [
+        `Invoice: ${invoiceState.docNumber}`,
+        `Date: ${invoiceState.issueDate}`,
+        `Client: ${invoiceState.clientName || 'N/A'}`,
+        `Total: ${grandTotal.toFixed(2)}`,
+        invoiceState.taxNumber ? `Tax#: ${invoiceState.taxNumber}` : '',
+        invoiceState.clientPhone ? `Phone: ${invoiceState.clientPhone}` : '',
+        `VAT: ${getTaxAmount().toFixed(2)}`,
+        `Paid: ${invoiceState.amountPaid.toFixed(2)}`,
+        `Due: ${Math.max(0, grandTotal - invoiceState.amountPaid).toFixed(2)}`,
+    ].filter(Boolean).join('\n');
+
+    // Use qrcode-generator library if available
+    if (typeof qrcode !== 'undefined') {
+        try {
+            const qr = qrcode(0, 'M');
+            qr.addData(qrData);
+            qr.make();
+
+            const moduleCount = qr.getModuleCount();
+            const cellSize = size / (moduleCount + 8); // padding
+            const offset = (size - moduleCount * cellSize) / 2;
+
+            ctx.fillStyle = '#000000';
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (qr.isDark(row, col)) {
+                        ctx.fillRect(
+                            offset + col * cellSize,
+                            offset + row * cellSize,
+                            cellSize + 0.5,
+                            cellSize + 0.5
+                        );
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('QR generation error:', e);
+            drawFallbackQR(ctx, size, qrData);
+        }
+    } else {
+        drawFallbackQR(ctx, size, qrData);
+    }
+}
+
+/* ── Fallback QR pattern if library not loaded ── */
+function drawFallbackQR(ctx, size, data) {
     ctx.fillStyle = '#000000';
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
         hash = ((hash << 5) - hash) + data.charCodeAt(i);
         hash |= 0;
     }
-    
-    // Draw finder patterns (corners)
+    const cellSize = Math.floor(size / 25);
     const drawFinder = (x, y) => {
         for (let i = 0; i < 7; i++) {
             for (let j = 0; j < 7; j++) {
-                if (i === 0 || i === 6 || j === 0 || j === 6 || 
+                if (i === 0 || i === 6 || j === 0 || j === 6 ||
                     (i >= 2 && i <= 4 && j >= 2 && j <= 4)) {
                     ctx.fillRect((x + i) * cellSize, (y + j) * cellSize, cellSize, cellSize);
                 }
@@ -609,12 +675,9 @@ function generateInvoiceQR() {
     drawFinder(1, 1);
     drawFinder(17, 1);
     drawFinder(1, 17);
-    
-    // Fill data area
     const rng = Math.abs(hash);
     for (let row = 0; row < 25; row++) {
         for (let col = 0; col < 25; col++) {
-            // Skip finder areas
             if ((row < 9 && col < 9) || (row < 9 && col > 15) || (row > 15 && col < 9)) continue;
             if (((rng * (row * 25 + col + 1)) % 7) < 3) {
                 ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
@@ -671,38 +734,56 @@ function invoiceDownloadPDF() {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 14;
+    const grandTotal = getGrandTotal();
+    const remaining = Math.max(0, grandTotal - invoiceState.amountPaid);
 
     // ── Logo area (centered top) ──
     doc.setFillColor(17, 17, 17);
     doc.roundedRect(pageWidth / 2 - 35, 8, 70, 22, 3, 3, 'F');
     doc.setFontSize(14);
     doc.setTextColor(212, 175, 55);
-    doc.text('NABDA', pageWidth / 2, 20, { align: 'center' });
-    doc.setFontSize(6);
+    doc.text('NABDA', pageWidth / 2, 18, { align: 'center' });
+    doc.setFontSize(5);
     doc.setTextColor(200, 200, 200);
-    doc.text('Advertising, Publicity & Marketing', pageWidth / 2, 26, { align: 'center' });
+    doc.text('Advertising, Publicity & Marketing', pageWidth / 2, 23, { align: 'center' });
+    doc.setFontSize(5);
+    doc.setTextColor(180, 180, 180);
+    doc.text('للدعاية والإعلان والتسويق', pageWidth / 2, 27, { align: 'center' });
 
-    // ── Document info rows ──
-    let yPos = 38;
-    doc.setFontSize(8);
+    // ── Document type badge ──
+    let yPos = 35;
+    doc.setFontSize(10);
+    doc.setTextColor(40, 40, 40);
+    const docTypeAr = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
+    const docTypeEn = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
+    doc.text(`${docTypeAr}  |  ${docTypeEn}`, pageWidth / 2, yPos, { align: 'center' });
 
-    // Draw info box
+    // ── Document info box ──
+    yPos = 42;
+    doc.setFontSize(7.5);
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.3);
-    doc.rect(margin, yPos, pageWidth - 2 * margin, 30);
+    const infoBoxHeight = invoiceState.taxNumber ? 38 : 30;
+    doc.rect(margin, yPos, pageWidth - 2 * margin, infoBoxHeight);
 
-    // Row 1: Date + Invoice Number
+    // Row 1: Date / Invoice Number
     doc.setTextColor(60, 60, 60);
-    doc.text(`${_t('invIssueDate', 'Date')}: ${invoiceState.issueDate || '—'}`, pageWidth - margin - 2, yPos + 6, { align: 'right' });
-    doc.text(`${_t('invDocNumber', 'Invoice #')}: ${invoiceState.docNumber}`, margin + 2, yPos + 6);
+    doc.text(`التاريخ Date: ${invoiceState.issueDate || '—'}`, pageWidth - margin - 2, yPos + 6, { align: 'right' });
+    doc.text(`رقم الفاتورة Invoice #: ${invoiceState.docNumber}`, margin + 2, yPos + 6);
 
-    // Row 2: Client + Phone
-    doc.text(`${_t('invClientName', 'Client')}: ${invoiceState.clientName || '—'}`, pageWidth - margin - 2, yPos + 14, { align: 'right' });
-    doc.text(`${_t('invPhone', 'Phone')}: ${invoiceState.clientPhone || '—'}`, margin + 2, yPos + 14);
+    // Row 2: Client / Phone
+    doc.text(`اسم العميل Client: ${invoiceState.clientName || '—'}`, pageWidth - margin - 2, yPos + 14, { align: 'right' });
+    doc.text(`التلفون Phone: ${invoiceState.clientPhone || '—'}`, margin + 2, yPos + 14);
 
-    // Row 3: Address + Email
-    doc.text(`${_t('invAddress', 'Address')}: ${invoiceState.clientAddress || '—'}`, pageWidth - margin - 2, yPos + 22, { align: 'right' });
-    doc.text(`${_t('invEmail', 'Email')}: ${invoiceState.clientEmail || '—'}`, margin + 2, yPos + 22);
+    // Row 3: Address / Email
+    doc.text(`العنوان Address: ${invoiceState.clientAddress || '—'}`, pageWidth - margin - 2, yPos + 22, { align: 'right' });
+    doc.text(`البريد Email: ${invoiceState.clientEmail || '—'}`, margin + 2, yPos + 22);
+
+    // Row 4: Tax Number / Due Date (if applicable)
+    if (invoiceState.taxNumber) {
+        doc.text(`الرقم الضريبي Tax #: ${invoiceState.taxNumber}`, pageWidth - margin - 2, yPos + 30, { align: 'right' });
+        doc.text(`الاستحقاق Due: ${invoiceState.dueDate || '—'}`, margin + 2, yPos + 30);
+    }
 
     // ── Line Items Table ──
     const tableData = invoiceState.lineItems
@@ -717,18 +798,11 @@ function invoiceDownloadPDF() {
         ]);
 
     doc.autoTable({
-        startY: yPos + 34,
-        head: [[
-            _t('invTotal', 'المبلغ'),
-            _t('invUnitPrice', 'السعر'),
-            _t('invQty', 'الكمية'),
-            _t('invDescription', 'الوصف'),
-            _t('invItem', 'الصنف'),
-            'م'
-        ]],
+        startY: yPos + infoBoxHeight + 4,
+        head: [['المبلغ\nAmount', 'السعر\nPrice', 'الكمية\nQty', 'الوصف\nDescription', 'الصنف\nItem', 'م\nNo']],
         body: tableData,
         styles: {
-            fontSize: 8,
+            fontSize: 7.5,
             cellPadding: 3,
             textColor: [40, 40, 40],
             lineColor: [180, 180, 180],
@@ -739,7 +813,7 @@ function invoiceDownloadPDF() {
             fillColor: [240, 240, 240],
             textColor: [30, 30, 30],
             fontStyle: 'bold',
-            fontSize: 7,
+            fontSize: 6.5,
             halign: 'center',
         },
         alternateRowStyles: { fillColor: [250, 250, 250] },
@@ -755,65 +829,84 @@ function invoiceDownloadPDF() {
         tableLineWidth: 0.3,
     });
 
-    let finalY = doc.lastAutoTable.finalY + 8;
+    let finalY = doc.lastAutoTable.finalY + 6;
 
-    // ── Summary Section ──
-    const summaryX = pageWidth - margin;
-    const summaryLabelX = summaryX - 45;
-    
-    const summaryLines = [
-        [_t('invSubtotal', 'الاجمالي'), formatNum(getSubtotal())],
-        [_t('invDiscount', 'الخصم'), formatNum(getDiscountAmount())],
-        [`${_t('invVAT', 'القيمة المضافة')} ${invoiceState.taxPercent}%`, formatNum(getTaxAmount())],
-    ];
-    if (invoiceState.shippingCost > 0) {
-        summaryLines.push([_t('invShipping', 'الشحن'), formatNum(invoiceState.shippingCost)]);
+    // ── QR Code + Summary side by side ──
+    const qrCanvas = document.getElementById('invQRCode');
+    if (qrCanvas) {
+        try {
+            const qrDataUrl = qrCanvas.toDataURL('image/png');
+            doc.addImage(qrDataUrl, 'PNG', margin, finalY, 30, 30);
+        } catch (e) { console.warn('QR embed error:', e); }
     }
 
-    doc.setFontSize(8);
+    // ── Summary Section (right side) ──
+    const summaryX = pageWidth - margin;
+    const summaryLabelX = summaryX - 50;
+
+    const summaryLines = [
+        ['الاجمالي Subtotal', formatNum(getSubtotal())],
+        ['الخصم Discount', formatNum(getDiscountAmount())],
+        [`القيمة المضافة VAT ${invoiceState.taxPercent}%`, formatNum(getTaxAmount())],
+    ];
+    if (invoiceState.shippingCost > 0) {
+        summaryLines.push(['الشحن Shipping', formatNum(invoiceState.shippingCost)]);
+    }
+
+    doc.setFontSize(7.5);
     summaryLines.forEach(([label, value]) => {
         doc.setTextColor(80, 80, 80);
         doc.text(label, summaryX, finalY, { align: 'right' });
         doc.setTextColor(40, 40, 40);
         doc.text(value, summaryLabelX, finalY, { align: 'right' });
-        finalY += 6;
+        finalY += 5.5;
     });
 
-    // Total line
+    // Total separator line
     doc.setDrawColor(150, 150, 150);
     doc.setLineWidth(0.5);
-    doc.line(summaryLabelX - 30, finalY - 2, summaryX, finalY - 2);
-    finalY += 4;
-    
-    doc.setFontSize(10);
+    doc.line(summaryLabelX - 20, finalY - 1, summaryX, finalY - 1);
+    finalY += 3;
+
+    // Grand total
+    doc.setFontSize(9);
     doc.setTextColor(30, 30, 30);
-    doc.text(_t('invGrandTotal', 'المستحق'), summaryX, finalY, { align: 'right' });
-    doc.text(formatNum(getGrandTotal()), summaryLabelX, finalY, { align: 'right' });
-    
-    finalY += 6;
-    doc.setFontSize(8);
-    doc.text(_t('invRemaining', 'المتبقي'), summaryX, finalY, { align: 'right' });
-    doc.text('0', summaryLabelX, finalY, { align: 'right' });
+    doc.text('المستحق Total Due', summaryX, finalY, { align: 'right' });
+    doc.text(formatNum(grandTotal), summaryLabelX, finalY, { align: 'right' });
+
+    // Paid
+    finalY += 5.5;
+    doc.setFontSize(7.5);
+    doc.setTextColor(60, 60, 60);
+    doc.text('المدفوع Paid', summaryX, finalY, { align: 'right' });
+    doc.text(formatNum(invoiceState.amountPaid), summaryLabelX, finalY, { align: 'right' });
+
+    // Remaining
+    finalY += 5.5;
+    doc.setTextColor(remaining > 0 ? 180 : 60, remaining > 0 ? 40 : 60, remaining > 0 ? 40 : 60);
+    doc.text('المتبقي Remaining', summaryX, finalY, { align: 'right' });
+    doc.text(formatNum(remaining), summaryLabelX, finalY, { align: 'right' });
 
     // ── Notes ──
-    finalY += 12;
+    finalY += 10;
     if (invoiceState.notes) {
-        doc.setFontSize(7);
+        doc.setFontSize(6.5);
         doc.setTextColor(120, 120, 120);
-        doc.text(_t('invNotes', 'Notes'), pageWidth - margin, finalY, { align: 'right' });
-        doc.setFontSize(8);
+        doc.text('ملاحظات Notes', pageWidth - margin, finalY, { align: 'right' });
+        doc.setFontSize(7.5);
         doc.setTextColor(80, 80, 80);
-        doc.text(invoiceState.notes, pageWidth - margin, finalY + 5, { maxWidth: pageWidth - 28, align: 'right' });
-        finalY += 14;
+        doc.text(invoiceState.notes, pageWidth - margin, finalY + 4, { maxWidth: pageWidth - 28, align: 'right' });
+        finalY += 12;
     }
 
     // ── Footer ──
-    doc.setFontSize(7);
+    doc.setFontSize(6.5);
     doc.setTextColor(150, 150, 150);
-    doc.text('الصفحة 1 من 1', pageWidth / 2, pageHeight - 12, { align: 'center' });
-    doc.setFontSize(8);
+    doc.text('الصفحة 1 من 1  |  Page 1 of 1', pageWidth / 2, pageHeight - 12, { align: 'center' });
+    doc.setFontSize(7.5);
     doc.setTextColor(100, 100, 100);
-    doc.text(_t('invBranchInfo', 'الفرع الرئيسي'), pageWidth / 2, pageHeight - 7, { align: 'center' });
+    const branchText = invoiceState.branchInfo || _t('invBranchInfoPlaceholder', 'الفرع الرئيسي');
+    doc.text(branchText, pageWidth / 2, pageHeight - 7, { align: 'center' });
 
     const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
     doc.save(filename);
@@ -830,22 +923,39 @@ function invoicePrint() {
         <html dir="rtl"><head><title>${invoiceState.docNumber}</title>
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Cairo', 'Inter', system-ui, sans-serif; padding: 30px; background: #fff; color: #1a1a1a; direction: rtl; }
-            .inv-preview-card { background: #fff !important; color: #1a1a1a !important; }
-            .inv-preview-card * { color: #1a1a1a !important; }
-            .inv-new-logo { width: 140px; height: auto; background: #111; border-radius: 8px; padding: 6px 10px; }
-            table { width: 100%; border-collapse: collapse; }
-            th { background: #f0f0f0 !important; padding: 6px 10px; text-align: center; font-size: 0.75rem; border: 1px solid #bbb; }
-            td { padding: 6px 10px; border: 1px solid #ccc; text-align: center; }
+            body { font-family: 'Cairo', 'Inter', system-ui, sans-serif; padding: 20px; background: #fff; color: #1a1a1a; direction: rtl; }
+            .inv-preview-card, .inv-preview-body { background: #fff !important; color: #1a1a1a !important; }
+            .inv-preview-card *, .inv-preview-body * { color: #1a1a1a !important; }
+            .inv-new-header { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 12px; padding: 12px; }
+            .inv-new-logo { width: 80px; height: 80px; object-fit: contain; }
+            .inv-new-header-info { text-align: center; }
+            .inv-company-name-ar { font-size: 1rem; font-weight: 700; }
+            .inv-company-name-en { font-size: 0.7rem; color: #666 !important; }
+            .inv-doc-type-badge { text-align: center; padding: 6px 0; margin-bottom: 10px; border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37; font-weight: 700; font-size: 0.9rem; }
+            .inv-doc-type-divider { margin: 0 8px; color: #ccc !important; }
             .inv-new-meta { background: #fafafa; border: 1px solid #eee; padding: 8px 12px; border-radius: 4px; margin: 10px 0; }
             .inv-new-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
-            .inv-meta-label { font-weight: 600; font-size: 0.8rem; }
-            .inv-new-bottom { display: grid; grid-template-columns: auto 1fr; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd; }
-            .inv-new-summary-row { display: flex; justify-content: space-between; padding: 3px 8px; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+            .inv-meta-label { font-weight: 600; font-size: 0.75rem; }
+            .inv-meta-value { font-size: 0.75rem; }
+            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            th { background: #f0f0f0 !important; padding: 6px 8px; text-align: center; font-size: 0.7rem; border: 1px solid #bbb; }
+            th small { display: block; font-weight: 400; font-size: 0.6rem; color: #888 !important; }
+            td { padding: 5px 8px; border: 1px solid #ccc; text-align: center; font-size: 0.75rem; }
+            .inv-new-bottom { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd; }
+            .inv-new-qr { flex-shrink: 0; }
+            .inv-new-qr canvas { width: 100px; height: 100px; border: 1px solid #ddd; }
+            .inv-new-summary { flex: 1; }
+            .inv-new-summary-row { display: flex; justify-content: space-between; padding: 3px 8px; border-bottom: 1px solid #eee; font-size: 0.8rem; }
+            .inv-new-summary-row small { font-size: 0.6rem; color: #999 !important; margin-right: 4px; }
             .inv-summary-total { background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-weight: 800; margin-top: 4px; }
-            .inv-new-footer { text-align: center; margin-top: 16px; padding-top: 10px; border-top: 1px solid #ddd; }
-            canvas { width: 90px; height: 90px; border: 1px solid #ddd; }
-            @media print { body { padding: 10px; } @page { margin: 15mm; } }
+            .inv-summary-paid { background: #f0fff0; }
+            .inv-summary-remaining { background: #fff5f5; font-weight: 700; }
+            .inv-new-footer { text-align: center; margin-top: 16px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 0.7rem; color: #999 !important; }
+            .inv-prev-notes-section { margin-top: 8px; padding: 6px 8px; border: 1px solid #eee; border-radius: 4px; font-size: 0.75rem; }
+            .inv-prev-notes-label { font-weight: 600; font-size: 0.7rem; margin-bottom: 2px; }
+            .inv-prev-notes-label small { color: #999 !important; }
+            [style*="display: none"], [style*="display:none"] { display: none !important; }
+            @media print { body { padding: 10px; } @page { margin: 12mm; } }
         </style>
         </head><body>${preview.innerHTML}</body></html>
     `);
@@ -864,11 +974,14 @@ function invoiceReset() {
         clientEmail: '',
         clientAddress: '',
         clientPhone: '',
+        taxNumber: '',
         lineItems: [{ name: '', description: '', quantity: 1, unitPrice: 0 }],
         taxPercent: 15,
         discountType: 'percent',
         discountValue: 0,
         shippingCost: 0,
+        amountPaid: 0,
+        branchInfo: '',
         notes: '',
         terms: '',
     };

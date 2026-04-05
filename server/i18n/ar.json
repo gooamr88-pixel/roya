@@ -767,7 +767,17 @@
         "invPdfDownloaded": "تم تحميل PDF",
         "invPdfNotLoaded": "مكتبة PDF غير محملة.",
         "invFormReset": "تم إعادة تعيين النموذج.",
-        "invLivePreview": "معاينة مباشرة"
+        "invLivePreview": "معاينة مباشرة",
+        "invTaxNumber": "الرقم الضريبي",
+        "invTaxNumberPlaceholder": "مثال: 310000014100000",
+        "invAmountPaid": "المدفوع",
+        "invRemaining": "المتبقي",
+        "invBranchInfo": "معلومات الفرع",
+        "invBranchInfoPlaceholder": "الفرع الرئيسي",
+        "invPageInfo": "الصفحة 1 من 1",
+        "invDueDateLabel": "تاريخ الاستحقاق",
+        "invCompanyName": "Nabda for Advertising, Publicity & Marketing",
+        "invCompanyNameAr": "نبضة للدعاية والإعلان والتسويق"
     },
     "onboarding": {
         "welcomeTitle": "مرحباً بك في نبضة!",

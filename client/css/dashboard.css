@@ -6282,30 +6282,67 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     color: #1a1a1a;
 }
 
-/* ── Invoice Header: Logo ── */
+/* ── Invoice Header: Logo + Company Info ── */
 .inv-new-header {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 16px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: none;
 }
 
-.inv-new-header-right {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+.inv-new-header-logo {
+    flex-shrink: 0;
 }
 
 .inv-new-logo {
-    width: 160px;
-    height: auto;
+    width: 90px;
+    height: 90px;
     object-fit: contain;
     filter: none;
-    background: #111;
-    border-radius: 8px;
-    padding: 8px 12px;
+}
+
+.inv-new-header-info {
+    text-align: center;
+}
+
+.inv-company-name-ar {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.4;
+}
+
+.inv-company-name-en {
+    font-size: 0.65rem;
+    color: #777;
+    letter-spacing: 0.02em;
+    margin-top: 2px;
+}
+
+/* ── Document Type Badge ── */
+.inv-doc-type-badge {
+    text-align: center;
+    padding: 6px 0;
+    margin: 4px 0 10px 0;
+    border-top: 2px solid #d4af37;
+    border-bottom: 2px solid #d4af37;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 0.03em;
+}
+
+.inv-doc-type-divider {
+    margin: 0 10px;
+    color: #ccc;
+    font-weight: 300;
+}
+
+.inv-doc-type-en {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
 }
 
 /* ── Document Meta ── */
@@ -6344,7 +6381,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     font-size: 0.75rem;
 }
 
-/* ── Table — Arabic Invoice Style ── */
+/* ── Table — Bilingual Invoice Style ── */
 .inv-new-table {
     width: 100%;
     border-collapse: collapse;
@@ -6355,7 +6392,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 .inv-new-table thead th {
     background: #f0f0f0 !important;
     color: #1a1a1a !important;
-    padding: 8px 10px !important;
+    padding: 6px 8px !important;
     text-align: center !important;
     font-size: 0.72rem !important;
     font-weight: 700 !important;
@@ -6363,6 +6400,15 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     text-transform: none !important;
     letter-spacing: 0 !important;
     white-space: nowrap;
+    line-height: 1.3;
+}
+
+.inv-new-table thead th small {
+    display: block;
+    font-weight: 400;
+    font-size: 0.58rem;
+    color: #888;
+    margin-top: 1px;
 }
 
 .inv-th-num { width: 35px !important; }
@@ -6401,8 +6447,8 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 }
 
 .inv-new-qr canvas {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     border: 1px solid #ddd;
     border-radius: 4px;
     background: #fff;
@@ -6422,6 +6468,12 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     padding: 4px 12px;
     border-bottom: 1px solid #eee;
     font-size: 0.78rem;
+}
+
+.inv-new-summary-row small {
+    font-size: 0.58rem;
+    color: #999;
+    margin-right: 4px;
 }
 
 .inv-summary-lbl {
@@ -6456,8 +6508,25 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     font-size: 0.9rem;
 }
 
+.inv-new-summary-row.inv-summary-paid {
+    background: #f0fdf4;
+    border-radius: 3px;
+}
+
+.inv-new-summary-row.inv-summary-paid .inv-summary-val {
+    color: #166534;
+    font-weight: 600;
+}
+
 .inv-new-summary-row.inv-summary-remaining {
+    background: #fef2f2;
+    border-radius: 3px;
     margin-top: 2px;
+}
+
+.inv-new-summary-row.inv-summary-remaining .inv-summary-val {
+    color: #b91c1c;
+    font-weight: 700;
 }
 
 /* ── Footer ── */
@@ -6489,6 +6558,11 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 
 .inv-rtl-layout .inv-prev-notes-label {
     color: #555;
+}
+
+.inv-rtl-layout .inv-prev-notes-label small {
+    color: #999;
+    margin-right: 4px;
 }
 
 .inv-rtl-layout .inv-prev-notes-text {

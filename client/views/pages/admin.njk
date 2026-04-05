@@ -12,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   {# FIX (F5): All admin styles moved to dashboard.css — no more inline <style> #}
 {% endblock %}
 
@@ -386,6 +387,12 @@
                     <input class="form-input" type="tel" id="invClientPhone" placeholder="{{ t.admin.invPhonePlaceholder }}">
                   </div>
                 </div>
+                <div class="inv-form-row">
+                  <div class="inv-form-group">
+                    <label>{{ t.admin.invTaxNumber | default('Tax Number') }}</label>
+                    <input class="form-input" type="text" id="invTaxNumber" placeholder="{{ t.admin.invTaxNumberPlaceholder | default('e.g. 310000014100000') }}">
+                  </div>
+                </div>
               </div>
 
               <div class="inv-section-divider"></div>
@@ -436,9 +443,15 @@
                     <input class="form-input" type="number" id="invDiscountValue" min="0" step="0.01" value="0" placeholder="0">
                   </div>
                 </div>
-                <div class="inv-form-group">
-                  <label>{{ t.admin.invShipping }}</label>
-                  <input class="form-input" type="number" id="invShippingCost" min="0" step="0.01" value="0" placeholder="0.00">
+                <div class="inv-form-row">
+                  <div class="inv-form-group">
+                    <label>{{ t.admin.invShipping }}</label>
+                    <input class="form-input" type="number" id="invShippingCost" min="0" step="0.01" value="0" placeholder="0.00">
+                  </div>
+                  <div class="inv-form-group">
+                    <label>{{ t.admin.invAmountPaid | default('Amount Paid') }}</label>
+                    <input class="form-input" type="number" id="invAmountPaid" min="0" step="0.01" value="0" placeholder="0.00">
+                  </div>
                 </div>
               </div>
 
@@ -447,6 +460,10 @@
               {# Additional Info #}
               <div class="inv-section">
                 <div class="inv-section-title"><i class="fas fa-note-sticky"></i> {{ t.admin.invAdditional }}</div>
+                <div class="inv-form-group">
+                  <label>{{ t.admin.invBranchInfo | default('Branch Info') }}</label>
+                  <input class="form-input" type="text" id="invBranchInfo" placeholder="{{ t.admin.invBranchInfoPlaceholder | default('Main Branch') }}" value="">
+                </div>
                 <div class="inv-form-group">
                   <label>{{ t.admin.invNotes }}</label>
                   <textarea class="form-textarea" id="invNotes" rows="2" placeholder="{{ t.admin.invNotesPlaceholder }}"></textarea>
@@ -479,11 +496,22 @@
               <div class="inv-preview-card" id="invPreviewCard">
                 <div class="inv-preview-body inv-rtl-layout">
 
-                  {# ── Invoice Header: Logo + Title ── #}
+                  {# ── Invoice Header: Logo + Company Info ── #}
                   <div class="inv-new-header">
-                    <div class="inv-new-header-right">
-                      <img src="/images/nabda-invoice-logo.svg" alt="Nabda Logo" class="inv-new-logo">
+                    <div class="inv-new-header-logo">
+                      <img src="/images/nabda-logo-dark.svg" alt="Nabda" class="inv-new-logo">
                     </div>
+                    <div class="inv-new-header-info">
+                      <div class="inv-company-name-ar">{{ t.admin.invCompanyNameAr | default('نبضة للدعاية والإعلان والتسويق') }}</div>
+                      <div class="inv-company-name-en">{{ t.admin.invCompanyName | default('Nabda for Advertising, Publicity & Marketing') }}</div>
+                    </div>
+                  </div>
+
+                  {# ── Document Type Badge ── #}
+                  <div class="inv-doc-type-badge" id="prevDocTypeBadge">
+                    <span class="inv-doc-type-ar" id="prevDocTypeAr">فاتورة ضريبية</span>
+                    <span class="inv-doc-type-divider">|</span>
+                    <span class="inv-doc-type-en" id="prevDocTypeEn">TAX INVOICE</span>
                   </div>
 
                   {# ── Document Meta Row ── #}
@@ -518,18 +546,28 @@
                         <span class="inv-meta-value" id="prevClientEmail">—</span>
                       </div>
                     </div>
+                    <div class="inv-new-meta-row">
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invTaxNumber | default('الرقم الضريبي') }}:</span>
+                        <span class="inv-meta-value" id="prevTaxNumber">—</span>
+                      </div>
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invDueDateLabel | default('تاريخ الاستحقاق') }}:</span>
+                        <span class="inv-meta-value" id="prevDueDate">—</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {# ── Line Items Table (Arabic Style) ── #}
+                  {# ── Line Items Table (Bilingual) ── #}
                   <table class="inv-prev-table inv-new-table">
                     <thead>
                       <tr>
-                        <th class="inv-th-num">م</th>
-                        <th class="inv-th-item">{{ t.admin.invItem | default('الصنف') }}</th>
-                        <th class="inv-th-desc">{{ t.admin.invDescription | default('الوصف') }}</th>
-                        <th class="inv-th-qty">{{ t.admin.invQty | default('الكمية') }}</th>
-                        <th class="inv-th-price">{{ t.admin.invUnitPrice | default('السعر') }}</th>
-                        <th class="inv-th-total">{{ t.admin.invTotal | default('المبلغ') }}</th>
+                        <th class="inv-th-num">م<br><small>No</small></th>
+                        <th class="inv-th-item">الصنف<br><small>Item</small></th>
+                        <th class="inv-th-desc">الوصف<br><small>Description</small></th>
+                        <th class="inv-th-qty">الكمية<br><small>Qty</small></th>
+                        <th class="inv-th-price">السعر<br><small>Price</small></th>
+                        <th class="inv-th-total">المبلغ<br><small>Amount</small></th>
                       </tr>
                     </thead>
                     <tbody id="prevLineItems">
@@ -540,32 +578,36 @@
                   {# ── Bottom Section: QR + Summary ── #}
                   <div class="inv-new-bottom">
                     <div class="inv-new-qr">
-                      <canvas id="invQRCode" width="120" height="120"></canvas>
+                      <canvas id="invQRCode" width="150" height="150"></canvas>
                     </div>
                     <div class="inv-new-summary">
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevSubtotal">0.00</span>
-                        <span class="inv-summary-lbl">{{ t.admin.invSubtotal | default('الاجمالي') }}</span>
+                        <span class="inv-summary-lbl">الاجمالي <small>Subtotal</small></span>
                       </div>
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevDiscount">0.00</span>
-                        <span class="inv-summary-lbl" id="prevDiscountLabel">{{ t.admin.invDiscount | default('الخصم') }}</span>
+                        <span class="inv-summary-lbl" id="prevDiscountLabel">الخصم <small>Discount</small></span>
                       </div>
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevTax">0.00</span>
-                        <span class="inv-summary-lbl" id="prevTaxLabel">{{ t.admin.invVAT | default('القيمة المضافة') }}</span>
+                        <span class="inv-summary-lbl" id="prevTaxLabel">القيمة المضافة <small>VAT</small></span>
                       </div>
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevShipping">0.00</span>
-                        <span class="inv-summary-lbl">{{ t.admin.invShipping | default('الشحن') }}</span>
+                        <span class="inv-summary-lbl">الشحن <small>Shipping</small></span>
                       </div>
                       <div class="inv-new-summary-row inv-summary-total">
                         <span class="inv-summary-val" id="prevGrandTotal">0.00</span>
-                        <span class="inv-summary-lbl">{{ t.admin.invGrandTotal | default('المستحق') }}</span>
+                        <span class="inv-summary-lbl">المستحق <small>Total Due</small></span>
+                      </div>
+                      <div class="inv-new-summary-row inv-summary-paid">
+                        <span class="inv-summary-val" id="prevAmountPaid">0.00</span>
+                        <span class="inv-summary-lbl">المدفوع <small>Paid</small></span>
                       </div>
                       <div class="inv-new-summary-row inv-summary-remaining">
-                        <span class="inv-summary-val" id="prevRemaining">0</span>
-                        <span class="inv-summary-lbl">{{ t.admin.invRemaining | default('المتبقي') }}</span>
+                        <span class="inv-summary-val" id="prevRemaining">0.00</span>
+                        <span class="inv-summary-lbl">المتبقي <small>Remaining</small></span>
                       </div>
                     </div>
                   </div>
@@ -573,23 +615,22 @@
                   {# Hidden elements for PDF title #}
                   <span id="prevDocTitle" style="display:none">{{ t.admin.invTaxInvoice | upper }}</span>
                   <span id="prevDocTitleAr" style="display:none">{{ t.admin.invTaxInvoiceAr }}</span>
-                  <span id="prevDueDate" style="display:none">—</span>
                   <span id="prevDueDateLabel" style="display:none">{{ t.admin.invDueDate }}</span>
 
                   {# Notes & Terms (hidden until filled) #}
                   <div class="inv-prev-notes-section" style="display:none">
-                    <div class="inv-prev-notes-label">{{ t.admin.invNotes }}</div>
+                    <div class="inv-prev-notes-label">{{ t.admin.invNotes }} <small>Notes</small></div>
                     <div class="inv-prev-notes-text" id="prevNotes"></div>
                   </div>
                   <div class="inv-prev-notes-section" style="display:none">
-                    <div class="inv-prev-notes-label">{{ t.admin.invTerms }}</div>
+                    <div class="inv-prev-notes-label">{{ t.admin.invTerms }} <small>Terms</small></div>
                     <div class="inv-prev-notes-text" id="prevTerms"></div>
                   </div>
 
                   {# Footer #}
                   <div class="inv-new-footer">
-                    <div class="inv-new-footer-page">الصفحة 1 من 1</div>
-                    <div class="inv-new-footer-branch">{{ t.admin.invBranchInfo | default('الفرع الرئيسي') }}</div>
+                    <div class="inv-new-footer-page" id="prevPageInfo">{{ t.admin.invPageInfo | default('الصفحة 1 من 1') }}</div>
+                    <div class="inv-new-footer-branch" id="prevBranchInfo">{{ t.admin.invBranchInfoPlaceholder | default('الفرع الرئيسي') }}</div>
                   </div>
                 </div>
               </div>
