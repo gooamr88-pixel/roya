@@ -3908,14 +3908,12 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 }
 
 /* ── Invoice Builder ── */
-[data-theme="light"] .inv-form-panel,
-[data-theme="light"] .inv-preview-panel {
+[data-theme="light"] .inv-form-panel {
     background: #FFFFFF;
     border-color: var(--border);
 }
 
-[data-theme="light"] .inv-form-panel h3,
-[data-theme="light"] .inv-preview-panel h3 {
+[data-theme="light"] .inv-form-panel h3 {
     color: var(--text-1);
 }
 
@@ -3949,18 +3947,9 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     background: #FAFAFA;
 }
 
-[data-theme="light"] .inv-preview-body {
-    background: #FFFFFF;
-    color: var(--text-2);
-}
-
 [data-theme="light"] .inv-prev-badge {
     background: #F8F9FA;
     border-color: var(--border);
-    color: var(--text-1);
-}
-
-[data-theme="light"] .inv-prev-header {
     color: var(--text-1);
 }
 
@@ -4325,88 +4314,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     background: #FEF2F2;
 }
 
-/* ── Invoice Preview ── */
-[data-theme="light"] .inv-preview-card {
-    background: #FFFFFF;
-    border-color: var(--border);
-    box-shadow: var(--shadow-sm);
-}
-
-[data-theme="light"] .inv-preview-body {
-    background: #FFFFFF;
-    color: var(--text-2);
-}
-
-[data-theme="light"] .inv-prev-brand-name {
-    color: var(--text-1);
-}
-
-[data-theme="light"] .inv-prev-brand-sub {
-    color: var(--text-3);
-}
-
-[data-theme="light"] .inv-prev-doc-title-ar {
-    color: var(--text-2);
-}
-
-[data-theme="light"] .inv-prev-doc-number {
-    color: var(--text-3);
-}
-
-[data-theme="light"] .inv-prev-doc-dates {
-    color: var(--text-3);
-}
-
-[data-theme="light"] .inv-prev-client-label {
-    color: var(--text-3);
-}
-
-[data-theme="light"] .inv-prev-client-name {
-    color: var(--text-1);
-}
-
-[data-theme="light"] .inv-prev-client-details {
-    color: var(--text-3);
-}
-
-[data-theme="light"] .inv-prev-table th {
-    background: #F8F9FA;
-    color: var(--text-3);
-    border-color: var(--border);
-}
-
-[data-theme="light"] .inv-prev-table td {
-    color: var(--text-2);
-    border-color: var(--border-light);
-}
-
-[data-theme="light"] .inv-prev-summary {
-    border-top-color: var(--border);
-}
-
-[data-theme="light"] .inv-prev-summary-row .label {
-    color: var(--text-3);
-}
-
-[data-theme="light"] .inv-prev-summary-row .value {
-    color: var(--text-1);
-}
-
-[data-theme="light"] .inv-prev-summary-row.total {
-    border-top-color: var(--border);
-}
-
-[data-theme="light"] .inv-prev-summary-row.total .value {
-    color: var(--gold);
-}
-
-[data-theme="light"] .inv-prev-notes-label {
-    color: var(--text-3);
-}
-
-[data-theme="light"] .inv-prev-notes-text {
-    color: var(--text-2);
-}
+/* ── Invoice Preview (new layout uses white bg, no overrides needed) ── */
 
 [data-theme="light"] .inv-prev-footer {
     color: var(--text-3);
@@ -6345,7 +6253,7 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 }
 
 /* ══════════════════════════════════════
-   PREVIEW PANEL (A4 Document Style)
+   PREVIEW PANEL — New Arabic Invoice Style
    ══════════════════════════════════════ */
 .inv-preview-panel {
     position: sticky;
@@ -6353,221 +6261,238 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 }
 
 .inv-preview-card {
-    background: #0f0f11;
-    border: 1px solid var(--border);
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     position: relative;
 }
 
-.inv-preview-accent {
-    height: 5px;
-    background: linear-gradient(135deg, #d4af37, #f0d878, #d4af37);
-    transition: background 0.4s ease;
+.inv-rtl-layout {
+    direction: rtl;
+    text-align: right;
 }
 
 .inv-preview-body {
-    padding: 28px 24px;
+    padding: 24px 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
+    color: #1a1a1a;
 }
 
-/* Preview Header */
-.inv-prev-header {
+/* ── Invoice Header: Logo ── */
+.inv-new-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.inv-new-header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.inv-new-logo {
+    width: 160px;
+    height: auto;
+    object-fit: contain;
+    filter: none;
+    background: #111;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+/* ── Document Meta ── */
+.inv-new-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.78rem;
+    padding: 10px 12px;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 6px;
+}
+
+.inv-new-meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.inv-new-meta-item {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+}
+
+.inv-meta-label {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    font-size: 0.75rem;
+}
+
+.inv-meta-value {
+    color: #555;
+    font-size: 0.75rem;
+}
+
+/* ── Table — Arabic Invoice Style ── */
+.inv-new-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #bbb;
+    font-size: 0.78rem;
+}
+
+.inv-new-table thead th {
+    background: #f0f0f0 !important;
+    color: #1a1a1a !important;
+    padding: 8px 10px !important;
+    text-align: center !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    border: 1px solid #bbb !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap;
+}
+
+.inv-th-num { width: 35px !important; }
+.inv-th-qty { width: 55px !important; }
+.inv-th-price { width: 70px !important; }
+.inv-th-total { width: 75px !important; }
+
+.inv-new-table tbody td {
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    color: #333;
+    font-size: 0.76rem;
+}
+
+.inv-new-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+/* ── Bottom: QR + Summary ── */
+.inv-new-bottom {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+    direction: rtl;
+}
+
+.inv-new-qr {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    order: 2;
+}
+
+.inv-new-qr canvas {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.inv-new-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    order: 1;
+}
+
+.inv-new-summary-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    padding: 4px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.78rem;
 }
 
-.inv-prev-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.inv-prev-brand-name {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--text-1);
-    letter-spacing: -0.02em;
-    font-family: 'Cairo', 'Inter', sans-serif;
-}
-
-.inv-prev-brand-sub {
-    font-size: 0.7rem;
-    color: var(--text-3);
-}
-
-.inv-prev-doc-info {
+.inv-summary-lbl {
+    font-weight: 600;
+    color: #333;
     text-align: right;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
 }
 
-.inv-prev-doc-title {
-    font-size: 1.4rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    line-height: 1;
+.inv-summary-val {
+    font-weight: 500;
+    color: #555;
+    direction: ltr;
+    text-align: left;
 }
 
-.inv-prev-doc-title-ar {
+.inv-new-summary-row.inv-summary-total {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     font-size: 0.85rem;
-    color: var(--text-3);
-    font-family: 'Cairo', sans-serif;
+    margin-top: 4px;
+}
+
+.inv-new-summary-row.inv-summary-total .inv-summary-lbl {
+    font-weight: 800;
+    color: #1a1a1a;
+}
+
+.inv-new-summary-row.inv-summary-total .inv-summary-val {
+    font-weight: 800;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+}
+
+.inv-new-summary-row.inv-summary-remaining {
     margin-top: 2px;
 }
 
-.inv-prev-doc-number {
-    font-size: 0.75rem;
-    color: var(--text-3);
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    margin-top: 6px;
-}
-
-.inv-prev-doc-dates {
-    font-size: 0.72rem;
-    color: var(--text-3);
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    margin-top: 4px;
-}
-
-/* Preview Client Section */
-.inv-prev-client {
-    padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-sm);
-}
-
-.inv-prev-client-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--text-3);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-}
-
-.inv-prev-client-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-1);
-    margin-bottom: 4px;
-}
-
-.inv-prev-client-details {
-    font-size: 0.75rem;
-    color: var(--text-3);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-/* Preview Line Items Table */
-.inv-prev-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.inv-prev-table thead th {
-    padding: 8px 12px;
-    text-align: left;
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: var(--text-3);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-bottom: 1px solid var(--border);
-}
-
-.inv-prev-table thead th:nth-child(3) { text-align: center; }
-.inv-prev-table thead th:nth-child(4),
-.inv-prev-table thead th:nth-child(5) { text-align: right; }
-
-/* Preview Summary */
-.inv-prev-summary {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
+/* ── Footer ── */
+.inv-new-footer {
+    text-align: center;
     padding-top: 12px;
-}
-
-.inv-prev-summary-row {
+    border-top: 1px solid #ddd;
     display: flex;
-    justify-content: space-between;
-    width: 220px;
-    font-size: 0.8rem;
-    padding: 3px 0;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.inv-prev-summary-row .label {
-    color: var(--text-3);
+.inv-new-footer-page {
+    font-size: 0.65rem;
+    color: #999;
 }
 
-.inv-prev-summary-row .value {
-    color: var(--text-2);
+.inv-new-footer-branch {
+    font-size: 0.72rem;
+    color: #555;
     font-weight: 500;
 }
 
-.inv-prev-summary-row.total {
-    border-top: 1px solid var(--border);
-    margin-top: 4px;
-    padding-top: 8px;
+/* ── Notes styling inside new layout ── */
+.inv-rtl-layout .inv-prev-notes-section {
+    background: #fafafa;
+    border: 1px solid #eee;
 }
 
-.inv-prev-summary-row.total .label {
-    font-weight: 700;
-    color: var(--text-1);
-    font-size: 0.85rem;
+.inv-rtl-layout .inv-prev-notes-label {
+    color: #555;
 }
 
-.inv-prev-summary-row.total .value {
-    font-weight: 800;
-    color: var(--gold);
-    font-size: 1rem;
-}
-
-/* Preview Notes & Terms */
-.inv-prev-notes-section {
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-light);
-}
-
-.inv-prev-notes-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--text-3);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-}
-
-.inv-prev-notes-text {
-    font-size: 0.75rem;
-    color: var(--text-3);
-    line-height: 1.5;
-    white-space: pre-wrap;
-}
-
-/* Preview Footer */
-.inv-prev-footer {
-    text-align: center;
-    padding: 12px 0 4px;
-    border-top: 1px solid var(--border-light);
-}
-
-.inv-prev-footer-text {
-    font-size: 0.65rem;
-    color: var(--text-3);
+.inv-rtl-layout .inv-prev-notes-text {
+    color: #333;
 }
 
 /* ══════════════════════════════════════

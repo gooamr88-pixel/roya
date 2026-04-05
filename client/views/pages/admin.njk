@@ -127,7 +127,7 @@
           </div>
           <span class="live-clock" id="liveClock"></span>
           <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect=/admin" class="topbar-btn" title="{{ langToggle.text }}" data-tooltip="{{ langToggle.text }}">
-            <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}" style="width:18px;height:auto;border-radius:2px;">
+            <span class="lang-toggle-label" style="font-size:0.8rem;font-weight:600;">{{ langToggle.label }}</span>
           </a>
           <a href="/dashboard" class="btn btn-ghost btn-sm" data-tooltip="{{ t.admin.switchToClientView | default('Switch to Client View') }}"><i class="fas fa-exchange-alt"></i> {{ t.admin.clientView }}</a>
           <button type="button" class="topbar-btn" title="{{ t.admin.logoutBtn }}" id="logoutBtn" aria-label="{{ t.admin.logoutBtn }}" data-tooltip="{{ t.admin.logoutBtn }}"><i class="fas fa-sign-out-alt" aria-hidden="true"></i></button>
@@ -477,76 +477,104 @@
             {# ═══ RIGHT: LIVE PREVIEW PANEL ═══ #}
             <div class="inv-preview-panel">
               <div class="inv-preview-card" id="invPreviewCard">
-                <div class="inv-preview-accent" id="prevAccentStripe"></div>
-                <div class="inv-preview-body">
+                <div class="inv-preview-body inv-rtl-layout">
 
-                  {# Preview Header #}
-                  <div class="inv-prev-header">
-                    <div class="inv-prev-brand">
-                      <div class="inv-prev-brand-name">{{ t.admin.brandName | default('NABDA') }}</div>
-                      <div class="inv-prev-brand-sub">Advertising · Marketing · Events</div>
+                  {# ── Invoice Header: Logo + Title ── #}
+                  <div class="inv-new-header">
+                    <div class="inv-new-header-right">
+                      <img src="/images/nabda-invoice-logo.svg" alt="Nabda Logo" class="inv-new-logo">
                     </div>
-                    <div class="inv-prev-doc-info">
-                      <div class="inv-prev-doc-title" id="prevDocTitle" style="color:var(--gold)">{{ t.admin.invTaxInvoice | upper }}</div>
-                      <div class="inv-prev-doc-title-ar" id="prevDocTitleAr">{{ t.admin.invTaxInvoiceAr }}</div>
-                      <div class="inv-prev-doc-number"># <span id="prevDocNumber">—</span></div>
-                      <div class="inv-prev-doc-dates">
-                        <span>{{ t.admin.invIssueDate }}: <strong id="prevIssueDate">—</strong></span>
-                        <span><span id="prevDueDateLabel">{{ t.admin.invDueDate }}</span>: <strong id="prevDueDate">—</strong></span>
+                  </div>
+
+                  {# ── Document Meta Row ── #}
+                  <div class="inv-new-meta">
+                    <div class="inv-new-meta-row">
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invIssueDate | default('التاريخ') }}:</span>
+                        <span class="inv-meta-value" id="prevIssueDate">—</span>
+                      </div>
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invDocNumber | default('رقم الفاتورة') }}:</span>
+                        <span class="inv-meta-value" id="prevDocNumber">—</span>
+                      </div>
+                    </div>
+                    <div class="inv-new-meta-row">
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invClientName | default('اسم العميل') }}:</span>
+                        <span class="inv-meta-value" id="prevClientName">—</span>
+                      </div>
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invPhone | default('التلفون') }}:</span>
+                        <span class="inv-meta-value" id="prevClientPhone">—</span>
+                      </div>
+                    </div>
+                    <div class="inv-new-meta-row">
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invAddress | default('العنوان') }}:</span>
+                        <span class="inv-meta-value" id="prevClientAddress">—</span>
+                      </div>
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invEmail | default('البريد') }}:</span>
+                        <span class="inv-meta-value" id="prevClientEmail">—</span>
                       </div>
                     </div>
                   </div>
 
-                  {# Preview Client #}
-                  <div class="inv-prev-client">
-                    <div class="inv-prev-client-label">{{ t.admin.invBillTo }}</div>
-                    <div class="inv-prev-client-name" id="prevClientName">{{ t.admin.invClientName }}</div>
-                    <div class="inv-prev-client-details">
-                      <span id="prevClientEmail">—</span>
-                      <span id="prevClientAddress">—</span>
-                      <span id="prevClientPhone">—</span>
-                    </div>
-                  </div>
-
-                  {# Preview Line Items #}
-                  <table class="inv-prev-table">
+                  {# ── Line Items Table (Arabic Style) ── #}
+                  <table class="inv-prev-table inv-new-table">
                     <thead>
                       <tr>
-                        <th>{{ t.admin.invItem }}</th>
-                        <th>{{ t.admin.invDescription }}</th>
-                        <th>{{ t.admin.invQty }}</th>
-                        <th>{{ t.admin.invUnitPrice }}</th>
-                        <th>{{ t.admin.invTotal }}</th>
+                        <th class="inv-th-num">م</th>
+                        <th class="inv-th-item">{{ t.admin.invItem | default('الصنف') }}</th>
+                        <th class="inv-th-desc">{{ t.admin.invDescription | default('الوصف') }}</th>
+                        <th class="inv-th-qty">{{ t.admin.invQty | default('الكمية') }}</th>
+                        <th class="inv-th-price">{{ t.admin.invUnitPrice | default('السعر') }}</th>
+                        <th class="inv-th-total">{{ t.admin.invTotal | default('المبلغ') }}</th>
                       </tr>
                     </thead>
                     <tbody id="prevLineItems">
-                      <tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px;font-style:italic;">{{ t.admin.invPreviewPlaceholder }}</td></tr>
+                      <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px;font-style:italic;">{{ t.admin.invPreviewPlaceholder }}</td></tr>
                     </tbody>
                   </table>
 
-                  {# Preview Summary #}
-                  <div class="inv-prev-summary">
-                    <div class="inv-prev-summary-row">
-                      <span class="label">{{ t.admin.invSubtotal }}</span>
-                      <span class="value" id="prevSubtotal">$0.00</span>
+                  {# ── Bottom Section: QR + Summary ── #}
+                  <div class="inv-new-bottom">
+                    <div class="inv-new-qr">
+                      <canvas id="invQRCode" width="120" height="120"></canvas>
                     </div>
-                    <div class="inv-prev-summary-row">
-                      <span class="label" id="prevDiscountLabel">{{ t.admin.invDiscount }} (0%)</span>
-                      <span class="value" id="prevDiscount">$0.00</span>
-                    </div>
-                    <div class="inv-prev-summary-row">
-                      <span class="label" id="prevTaxLabel">{{ t.admin.invVAT }} (15%)</span>
-                      <span class="value" id="prevTax">$0.00</span>
-                    </div>
-                    <div class="inv-prev-summary-row">
-                      <span class="label">{{ t.admin.invShipping }}</span>
-                      <span class="value" id="prevShipping">$0.00</span>
-                    </div>
-                    <div class="inv-prev-summary-row total">
-                      <span class="label">{{ t.admin.invGrandTotal }}</span>
-                      <span class="value" id="prevGrandTotal">$0.00</span>
+                    <div class="inv-new-summary">
+                      <div class="inv-new-summary-row">
+                        <span class="inv-summary-val" id="prevSubtotal">0.00</span>
+                        <span class="inv-summary-lbl">{{ t.admin.invSubtotal | default('الاجمالي') }}</span>
+                      </div>
+                      <div class="inv-new-summary-row">
+                        <span class="inv-summary-val" id="prevDiscount">0.00</span>
+                        <span class="inv-summary-lbl" id="prevDiscountLabel">{{ t.admin.invDiscount | default('الخصم') }}</span>
+                      </div>
+                      <div class="inv-new-summary-row">
+                        <span class="inv-summary-val" id="prevTax">0.00</span>
+                        <span class="inv-summary-lbl" id="prevTaxLabel">{{ t.admin.invVAT | default('القيمة المضافة') }}</span>
+                      </div>
+                      <div class="inv-new-summary-row">
+                        <span class="inv-summary-val" id="prevShipping">0.00</span>
+                        <span class="inv-summary-lbl">{{ t.admin.invShipping | default('الشحن') }}</span>
+                      </div>
+                      <div class="inv-new-summary-row inv-summary-total">
+                        <span class="inv-summary-val" id="prevGrandTotal">0.00</span>
+                        <span class="inv-summary-lbl">{{ t.admin.invGrandTotal | default('المستحق') }}</span>
+                      </div>
+                      <div class="inv-new-summary-row inv-summary-remaining">
+                        <span class="inv-summary-val" id="prevRemaining">0</span>
+                        <span class="inv-summary-lbl">{{ t.admin.invRemaining | default('المتبقي') }}</span>
+                      </div>
                     </div>
                   </div>
+
+                  {# Hidden elements for PDF title #}
+                  <span id="prevDocTitle" style="display:none">{{ t.admin.invTaxInvoice | upper }}</span>
+                  <span id="prevDocTitleAr" style="display:none">{{ t.admin.invTaxInvoiceAr }}</span>
+                  <span id="prevDueDate" style="display:none">—</span>
+                  <span id="prevDueDateLabel" style="display:none">{{ t.admin.invDueDate }}</span>
 
                   {# Notes & Terms (hidden until filled) #}
                   <div class="inv-prev-notes-section" style="display:none">
@@ -559,8 +587,9 @@
                   </div>
 
                   {# Footer #}
-                  <div class="inv-prev-footer">
-                    <div class="inv-prev-footer-text">{{ t.admin.invGeneratedBy }}</div>
+                  <div class="inv-new-footer">
+                    <div class="inv-new-footer-page">الصفحة 1 من 1</div>
+                    <div class="inv-new-footer-branch">{{ t.admin.invBranchInfo | default('الفرع الرئيسي') }}</div>
                   </div>
                 </div>
               </div>

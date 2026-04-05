@@ -100,7 +100,7 @@
         </div>
         <div class="topbar-right">
           <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect=/dashboard" class="topbar-btn" title="{{ langToggle.text }}" data-tooltip="{{ langToggle.text }}">
-            <img src="{{ langToggle.flag }}" alt="{{ langToggle.text }}" style="width:18px;height:auto;border-radius:2px;">
+            <span class="lang-toggle-label" style="font-size:0.8rem;font-weight:600;">{{ langToggle.label }}</span>
           </a>
           <button type="button" class="topbar-btn" id="themeToggle" title="{{ t.nav.toggleTheme }}" aria-label="{{ t.nav.toggleTheme }}" data-tooltip="{{ t.nav.toggleTheme }}" style="background: transparent; border: none; box-shadow: none; outline: none; padding: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-primary);">
             <!-- Icon injected by JS -->
