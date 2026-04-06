@@ -800,13 +800,18 @@ async function invoiceDownloadPDF() {
     if (btn) setLoading(btn, true);
 
     try {
+        const qrCanvas = document.getElementById('invQRCode');
+        let qrImage = '';
+        try { if (qrCanvas) qrImage = qrCanvas.toDataURL('image/png'); } catch(e){}
+
         const payload = {
             ...invoiceState,
             subtotal: getSubtotal(),
             discountAmount: getDiscountAmount(),
             taxAmount: getTaxAmount(),
             grandTotal: getGrandTotal(),
-            isInvoice: invoiceState.mode === 'invoice'
+            isInvoice: invoiceState.mode === 'invoice',
+            qrImage: qrImage
         };
 
         const response = await fetch('/api/invoices/download-pdf', {

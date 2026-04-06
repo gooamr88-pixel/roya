@@ -76,6 +76,8 @@ app.use(helmet({
                 "'self'",
                 "https://www.facebook.com",
                 "https://tr.snapchat.com",
+                "https://*.snapchat.com",
+                "https://tr6.snapchat.com",
                 "https://ct.snap.com",
                 "https://analytics.tiktok.com",
                 "https://cdnjs.cloudflare.com",
