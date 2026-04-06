@@ -51,7 +51,11 @@ const markReplied = async (id, replyMessage) => {
 };
 
 const markEmailFailed = async (id) => {
-    await query(`UPDATE contacts SET email_status = 'failed' WHERE id = $1`, [id]).catch(() => {});
+    // SECURITY FIX: Log instead of silently swallowing. Don't throw — this runs
+    // inside a catch block and throwing would mask the original email error.
+    await query(`UPDATE contacts SET email_status = 'failed' WHERE id = $1`, [id]).catch((err) => {
+        console.error(`Failed to mark email_status='failed' for contact ${id}:`, err.message);
+    });
 };
 
 const updateNote = async (id, internalNotes) => {

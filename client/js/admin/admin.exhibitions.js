@@ -59,9 +59,9 @@ async function loadAdminExhibitions() {
                         <button class="btn btn-ghost btn-sm" data-edit-exhibition="${e.id}">
                             <i class="fas fa-edit"></i> Edit
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteExhibition(${e.id}, '${esc(e.title).replace(/'/g, "\\'")}')">
+                        ${hasMinRole('admin') ? `<button class="btn btn-danger btn-sm" onclick="deleteExhibition(${e.id}, '${esc(e.title).replace(/'/g, "\\'")}')">
                             <i class="fas fa-trash"></i> Delete
-                        </button>
+                        </button>` : ''}
                     </div>
                 </div>`;
             }).join('');
@@ -164,7 +164,7 @@ function renderExhibitionPreviews(sources, isUrl) {
     sources.forEach((src) => {
         const thumb = document.createElement('div');
         thumb.className = 'img-thumb';
-        thumb.innerHTML = `<img src="${src}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
+        thumb.innerHTML = `<img src="${esc(src)}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
         grid.appendChild(thumb);
     });
 }

@@ -28,7 +28,7 @@ async function loadAdminServices(page = 1) {
                     <td data-label="Created">${Utils.formatDate(s.created_at)}</td>
                     <td data-label="Actions">
                         <button class="btn btn-ghost btn-sm" onclick="editService(${s.id})" data-tooltip="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-ghost btn-sm" onclick="deleteService(${s.id})" data-tooltip="Deactivate"><i class="fas fa-trash" style="color:var(--danger)"></i></button>
+                        ${hasMinRole('admin') ? `<button class="btn btn-ghost btn-sm" onclick="deleteService(${s.id})" data-tooltip="Deactivate"><i class="fas fa-trash" style="color:var(--danger)"></i></button>` : ''}
                     </td>
                 </tr>
             `).join('');
@@ -118,7 +118,7 @@ function renderServicePreviews(sources) {
     sources.forEach((src) => {
         const thumb = document.createElement('div');
         thumb.className = 'img-thumb';
-        thumb.innerHTML = `<img src="${src}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
+        thumb.innerHTML = `<img src="${esc(src)}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
         grid.appendChild(thumb);
     });
 }

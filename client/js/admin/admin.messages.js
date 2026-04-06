@@ -50,7 +50,7 @@ async function loadAdminMessages(page = 1) {
                                 </button>
                                 <button class="btn btn-primary btn-sm" onclick="sendAdminReply(${m.id})"><i class="fas fa-paper-plane"></i> ${(window.__t||{}).replyBtn || 'Reply'}</button>
                                 <button class="btn btn-outline btn-sm" onclick="saveInternalNote(${m.id})"><i class="fas fa-sticky-note"></i> ${(window.__t||{}).noteBtn || 'Note'}</button>
-                                ${adminUser?.role === 'super_admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAdminMessage(${m.id})" style="margin-left:auto"><i class="fas fa-trash"></i></button>` : ''}
+                                ${hasMinRole('admin') ? `<button class="btn btn-danger btn-sm" onclick="deleteAdminMessage(${m.id})" style="margin-left:auto"><i class="fas fa-trash"></i></button>` : ''}
                             </div>
                             <div id="ai-draft-status-${m.id}"></div>
                         </div>
@@ -67,7 +67,9 @@ async function sendAdminReply(messageId) {
     const reply = input?.value?.trim();
     if (!reply) { Toast.warning((window.__t||{}).enterReply || 'Please enter a reply.'); return; }
     try {
-        await API.put(`/admin/messages/${messageId}/reply`, { reply_message: reply });
+        // SECURITY FIX: Use POST /contact/admin/:id/reply instead of PUT /admin/messages/:id/reply
+        // This hits the replyEmailLimiter (10/15min) added in Phase 4 to prevent spam relay abuse
+        await API.post(`/contact/admin/${messageId}/reply`, { reply_message: reply });
         Toast.success((window.__t||{}).replySent || 'Reply sent successfully!');
         loadAdminMessages();
     } catch (err) { Toast.error(err.message); }

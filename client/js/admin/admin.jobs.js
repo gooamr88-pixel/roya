@@ -35,10 +35,10 @@ async function loadAdminJobs() {
                         <button class="btn btn-ghost btn-sm" onclick="editJob(${j.id})" title="Edit">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)"
+                        ${hasMinRole('admin') ? `<button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)"
                             onclick="deleteJob(${j.id})" title="Deactivate">
                             <i class="fas fa-trash"></i>
-                        </button>
+                        </button>` : ''}
                     </div>
                 </td>
             </tr>

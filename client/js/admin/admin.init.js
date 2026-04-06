@@ -13,8 +13,10 @@ let adminUser = null;
 let selectedSvc = new Set();
 let selectedProp = new Set();
 
-// ── Hierarchical RBAC: role weight map (mirrors backend ROLE_HIERARCHY) ──
-const ROLE_WEIGHT = { viewer: 1, client: 1, supervisor: 1, editor: 2, admin: 3, super_admin: 4 };
+// ── Hierarchical RBAC: role weight map (MUST mirror backend ROLE_HIERARCHY in auth.js) ──
+// SECURITY FIX: Removed viewer/client — they are NOT admin roles.
+// Keeping them here would let the UI show admin elements to non-admin users.
+const ROLE_WEIGHT = { supervisor: 1, editor: 2, admin: 3, super_admin: 4 };
 function hasMinRole(minRole) {
     return (ROLE_WEIGHT[adminUser?.role] || 0) >= (ROLE_WEIGHT[minRole] || 0);
 }
@@ -428,13 +430,14 @@ function initCommandPalette() {
         const filtered = filter
             ? commands.filter(c => c.label.toLowerCase().includes(filter.toLowerCase()))
             : commands;
+        // SECURITY FIX: Escape c.label to prevent XSS from compromised i18n
         results.innerHTML = filtered.map((c, i) => `
             <div class="command-palette-item ${i === 0 ? 'active' : ''}" data-idx="${i}">
                 <div class="cmd-icon"><i class="fas ${c.icon}"></i></div>
-                <span>${c.label}</span>
+                <span>${esc(c.label)}</span>
                 ${c.shortcut ? `<span class="cmd-shortcut">${c.shortcut}</span>` : ''}
             </div>
-        `).join('') || `<div style="padding:20px;text-align:center;color:var(--text-3);font-size:0.85rem">${__t?.noResultsFound || 'No matching commands'}</div>`;
+        `).join('') || `<div style="padding:20px;text-align:center;color:var(--text-3);font-size:0.85rem">${esc(__t?.noResultsFound || 'No matching commands')}</div>`;
 
         results.querySelectorAll('.command-palette-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -558,7 +561,7 @@ function exportTableWord(tableId, filename) {
             h2 { font-family: Arial; color: #333; }
         </style></head>
         <body>
-            <h2>Nabda Platform — ${filename}</h2>
+            <h2>Nabda Platform — ${esc(filename)}</h2>
             <p style='color:#888;font-size:10px'>Generated: ${new Date().toLocaleString()}</p>
             ${table.outerHTML}
         </body></html>`;
@@ -594,17 +597,23 @@ function initGlobalSearch() {
                 } else {
                     const typeIcons = { user: 'fa-user', order: 'fa-shopping-bag', property: 'fa-building', service: 'fa-concierge-bell' };
                     const typeColors = { user: '#a855f7', order: '#3b82f6', property: '#10b981', service: '#f59e0b' };
+                    // SECURITY FIX: Use data-* attributes instead of onclick string interpolation
+                    // Prevents XSS if item.type or item.id ever contain quotes
                     results.innerHTML = items.map(item => `
-                        <div class="search-result-item" onclick="navigateSearchResult('${item.type}', '${item.id}')">
+                        <div class="search-result-item" data-type="${esc(item.type)}" data-id="${esc(String(item.id))}">
                             <i class="fas ${typeIcons[item.type] || 'fa-circle'}" style="color:${typeColors[item.type]};width:20px;text-align:center"></i>
                             <div style="flex:1">
                                 <div style="font-weight:600">${esc(item.name || item.title || item.invoice_number || '—')}</div>
                                 ${item.email ? `<div style="font-size:0.75rem;color:var(--text-3)">${esc(item.email)}</div>` : ''}
                                 ${item.location ? `<div style="font-size:0.75rem;color:var(--text-3)">${esc(item.location)}</div>` : ''}
                             </div>
-                            <span class="search-type-badge" style="background:${typeColors[item.type]}20;color:${typeColors[item.type]}">${item.type}</span>
+                            <span class="search-type-badge" style="background:${typeColors[item.type]}20;color:${typeColors[item.type]}">${esc(item.type)}</span>
                         </div>
                     `).join('');
+                    // Bind click handlers via event delegation (XSS-safe)
+                    results.querySelectorAll('.search-result-item').forEach(el => {
+                        el.addEventListener('click', () => navigateSearchResult(el.dataset.type, el.dataset.id));
+                    });
                 }
                 results.classList.add('show');
             } catch { results.classList.remove('show'); }

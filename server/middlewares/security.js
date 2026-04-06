@@ -1,41 +1,56 @@
 // ═══════════════════════════════════════════════
 // Security Middleware — Request hardening layer
 //
-// PHASE 2:
-// ✅ Request ID (X-Request-Id) for correlation
-// ✅ Input sanitization — strip null bytes, control chars
-// ✅ SQL injection pattern detection on query params
-// ✅ Request size guard
+// PHASE 3 HARDENING:
+// ✅ Request ID validation (reject spoofed IDs)
+// ✅ Depth-limited recursive sanitization (DoS-safe)
+// ✅ SQL injection guard covers body + query + URL
+// ✅ Reduced false-positive SQLi patterns
 // ✅ HPP (HTTP Parameter Pollution) protection
 // ═══════════════════════════════════════════════
 const crypto = require('crypto');
 const { AppError } = require('./errorHandler');
 
+// ── Constants ──
+const MAX_SANITIZE_DEPTH = 10; // Prevents stack overflow via deeply nested payloads
+const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 /**
  * Attach a unique request ID for logging/tracing.
- * Accepts X-Request-Id from trusted reverse proxies or generates one.
+ * SECURITY: Only accept X-Request-Id from proxies if it matches UUID v4 format.
+ * Reject arbitrary strings to prevent log-forging attacks.
  */
 const requestId = (req, res, next) => {
-    req.id = req.headers['x-request-id'] || crypto.randomUUID();
+    const incoming = req.headers['x-request-id'];
+
+    // Only trust the incoming header if it's a valid UUID v4
+    // (reverse proxies like Nginx/Cloudflare always generate UUIDs)
+    req.id = (incoming && UUID_V4_REGEX.test(incoming))
+        ? incoming
+        : crypto.randomUUID();
+
     res.setHeader('X-Request-Id', req.id);
     next();
 };
 
 /**
  * Sanitize string inputs — strips null bytes and suspicious control characters.
- * Applied to req.body, req.query, and req.params recursively.
+ * SECURITY: Depth-limited to prevent stack overflow from deeply nested JSON payloads.
+ * Applied to req.body, req.query, and req.params.
  */
 const sanitizeInput = (req, res, next) => {
-    const clean = (obj) => {
-        if (!obj || typeof obj !== 'object') return obj;
+    const clean = (obj, depth = 0) => {
+        // SECURITY: Stop recursion at MAX_SANITIZE_DEPTH to prevent DoS
+        if (!obj || typeof obj !== 'object' || depth > MAX_SANITIZE_DEPTH) return obj;
+
         for (const key of Object.keys(obj)) {
             if (typeof obj[key] === 'string') {
                 // Remove null bytes (used in SQL injection and path traversal)
                 obj[key] = obj[key].replace(/\0/g, '');
-                // Remove other dangerous control characters (except common whitespace)
+                // Remove dangerous control characters (except common whitespace: \t, \n, \r)
                 obj[key] = obj[key].replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
             } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                clean(obj[key]);
+                clean(obj[key], depth + 1);
             }
         }
         return obj;
@@ -49,30 +64,61 @@ const sanitizeInput = (req, res, next) => {
 };
 
 /**
- * SQL injection pattern detection — scans query params and URL path.
- * This is a defense-in-depth layer; parameterized queries are the primary defense.
- * Rejects requests with obvious injection patterns (UNION SELECT, --, ;DROP, etc.).
+ * Recursively extract all string values from an object (depth-limited).
+ * Used by sqlInjectionGuard to scan nested body payloads.
+ */
+function extractStrings(obj, depth = 0, result = []) {
+    if (!obj || depth > MAX_SANITIZE_DEPTH) return result;
+    if (typeof obj === 'string') {
+        result.push(obj);
+        return result;
+    }
+    if (typeof obj !== 'object') return result;
+
+    for (const key of Object.keys(obj)) {
+        if (typeof obj[key] === 'string') {
+            result.push(obj[key]);
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            extractStrings(obj[key], depth + 1, result);
+        }
+    }
+    return result;
+}
+
+/**
+ * SQL injection pattern detection — defense-in-depth layer.
+ * SECURITY FIX: Now scans req.body in addition to query params and URL.
+ * Parameterized queries remain the primary defense; this catches
+ * obvious attack patterns at the perimeter before they reach handlers.
+ *
+ * Patterns are tuned to reduce false positives on legitimate content
+ * (e.g., the word "select" followed by "from" in natural language).
  */
 const sqlInjectionGuard = (req, res, next) => {
-    // Only check query string params and URL path
+    // ── Collect all string values from query, URL, AND body ──
     const targets = [
         req.originalUrl,
-        ...Object.values(req.query || {}),
-    ].filter(v => typeof v === 'string');
+        ...extractStrings(req.query),
+        ...extractStrings(req.body),
+    ];
 
-    // Common SQL injection patterns (case-insensitive)
+    // SQL injection patterns — ordered by severity, tuned for low false-positives
+    // These use SQL-specific delimiters (quotes, semicolons, comments) to
+    // distinguish attacks from natural language.
     const patterns = [
-        /(\bunion\b\s+\bselect\b)/i,
-        /(\bselect\b\s+.*\bfrom\b)/i,
-        /(\bdrop\b\s+\btable\b)/i,
-        /(\binsert\b\s+\binto\b)/i,
-        /(\bdelete\b\s+\bfrom\b)/i,
-        /(\bupdate\b\s+.*\bset\b)/i,
-        /(\balter\b\s+\btable\b)/i,
-        /(\bexec\b\s*\()/i,
-        /(--|;)\s*(drop|alter|truncate|exec|execute|xp_)\b/i,
-        /(\b1\s*=\s*1\b|\b0\s*=\s*0\b)/,             // Tautology attacks
-        /('\s*or\s+')/i,                                // 'or'
+        /(\bunion\b\s+(all\s+)?\bselect\b)/i,          // UNION [ALL] SELECT
+        /(\bdrop\b\s+\btable\b)/i,                      // DROP TABLE
+        /(\binsert\b\s+\binto\b)/i,                     // INSERT INTO
+        /(\bdelete\b\s+\bfrom\b)/i,                     // DELETE FROM
+        /(\balter\b\s+\btable\b)/i,                     // ALTER TABLE
+        /(\bexec\b\s*\()/i,                              // EXEC(
+        /(\btruncate\b\s+\btable\b)/i,                  // TRUNCATE TABLE
+        /(--|;)\s*(drop|alter|truncate|exec|execute|xp_)\b/i,  // Statement chaining
+        /(;\s*\bselect\b)/i,                             // Chained SELECT (;SELECT)
+        /(\b0x[0-9a-f]+)/i,                             // Hex-encoded payloads
+        /('(\s|%20)*;)/,                                 // Quote followed by semicolon
+        /('\s*or\s+')/i,                                 // 'or' (classic ' OR '1'='1)
+        /(\b1\s*=\s*1\b|\b0\s*=\s*0\b)/,               // Tautology attacks
     ];
 
     for (const target of targets) {

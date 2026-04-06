@@ -24,13 +24,13 @@ async function loadAdminOrders(page = 1) {
                     <td data-label="Status">
                         <select class="role-select" onchange="updateOrderStatus(${o.id}, this.value)">
                             ${['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'].map(s =>
-                `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s.replace(/_/g, ' ')}</option>`
+                `<option value="${esc(s)}" ${o.status === s ? 'selected' : ''}>${esc(s.replace(/_/g, ' '))}</option>`
             ).join('')}
                         </select>
                     </td>
                     <td data-label="Date">${Utils.formatDate(o.created_at)}</td>
                     <td data-label="Actions" style="display:flex;gap:6px;flex-wrap:wrap">
-                        <button class="ai-sparkle-btn" data-tooltip="${(window.__t||{}).aiSummarize||'✨ Summarize'}" onclick="aiSummarizeOrder(${o.id}, '${esc(o.service_title)}')"
+                        <button class="ai-sparkle-btn" data-tooltip="${(window.__t||{}).aiSummarize||'✨ Summarize'}" onclick="aiSummarizeOrder(${o.id}, '${esc(o.service_title).replace(/'/g, "\\'")}')"
                             ><i class="fas fa-wand-magic-sparkles sparkle-icon"></i>
                         </button>
                         ${canInvoice ? `<button class="btn btn-ghost btn-sm" data-tooltip="Generate Invoice" onclick="generateInvoice(${o.id})"><i class="fas fa-file-invoice"></i></button>` : ''}
@@ -54,13 +54,13 @@ async function loadAdminOrders(page = 1) {
 async function updateOrderStatus(orderId, status) {
     const confirmed = await glassConfirm(
         (window.__t||{}).updateOrderStatus || 'Update Order Status',
-        `${(window.__t||{}).changeStatusTo || 'Change this order\'s status to'} "${status.replace(/_/g, ' ')}"?`,
+        `${(window.__t||{}).changeStatusTo || 'Change this order\'s status to'} "${esc(status.replace(/_/g, ' '))}"?`,
         status === 'cancelled' ? 'danger' : 'warning'
     );
     if (!confirmed) { loadAdminOrders(); return; }
     try {
         await API.put(`/orders/${orderId}/status`, { status });
-        Toast.success(`${(window.__t||{}).orderStatusUpdated || 'Order status updated to'} ${status.replace(/_/g, ' ')}`);
+        Toast.success(`${(window.__t||{}).orderStatusUpdated || 'Order status updated to'} ${esc(status.replace(/_/g, ' '))}`);
     } catch (err) { Toast.error(err.message); loadAdminOrders(); }
 }
 

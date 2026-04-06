@@ -19,6 +19,11 @@
   <meta name="keywords" content="{{ t.meta.keywords }}">
   <link rel="icon" type="image/svg+xml" href="/images/nabda-logo-transparent.svg">
 
+  {# ── CSRF Token (read by api.js for all mutating requests) ── #}
+  {% if csrfToken %}
+  <meta name="csrf-token" content="{{ csrfToken }}">
+  {% endif %}
+
   {# ── Canonical & hreflang (bilingual SEO) ── #}
   <link rel="canonical" href="{{ baseUrl }}{{ currentPath }}">
   <link rel="alternate" hreflang="en" href="{{ baseUrl }}{{ currentPath }}">

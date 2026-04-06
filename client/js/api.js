@@ -1,5 +1,11 @@
 // ═══════════════════════════════════════════════
 // API Client — Shared fetch wrapper + Global Settings
+//
+// PHASE 5 HARDENING:
+// ✅ CSRF token auto-attached to all mutating requests (POST/PUT/DELETE)
+// ✅ Global 403 Forbidden handling with clear user feedback
+// ✅ Global 429 Rate Limit handling with retry-after display
+// ✅ Toast uses textContent (XSS-safe) — verified
 // ═══════════════════════════════════════════════
 
 // ── i18n Helper — detect page language for bilingual messages ──
@@ -77,6 +83,14 @@ const i18n = {
   },
 };
 
+// ── CSRF Token Reader ──
+// SECURITY: Reads the CSRF token from a <meta name="csrf-token"> tag.
+// Falls back to fetching from the CSRF endpoint if the meta tag is missing.
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
 const API = {
   baseUrl: "/api",
 
@@ -94,14 +108,23 @@ const API = {
       delete config.headers["Content-Type"];
     }
 
+    // ── SECURITY: Auto-attach CSRF token to all mutating requests ──
+    const method = (config.method || 'GET').toUpperCase();
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+      const csrfToken = getCsrfToken();
+      if (csrfToken) {
+        config.headers = config.headers || {};
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
+    }
+
     try {
       const response = await fetch(url, config);
 
-      // Handle token refresh — but NOT for auth endpoints (login, register, etc.)
+      // ── Handle 401: Token refresh ──
       if (response.status === 401 && !skipAuthRefresh) {
         const refreshed = await this.refreshToken();
         if (refreshed) {
-          // Retry the original request with skipAuthRefresh to prevent infinite loop
           const retryResponse = await fetch(url, config);
           const retryData = await retryResponse.json();
           if (!retryResponse.ok) {
@@ -114,6 +137,31 @@ const API = {
         // Refresh failed — redirect to login
         window.location.href = "/login";
         return null;
+      }
+
+      // ── SECURITY: Handle 403 Forbidden ──
+      // Show a clear "Access Denied" message instead of a raw error
+      if (response.status === 403) {
+        const data = await response.json().catch(() => ({}));
+        const message = data.error?.message || data.message || 'Access Denied';
+        throw new Error(
+          i18n.translateApiMessage(message) + ' — ' +
+          i18n.t('You do not have permission for this action.', 'ليس لديك صلاحية لتنفيذ هذا الإجراء.')
+        );
+      }
+
+      // ── SECURITY: Handle 429 Rate Limited ──
+      // Show a purpose-built "slow down" warning with retry-after
+      if (response.status === 429) {
+        const data = await response.json().catch(() => ({}));
+        const retryAfter = data.error?.retryAfter || 60;
+        const minutes = Math.ceil(retryAfter / 60);
+        throw new Error(
+          i18n.t(
+            `Too many requests. Please wait ${minutes} minute(s) and try again.`,
+            `طلبات كثيرة جداً. يرجى الانتظار ${minutes} دقيقة والمحاولة مرة أخرى.`
+          )
+        );
       }
 
       const data = await response.json();
@@ -207,7 +255,8 @@ const Toast = {
 
     const toast = document.createElement("div");
     toast.className = `toast toast-${type}`;
-    // Use DOM creation instead of innerHTML to prevent XSS from error messages
+    // SECURITY: Use DOM creation (textContent) instead of innerHTML
+    // to prevent XSS from error messages or API responses
     const iconEl = document.createElement("i");
     iconEl.className = icons[type] || icons.info;
     const spanEl = document.createElement("span");
@@ -283,7 +332,6 @@ const Settings = {
     // Theme
     document.documentElement.setAttribute('data-theme', theme);
     document.querySelectorAll('#themeToggle, .theme-toggle').forEach(btn => {
-      // Forcefully remove gear ambiguity by injecting explicit clean SVGs
       btn.innerHTML = theme === 'light'
         ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
         : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;

@@ -46,7 +46,14 @@ const csrfProtection = (req, res, next) => {
     const cookieToken = req.cookies[COOKIE_NAME];
     const headerToken = req.headers['x-csrf-token'];
 
-    if (!cookieToken || !headerToken || cookieToken !== headerToken) {
+    // SECURITY: Use timing-safe comparison to prevent timing attacks
+    // that could allow byte-by-byte brute-forcing of the CSRF token
+    if (
+        !cookieToken ||
+        !headerToken ||
+        cookieToken.length !== headerToken.length ||
+        !crypto.timingSafeEqual(Buffer.from(cookieToken), Buffer.from(headerToken))
+    ) {
         return next(new AppError(
             'Invalid or missing CSRF token. Please refresh the page and try again.',
             403,

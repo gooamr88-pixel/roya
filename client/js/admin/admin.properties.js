@@ -29,7 +29,7 @@ async function loadAdminProperties(page = 1) {
                     <td data-label="Status"><span class="badge badge-${p.is_active !== false ? 'success' : 'danger'}">${p.is_active !== false ? 'Active' : 'Inactive'}</span></td>
                     <td data-label="Actions">
                         <button class="btn btn-ghost btn-sm" onclick="editProperty(${p.id})" data-tooltip="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-ghost btn-sm" onclick="deleteProperty(${p.id})" data-tooltip="Deactivate"><i class="fas fa-trash" style="color:var(--danger)"></i></button>
+                        ${hasMinRole('admin') ? `<button class="btn btn-ghost btn-sm" onclick="deleteProperty(${p.id})" data-tooltip="Deactivate"><i class="fas fa-trash" style="color:var(--danger)"></i></button>` : ''}
                     </td>
                 </tr>
             `).join('');
@@ -114,7 +114,7 @@ function renderPropertyPreviews(sources) {
     sources.forEach((src) => {
         const thumb = document.createElement('div');
         thumb.className = 'img-thumb';
-        thumb.innerHTML = `<img src="${src}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
+        thumb.innerHTML = `<img src="${esc(src)}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
         grid.appendChild(thumb);
     });
 }

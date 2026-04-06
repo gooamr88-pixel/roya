@@ -62,7 +62,7 @@ function buildUserRow(u, roles) {
         <td data-label="Phone" style="font-size:0.85rem">${esc(u.phone || '—')}</td>
         <td data-label="Role">
             <select class="role-select" onchange="changeUserRole(${u.id}, this.value)" ${!canEdit ? 'disabled' : ''}>
-                ${roles.map(r => `<option value="${r.name}" ${(u.role || 'client') === r.name ? 'selected' : ''}>${__t?.roleNames?.[r.name] || r.name.replace(/_/g, ' ')}</option>`).join('')}
+                ${roles.map(r => `<option value="${esc(r.name)}" ${(u.role || 'client') === r.name ? 'selected' : ''}>${esc(__t?.roleNames?.[r.name] || r.name.replace(/_/g, ' '))}</option>`).join('')}
             </select>
         </td>
         <td data-label="Status">
@@ -168,7 +168,8 @@ function parseBrowser(ua) {
     if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
     if (ua.includes('Edg')) return 'Edge';
     if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
-    return ua.substring(0, 20) + '...';
+    // SECURITY FIX: Escape the raw substring to prevent XSS from crafted user-agents
+    return esc(ua.substring(0, 20)) + '…';
 }
 
 async function clearAdminLogs() {

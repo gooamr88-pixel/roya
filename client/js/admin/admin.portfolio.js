@@ -39,7 +39,7 @@ async function loadAdminPortfolio() {
                         <button class="btn btn-ghost btn-sm" onclick="editPortfolioItem(${item.id})" title="Edit">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)"
+                        ${hasMinRole('admin') ? `<button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)"
                             onclick="deletePortfolioItem(${item.id})" title="Deactivate">
                             <i class="fas fa-eye-slash"></i>
                         </button>
@@ -47,7 +47,7 @@ async function loadAdminPortfolio() {
                             onclick="permanentDeletePortfolioItem(${item.id}, '${esc(item.title).replace(/'/g, "\\'")}')"
                             title="Permanent Delete">
                             <i class="fas fa-trash-alt"></i>
-                        </button>
+                        </button>` : ''}
                     </div>
                 </td>
             </tr>`;

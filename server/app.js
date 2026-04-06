@@ -100,6 +100,8 @@ app.use(helmet({
             geolocation: ["'self'"],
             payment: ["'none'"],
             usb: ["'none'"],
+            // SECURITY: Opt out of Google FLoC/Topics API user profiling
+            'interest-cohort': [],
         },
     },
 }));
@@ -139,8 +141,11 @@ app.use(cookieParser());
 
 // ═══════════════════════════════════════════════
 // Security Middleware Chain
+// SECURITY: sqlInjectionGuard runs globally to protect ALL routes
+// (page routes, SEO routes, etc.) — not just /api routes.
 // ═══════════════════════════════════════════════
 app.use(sanitizeInput);
+app.use(sqlInjectionGuard);
 app.use(hppProtection);
 
 // ── Maintenance Mode Gate (must be after cookie-parser) ──
@@ -182,10 +187,10 @@ app.set('view engine', 'njk');
 app.use(i18nMiddleware);
 
 // ═══════════════════════════════════════════════
-// API Routes — with global rate limit + SQL injection guard
+// API Routes — with global rate limit
+// (sqlInjectionGuard is now applied globally above)
 // ═══════════════════════════════════════════════
 app.use('/api', apiLimiter);
-app.use('/api', sqlInjectionGuard);
 
 app.use('/api/auth',          require('./routes/auth.routes'));
 app.use('/api/users',         require('./routes/user.routes'));
