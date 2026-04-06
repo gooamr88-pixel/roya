@@ -372,7 +372,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
     } catch (err) {
         if (browser) await browser.close();
         console.error('[PDF Generator Error]:', err);
-        return next(new AppError('Failed to generate PDF. Please try again.', 500));
+        return next(new AppError('Failed to generate PDF. Reason: ' + (err.message || 'Unknown'), 500));
     }
 });
 
