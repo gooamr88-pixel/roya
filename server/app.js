@@ -46,6 +46,7 @@ app.use(helmet({
                 "https://cdnjs.cloudflare.com",
                 "https://connect.facebook.net",
                 "https://sc-static.net",
+                "https://tr.snapchat.com",
                 "https://analytics.tiktok.com",
             ],
             styleSrc: [
@@ -77,9 +78,14 @@ app.use(helmet({
                 "https://tr.snapchat.com",
                 "https://ct.snap.com",
                 "https://analytics.tiktok.com",
+                "https://cdnjs.cloudflare.com",
             ],
             scriptSrcAttr: ["'unsafe-inline'"],
-            frameSrc: ["'none'"],
+            frameSrc: [
+                "'none'",
+                "https://tr.snapchat.com",
+                "https://sc-static.net",
+            ],
             objectSrc: ["'none'"],
             baseUri: ["'self'"],
             formAction: ["'self'"],

@@ -811,10 +811,10 @@ function invoiceDownloadPDF() {
 
     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
     iframeDoc.open();
-    iframeDoc.write(\`<!DOCTYPE html><html dir="rtl"><head>
+    iframeDoc.write(`<!DOCTYPE html><html dir="rtl"><head>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-        <style>\${_getInvoiceCSS()}</style>
-        </head><body>\${previewHTML}</body></html>\`);
+        <style>${_getInvoiceCSS()}</style>
+        </head><body>${previewHTML}</body></html>`);
     iframeDoc.close();
 
     // Wait for fonts and images to load, then capture
@@ -851,9 +851,9 @@ function invoiceDownloadPDF() {
                 const fitW = (canvas.width * fitH) / canvas.height;
                 doc.addImage(imgData, 'PNG', (pageW - fitW) / 2, my, fitW, fitH);
             }
-            const filename = \`\${invoiceState.docNumber || 'document'}_\${new Date().toISOString().slice(0, 10)}.pdf\`;
+            const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
             doc.save(filename);
-            Toast.success(\`\${_t('invPdfDownloaded', 'PDF downloaded')}: \${filename}\`);
+            Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
         }).catch(err => {
             document.body.removeChild(iframe);
             console.error('PDF generation error:', err);
@@ -868,16 +868,16 @@ function invoicePrint() {
     if (!previewHTML) return;
 
     const printWindow = window.open('', '_blank', 'width=800,height=1100');
-    printWindow.document.write(\`
+    printWindow.document.write(`
         <!DOCTYPE html>
-        <html dir="rtl"><head><title>\${invoiceState.docNumber}</title>
+        <html dir="rtl"><head><title>${invoiceState.docNumber}</title>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
-            \${_getInvoiceCSS()}
+            ${_getInvoiceCSS()}
             @media print { body { padding: 12px; } @page { margin: 10mm; } }
         </style>
-        </head><body>\${previewHTML}</body></html>
-    \`);
+        </head><body>${previewHTML}</body></html>
+    `);
     printWindow.document.close();
     setTimeout(() => { printWindow.print(); }, 600);
 }
