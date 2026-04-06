@@ -788,77 +788,59 @@ function _getPreviewHTMLForExport() {
     return html;
 }
 
-/* ── PDF — renders in hidden iframe then captures with html2canvas ── */
-function invoiceDownloadPDF() {
-    if (!window.html2canvas) {
-        Toast.error('html2canvas library not loaded.');
-        return;
-    }
-    if (!window.jspdf) {
-        Toast.error(_t('invPdfNotLoaded', 'PDF library not loaded.'));
+/* ── PDF — Server-Side Rendering via Puppeteer ── */
+async function invoiceDownloadPDF() {
+    if (invoiceState.lineItems.length === 0 || (invoiceState.lineItems.length === 1 && !invoiceState.lineItems[0].name)) {
+        Toast.error(_t('invItemRequired', 'At least one line item is required.'));
         return;
     }
 
-    const previewHTML = _getPreviewHTMLForExport();
-    if (!previewHTML) return;
+    Toast.info(_t('invPdfGenerating', 'Generating PDF securely...'));
+    const btn = document.querySelector('[onclick="invoiceDownloadPDF()"]');
+    if (btn) setLoading(btn, true);
 
-    Toast.success(_t('invPdfGenerating', 'جاري إنشاء PDF...'));
+    try {
+        const payload = {
+            ...invoiceState,
+            subtotal: getSubtotal(),
+            discountAmount: getDiscountAmount(),
+            taxAmount: getTaxAmount(),
+            grandTotal: getGrandTotal(),
+            isInvoice: invoiceState.mode === 'invoice'
+        };
 
-    // Create hidden iframe with full self-contained CSS
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;';
-    document.body.appendChild(iframe);
-
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    iframeDoc.open();
-    iframeDoc.write(`<!DOCTYPE html><html dir="rtl"><head>
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-        <style>${_getInvoiceCSS()}</style>
-        </head><body>${previewHTML}</body></html>`);
-    iframeDoc.close();
-
-    // Wait for fonts and images to load, then capture
-    setTimeout(() => {
-        if (iframeDoc.fonts && iframeDoc.fonts.ready) {
-            iframeDoc.fonts.ready.then(capturePDF);
-        } else {
-            capturePDF();
-        }
-    }, 1000);
-
-    function capturePDF() {
-        html2canvas(iframeDoc.body, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            logging: false,
-            width: 794,
-        }).then(canvas => {
-            document.body.removeChild(iframe);
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            const pageW = doc.internal.pageSize.getWidth();
-            const pageH = doc.internal.pageSize.getHeight();
-            const mx = 6, my = 6;
-            const imgW = pageW - (mx * 2);
-            const imgH = (canvas.height * imgW) / canvas.width;
-            if (imgH <= pageH - (my * 2)) {
-                doc.addImage(imgData, 'PNG', mx, my, imgW, imgH);
-            } else {
-                const fitH = pageH - (my * 2);
-                const fitW = (canvas.width * fitH) / canvas.height;
-                doc.addImage(imgData, 'PNG', (pageW - fitW) / 2, my, fitW, fitH);
-            }
-            const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
-            doc.save(filename);
-            Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
-        }).catch(err => {
-            document.body.removeChild(iframe);
-            console.error('PDF generation error:', err);
-            Toast.error('PDF generation failed.');
+        const response = await fetch('/api/invoices/download-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': getCsrfToken()
+            },
+            body: JSON.stringify(payload)
         });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.message || 'Failed to generate PDF');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
+    } catch (err) {
+        console.error('PDF generation error:', err);
+        Toast.error(err.message || 'PDF generation failed.');
+    } finally {
+        if (btn) setLoading(btn, false);
     }
 }
 
