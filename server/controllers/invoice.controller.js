@@ -208,14 +208,28 @@ const save = asyncHandler(async (req, res) => {
 });
 
 // ── NEW: Puppeteer Server-Side PDF Rendering ──
-const puppeteer = require('puppeteer');
+const fs = require('fs');
+const path = require('path');
 const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
     let browser = null;
+    let puppeteer;
+    try {
+        puppeteer = require('puppeteer');
+    } catch (e) {
+        return next(new AppError('Puppeteer is not installed on the server. Run: npm install puppeteer', 500));
+    }
+
     try {
         const invoiceData = req.body;
-        // In reality, you'd fetch the DB record based on req.params.id instead of just taking req.body entirely
-        // But for backward compatibility with the frontend state-based save, we merge both or prefer req.body.
         
+        let logoBase64 = '';
+        try {
+            const logoPath = path.join(__dirname, '../../client/images/nabda-logo-dark.svg');
+            logoBase64 = 'data:image/svg+xml;base64,' + fs.readFileSync(logoPath).toString('base64');
+        } catch (e) {
+            console.warn('Could not read logo image:', e);
+        }
+
         let htmlContent = `
         <!DOCTYPE html>
         <html dir="rtl">
@@ -260,7 +274,8 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     .no-print {
                         display: none !important;
                     }
-                    .invoice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+                    .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+                    .invoice-brand { display: flex; gap: 15px; align-items: center; }
                     .invoice-totals { width: 40%; margin-right: auto; margin-top: 20px; }
                     .total-row { display: flex; justify-content: space-between; padding: 5px 0; }
                     .grand-total { font-weight: bold; background: #f9fafb !important; padding: 10px; }
@@ -269,12 +284,17 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         </head>
         <body>
             <div class="invoice-header">
-                <div>
-                    <h1>${invoiceData.isInvoice ? 'فاتورة ضريبية' : 'عرض سعر'}</h1>
-                    <p>رقم المستند: ${invoiceData.docNumber || '—'}</p>
-                    <p>التاريخ: ${invoiceData.issueDate || '—'}</p>
+                <div class="invoice-brand">
+                    ${logoBase64 ? `<img src="${logoBase64}" width="80" height="80" style="object-fit:contain"/>` : ''}
+                    <div>
+                        <h2 style="margin:0;">نبضة للدعاية والإعلان</h2>
+                        <small style="color:#555">Nabda for Advertising & Marketing</small>
+                        <h1 style="margin-top:10px;">${invoiceData.isInvoice ? 'فاتورة ضريبية' : 'عرض سعر'}</h1>
+                        <p>رقم المستند: ${invoiceData.docNumber || '—'}</p>
+                        <p>التاريخ: ${invoiceData.issueDate || '—'}</p>
+                    </div>
                 </div>
-                ${invoiceData.qrImage ? `<img src="${invoiceData.qrImage}" width="90" height="90" style="object-fit:contain"/>` : ''}
+                ${invoiceData.qrImage ? `<img src="${invoiceData.qrImage}" width="100" height="100" style="object-fit:contain; border:1px solid #eee; border-radius:4px;"/>` : ''}
             </div>
 
             <div style="margin-bottom: 30px;">
