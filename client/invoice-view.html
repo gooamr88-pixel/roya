@@ -173,13 +173,17 @@
 
         let inv;
         try {
-            // Fix Arabic character encoding issues
-            // btoa(unescape(encodeURIComponent(...))) reverses to decodeURIComponent(escape(atob(...)))
-            const base64Decoded = atob(dataParam);
-            const utf8Decoded = decodeURIComponent(escape(base64Decoded));
+            // Robust base64 to UTF-8 decoding for Arabic
+            const base64Str = dataParam.replace(/-/g, '+').replace(/_/g, '/'); // safe b64
+            const binaryString = atob(base64Str);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            const utf8Decoded = new TextDecoder('utf-8').decode(bytes);
             inv = JSON.parse(utf8Decoded);
         } catch(e) {
-            console.error(e);
+            console.error('Decode Error:', e);
             document.getElementById('loadingMsg').textContent = 'خطأ في بيانات الفاتورة | Invalid invoice data';
             return;
         }

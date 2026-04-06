@@ -222,10 +222,12 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
     try {
         const invoiceData = req.body;
         
-        let logoBase64 = '';
+        let logoSVG = '';
         try {
             const logoPath = path.join(__dirname, '../../client/images/nabda-logo-dark.svg');
-            logoBase64 = 'data:image/svg+xml;base64,' + fs.readFileSync(logoPath).toString('base64');
+            logoSVG = fs.readFileSync(logoPath, 'utf8');
+            // Add width and height strictly to SVG if missing
+            logoSVG = logoSVG.replace('<svg', '<svg width="80" height="80" style="max-height:80px; max-width:80px"');
         } catch (e) {
             console.warn('Could not read logo image:', e);
         }
@@ -285,7 +287,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         <body>
             <div class="invoice-header">
                 <div class="invoice-brand">
-                    ${logoBase64 ? `<img src="${logoBase64}" width="80" height="80" style="object-fit:contain"/>` : ''}
+                    <div style="width:80px;height:80px;display:inline-block;">${logoSVG}</div>
                     <div>
                         <h2 style="margin:0;">نبضة للدعاية والإعلان</h2>
                         <small style="color:#555">Nabda for Advertising & Marketing</small>
