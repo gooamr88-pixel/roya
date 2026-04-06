@@ -276,9 +276,9 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     .no-print {
                         display: none !important;
                     }
-                    .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+                    .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; flex-direction: row-reverse; }
                     .invoice-brand { display: flex; gap: 15px; align-items: center; }
-                    .invoice-totals { width: 40%; margin-right: auto; margin-top: 20px; }
+                    .invoice-totals { width: 40%; margin-left: auto; margin-top: 20px; }
                     .total-row { display: flex; justify-content: space-between; padding: 5px 0; }
                     .grand-total { font-weight: bold; background: #f9fafb !important; padding: 10px; }
                 }
