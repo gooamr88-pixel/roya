@@ -267,68 +267,6 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     line-height: 1.5;
                 }
 
-                /* ── Header ── */
-                .inv-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-direction: row-reverse;
-                    margin-bottom: 20px;
-                    padding-bottom: 16px;
-                    border-bottom: 2px solid #d4af37;
-                }
-                .inv-brand {
-                    display: flex;
-                    align-items: center;
-                    gap: 14px;
-                    flex-direction: row-reverse;
-                }
-                .inv-brand img {
-                    width: 90px;
-                    height: 90px;
-                    object-fit: contain;
-                }
-                .inv-brand-text .company-ar {
-                    font-size: 18px;
-                    font-weight: 800;
-                    color: #1a1a1a;
-                }
-                .inv-brand-text .company-en {
-                    font-size: 11px;
-                    color: #888;
-                    letter-spacing: 0.04em;
-                    margin-top: 2px;
-                }
-
-                /* ── Doc Type Badge ── */
-                .inv-type-badge {
-                    text-align: center;
-                    padding: 8px 0;
-                    margin: 14px 0;
-                    border-top: 2px solid #d4af37;
-                    border-bottom: 2px solid #d4af37;
-                    font-weight: 800;
-                    font-size: 14px;
-                    letter-spacing: 0.02em;
-                }
-                .inv-type-en { font-size: 11px; letter-spacing: 0.1em; color: #555; }
-                .inv-type-divider { margin: 0 10px; color: #ccc; font-weight: 300; }
-
-                /* ── Meta ── */
-                .inv-meta {
-                    background: #fafafa;
-                    border: 1px solid #e5e5e5;
-                    border-radius: 6px;
-                    padding: 12px 14px;
-                    margin: 12px 0;
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 6px 16px;
-                }
-                .inv-meta-item { display: flex; gap: 6px; font-size: 12px; }
-                .inv-meta-lbl { font-weight: 700; color: #333; white-space: nowrap; }
-                .inv-meta-val { color: #555; }
-
                 /* ── Table ── */
                 table {
                     width: 100%;
@@ -337,181 +275,290 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     font-size: 12px;
                 }
                 thead th {
-                    background: #f0f0f0;
-                    color: #1a1a1a;
-                    padding: 8px 10px;
+                    background: #1a1a2e;
+                    color: #d4af37;
+                    padding: 10px 10px;
                     text-align: center;
                     font-weight: 700;
-                    border: 1px solid #ccc;
+                    border: 1px solid #1a1a2e;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
+                    font-size: 11px;
+                    letter-spacing: 0.03em;
                 }
                 tbody td {
                     padding: 8px 10px;
-                    border: 1px solid #ddd;
+                    border: 1px solid #e0e0e0;
                     text-align: center;
                     color: #333;
                 }
                 tbody tr:nth-child(even) td {
-                    background: #fafafa;
+                    background: #f8f8f8;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }
+                tbody tr:last-child td { border-bottom: 2px solid #d4af37; }
 
-                /* ── Totals ── */
-                .inv-totals {
-                    margin-top: 16px;
-                    display: flex;
-                    justify-content: flex-start;
+                /* ── Totals Box ── */
+                .inv-totals-box {
+                    min-width: 280px;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 6px;
+                    overflow: hidden;
+                    flex-shrink: 0;
                 }
-                .inv-totals-inner { min-width: 260px; }
+                .inv-totals-box-title {
+                    background: #1a1a2e;
+                    color: #d4af37;
+                    font-weight: 800;
+                    font-size: 11px;
+                    padding: 8px 14px;
+                    letter-spacing: 0.05em;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
                 .inv-total-row {
                     display: flex;
                     justify-content: space-between;
-                    padding: 5px 12px;
-                    border-bottom: 1px solid #eee;
+                    align-items: center;
+                    padding: 7px 14px;
+                    border-bottom: 1px solid #f0f0f0;
                     font-size: 12px;
                 }
-                .inv-total-row .lbl { color: #555; font-weight: 600; }
-                .inv-total-row .val { color: #333; direction: ltr; }
+                .inv-total-row:last-child { border-bottom: none; }
+                .inv-total-row .lbl { color: #666; font-weight: 600; }
+                .inv-total-row .val { color: #333; direction: ltr; font-weight: 600; }
                 .inv-total-row.grand {
-                    background: #f5f5f5;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    margin-top: 6px;
-                    font-size: 14px;
-                    font-weight: 800;
+                    background: #1a1a2e;
+                    padding: 11px 14px;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }
-                .inv-total-row.grand .lbl,
-                .inv-total-row.grand .val { color: #1a1a1a; }
+                .inv-total-row.grand .lbl { color: #d4af37; font-weight: 700; font-size: 13px; }
+                .inv-total-row.grand .val { color: #fff; font-weight: 900; font-size: 15px; direction: ltr; }
+                .inv-total-row.paid-row { background: #f0fdf4; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+                .inv-total-row.paid-row .lbl { color: #166534; }
+                .inv-total-row.paid-row .val { color: #166534; }
+                .inv-total-row.remaining-row { background: #fef2f2; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+                .inv-total-row.remaining-row .lbl { color: #991b1b; }
+                .inv-total-row.remaining-row .val { color: #991b1b; }
 
                 /* ── Notes ── */
                 .inv-notes {
-                    margin-top: 14px;
-                    padding: 10px 12px;
-                    border: 1px solid #eee;
-                    border-radius: 4px;
-                    background: #fafafa;
+                    padding: 10px 14px;
+                    border-right: 3px solid #d4af37;
+                    background: #fffdf5;
                     font-size: 12px;
+                    margin-bottom: 8px;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }
-                .inv-notes .lbl { font-weight: 700; font-size: 11px; color: #444; }
-                .inv-notes .txt { color: #333; margin-top: 4px; }
+                .inv-notes .lbl { font-weight: 700; font-size: 10px; color: #8a6d00; margin-bottom: 4px; letter-spacing:0.05em; }
+                .inv-notes .txt { color: #444; }
 
-                /* ── Footer ── */
-                .inv-footer {
-                    text-align: center;
-                    margin-top: 20px;
-                    padding-top: 12px;
-                    border-top: 1px solid #ddd;
-                    font-size: 11px;
-                    color: #999;
-                }
-
-                /* ── QR ── */
-                .inv-qr-img {
-                    width: 90px;
-                    height: 90px;
-                    object-fit: contain;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
+                /* ── Gold Bar ── */
+                .gold-bar {
+                    height: 5px;
+                    background: linear-gradient(90deg,#7c461d,#a57029,#f2d379,#e9ae39,#e3a430,#dc9927,#c7832a,#82481e);
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
                 }
 
                 @media print {
-                    body {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                    }
+                    body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     tr { page-break-inside: avoid; }
                 }
             </style>
         </head>
-        <body>
+        <body style="padding:0;">
 
-            <!-- Header -->
-            <div class="inv-header">
-                <div class="inv-brand">
-                    ${logoDataUri
-                        ? `<img src="${logoDataUri}" alt="Platform Logo">`
-                        : `<div style="width:90px;height:90px;background:#f0f0f0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#d4af37;">LOGO</div>`
-                    }
-                    <div class="inv-brand-text">
-                        <div class="company-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
-                        <div class="company-en">${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
+            <!-- TOP GOLD BAR -->
+            <div class="gold-bar"></div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- CORPORATE HEADER                        -->
+            <!-- ═══════════════════════════════════════ -->
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-start;
+                padding:18px 22px 16px;
+                background:#fff;
+                border-bottom:1px solid #ebebeb;
+            ">
+                <!-- RIGHT SIDE: Logo + Company Identity -->
+                <div style="display:flex;align-items:center;gap:14px;flex-direction:row-reverse;flex:1;">
+                    <div style="flex-shrink:0;">
+                        ${logoDataUri
+                            ? `<img src="${logoDataUri}" alt="Company Logo" style="width:80px;height:80px;object-fit:contain;display:block;">`
+                            : `<div style="width:80px;height:80px;background:#1a1a2e;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:900;font-size:13px;letter-spacing:1px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">NABDA</div>`
+                        }
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:20px;font-weight:900;color:#1a1a2e;line-height:1.2;">
+                            ${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}
+                        </div>
+                        <div style="font-size:10px;color:#b8860b;font-weight:700;letter-spacing:0.07em;margin-top:3px;text-transform:uppercase;">
+                            ${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}
+                        </div>
+                        <div style="margin-top:9px;font-size:11px;color:#666;line-height:1.9;">
+                            <div>الرياض، المملكة العربية السعودية &nbsp;|&nbsp; Riyadh, Saudi Arabia</div>
+                            <div>www.nabdaads.com &nbsp;|&nbsp; +966 5X XXX XXXX</div>
+                            <div style="margin-top:4px;">
+                                <span style="background:#1a1a2e;color:#d4af37;padding:2px 10px;border-radius:3px;font-size:10px;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
+                                    الرقم الضريبي: 310XXXXXXXXX
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                ${invoiceData.qrImage
-                    ? `<img class="inv-qr-img" src="${invoiceData.qrImage}" alt="QR"/>`
-                    : ''
-                }
-            </div>
 
-            <!-- Document Type -->
-            <div class="inv-type-badge">
-                <span>${docTypeAr}</span>
-                <span class="inv-type-divider">|</span>
-                <span class="inv-type-en">${docTypeEn}</span>
-            </div>
-
-            <!-- Meta -->
-            <div class="inv-meta">
-                <div class="inv-meta-item"><span class="inv-meta-lbl">رقم المستند:</span><span class="inv-meta-val">${invoiceData.docNumber || '—'}</span></div>
-                <div class="inv-meta-item"><span class="inv-meta-lbl">التاريخ:</span><span class="inv-meta-val">${invoiceData.issueDate || '—'}</span></div>
-                <div class="inv-meta-item"><span class="inv-meta-lbl">اسم العميل:</span><span class="inv-meta-val">${invoiceData.clientName || '—'}</span></div>
-                <div class="inv-meta-item"><span class="inv-meta-lbl">تاريخ الاستحقاق:</span><span class="inv-meta-val">${invoiceData.dueDate || '—'}</span></div>
-                <div class="inv-meta-item"><span class="inv-meta-lbl">الهاتف:</span><span class="inv-meta-val">${invoiceData.clientPhone || '—'}</span></div>
-                <div class="inv-meta-item"><span class="inv-meta-lbl">البريد:</span><span class="inv-meta-val">${invoiceData.clientEmail || '—'}</span></div>
-                <div class="inv-meta-item"><span class="inv-meta-lbl">العنوان:</span><span class="inv-meta-val">${invoiceData.clientAddress || '—'}</span></div>
-                <div class="inv-meta-item"><span class="inv-meta-lbl">الرقم الضريبي:</span><span class="inv-meta-val">${invoiceData.taxNumber || '—'}</span></div>
-            </div>
-
-            <!-- Line Items Table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:35px">م</th>
-                        <th>الصنف</th>
-                        <th>الوصف</th>
-                        <th style="width:55px">الكمية</th>
-                        <th style="width:80px">السعر</th>
-                        <th style="width:90px">المبلغ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${lineItemsHTML || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px">لا توجد بنود</td></tr>'}
-                </tbody>
-            </table>
-
-            <!-- Totals -->
-            <div class="inv-totals">
-                <div class="inv-totals-inner">
-                    <div class="inv-total-row"><span class="lbl">الاجمالي الفرعي <small>Subtotal</small></span><span class="val">${fmt(invoiceData.subtotal)}</span></div>
-                    <div class="inv-total-row"><span class="lbl">الخصم <small>Discount</small></span><span class="val">${fmt(invoiceData.discountAmount)}</span></div>
-                    <div class="inv-total-row"><span class="lbl">القيمة المضافة ${invoiceData.taxPercent || 0}% <small>VAT</small></span><span class="val">${fmt(invoiceData.taxAmount)}</span></div>
-                    <div class="inv-total-row grand"><span class="lbl">الإجمالي المستحق <small>Total Due</small></span><span class="val">${fmt(invoiceData.grandTotal)}</span></div>
+                <!-- LEFT SIDE: Document Badge + Info + QR -->
+                <div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:170px;">
+                    <div style="
+                        background:#1a1a2e;color:#d4af37;
+                        padding:7px 18px;border-radius:4px;
+                        font-weight:900;font-size:12px;
+                        letter-spacing:0.07em;text-align:center;
+                        -webkit-print-color-adjust:exact;print-color-adjust:exact;
+                    ">
+                        ${docTypeAr}<br>
+                        <span style="font-size:9px;letter-spacing:0.14em;color:#f0d060;">${docTypeEn}</span>
+                    </div>
+                    <div style="font-size:11.5px;color:#555;line-height:2.1;">
+                        <div><span style="font-weight:700;color:#222;">رقم المستند:</span> ${invoiceData.docNumber || '—'}</div>
+                        <div><span style="font-weight:700;color:#222;">تاريخ الإصدار:</span> ${invoiceData.issueDate || '—'}</div>
+                        <div><span style="font-weight:700;color:#222;">تاريخ الاستحقاق:</span> ${invoiceData.dueDate || '—'}</div>
+                    </div>
+                    ${invoiceData.qrImage ? `<img src="${invoiceData.qrImage}" alt="QR" style="width:80px;height:80px;object-fit:contain;border:1px solid #ddd;border-radius:4px;padding:3px;">` : ''}
                 </div>
             </div>
 
-            <!-- Notes / Terms -->
-            ${invoiceData.notes ? `
-            <div class="inv-notes">
-                <div class="lbl">ملاحظات <small>Notes</small></div>
-                <div class="txt">${invoiceData.notes.replace(/\n/g, '<br/>')}</div>
-            </div>` : ''}
-            ${invoiceData.terms ? `
-            <div class="inv-notes">
-                <div class="lbl">الشروط والأحكام <small>Terms</small></div>
-                <div class="txt">${invoiceData.terms.replace(/\n/g, '<br/>')}</div>
-            </div>` : ''}
+            <!-- ═══════════════════════════════════════ -->
+            <!-- BODY                                    -->
+            <!-- ═══════════════════════════════════════ -->
+            <div style="padding:16px 22px 22px;">
 
-            <!-- Footer -->
-            <div class="inv-footer">
-                <div>${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'} — ${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
-                <div style="margin-top:4px;">الصفحة 1 من 1 | Page 1 of 1</div>
+                <!-- ── Bill To ── -->
+                <div style="
+                    background:#f8f9ff;
+                    border:1px solid #e0e4f0;
+                    border-right:4px solid #1a1a2e;
+                    border-radius:0 6px 6px 0;
+                    padding:11px 16px;
+                    margin-bottom:4px;
+                    -webkit-print-color-adjust:exact;
+                    print-color-adjust:exact;
+                ">
+                    <div style="font-size:9px;font-weight:900;color:#1a1a2e;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">
+                        فاتورة إلى &nbsp;·&nbsp; BILL TO
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:12px;">
+                        <div><span style="font-weight:700;color:#333;">الاسم:</span> <span style="color:#555;">${invoiceData.clientName || '—'}</span></div>
+                        <div><span style="font-weight:700;color:#333;">الرقم الضريبي:</span> <span style="color:#555;">${invoiceData.taxNumber || '—'}</span></div>
+                        <div><span style="font-weight:700;color:#333;">الهاتف:</span> <span style="color:#555;direction:ltr;display:inline-block;">${invoiceData.clientPhone || '—'}</span></div>
+                        <div><span style="font-weight:700;color:#333;">البريد:</span> <span style="color:#555;">${invoiceData.clientEmail || '—'}</span></div>
+                        <div style="grid-column:1/-1;"><span style="font-weight:700;color:#333;">العنوان:</span> <span style="color:#555;">${invoiceData.clientAddress || '—'}</span></div>
+                    </div>
+                </div>
+
+                <!-- ── Line Items Table ── -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:30px;">م<br><small style="font-weight:400;font-size:9px;opacity:0.6;">No.</small></th>
+                            <th>الصنف / البند<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Item</small></th>
+                            <th>الوصف<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Description</small></th>
+                            <th style="width:48px;">الكمية<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Qty</small></th>
+                            <th style="width:78px;">السعر<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Unit Price</small></th>
+                            <th style="width:88px;">المبلغ<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Amount</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${lineItemsHTML || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:24px;font-size:12px;">لا توجد بنود مضافة</td></tr>'}
+                    </tbody>
+                </table>
+
+                <!-- ── Bottom: Notes + Totals ── -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-top:8px;">
+
+                    <!-- Notes / Terms -->
+                    <div style="flex:1;">
+                        ${invoiceData.notes ? `
+                        <div class="inv-notes">
+                            <div class="lbl">ملاحظات &nbsp;&#x2022;&nbsp; NOTES</div>
+                            <div class="txt">${invoiceData.notes.replace(/\n/g, '<br/>')}</div>
+                        </div>` : ''}
+                        ${invoiceData.terms ? `
+                        <div class="inv-notes">
+                            <div class="lbl">الشروط والأحكام &nbsp;&#x2022;&nbsp; TERMS &amp; CONDITIONS</div>
+                            <div class="txt">${invoiceData.terms.replace(/\n/g, '<br/>')}</div>
+                        </div>` : ''}
+                        ${!invoiceData.notes && !invoiceData.terms
+                            ? `<div style="color:#ccc;font-size:11px;padding-top:8px;">— لا توجد ملاحظات إضافية —</div>`
+                            : ''}
+                    </div>
+
+                    <!-- Totals Box -->
+                    <div class="inv-totals-box">
+                        <div class="inv-totals-box-title">ملخص المبالغ &nbsp;·&nbsp; SUMMARY</div>
+                        <div class="inv-total-row">
+                            <span class="lbl">الإجمالي الفرعي <small style="color:#aaa;">Subtotal</small></span>
+                            <span class="val">${fmt(invoiceData.subtotal)}</span>
+                        </div>
+                        <div class="inv-total-row">
+                            <span class="lbl">الخصم <small style="color:#aaa;">Discount</small></span>
+                            <span class="val">${fmt(invoiceData.discountAmount)}</span>
+                        </div>
+                        <div class="inv-total-row">
+                            <span class="lbl">ض.ق.م ${invoiceData.taxPercent || 0}% <small style="color:#aaa;">VAT</small></span>
+                            <span class="val">${fmt(invoiceData.taxAmount)}</span>
+                        </div>
+                        ${(invoiceData.shippingCost && Number(invoiceData.shippingCost) > 0) ? `
+                        <div class="inv-total-row">
+                            <span class="lbl">الشحن <small style="color:#aaa;">Shipping</small></span>
+                            <span class="val">${fmt(invoiceData.shippingCost)}</span>
+                        </div>` : ''}
+                        <div class="inv-total-row grand">
+                            <span class="lbl">الإجمالي المستحق &nbsp;<small>Total Due</small></span>
+                            <span class="val">${fmt(invoiceData.grandTotal)}</span>
+                        </div>
+                        ${(invoiceData.amountPaid !== undefined && invoiceData.amountPaid !== null) ? `
+                        <div class="inv-total-row paid-row">
+                            <span class="lbl">المدفوع <small>Paid</small></span>
+                            <span class="val">${fmt(invoiceData.amountPaid)}</span>
+                        </div>
+                        <div class="inv-total-row remaining-row">
+                            <span class="lbl">المتبقي <small>Remaining</small></span>
+                            <span class="val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</span>
+                        </div>` : ''}
+                    </div>
+                </div>
+
+                <!-- ── Footer ── -->
+                <div style="
+                    margin-top:26px;
+                    padding-top:12px;
+                    border-top:1px solid #e5e5e5;
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    font-size:10px;
+                    color:#aaa;
+                ">
+                    <div>الصفحة 1 من 1 &nbsp;|&nbsp; Page 1 of 1</div>
+                    <div style="font-weight:700;color:#444;">
+                        ${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}
+                        &nbsp;·&nbsp;
+                        <span style="direction:ltr;display:inline-block;">${invoiceData.companyNameEn || 'Nabda for Advertising &amp; Marketing'}</span>
+                    </div>
+                    <div>تم الإنشاء بواسطة المنصة &nbsp;|&nbsp; System Generated</div>
+                </div>
+
             </div>
+
+            <!-- BOTTOM GOLD BAR -->
+            <div class="gold-bar"></div>
 
         </body>
         </html>
