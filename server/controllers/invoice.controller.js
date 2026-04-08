@@ -261,11 +261,15 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
 
         const fmt = (n) => `${(Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
 
+        const discLabel = invoiceData.discountType === 'percent'
+            ? `الخصم (${invoiceData.discountValue || 0}%) <small>Discount</small>`
+            : `الخصم <small>Discount</small>`;
+
         const lineItemsHTML = (invoiceData.lineItems || []).filter(i => i.name).map((item, idx) => `
             <tr>
                 <td>${idx + 1}</td>
-                <td style="font-weight:600;text-align:right">${item.name || '—'}</td>
-                <td style="font-size:11px;color:#555;text-align:right">${item.description || ''}</td>
+                <td style="font-weight:500;text-align:right">${item.name || '—'}</td>
+                <td style="font-size:0.72rem;text-align:right">${item.description || ''}</td>
                 <td>${item.quantity || 0}</td>
                 <td>${fmt(item.unitPrice)}</td>
                 <td style="font-weight:600">${fmt((Number(item.quantity) || 0) * (Number(item.unitPrice) || 0))}</td>
@@ -277,7 +281,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         <html dir="rtl" lang="ar">
         <head>
             <meta charset="UTF-8">
-            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
             <style>
                 * { box-sizing: border-box; margin: 0; padding: 0; }
                 body {
@@ -285,106 +289,177 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     background: #fff;
                     color: #1a1a1a;
                     direction: rtl;
+                    text-align: right;
                     font-size: 13px;
                     line-height: 1.5;
+                    padding: 0;
                 }
+
+                .inv-preview-body {
+                    padding: 24px 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    color: #1a1a1a;
+                    background: #fff;
+                    direction: rtl;
+                }
+
+                /* ── Header: Logo + Company Info ── */
+                .inv-new-header {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    padding: 12px 0;
+                    direction: rtl;
+                    gap: 0;
+                }
+                .inv-new-header-logo { flex-shrink: 0; }
+                .inv-new-logo {
+                    width: 80px; height: 80px;
+                    object-fit: contain;
+                }
+                .inv-new-header-info {
+                    flex: 1;
+                    text-align: center;
+                    padding: 0 16px;
+                }
+                .inv-company-name-ar {
+                    font-size: 1.1rem; font-weight: 700;
+                    color: #1a1a1a; line-height: 1.5;
+                }
+                .inv-company-name-en {
+                    font-size: 0.62rem; color: #888;
+                    letter-spacing: 0.03em; margin-top: 2px;
+                }
+
+                /* ── Document Type Badge ── */
+                .inv-doc-type-badge {
+                    text-align: center; padding: 6px 0;
+                    margin: 4px 0 10px 0;
+                    border-top: 2px solid #d4af37;
+                    border-bottom: 2px solid #d4af37;
+                    font-size: 0.85rem; font-weight: 700;
+                    color: #1a1a1a; letter-spacing: 0.03em;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .inv-doc-type-divider { margin: 0 10px; color: #ccc; font-weight: 300; }
+                .inv-doc-type-en { font-size: 0.78rem; letter-spacing: 0.08em; }
+
+                /* ── Document Meta ── */
+                .inv-new-meta {
+                    display: flex; flex-direction: column; gap: 6px;
+                    font-size: 0.78rem; padding: 10px 12px;
+                    background: #fafafa; border: 1px solid #eee;
+                    border-radius: 6px;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                }
+                .inv-new-meta-row {
+                    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+                }
+                .inv-new-meta-item { display: flex; gap: 6px; align-items: baseline; }
+                .inv-meta-label { font-weight: 600; color: #333; white-space: nowrap; font-size: 0.75rem; }
+                .inv-meta-value { color: #555; font-size: 0.75rem; }
 
                 /* ── Table ── */
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 14px 0;
-                    font-size: 12px;
+                .inv-new-table {
+                    width: 100%; border-collapse: collapse;
+                    border: 1px solid #bbb; font-size: 0.78rem;
                 }
-                thead th {
-                    background: #1a1a2e;
-                    color: #d4af37;
-                    padding: 10px 10px;
-                    text-align: center;
-                    font-weight: 700;
-                    border: 1px solid #1a1a2e;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
-                    font-size: 11px;
-                    letter-spacing: 0.03em;
+                .inv-new-table thead th {
+                    background: #f0f0f0; color: #1a1a1a;
+                    padding: 6px 8px; text-align: center;
+                    font-size: 0.72rem; font-weight: 700;
+                    border: 1px solid #bbb; white-space: nowrap;
+                    line-height: 1.3;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 }
-                tbody td {
-                    padding: 8px 10px;
-                    border: 1px solid #e0e0e0;
-                    text-align: center;
-                    color: #333;
+                .inv-new-table thead th small {
+                    display: block; font-weight: 400;
+                    font-size: 0.58rem; color: #888; margin-top: 1px;
                 }
-                tbody tr:nth-child(even) td {
-                    background: #f8f8f8;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
+                .inv-th-num { width: 35px; }
+                .inv-th-qty { width: 55px; }
+                .inv-th-price { width: 70px; }
+                .inv-th-total { width: 75px; }
+                .inv-new-table tbody td {
+                    padding: 7px 10px; border: 1px solid #ccc;
+                    text-align: center; color: #333; font-size: 0.76rem;
                 }
-                tbody tr:last-child td { border-bottom: 2px solid #d4af37; }
+                .inv-new-table tbody tr:nth-child(even) {
+                    background: #fafafa;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                }
 
-                /* ── Totals Box ── */
-                .inv-totals-box {
-                    min-width: 280px;
-                    border: 1px solid #e0e0e0;
-                    border-radius: 6px;
-                    overflow: hidden;
-                    flex-shrink: 0;
+                /* ── Bottom: QR + Summary ── */
+                .inv-new-bottom {
+                    display: grid; grid-template-columns: auto 1fr;
+                    gap: 16px; align-items: start;
+                    padding-top: 12px; border-top: 1px solid #ddd;
+                    direction: rtl;
                 }
-                .inv-totals-box-title {
-                    background: #1a1a2e;
-                    color: #d4af37;
-                    font-weight: 800;
-                    font-size: 11px;
-                    padding: 8px 14px;
-                    letter-spacing: 0.05em;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
+                .inv-new-qr {
+                    display: flex; align-items: flex-start;
+                    justify-content: center; order: 2;
                 }
-                .inv-total-row {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 7px 14px;
-                    border-bottom: 1px solid #f0f0f0;
-                    font-size: 12px;
+                .inv-new-qr canvas, .inv-new-qr img {
+                    width: 110px; height: 110px;
+                    border: 1px solid #ddd; border-radius: 4px;
+                    background: #fff;
                 }
-                .inv-total-row:last-child { border-bottom: none; }
-                .inv-total-row .lbl { color: #666; font-weight: 600; }
-                .inv-total-row .val { color: #333; direction: ltr; font-weight: 600; }
-                .inv-total-row.grand {
-                    background: #1a1a2e;
-                    padding: 11px 14px;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
+                .inv-new-summary {
+                    display: flex; flex-direction: column;
+                    gap: 4px; order: 1;
                 }
-                .inv-total-row.grand .lbl { color: #d4af37; font-weight: 700; font-size: 13px; }
-                .inv-total-row.grand .val { color: #fff; font-weight: 900; font-size: 15px; direction: ltr; }
-                .inv-total-row.paid-row { background: #f0fdf4; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-                .inv-total-row.paid-row .lbl { color: #166534; }
-                .inv-total-row.paid-row .val { color: #166534; }
-                .inv-total-row.remaining-row { background: #fef2f2; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-                .inv-total-row.remaining-row .lbl { color: #991b1b; }
-                .inv-total-row.remaining-row .val { color: #991b1b; }
+                .inv-new-summary-row {
+                    display: flex; justify-content: space-between;
+                    align-items: center; padding: 4px 12px;
+                    border-bottom: 1px solid #eee; font-size: 0.78rem;
+                }
+                .inv-new-summary-row small { font-size: 0.58rem; color: #999; margin-right: 4px; }
+                .inv-summary-lbl { font-weight: 600; color: #333; text-align: right; }
+                .inv-summary-val { font-weight: 500; color: #555; direction: ltr; text-align: left; }
+
+                .inv-summary-total {
+                    background: #f5f5f5; border: 1px solid #ccc;
+                    border-radius: 4px; font-size: 0.85rem; margin-top: 4px;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                }
+                .inv-summary-total .inv-summary-lbl { font-weight: 800; color: #1a1a1a; }
+                .inv-summary-total .inv-summary-val { font-weight: 800; color: #1a1a1a; font-size: 0.9rem; }
+
+                .inv-summary-paid {
+                    background: #f0fdf4; border-radius: 3px;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                }
+                .inv-summary-paid .inv-summary-val { color: #166534; font-weight: 600; }
+
+                .inv-summary-remaining {
+                    background: #fef2f2; border-radius: 3px; margin-top: 2px;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                }
+                .inv-summary-remaining .inv-summary-val { color: #b91c1c; font-weight: 700; }
 
                 /* ── Notes ── */
-                .inv-notes {
-                    padding: 10px 14px;
-                    border-right: 3px solid #d4af37;
-                    background: #fffdf5;
-                    font-size: 12px;
-                    margin-bottom: 8px;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
+                .inv-prev-notes-section {
+                    background: #fafafa; border: 1px solid #eee;
+                    border-radius: 4px; padding: 6px 8px;
+                    font-size: 0.75rem;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 }
-                .inv-notes .lbl { font-weight: 700; font-size: 10px; color: #8a6d00; margin-bottom: 4px; letter-spacing:0.05em; }
-                .inv-notes .txt { color: #444; }
+                .inv-prev-notes-label { font-weight: 600; font-size: 0.7rem; color: #555; }
+                .inv-prev-notes-label small { color: #999; margin-right: 4px; }
+                .inv-prev-notes-text { color: #333; margin-top: 2px; }
 
-                /* ── Gold Bar ── */
-                .gold-bar {
-                    height: 5px;
-                    background: linear-gradient(90deg,#7c461d,#a57029,#f2d379,#e9ae39,#e3a430,#dc9927,#c7832a,#82481e);
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
+                /* ── Footer ── */
+                .inv-new-footer {
+                    text-align: center; padding-top: 12px;
+                    border-top: 1px solid #ddd;
+                    display: flex; flex-direction: column; gap: 4px;
                 }
+                .inv-new-footer-page { font-size: 0.65rem; color: #999; }
+                .inv-new-footer-branch { font-size: 0.72rem; color: #555; font-weight: 500; }
 
                 @media print {
                     body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -392,196 +467,147 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 }
             </style>
         </head>
-        <body style="padding:0;">
+        <body>
+            <div class="inv-preview-body">
 
-            <!-- TOP GOLD BAR -->
-            <div class="gold-bar"></div>
-
-            <!-- ═══════════════════════════════════════ -->
-            <!-- CORPORATE HEADER                        -->
-            <!-- ═══════════════════════════════════════ -->
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:flex-start;
-                padding:18px 22px 16px;
-                background:#fff;
-                border-bottom:1px solid #ebebeb;
-            ">
-                <!-- RIGHT SIDE: Logo + Company Identity -->
-                <div style="display:flex;align-items:center;gap:14px;flex-direction:row-reverse;flex:1;">
-                    <div style="flex-shrink:0;">
+                <!-- ── Header: Logo + Company Info ── -->
+                <div class="inv-new-header">
+                    <div class="inv-new-header-logo">
                         ${logoDataUri
-                            ? `<img src="${logoDataUri}" alt="Company Logo" style="width:80px;height:80px;object-fit:contain;display:block;">`
-                            : `<div style="width:80px;height:80px;background:#1a1a2e;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#d4af37;font-weight:900;font-size:13px;letter-spacing:1px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">NABDA</div>`
+                            ? `<img src="${logoDataUri}" alt="Nabda" class="inv-new-logo">`
+                            : `<div style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-weight:700;font-size:11px;">LOGO</div>`
                         }
                     </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:20px;font-weight:900;color:#1a1a2e;line-height:1.2;">
-                            ${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}
-                        </div>
-                        <div style="font-size:10px;color:#b8860b;font-weight:700;letter-spacing:0.07em;margin-top:3px;text-transform:uppercase;">
-                            ${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}
-                        </div>
-                        <div style="margin-top:9px;font-size:11px;color:#666;line-height:1.9;">
-                            <div>الرياض، المملكة العربية السعودية &nbsp;|&nbsp; Riyadh, Saudi Arabia</div>
-                            <div>www.nabdaads.com &nbsp;|&nbsp; +966 5X XXX XXXX</div>
-                            <div style="margin-top:4px;">
-                                <span style="background:#1a1a2e;color:#d4af37;padding:2px 10px;border-radius:3px;font-size:10px;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
-                                    الرقم الضريبي: 310XXXXXXXXX
-                                </span>
-                            </div>
-                        </div>
+                    <div class="inv-new-header-info">
+                        <div class="inv-company-name-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
+                        <div class="inv-company-name-en">${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
                     </div>
                 </div>
 
-                <!-- LEFT SIDE: Document Badge + Info + QR -->
-                <div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:170px;">
-                    <div style="
-                        background:#1a1a2e;color:#d4af37;
-                        padding:7px 18px;border-radius:4px;
-                        font-weight:900;font-size:12px;
-                        letter-spacing:0.07em;text-align:center;
-                        -webkit-print-color-adjust:exact;print-color-adjust:exact;
-                    ">
-                        ${docTypeAr}<br>
-                        <span style="font-size:9px;letter-spacing:0.14em;color:#f0d060;">${docTypeEn}</span>
-                    </div>
-                    <div style="font-size:11.5px;color:#555;line-height:2.1;">
-                        <div><span style="font-weight:700;color:#222;">رقم المستند:</span> ${invoiceData.docNumber || '—'}</div>
-                        <div><span style="font-weight:700;color:#222;">تاريخ الإصدار:</span> ${invoiceData.issueDate || '—'}</div>
-                        <div><span style="font-weight:700;color:#222;">تاريخ الاستحقاق:</span> ${invoiceData.dueDate || '—'}</div>
-                    </div>
-                    ${invoiceData.qrImage ? `<img src="${invoiceData.qrImage}" alt="QR" style="width:80px;height:80px;object-fit:contain;border:1px solid #ddd;border-radius:4px;padding:3px;">` : ''}
+                <!-- ── Document Type Badge ── -->
+                <div class="inv-doc-type-badge">
+                    <span class="inv-doc-type-ar">${docTypeAr}</span>
+                    <span class="inv-doc-type-divider">|</span>
+                    <span class="inv-doc-type-en">${docTypeEn}</span>
                 </div>
-            </div>
 
-            <!-- ═══════════════════════════════════════ -->
-            <!-- BODY                                    -->
-            <!-- ═══════════════════════════════════════ -->
-            <div style="padding:16px 22px 22px;">
-
-                <!-- ── Bill To ── -->
-                <div style="
-                    background:#f8f9ff;
-                    border:1px solid #e0e4f0;
-                    border-right:4px solid #1a1a2e;
-                    border-radius:0 6px 6px 0;
-                    padding:11px 16px;
-                    margin-bottom:4px;
-                    -webkit-print-color-adjust:exact;
-                    print-color-adjust:exact;
-                ">
-                    <div style="font-size:9px;font-weight:900;color:#1a1a2e;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">
-                        فاتورة إلى &nbsp;·&nbsp; BILL TO
+                <!-- ── Document Meta ── -->
+                <div class="inv-new-meta">
+                    <div class="inv-new-meta-row">
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">التاريخ:</span>
+                            <span class="inv-meta-value">${invoiceData.issueDate || '—'}</span>
+                        </div>
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">رقم الفاتورة:</span>
+                            <span class="inv-meta-value">${invoiceData.docNumber || '—'}</span>
+                        </div>
                     </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:12px;">
-                        <div><span style="font-weight:700;color:#333;">الاسم:</span> <span style="color:#555;">${invoiceData.clientName || '—'}</span></div>
-                        <div><span style="font-weight:700;color:#333;">الرقم الضريبي:</span> <span style="color:#555;">${invoiceData.taxNumber || '—'}</span></div>
-                        <div><span style="font-weight:700;color:#333;">الهاتف:</span> <span style="color:#555;direction:ltr;display:inline-block;">${invoiceData.clientPhone || '—'}</span></div>
-                        <div><span style="font-weight:700;color:#333;">البريد:</span> <span style="color:#555;">${invoiceData.clientEmail || '—'}</span></div>
-                        <div style="grid-column:1/-1;"><span style="font-weight:700;color:#333;">العنوان:</span> <span style="color:#555;">${invoiceData.clientAddress || '—'}</span></div>
+                    <div class="inv-new-meta-row">
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">اسم العميل:</span>
+                            <span class="inv-meta-value">${invoiceData.clientName || '—'}</span>
+                        </div>
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">التلفون:</span>
+                            <span class="inv-meta-value">${invoiceData.clientPhone || '—'}</span>
+                        </div>
+                    </div>
+                    <div class="inv-new-meta-row">
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">العنوان:</span>
+                            <span class="inv-meta-value">${invoiceData.clientAddress || '—'}</span>
+                        </div>
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">البريد:</span>
+                            <span class="inv-meta-value">${invoiceData.clientEmail || '—'}</span>
+                        </div>
+                    </div>
+                    <div class="inv-new-meta-row">
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">الرقم الضريبي:</span>
+                            <span class="inv-meta-value">${invoiceData.taxNumber || '—'}</span>
+                        </div>
+                        <div class="inv-new-meta-item">
+                            <span class="inv-meta-label">تاريخ الاستحقاق:</span>
+                            <span class="inv-meta-value">${invoiceData.dueDate || '—'}</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- ── Line Items Table ── -->
-                <table>
+                <table class="inv-new-table">
                     <thead>
                         <tr>
-                            <th style="width:30px;">م<br><small style="font-weight:400;font-size:9px;opacity:0.6;">No.</small></th>
-                            <th>الصنف / البند<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Item</small></th>
-                            <th>الوصف<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Description</small></th>
-                            <th style="width:48px;">الكمية<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Qty</small></th>
-                            <th style="width:78px;">السعر<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Unit Price</small></th>
-                            <th style="width:88px;">المبلغ<br><small style="font-weight:400;font-size:9px;opacity:0.6;">Amount</small></th>
+                            <th class="inv-th-num">م<br><small>No</small></th>
+                            <th class="inv-th-item">الصنف<br><small>Item</small></th>
+                            <th class="inv-th-desc">الوصف<br><small>Description</small></th>
+                            <th class="inv-th-qty">الكمية<br><small>Qty</small></th>
+                            <th class="inv-th-price">السعر<br><small>Price</small></th>
+                            <th class="inv-th-total">المبلغ<br><small>Amount</small></th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${lineItemsHTML || '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:24px;font-size:12px;">لا توجد بنود مضافة</td></tr>'}
+                        ${lineItemsHTML || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;font-style:italic;">لا توجد بنود</td></tr>'}
                     </tbody>
                 </table>
 
-                <!-- ── Bottom: Notes + Totals ── -->
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-top:8px;">
-
-                    <!-- Notes / Terms -->
-                    <div style="flex:1;">
-                        ${invoiceData.notes ? `
-                        <div class="inv-notes">
-                            <div class="lbl">ملاحظات &nbsp;&#x2022;&nbsp; NOTES</div>
-                            <div class="txt">${invoiceData.notes.replace(/\n/g, '<br/>')}</div>
-                        </div>` : ''}
-                        ${invoiceData.terms ? `
-                        <div class="inv-notes">
-                            <div class="lbl">الشروط والأحكام &nbsp;&#x2022;&nbsp; TERMS &amp; CONDITIONS</div>
-                            <div class="txt">${invoiceData.terms.replace(/\n/g, '<br/>')}</div>
-                        </div>` : ''}
-                        ${!invoiceData.notes && !invoiceData.terms
-                            ? `<div style="color:#ccc;font-size:11px;padding-top:8px;">— لا توجد ملاحظات إضافية —</div>`
-                            : ''}
+                <!-- ── Bottom: QR + Summary ── -->
+                <div class="inv-new-bottom">
+                    <div class="inv-new-qr">
+                        <div style="width:110px;height:110px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px;">QR</div>
                     </div>
-
-                    <!-- Totals Box -->
-                    <div class="inv-totals-box">
-                        <div class="inv-totals-box-title">ملخص المبالغ &nbsp;·&nbsp; SUMMARY</div>
-                        <div class="inv-total-row">
-                            <span class="lbl">الإجمالي الفرعي <small style="color:#aaa;">Subtotal</small></span>
-                            <span class="val">${fmt(invoiceData.subtotal)}</span>
+                    <div class="inv-new-summary">
+                        <div class="inv-new-summary-row">
+                            <span class="inv-summary-val">${fmt(invoiceData.subtotal)}</span>
+                            <span class="inv-summary-lbl">الاجمالي <small>Subtotal</small></span>
                         </div>
-                        <div class="inv-total-row">
-                            <span class="lbl">الخصم <small style="color:#aaa;">Discount</small></span>
-                            <span class="val">${fmt(invoiceData.discountAmount)}</span>
+                        <div class="inv-new-summary-row">
+                            <span class="inv-summary-val">${fmt(invoiceData.discountAmount)}</span>
+                            <span class="inv-summary-lbl">${discLabel}</span>
                         </div>
-                        <div class="inv-total-row">
-                            <span class="lbl">ض.ق.م ${invoiceData.taxPercent || 0}% <small style="color:#aaa;">VAT</small></span>
-                            <span class="val">${fmt(invoiceData.taxAmount)}</span>
+                        <div class="inv-new-summary-row">
+                            <span class="inv-summary-val">${fmt(invoiceData.taxAmount)}</span>
+                            <span class="inv-summary-lbl">القيمة المضافة ${invoiceData.taxPercent || 0}% <small>VAT</small></span>
                         </div>
-                        ${(invoiceData.shippingCost && Number(invoiceData.shippingCost) > 0) ? `
-                        <div class="inv-total-row">
-                            <span class="lbl">الشحن <small style="color:#aaa;">Shipping</small></span>
-                            <span class="val">${fmt(invoiceData.shippingCost)}</span>
-                        </div>` : ''}
-                        <div class="inv-total-row grand">
-                            <span class="lbl">الإجمالي المستحق &nbsp;<small>Total Due</small></span>
-                            <span class="val">${fmt(invoiceData.grandTotal)}</span>
+                        <div class="inv-new-summary-row">
+                            <span class="inv-summary-val">${fmt(invoiceData.shippingCost || 0)}</span>
+                            <span class="inv-summary-lbl">الشحن <small>Shipping</small></span>
                         </div>
-                        ${(invoiceData.amountPaid !== undefined && invoiceData.amountPaid !== null) ? `
-                        <div class="inv-total-row paid-row">
-                            <span class="lbl">المدفوع <small>Paid</small></span>
-                            <span class="val">${fmt(invoiceData.amountPaid)}</span>
+                        <div class="inv-new-summary-row inv-summary-total">
+                            <span class="inv-summary-val">${fmt(invoiceData.grandTotal)}</span>
+                            <span class="inv-summary-lbl">المستحق <small>Total Due</small></span>
                         </div>
-                        <div class="inv-total-row remaining-row">
-                            <span class="lbl">المتبقي <small>Remaining</small></span>
-                            <span class="val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</span>
-                        </div>` : ''}
+                        <div class="inv-new-summary-row inv-summary-paid">
+                            <span class="inv-summary-val">${fmt(invoiceData.amountPaid || 0)}</span>
+                            <span class="inv-summary-lbl">المدفوع <small>Paid</small></span>
+                        </div>
+                        <div class="inv-new-summary-row inv-summary-remaining">
+                            <span class="inv-summary-val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</span>
+                            <span class="inv-summary-lbl">المتبقي <small>Remaining</small></span>
+                        </div>
                     </div>
                 </div>
 
+                <!-- ── Notes & Terms ── -->
+                ${invoiceData.notes ? `
+                <div class="inv-prev-notes-section">
+                    <div class="inv-prev-notes-label">ملاحظات <small>Notes</small></div>
+                    <div class="inv-prev-notes-text">${invoiceData.notes.replace(/\n/g, '<br/>')}</div>
+                </div>` : ''}
+                ${invoiceData.terms ? `
+                <div class="inv-prev-notes-section">
+                    <div class="inv-prev-notes-label">الشروط <small>Terms</small></div>
+                    <div class="inv-prev-notes-text">${invoiceData.terms.replace(/\n/g, '<br/>')}</div>
+                </div>` : ''}
+
                 <!-- ── Footer ── -->
-                <div style="
-                    margin-top:26px;
-                    padding-top:12px;
-                    border-top:1px solid #e5e5e5;
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:center;
-                    font-size:10px;
-                    color:#aaa;
-                ">
-                    <div>الصفحة 1 من 1 &nbsp;|&nbsp; Page 1 of 1</div>
-                    <div style="font-weight:700;color:#444;">
-                        ${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}
-                        &nbsp;·&nbsp;
-                        <span style="direction:ltr;display:inline-block;">${invoiceData.companyNameEn || 'Nabda for Advertising &amp; Marketing'}</span>
-                    </div>
-                    <div>تم الإنشاء بواسطة المنصة &nbsp;|&nbsp; System Generated</div>
+                <div class="inv-new-footer">
+                    <div class="inv-new-footer-page">الصفحة 1 من 1 | Page 1 of 1</div>
+                    <div class="inv-new-footer-branch">${invoiceData.branchInfo || 'الفرع الرئيسي'}</div>
                 </div>
 
             </div>
-
-            <!-- BOTTOM GOLD BAR -->
-            <div class="gold-bar"></div>
-
         </body>
         </html>
         `;
