@@ -320,7 +320,8 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 .header-logos .logo-1 { height: 42px; object-fit: contain; }
                 .header-logos .logo-2 { height: 50px; object-fit: contain; }
                 .header-info {
-                    text-align: left; /* Align opposite to RTL -> left */
+                    text-align: center;
+                    width: 100%;
                 }
                 .company-ar {
                     font-size: 16px;
@@ -518,10 +519,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
             <div class="page">
                 <!-- ── Header: Logos + Company ── -->
                 <div class="header">
-                    <div class="header-logos">
-                        ${logo1Uri ? `<img src="${logo1Uri}" class="logo-1" alt="Logo 1">` : ''}
-                        ${logo2Uri ? `<img src="${logo2Uri}" class="logo-2" alt="Logo 2">` : ''}
-                    </div>
+                    <!-- Logos removed per user request -->
                     <div class="header-info">
                         <div class="company-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
                         <div class="company-en">${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
