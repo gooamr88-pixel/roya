@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════
 const router = require('express').Router();
 const ctrl = require('../controllers/invoice.controller');
+const { csrfProtection } = require('../middlewares/csrf');
 const { authenticate, authorize } = require('../middlewares/auth');
 const { idParamValidation } = require('../middlewares/validators');
 
@@ -20,7 +21,7 @@ router.post('/:orderId/generate', authorize('super_admin'), ctrl.generate);
 router.get('/:id/download', idParamValidation, ctrl.download);
 
 // ── NEW: Puppeteer PDF Generation Route ──
-router.post('/download-pdf', authorize('super_admin', 'admin', 'supervisor'), ctrl.downloadInvoicePDF);
-router.post('/:id/download-pdf', authorize('super_admin', 'admin', 'supervisor'), idParamValidation, ctrl.downloadInvoicePDF);
+router.post('/download-pdf', authorize('super_admin', 'admin', 'supervisor'), csrfProtection, ctrl.downloadInvoicePDF);
+router.post('/:id/download-pdf', authorize('super_admin', 'admin', 'supervisor'), idParamValidation, csrfProtection, ctrl.downloadInvoicePDF);
 
 module.exports = router;

@@ -815,13 +815,14 @@ async function invoiceDownloadPDF() {
         };
 
         const response = await fetch('/api/invoices/download-pdf', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': getCsrfToken()
-            },
-            body: JSON.stringify(payload)
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCsrfToken(),
+          },
+          body: JSON.stringify(payload)
         });
+
 
         if (!response.ok) {
             const errData = await response.json().catch(() => ({}));
