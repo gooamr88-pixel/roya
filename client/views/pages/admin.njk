@@ -349,6 +349,9 @@
             <button type="button" class="inv-mode-tab" data-mode="quote" onclick="switchInvoiceMode('quote')">
               <i class="fas fa-file-signature"></i> {{ t.admin.invQuotation }} · {{ t.admin.invQuotationAr }}
             </button>
+            <button type="button" class="inv-mode-tab" data-mode="history" onclick="switchInvoiceMode('history')">
+              <i class="fas fa-history"></i> سجل الفواتير · History
+            </button>
           </div>
 
           <div class="inv-mode-badge invoice" id="invModeBadge">{{ t.admin.invBadgeInvoice }}</div>
@@ -663,6 +666,28 @@
               </div>
             </div>
 
+          </div>
+
+          {# ═══ INVOICE HISTORY PANEL ═══ #}
+          <div class="inv-history-panel" id="invHistorySection" style="display:none; margin-top:20px;">
+            <div class="table-container fade-in">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>تاريخ الإنشاء<br><small>Date</small></th>
+                    <th>رقم المستند<br><small>Doc Number</small></th>
+                    <th>العميل / الخدمة<br><small>Client / Target</small></th>
+                    <th>التكلفة<br><small>Amount</small></th>
+                    <th>النوع<br><small>Type</small></th>
+                    <th style="width:120px">إجراء<br><small>Actions</small></th>
+                  </tr>
+                </thead>
+                <tbody id="invoicesHistoryTableBody">
+                  <tr><td colspan="6" class="text-center">Loading invoices...</td></tr>
+                </tbody>
+              </table>
+              <div class="pagination" id="invHistoryPagination" style="margin-top:15px;"></div>
+            </div>
           </div>
         </div>
 

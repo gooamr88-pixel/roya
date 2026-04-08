@@ -79,16 +79,35 @@ function setTodayDate() {
 
 /* ── Mode Toggle ── */
 function switchInvoiceMode(mode) {
-    invoiceState.mode = mode;
     document.querySelectorAll('.inv-mode-tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.inv-mode-tab[data-mode="${mode}"]`)?.classList.add('active');
+    
+    const layout = document.querySelector('.inv-layout');
     const badge = document.getElementById('invModeBadge');
+    const historySection = document.getElementById('invHistorySection');
+
+    if (mode === 'history') {
+        if (layout) layout.style.display = 'none';
+        if (badge) badge.style.display = 'none';
+        if (historySection) {
+            historySection.style.display = 'block';
+            loadInvoicesHistory(1);
+        }
+        return;
+    }
+
+    // Builder modes
+    if (layout) layout.style.display = 'flex';
+    if (historySection) historySection.style.display = 'none';
     if (badge) {
+        badge.style.display = 'block';
         badge.textContent = mode === 'invoice'
             ? _t('invBadgeInvoice', 'فاتورة ضريبية — Tax Invoice')
             : _t('invBadgeQuote', 'عرض سعر — Quotation');
         badge.className = `inv-mode-badge ${mode}`;
     }
+    
+    invoiceState.mode = mode;
     generateDocNumber();
     updatePreview();
 }
@@ -898,4 +917,92 @@ function invoiceReset() {
     renderLineItems();
     updatePreview();
     Toast.success(_t('invFormReset', 'Form reset.'));
+}
+
+/* ══════════════════════════════════════════════════════
+   INVOICE HISTORY MANAGEMENT
+══════════════════════════════════════════════════════ */
+async function loadInvoicesHistory(page = 1) {
+    const tbody = document.getElementById('invoicesHistoryTableBody');
+    const pagination = document.getElementById('invHistoryPagination');
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--gold);margin:20px;"></i></td></tr>`;
+    
+    try {
+        const res = await API.get('/invoices', { page, limit: 10 });
+        const data = res.data;
+        if (!data.invoices || data.invoices.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:#999;"><i class="fas fa-inbox fa-3x" style="opacity:0.3;margin-bottom:10px;"></i><br>لا يوجد فواتير محفوظة</td></tr>`;
+            if (pagination) pagination.innerHTML = '';
+            return;
+        }
+
+        tbody.innerHTML = data.invoices.map(inv => {
+            const dateStr = new Date(inv.created_at).toLocaleDateString('en-GB');
+            const typeBadge = inv.mode === 'quote' 
+                ? '<span class="status-badge bg-blue/10 text-blue font-weight-bold">عرض سعر</span>' 
+                : '<span class="status-badge bg-green/10 text-green font-weight-bold">فاتورة</span>';
+                
+            return `
+                <tr>
+                    <td style="font-family:monospace; font-size:0.85rem; color:#666;">${dateStr}</td>
+                    <td dir="ltr" style="font-family:monospace; font-weight:600; color:#333;">${esc(inv.invoice_number)}</td>
+                    <td style="font-weight:700;">
+                        ${esc(inv.client_name)}
+                        <br><small style="color:#777;font-weight:500;">${esc(inv.service_title)}</small>
+                    </td>
+                    <td dir="ltr" style="font-weight:800; color:#1a1a1a;">${Number(inv.total_amount).toFixed(2)} SAR</td>
+                    <td>${typeBadge}</td>
+                    <td>
+                        <div class="action-buttons" style="justify-content:center;">
+                            <a href="/api/invoices/${inv.id}/download-pdf" target="_blank" class="action-btn view-btn" title="PDF">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                            <button onclick="deleteInvoiceHistory(${inv.id})" class="action-btn delete-btn" title="حذف">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        // Pagination
+        if (pagination) {
+            let pHTML = '';
+            const p = data.pagination;
+            if (p.totalPages > 1) {
+                if (p.page > 1) pHTML += `<button class="page-btn" onclick="loadInvoicesHistory(${p.page - 1})"><i class="fas fa-chevron-right"></i></button>`;
+                pHTML += `<span class="page-info">صفحة ${p.page} من ${p.totalPages}</span>`;
+                if (p.page < p.totalPages) pHTML += `<button class="page-btn" onclick="loadInvoicesHistory(${p.page + 1})"><i class="fas fa-chevron-left"></i></button>`;
+            }
+            pagination.innerHTML = pHTML;
+        }
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger" style="padding:20px;">خطأ في جلب السجل: ${err.message}</td></tr>`;
+    }
+}
+
+async function deleteInvoiceHistory(id) {
+    const confirmation = await Swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: 'سيتم حذف الفاتورة نهائياً ولن يمكنك استعادتها!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#71717a',
+        confirmButtonText: 'نعم، احذف',
+        cancelButtonText: 'تراجع'
+    });
+
+    if (confirmation.isConfirmed) {
+        try {
+            await API.delete('/invoices/' + id);
+            Toast.success('تم حذف الفاتورة بنجاح!');
+            loadInvoicesHistory(1); // Reload table
+        } catch (err) {
+            Toast.error(err.message || 'حدث خطأ أثناء החذف');
+        }
+    }
 }

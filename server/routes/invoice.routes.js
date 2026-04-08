@@ -23,5 +23,6 @@ router.get('/:id/download', idParamValidation, ctrl.download);
 // ── NEW: Puppeteer PDF Generation Routes (GET — no CSRF needed for downloads) ──
 router.get('/download-pdf', authorize('super_admin', 'admin', 'supervisor'), ctrl.downloadInvoicePDF);
 router.get('/:id/download-pdf', authorize('super_admin', 'admin', 'supervisor'), idParamValidation, ctrl.downloadInvoicePDF);
+router.delete('/:id', authorize('super_admin', 'admin'), idParamValidation, ctrl.removeInvoice);
 
 module.exports = router;

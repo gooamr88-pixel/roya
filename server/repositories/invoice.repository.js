@@ -45,7 +45,7 @@ const findAll = async ({ page, limit, userId, isAdmin }) => {
 
     const [invoices, countResult] = await Promise.all([
         query(
-            `SELECT i.id, i.invoice_number, i.total_amount, i.tax_amount, i.status, i.created_at,
+            `SELECT i.id, i.invoice_number, i.total_amount, i.tax_amount, i.status, i.created_at, i.payload_json,
                     o.service_title, u.name as client_name
              FROM invoices i
              LEFT JOIN orders o ON i.order_id = o.id
@@ -73,4 +73,9 @@ const getOrderWithClient = async (orderId) => {
     return result.rows[0] || null;
 };
 
-module.exports = { findByOrderId, create, update, findByIdWithOwner, findAll, getOrderWithClient };
+const remove = async (id) => {
+    const result = await query('DELETE FROM invoices WHERE id = $1 RETURNING id', [id]);
+    return result.rows[0] || null;
+};
+
+module.exports = { findByOrderId, create, update, findByIdWithOwner, findAll, getOrderWithClient, remove };

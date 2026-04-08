@@ -92,7 +92,39 @@ const getAll = asyncHandler(async (req, res) => {
         isAdmin,
     });
 
-    res.json({ success: true, data: { invoices: rows, pagination } });
+    const mappedRows = rows.map(inv => {
+        let payload = null;
+        if (inv.payload_json) {
+            try { payload = typeof inv.payload_json === 'string' ? JSON.parse(inv.payload_json) : inv.payload_json; }
+            catch(e) {}
+        }
+        
+        return {
+            id: inv.id,
+            invoice_number: inv.invoice_number,
+            total_amount: inv.total_amount,
+            tax_amount: inv.tax_amount,
+            status: inv.status,
+            created_at: inv.created_at,
+            client_name: inv.client_name || (payload && payload.clientName) || 'غير محدد',
+            service_title: inv.service_title || (payload && payload.docTypeAr) || (payload && payload.mode === 'quote' ? 'عرض سعر' : 'فاتورة ضريبية'),
+            mode: (payload && payload.mode) || 'invoice'
+        };
+    });
+
+    res.json({ success: true, data: { invoices: mappedRows, pagination } });
+});
+
+/**
+ * DELETE /api/invoices/:id
+ */
+const removeInvoice = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const deleted = await invoiceRepo.remove(id);
+    if (!deleted) {
+        return next(new AppError('Invoice not found', 404));
+    }
+    res.json({ success: true, message: 'Invoice deleted successfully.' });
 });
 
 /**
@@ -698,4 +730,4 @@ const viewInvoicePublic = asyncHandler(async (req, res, next) => {
     res.send(htmlContent);
 });
 
-module.exports = { generate, download, getAll, getCatalog, save, downloadInvoicePDF, viewInvoicePublic };
+module.exports = { generate, download, getAll, getCatalog, save, downloadInvoicePDF, viewInvoicePublic, removeInvoice };
