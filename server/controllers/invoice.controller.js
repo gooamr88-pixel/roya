@@ -272,24 +272,21 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         `).join('');
 
         // Build QR content (compact invoice summary — not the full URL)
-        const qrText = [
-            invoiceData.docNumber || 'INV',
-            invoiceData.clientName || '',
-            invoiceData.issueDate || '',
-            `${(Number(invoiceData.grandTotal) || 0).toFixed(2)} ${currency}`,
-        ].join('\\n');
+        // Build QR content: Public URL instead of plain text
+        const baseUrl = process.env.BASE_URL || 'https://roya-advertising.com';
+        const qrText = `${baseUrl}/invoice/${invoiceData._id || invoiceData.id || invoiceData.docNumber}`;
 
         let htmlContent = `
         <!DOCTYPE html>
         <html dir="rtl" lang="ar">
         <head>
             <meta charset="UTF-8">
-            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
             <style>
+                @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+                
                 * { box-sizing: border-box; margin: 0; padding: 0; }
                 body {
-                    font-family: 'Tajawal', 'Cairo', sans-serif;
+                    font-family: 'Cairo', sans-serif !important;
                     background: #fff;
                     color: #1a1a1a;
                     direction: rtl;
@@ -311,20 +308,19 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 .header {
                     display: flex;
                     align-items: center;
-                    gap: 16px;
+                    justify-content: space-between;
                     padding-bottom: 10px;
                 }
                 .header-logos {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
+                    gap: 15px; /* Matches navbar */
                     flex-shrink: 0;
                 }
                 .header-logos .logo-1 { height: 42px; object-fit: contain; }
                 .header-logos .logo-2 { height: 50px; object-fit: contain; }
                 .header-info {
-                    flex: 1;
-                    text-align: center;
+                    text-align: left; /* Align opposite to RTL -> left */
                 }
                 .company-ar {
                     font-size: 16px;
@@ -338,7 +334,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     color: #999;
                     letter-spacing: 0.06em;
                     margin-top: 3px;
-                    font-weight: 400;
+                    font-weight: 600;
                 }
 
                 /* ── Type Badge ── */
@@ -379,7 +375,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 .meta-val {
                     color: #555;
                     font-size: 12px;
-                    font-weight: 400;
+                    font-weight: 600;
                 }
 
                 /* ── Table ── */
@@ -394,17 +390,17 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     color: #1a1a1a;
                     padding: 8px 10px;
                     text-align: center;
-                    font-size: 11px;
-                    font-weight: 700;
+                    font-size: 12px;
+                    font-weight: 800;
                     border: 1px solid #bbb;
                     white-space: nowrap;
                     line-height: 1.4;
                 }
                 .items-table thead th small {
                     display: block;
-                    font-weight: 400;
-                    font-size: 9px;
-                    color: #999;
+                    font-weight: 600;
+                    font-size: 10px;
+                    color: #777;
                     margin-top: 2px;
                 }
                 .items-table tbody td {
@@ -412,14 +408,18 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     border: 1px solid #ccc;
                     text-align: center;
                     color: #333;
-                    font-size: 12px;
+                    font-size: 13px;
+                    font-weight: 600;
                     line-height: 1.5;
                 }
                 .items-table tbody tr:nth-child(even) { background: #fafafa; }
                 .col-num  { width: 35px; }
                 .col-qty  { width: 55px; }
-                .col-price { width: 75px; }
-                .col-total { width: 80px; }
+                .col-price { width: 85px; }
+                .col-total { width: 95px; }
+                
+                /* Keep LTR formatting for prices inside table */
+                .ltr-td { direction: ltr; unicode-bidi: isolate; }
 
                 /* ── Bottom Section ── */
                 .bottom {
@@ -431,41 +431,56 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     border-top: 1px solid #ddd;
                 }
                 .qr-box {
-                    order: 2;
+                    order: 2; /* Put QR on the left for RTL */
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    gap: 4px;
+                    gap: 8px;
                 }
                 .qr-box canvas {
-                    width: 120px; height: 120px;
+                    width: 130px; height: 130px;
                     border: 1px solid #ddd;
-                    border-radius: 4px;
+                    border-radius: 6px;
                 }
-                .qr-hint { font-size: 8px; color: #bbb; text-align: center; }
+                .qr-hint { font-size: 10px; color: #999; font-weight: 600; text-align: center; }
+                
+                /* RTL/LTR Totals Overhaul */
                 .summary { order: 1; display: flex; flex-direction: column; gap: 5px; }
                 .sum-row {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: 5px 14px;
+                    padding: 6px 14px;
                     border-bottom: 1px solid #eee;
-                    font-size: 12px;
-                    line-height: 1.5;
+                    font-size: 13px;
                 }
-                .sum-row small { font-size: 9px; color: #aaa; margin-right: 5px; }
-                .sum-lbl { font-weight: 600; color: #333; }
-                .sum-val { font-weight: 500; color: #555; direction: ltr; }
+                .sum-lbl { 
+                    font-weight: 700; color: #333; 
+                    display: flex; align-items: baseline; gap: 6px; 
+                }
+                .sum-lbl small { font-size: 10px; color: #999; }
+                
+                /* Safe LTR value cell */
+                .sum-val { 
+                    direction: ltr !important; 
+                    unicode-bidi: isolate;
+                    text-align: left;
+                    font-weight: 800; 
+                    color: #1a1a1a; 
+                    min-width: 120px;
+                }
+
                 .sum-row.total {
                     background: #f5f5f5; border: 1px solid #ccc;
-                    border-radius: 4px; font-size: 14px; margin-top: 5px;
+                    border-radius: 4px; font-size: 15px; margin-top: 5px;
                 }
-                .sum-row.total .sum-lbl { font-weight: 800; color: #1a1a1a; }
-                .sum-row.total .sum-val { font-weight: 800; color: #1a1a1a; font-size: 14px; }
+                .sum-row.total .sum-val { font-size: 15px; color: #000; }
+                
                 .sum-row.paid { background: #f0fdf4; border-radius: 3px; }
-                .sum-row.paid .sum-val { color: #166534; font-weight: 600; }
+                .sum-row.paid .sum-val { color: #166534; }
+                
                 .sum-row.remaining { background: #fef2f2; border-radius: 3px; margin-top: 3px; }
-                .sum-row.remaining .sum-val { color: #b91c1c; font-weight: 700; }
+                .sum-row.remaining .sum-val { color: #b91c1c; }
 
                 /* ── Notes ── */
                 .notes-box {
@@ -473,12 +488,12 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     border: 1px solid #eee;
                     border-radius: 4px;
                     padding: 8px 10px;
-                    font-size: 11px;
+                    font-size: 12px;
                     line-height: 1.6;
                 }
-                .notes-title { font-weight: 700; font-size: 10px; color: #555; margin-bottom: 3px; }
-                .notes-title small { color: #aaa; margin-right: 4px; }
-                .notes-text { color: #333; }
+                .notes-title { font-weight: 800; font-size: 12px; color: #555; margin-bottom: 4px; }
+                .notes-title small { color: #aaa; font-weight: 600; margin-right: 4px; }
+                .notes-text { color: #333; font-weight: 600; }
 
                 /* ── Footer ── */
                 .footer {
@@ -489,18 +504,18 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     flex-direction: column;
                     gap: 4px;
                 }
-                .footer-page { font-size: 9px; color: #bbb; }
-                .footer-branch { font-size: 11px; color: #555; font-weight: 500; }
+                .footer-page { font-size: 10px; color: #bbb; font-weight: 600; }
+                .footer-branch { font-size: 12px; color: #555; font-weight: 700; }
 
                 @media print {
-                    body { -webkit-print-color-adjust: exact !important; }
+                    body { font-family: 'Cairo', sans-serif !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     tr { page-break-inside: avoid; }
                 }
             </style>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
         </head>
         <body>
             <div class="page">
-
                 <!-- ── Header: Logos + Company ── -->
                 <div class="header">
                     <div class="header-logos">
@@ -524,18 +539,18 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 <div class="meta-box">
                     <div class="meta-row">
                         <div class="meta-item"><span class="meta-lbl">التاريخ:</span><span class="meta-val">${invoiceData.issueDate || '—'}</span></div>
-                        <div class="meta-item"><span class="meta-lbl">رقم الفاتورة:</span><span class="meta-val">${invoiceData.docNumber || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">رقم الفاتورة:</span><span class="meta-val" dir="ltr">${invoiceData.docNumber || '—'}</span></div>
                     </div>
                     <div class="meta-row">
                         <div class="meta-item"><span class="meta-lbl">اسم العميل:</span><span class="meta-val">${invoiceData.clientName || '—'}</span></div>
-                        <div class="meta-item"><span class="meta-lbl">الهاتف:</span><span class="meta-val">${invoiceData.clientPhone || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">الهاتف:</span><span class="meta-val" dir="ltr">${invoiceData.clientPhone || '—'}</span></div>
                     </div>
                     <div class="meta-row">
                         <div class="meta-item"><span class="meta-lbl">العنوان:</span><span class="meta-val">${invoiceData.clientAddress || '—'}</span></div>
-                        <div class="meta-item"><span class="meta-lbl">البريد:</span><span class="meta-val">${invoiceData.clientEmail || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">البريد:</span><span class="meta-val" dir="ltr">${invoiceData.clientEmail || '—'}</span></div>
                     </div>
                     <div class="meta-row">
-                        <div class="meta-item"><span class="meta-lbl">الرقم الضريبي:</span><span class="meta-val">${invoiceData.taxNumber || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">الرقم الضريبي:</span><span class="meta-val" dir="ltr">${invoiceData.taxNumber || '—'}</span></div>
                         <div class="meta-item"><span class="meta-lbl">تاريخ الاستحقاق:</span><span class="meta-val">${invoiceData.dueDate || '—'}</span></div>
                     </div>
                 </div>
@@ -553,7 +568,16 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                         </tr>
                     </thead>
                     <tbody>
-                        ${lineItemsHTML || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;font-style:italic;">لا توجد بنود</td></tr>'}
+                        ${(invoiceData.lineItems || []).filter(i => i.name).map((item, idx) => `
+                            <tr>
+                                <td>${idx + 1}</td>
+                                <td style="text-align:right">${item.name || '—'}</td>
+                                <td style="text-align:right;font-size:11px;color:#666">${item.description || ''}</td>
+                                <td>${item.quantity || 0}</td>
+                                <td class="ltr-td">${fmt(item.unitPrice)}</td>
+                                <td class="ltr-td">${fmt((Number(item.quantity) || 0) * (Number(item.unitPrice) || 0))}</td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">لا توجد بنود</td></tr>'}
                     </tbody>
                 </table>
 
@@ -561,16 +585,37 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 <div class="bottom">
                     <div class="qr-box">
                         <canvas id="qr" width="300" height="300"></canvas>
-                        <div class="qr-hint">امسح للاطلاع</div>
+                        <div class="qr-hint">امسح لفتح الفاتورة<br>Scan to View</div>
                     </div>
                     <div class="summary">
-                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.subtotal)}</span><span class="sum-lbl">الاجمالي <small>Subtotal</small></span></div>
-                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.discountAmount)}</span><span class="sum-lbl">${discLabel}</span></div>
-                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.taxAmount)}</span><span class="sum-lbl">القيمة المضافة ${invoiceData.taxPercent || 0}% <small>VAT</small></span></div>
-                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.shippingCost || 0)}</span><span class="sum-lbl">الشحن <small>Shipping</small></span></div>
-                        <div class="sum-row total"><span class="sum-val">${fmt(invoiceData.grandTotal)}</span><span class="sum-lbl">المستحق <small>Total Due</small></span></div>
-                        <div class="sum-row paid"><span class="sum-val">${fmt(invoiceData.amountPaid || 0)}</span><span class="sum-lbl">المدفوع <small>Paid</small></span></div>
-                        <div class="sum-row remaining"><span class="sum-val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</span><span class="sum-lbl">المتبقي <small>Remaining</small></span></div>
+                        <div class="sum-row">
+                            <div class="sum-lbl">الاجمالي <small>Subtotal</small></div>
+                            <div class="sum-val">${fmt(invoiceData.subtotal)}</div>
+                        </div>
+                        <div class="sum-row">
+                            <div class="sum-lbl">${discLabel}</div>
+                            <div class="sum-val">${fmt(invoiceData.discountAmount)}</div>
+                        </div>
+                        <div class="sum-row">
+                            <div class="sum-lbl">القيمة المضافة ${invoiceData.taxPercent || 0}% <small>VAT</small></div>
+                            <div class="sum-val">${fmt(invoiceData.taxAmount)}</div>
+                        </div>
+                        <div class="sum-row">
+                            <div class="sum-lbl">الشحن <small>Shipping</small></div>
+                            <div class="sum-val">${fmt(invoiceData.shippingCost || 0)}</div>
+                        </div>
+                        <div class="sum-row total">
+                            <div class="sum-lbl">المستحق <small>Total Due</small></div>
+                            <div class="sum-val">${fmt(invoiceData.grandTotal)}</div>
+                        </div>
+                        <div class="sum-row paid">
+                            <div class="sum-lbl">المدفوع <small>Paid</small></div>
+                            <div class="sum-val">${fmt(invoiceData.amountPaid || 0)}</div>
+                        </div>
+                        <div class="sum-row remaining">
+                            <div class="sum-lbl">المتبقي <small>Remaining</small></div>
+                            <div class="sum-val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</div>
+                        </div>
                     </div>
                 </div>
 
@@ -594,7 +639,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     var ctx = c.getContext('2d');
                     ctx.fillStyle = '#fff';
                     ctx.fillRect(0, 0, 300, 300);
-                    var q = qrcode(0, 'M');
+                    var q = qrcode(0, 'Q');
                     q.addData('${qrText.replace(/'/g, "\\'")}');
                     q.make();
                     var mc = q.getModuleCount();
