@@ -236,7 +236,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         let logo1Uri = '';
         let logo2Uri = '';
         try {
-            const logo1Path = path.join(__dirname, '../../client/images/logo-ar.svg');
+            const logo1Path = path.join(__dirname, '../../client/images/nabda-text-ar.svg');
             if (fs.existsSync(logo1Path)) {
                 logo1Uri = `data:image/svg+xml;base64,${fs.readFileSync(logo1Path).toString('base64')}`;
             }
@@ -319,7 +319,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     align-items: center;
                     gap: 16px;
                 }
-                .logo-roya { height: 38px; object-fit: contain; }
+                .logo-nabda-text { height: 38px; object-fit: contain; }
                 .logo-nabda { height: 50px; object-fit: contain; }
                 .logo-divider {
                     width: 1.5px; height: 35px;
@@ -489,7 +489,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 <!-- ── Header: Co-Branded Logos ── -->
                 <div class="header">
                     <div class="header-logos">
-                        ${logo1Uri ? `<img src="${logo1Uri}" class="logo-roya" alt="Roya">` : ''}
+                        ${logo1Uri ? `<img src="${logo1Uri}" class="logo-nabda-text" alt="Nabda Text">` : ''}
                         ${logo1Uri && logo2Uri ? `<div class="logo-divider"></div>` : ''}
                         ${logo2Uri ? `<img src="${logo2Uri}" class="logo-nabda" alt="Nabda">` : ''}
                     </div>
