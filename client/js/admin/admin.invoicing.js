@@ -624,12 +624,13 @@ function getInvoiceViewerURL() {
         branchInfo: invoiceState.branchInfo,
         notes: invoiceState.notes,
         terms: invoiceState.terms,
+        currency: invoiceState.currency,
     };
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
     return `${window.location.origin}/invoice-view.html?d=${encoded}`;
 }
 
-/* ── QR Code — generates URL to invoice viewer page ── */
+/* ── QR Code — generates compact invoice summary ── */
 function generateInvoiceQR() {
     const canvas = document.getElementById('invQRCode');
     if (!canvas) return;
@@ -644,12 +645,26 @@ function generateInvoiceQR() {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, size, size);
 
-    const viewerURL = getInvoiceViewerURL();
+    // Build compact QR content with key invoice details
+    // Full viewer URL is too long for QR codes (>4000 chars with base64 data)
+    const isInvoice = invoiceState.mode !== 'quote';
+    const typeLabel = isInvoice ? 'فاتورة / Invoice' : 'عرض سعر / Quotation';
+    const total = getGrandTotal();
+    
+    const qrContent = [
+        `📄 ${typeLabel}`,
+        `رقم: ${invoiceState.docNumber || '—'}`,
+        `العميل: ${invoiceState.clientName || '—'}`,
+        `التاريخ: ${invoiceState.issueDate || '—'}`,
+        `المبلغ: ${(total || 0).toFixed(2)} ${invoiceState.currency || 'SAR'}`,
+        ``,
+        `${window.location.origin}`
+    ].join('\n');
 
     if (typeof qrcode !== 'undefined') {
         try {
-            const qr = qrcode(0, 'L');
-            qr.addData(viewerURL);
+            const qr = qrcode(0, 'M');
+            qr.addData(qrContent);
             qr.make();
 
             const moduleCount = qr.getModuleCount();
@@ -671,25 +686,22 @@ function generateInvoiceQR() {
             }
         } catch (e) {
             console.warn('QR generation error:', e);
-            _drawQRFallback(ctx, size, viewerURL);
+            _drawQRPlaceholder(ctx, size);
         }
     } else {
-        _drawQRFallback(ctx, size, viewerURL);
+        _drawQRPlaceholder(ctx, size);
     }
 }
 
-function _drawQRFallback(ctx, size, data) {
-    ctx.fillStyle = '#000';
-    let hash = 0;
-    for (let i = 0; i < data.length; i++) { hash = ((hash << 5) - hash) + data.charCodeAt(i); hash |= 0; }
-    const cs = Math.floor(size / 25);
-    const df = (x, y) => { for (let i=0;i<7;i++) for (let j=0;j<7;j++) if (i===0||i===6||j===0||j===6||(i>=2&&i<=4&&j>=2&&j<=4)) ctx.fillRect((x+i)*cs,(y+j)*cs,cs,cs); };
-    df(1,1); df(17,1); df(1,17);
-    const r = Math.abs(hash);
-    for (let row=0;row<25;row++) for (let col=0;col<25;col++) {
-        if ((row<9&&col<9)||(row<9&&col>15)||(row>15&&col<9)) continue;
-        if (((r*(row*25+col+1))%7)<3) ctx.fillRect(col*cs,row*cs,cs,cs);
-    }
+function _drawQRPlaceholder(ctx, size) {
+    // Draw a simple placeholder when QR library is unavailable
+    ctx.fillStyle = '#f5f5f5';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#ccc';
+    ctx.font = `${Math.floor(size / 8)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('QR', size / 2, size / 2);
 }
 
 /* ── Save & Issue ── */

@@ -175,7 +175,7 @@ const save = asyncHandler(async (req, res) => {
         mode, docNumber, issueDate, dueDate,
         clientName, clientEmail, clientAddress, clientPhone,
         lineItems, taxPercent, discountType, discountValue,
-        shippingCost, notes, terms,
+        shippingCost, notes, terms, currency,
         subtotal, discountAmount, taxAmount, grandTotal,
     } = req.body;
 
@@ -196,7 +196,7 @@ const save = asyncHandler(async (req, res) => {
                 mode, docNumber, issueDate, dueDate,
                 clientName, clientEmail, clientAddress, clientPhone,
                 lineItems, taxPercent, discountType, discountValue,
-                shippingCost, notes, terms,
+                shippingCost, notes, terms, currency,
                 subtotal, discountAmount, taxAmount, grandTotal,
                 savedBy: req.user.id,
                 savedAt: new Date().toISOString(),
@@ -233,14 +233,25 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         }
 
         // Read logo and convert to base64 data URI so Puppeteer can render it
-        // without needing to serve it over HTTP
+        // without needing to serve it over HTTP.
+        // NOTE: Use PNG instead of SVG — complex SVGs with Adobe Illustrator
+        // artifacts (Cyrillic gradient IDs, XML processing instructions) can
+        // fail to render in Puppeteer's headless Chrome.
         let logoDataUri = '';
         try {
-            const logoPath = path.join(__dirname, '../../client/images/nabda-invoice-logo.svg');
-            const logoRaw = fs.readFileSync(logoPath);
-            logoDataUri = `data:image/svg+xml;base64,${logoRaw.toString('base64')}`;
+            // Try PNG first (most reliable in Puppeteer)
+            const pngPath = path.join(__dirname, '../../client/images/brand-symbol.png');
+            if (fs.existsSync(pngPath)) {
+                const logoRaw = fs.readFileSync(pngPath);
+                logoDataUri = `data:image/png;base64,${logoRaw.toString('base64')}`;
+            } else {
+                // Fallback to SVG
+                const svgPath = path.join(__dirname, '../../client/images/nabda-invoice-logo.svg');
+                const logoRaw = fs.readFileSync(svgPath);
+                logoDataUri = `data:image/svg+xml;base64,${logoRaw.toString('base64')}`;
+            }
         } catch (e) {
-            console.warn('Could not read logo image:', e);
+            console.warn('Could not read logo image:', e.message);
         }
 
         const isInvoice = invoiceData.isInvoice !== false;
@@ -581,10 +592,12 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         });
 
         const page = await browser.newPage();
-        // Set content and wait for fonts to load
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        // Extra wait for Google Fonts
+        // Set content and wait for network/fonts to load
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 30000 });
+        // Wait for Google Fonts + embedded base64 images to fully render
         await page.evaluateHandle('document.fonts.ready');
+        // Small extra delay ensures base64 images finish rendering
+        await new Promise(r => setTimeout(r, 500));
 
         const pdfBuffer = await page.pdf({
             format: 'A4',

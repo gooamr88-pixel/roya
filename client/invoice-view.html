@@ -2,10 +2,11 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>فاتورة | Invoice</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -21,6 +22,8 @@
             align-items: center;
             padding: 20px;
         }
+
+        /* ── Toolbar ── */
         .toolbar {
             display: flex;
             gap: 12px;
@@ -45,12 +48,14 @@
             background: #1a1a1a;
             color: #fff;
         }
-        .btn-print:hover { background: #333; }
+        .btn-print:hover { background: #333; transform: translateY(-1px); }
         .btn-pdf {
             background: #d4af37;
             color: #1a1a1a;
         }
-        .btn-pdf:hover { background: #c4a030; }
+        .btn-pdf:hover { background: #c4a030; transform: translateY(-1px); }
+
+        /* ── Invoice Container ── */
         .invoice-container {
             background: #fff;
             width: 210mm;
@@ -60,22 +65,24 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             direction: rtl;
         }
-        /* Header */
+
+        /* ── Header ── */
         .inv-header {
             display: flex;
             justify-content: flex-end;
             align-items: center;
             padding: 12px 0;
             direction: rtl;
-            gap: 0;
+            gap: 12px;
             flex-direction: row-reverse;
         }
         .inv-header-logo { flex-shrink: 0; order: -1; }
         .inv-header-logo img { width: 80px; height: 80px; object-fit: contain; }
-        .inv-header-info { flex: 1; text-align: center; padding: 0 16px; order: 0; }
+        .inv-header-info { flex: 1; text-align: center; padding: 0 12px; order: 0; }
         .inv-company-ar { font-size: 1.1rem; font-weight: 700; line-height: 1.5; }
         .inv-company-en { font-size: 0.62rem; color: #888; letter-spacing: 0.03em; margin-top: 2px; }
-        /* Doc type */
+
+        /* ── Doc Type Badge ── */
         .inv-type-badge {
             text-align: center; padding: 6px 0; margin: 4px 0 10px;
             border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37;
@@ -83,17 +90,20 @@
         }
         .inv-type-divider { margin: 0 10px; color: #ccc; font-weight: 300; }
         .inv-type-en { font-size: 0.78rem; letter-spacing: 0.08em; }
-        /* Meta */
+
+        /* ── Meta ── */
         .inv-meta {
             background: #fafafa; border: 1px solid #eee;
             padding: 10px 12px; border-radius: 6px; margin: 10px 0;
         }
-        .inv-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
-        .inv-meta-item { display: flex; gap: 6px; align-items: baseline; }
+        .inv-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 4px; }
+        .inv-meta-item { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
         .inv-meta-lbl { font-weight: 600; font-size: 0.75rem; white-space: nowrap; color: #333; }
-        .inv-meta-val { font-size: 0.75rem; color: #555; }
-        /* Table */
-        .inv-table { width: 100%; border-collapse: collapse; border: 1px solid #bbb; margin: 10px 0; font-size: 0.78rem; direction: rtl; }
+        .inv-meta-val { font-size: 0.75rem; color: #555; word-break: break-word; }
+
+        /* ── Table ── */
+        .inv-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 10px 0; }
+        .inv-table { width: 100%; border-collapse: collapse; border: 1px solid #bbb; font-size: 0.78rem; direction: rtl; min-width: 400px; }
         .inv-table thead th {
             background: #f0f0f0; color: #1a1a1a; padding: 6px 8px;
             text-align: center; font-size: 0.72rem; font-weight: 700;
@@ -102,14 +112,19 @@
         .inv-table thead th small { display: block; font-weight: 400; font-size: 0.58rem; color: #888; margin-top: 1px; }
         .inv-table tbody td { padding: 7px 10px; border: 1px solid #ccc; text-align: center; color: #333; font-size: 0.76rem; }
         .inv-table tbody tr:nth-child(even) { background: #fafafa; }
-        /* Bottom */
+
+        /* ── Bottom (QR + Summary) ── */
         .inv-bottom {
-            display: grid; grid-template-columns: 1fr auto; gap: 16px;
-            align-items: start; padding-top: 12px; border-top: 1px solid #ddd; direction: rtl;
+            display: flex; flex-wrap: wrap; gap: 16px;
+            align-items: flex-start; padding-top: 12px; border-top: 1px solid #ddd;
+            direction: rtl;
         }
-        .inv-qr { order: 2; justify-self: end; }
+        .inv-summary { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 4px; }
+        .inv-qr { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .inv-qr canvas { width: 110px; height: 110px; border: 1px solid #ddd; border-radius: 4px; }
-        .inv-summary { order: 1; display: flex; flex-direction: column; gap: 4px; }
+        .inv-qr-hint { font-size: 0.6rem; color: #999; text-align: center; max-width: 120px; }
+
+        /* Summary rows */
         .inv-summary-row {
             display: flex; justify-content: space-between; align-items: center;
             padding: 4px 12px; border-bottom: 1px solid #eee; font-size: 0.78rem;
@@ -127,36 +142,100 @@
         .inv-summary-row.paid .val { color: #166534; font-weight: 600; }
         .inv-summary-row.remaining { background: #fef2f2; border-radius: 3px; margin-top: 2px; }
         .inv-summary-row.remaining .val { color: #b91c1c; font-weight: 700; }
-        /* Notes */
+
+        /* ── Notes ── */
         .inv-notes { margin-top: 8px; padding: 6px 8px; border: 1px solid #eee; border-radius: 4px; font-size: 0.75rem; background: #fafafa; }
         .inv-notes-label { font-weight: 600; font-size: 0.7rem; color: #555; }
         .inv-notes-label small { color: #999; }
         .inv-notes-text { color: #333; margin-top: 2px; }
-        /* Footer */
+
+        /* ── Footer ── */
         .inv-footer {
             text-align: center; padding-top: 12px; border-top: 1px solid #ddd;
             margin-top: 12px; display: flex; flex-direction: column; gap: 4px;
         }
         .inv-footer-page { font-size: 0.65rem; color: #999; }
         .inv-footer-branch { font-size: 0.72rem; color: #555; font-weight: 500; }
-        /* Loading */
+
+        /* ── Loading ── */
         .loading { text-align: center; padding: 60px 20px; color: #999; font-size: 1.2rem; }
+
+        /* ── Print ── */
         @media print {
             body { padding: 0; background: #fff; }
             .toolbar { display: none !important; }
-            .invoice-container { box-shadow: none; border-radius: 0; }
+            .invoice-container { box-shadow: none; border-radius: 0; width: 100%; }
             @page { margin: 12mm; }
         }
+
+        /* ── Mobile Responsive ── */
         @media (max-width: 768px) {
-            .invoice-container { padding: 16px 12px; }
-            .inv-meta-row { grid-template-columns: 1fr; }
+            body { padding: 12px 8px; }
+            .toolbar { gap: 8px; width: 100%; }
+            .toolbar button { flex: 1; justify-content: center; padding: 12px 16px; font-size: 0.85rem; }
+            .invoice-container { padding: 16px 12px; border-radius: 12px; }
+
+            /* Header: stack vertically */
+            .inv-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 8px;
+            }
+            .inv-header-logo { order: 0; }
+            .inv-header-logo img { width: 60px; height: 60px; }
+            .inv-header-info { order: 1; padding: 0; text-align: center; }
+            .inv-company-ar { font-size: 1rem; }
+
+            /* Meta: single column */
+            .inv-meta { padding: 8px 10px; }
+            .inv-meta-row { grid-template-columns: 1fr; gap: 6px; }
+            .inv-meta-item { gap: 4px; }
+            .inv-meta-lbl { font-size: 0.7rem; }
+            .inv-meta-val { font-size: 0.7rem; }
+
+            /* Table */
+            .inv-table { font-size: 0.7rem; }
+            .inv-table thead th { font-size: 0.65rem; padding: 5px 6px; }
+            .inv-table tbody td { padding: 5px 6px; font-size: 0.68rem; }
+
+            /* Bottom: stack */
+            .inv-bottom {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .inv-summary { order: 1; min-width: 0; }
+            .inv-qr { order: 2; align-items: center; margin-top: 12px; }
+
+            /* Summary */
+            .inv-summary-row { padding: 5px 8px; font-size: 0.73rem; }
+            .inv-summary-row.total { font-size: 0.8rem; }
+
+            /* Notes */
+            .inv-notes { font-size: 0.7rem; }
+
+            /* Footer */
+            .inv-footer { margin-top: 8px; padding-top: 8px; }
+
+            /* Type badge */
+            .inv-type-badge { font-size: 0.78rem; }
+            .inv-type-en { font-size: 0.7rem; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 8px 4px; }
+            .invoice-container { padding: 12px 8px; }
+            .toolbar button { padding: 10px 12px; font-size: 0.8rem; }
+            .inv-header-logo img { width: 50px; height: 50px; }
+            .inv-company-ar { font-size: 0.9rem; }
+            .inv-company-en { font-size: 0.55rem; }
         }
     </style>
 </head>
 <body>
     <div class="toolbar" id="toolbar">
-        <button class="btn-print" onclick="window.print()">🖨️ طباعة Print</button>
-        <button class="btn-pdf" onclick="downloadPDF()">📄 تحميل PDF</button>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة Print</button>
+        <button class="btn-pdf" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> تحميل PDF</button>
     </div>
     <div class="invoice-container" id="invoiceContainer">
         <div class="loading" id="loadingMsg">جاري تحميل الفاتورة...</div>
@@ -189,6 +268,16 @@
             return;
         }
 
+        const currency = inv.currency || 'SAR';
+        const fmtCurrency = (n) => {
+            try {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency', currency: currency, minimumFractionDigits: 2,
+                }).format(n || 0);
+            } catch(e) {
+                return `${currency} ${(Number(n) || 0).toFixed(2)}`;
+            }
+        };
         const fmt = (n) => new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n || 0);
         const esc = (s) => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
@@ -209,8 +298,8 @@
         const itemRows = (inv.lineItems||[]).filter(i => i.name).map((item, idx) => `
             <tr>
                 <td>${idx+1}</td>
-                <td style="font-weight:500">${esc(item.name)}</td>
-                <td style="font-size:0.72rem">${esc(item.description||'')}</td>
+                <td style="font-weight:500;text-align:right">${esc(item.name)}</td>
+                <td style="font-size:0.72rem;text-align:right">${esc(item.description||'')}</td>
                 <td>${item.quantity||0}</td>
                 <td>${fmt(item.unitPrice)}</td>
                 <td style="font-weight:600">${fmt((item.quantity||0)*(item.unitPrice||0))}</td>
@@ -242,7 +331,7 @@
                 </div>
                 <div class="inv-meta-row">
                     <div class="inv-meta-item"><span class="inv-meta-lbl">اسم العميل:</span><span class="inv-meta-val">${esc(inv.clientName||'—')}</span></div>
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">التلفون:</span><span class="inv-meta-val">${esc(inv.clientPhone||'—')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">الهاتف:</span><span class="inv-meta-val">${esc(inv.clientPhone||'—')}</span></div>
                 </div>
                 <div class="inv-meta-row">
                     <div class="inv-meta-item"><span class="inv-meta-lbl">العنوان:</span><span class="inv-meta-val">${esc(inv.clientAddress||'—')}</span></div>
@@ -254,7 +343,7 @@
                 </div>
             </div>
 
-            <div style="width:100%; overflow-x:auto;">
+            <div class="inv-table-wrap">
                 <table class="inv-table">
                     <thead>
                         <tr>
@@ -271,15 +360,18 @@
             </div>
 
             <div class="inv-bottom">
-                <div class="inv-qr"><canvas id="qrCanvas" width="150" height="150"></canvas></div>
                 <div class="inv-summary">
-                    <div class="inv-summary-row"><span class="val">${fmt(subtotal)}</span><span class="lbl">الاجمالي <small>Subtotal</small></span></div>
-                    <div class="inv-summary-row"><span class="val">${fmt(discountAmt)}</span><span class="lbl">${discLabel}</span></div>
-                    <div class="inv-summary-row"><span class="val">${fmt(taxAmt)}</span><span class="lbl">القيمة المضافة ${inv.taxPercent||0}% <small>VAT</small></span></div>
-                    ${(inv.shippingCost||0) > 0 ? `<div class="inv-summary-row"><span class="val">${fmt(inv.shippingCost)}</span><span class="lbl">الشحن <small>Shipping</small></span></div>` : ''}
-                    <div class="inv-summary-row total"><span class="val">${fmt(grandTotal)}</span><span class="lbl">المستحق <small>Total Due</small></span></div>
-                    <div class="inv-summary-row paid"><span class="val">${fmt(inv.amountPaid||0)}</span><span class="lbl">المدفوع <small>Paid</small></span></div>
-                    <div class="inv-summary-row remaining"><span class="val">${fmt(remaining)}</span><span class="lbl">المتبقي <small>Remaining</small></span></div>
+                    <div class="inv-summary-row"><span class="val">${fmtCurrency(subtotal)}</span><span class="lbl">الاجمالي <small>Subtotal</small></span></div>
+                    <div class="inv-summary-row"><span class="val">${fmtCurrency(discountAmt)}</span><span class="lbl">${discLabel}</span></div>
+                    <div class="inv-summary-row"><span class="val">${fmtCurrency(taxAmt)}</span><span class="lbl">القيمة المضافة ${inv.taxPercent||0}% <small>VAT</small></span></div>
+                    ${(inv.shippingCost||0) > 0 ? `<div class="inv-summary-row"><span class="val">${fmtCurrency(inv.shippingCost)}</span><span class="lbl">الشحن <small>Shipping</small></span></div>` : ''}
+                    <div class="inv-summary-row total"><span class="val">${fmtCurrency(grandTotal)}</span><span class="lbl">المستحق <small>Total Due</small></span></div>
+                    <div class="inv-summary-row paid"><span class="val">${fmtCurrency(inv.amountPaid||0)}</span><span class="lbl">المدفوع <small>Paid</small></span></div>
+                    <div class="inv-summary-row remaining"><span class="val">${fmtCurrency(remaining)}</span><span class="lbl">المتبقي <small>Remaining</small></span></div>
+                </div>
+                <div class="inv-qr">
+                    <canvas id="qrCanvas" width="300" height="300"></canvas>
+                    <div class="inv-qr-hint">امسح للاطلاع<br>Scan to view</div>
                 </div>
             </div>
 
@@ -294,21 +386,45 @@
 
         document.title = `${inv.docNumber || 'Invoice'} — فاتورة`;
 
-        // Render real QR
+        // ── QR Code: encode ONLY a short, clean URL ──
+        // Instead of the full base64 data URL (which is too long for QR),
+        // encode just the current page URL (which already has the data).
+        // If the URL is too long, encode a short reference URL instead.
         try {
             const qrCanvas = document.getElementById('qrCanvas');
             if (qrCanvas && typeof qrcode !== 'undefined') {
                 const ctx = qrCanvas.getContext('2d');
+                const w = qrCanvas.width;
+                const h = qrCanvas.height;
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, 150, 150);
-                
-                const qr = qrcode(0, 'L');
-                qr.addData(window.location.href);
+                ctx.fillRect(0, 0, w, h);
+
+                // Build a short QR content — just the essential invoice reference
+                // A full URL with base64 data is too long for QR codes (>4000 chars)
+                const origin = window.location.origin;
+                const docNum = inv.docNumber || 'INV';
+                const clientName = inv.clientName || '';
+                const totalStr = (grandTotal || 0).toFixed(2);
+                const dateStr = inv.issueDate || '';
+
+                // Create compact QR content with key invoice details
+                const qrContent = [
+                    `📄 ${isInvoice ? 'فاتورة' : 'عرض سعر'} / ${typeEn}`,
+                    `رقم: ${docNum}`,
+                    `العميل: ${clientName}`,
+                    `التاريخ: ${dateStr}`,
+                    `المبلغ: ${totalStr} ${currency}`,
+                    ``,
+                    `${origin}`
+                ].join('\n');
+
+                const qr = qrcode(0, 'M');
+                qr.addData(qrContent);
                 qr.make();
-                
+
                 const moduleCount = qr.getModuleCount();
-                const cellSize = 150 / (moduleCount + 2);
-                const offset = (150 - moduleCount * cellSize) / 2;
+                const cellSize = w / (moduleCount + 4);
+                const offset = (w - moduleCount * cellSize) / 2;
 
                 ctx.fillStyle = '#000000';
                 for (let row = 0; row < moduleCount; row++) {
@@ -317,8 +433,8 @@
                             ctx.fillRect(
                                 offset + col * cellSize,
                                 offset + row * cellSize,
-                                cellSize,
-                                cellSize
+                                cellSize + 0.5,
+                                cellSize + 0.5
                             );
                         }
                     }
@@ -346,7 +462,13 @@
             doc.addImage(imgData, 'PNG', 10, 10, imgW, Math.min(imgH, pageH - 20));
             const params = new URLSearchParams(window.location.search);
             let docNum = 'invoice';
-            try { docNum = JSON.parse(atob(params.get('d'))).docNumber || 'invoice'; } catch(e) {}
+            try { 
+                const b64 = params.get('d').replace(/-/g, '+').replace(/_/g, '/');
+                const bin = atob(b64);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                docNum = JSON.parse(new TextDecoder().decode(bytes)).docNumber || 'invoice';
+            } catch(e) {}
             doc.save(`${docNum}.pdf`);
         });
     }
