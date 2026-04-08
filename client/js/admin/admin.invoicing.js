@@ -808,7 +808,7 @@ function _getPreviewHTMLForExport() {
     return html;
 }
 
-/* ── PDF — Server-Side Rendering via Puppeteer (GET + base64 payload) ── */
+/* ── PDF — Server-Side Rendering via Puppeteer ── */
 async function invoiceDownloadPDF() {
     if (invoiceState.lineItems.length === 0 || (invoiceState.lineItems.length === 1 && !invoiceState.lineItems[0].name)) {
         Toast.error(_t('invItemRequired', 'At least one line item is required.'));
@@ -819,12 +819,7 @@ async function invoiceDownloadPDF() {
     if (btn) setLoading(btn, true);
 
     try {
-        // Get QR image from canvas
-        const qrCanvas = document.getElementById('invQRCode');
-        let qrImage = '';
-        try { if (qrCanvas) qrImage = qrCanvas.toDataURL('image/png'); } catch(e){}
-
-        // Build full payload
+        // Build payload — exclude qrImage (server doesn't use it and it bloats the URL)
         const payload = {
             ...invoiceState,
             subtotal:       getSubtotal(),
@@ -832,15 +827,14 @@ async function invoiceDownloadPDF() {
             taxAmount:      getTaxAmount(),
             grandTotal:     getGrandTotal(),
             isInvoice:      invoiceState.mode === 'invoice',
-            qrImage:        qrImage,
         };
 
-        // Encode as base64 JSON and open directly in new tab
-        // The browser sends the HttpOnly auth cookie automatically on GET
+        // Encode as base64 JSON
         const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-        const url = `/api/invoices/download-pdf?d=${encoded}`;
 
-        // Open in new tab — browser handles the PDF download
+        // Use GET with d= query param — open in new tab
+        // The browser sends the HttpOnly auth cookie automatically
+        const url = `/api/invoices/download-pdf?d=${encoded}`;
         window.open(url, '_blank');
 
         Toast.success(_t('invPdfGenerating', 'جاري إنشاء PDF...'));
