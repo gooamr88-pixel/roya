@@ -232,27 +232,22 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
             return next(new AppError('Invalid or missing invoice payload. Please regenerate.', 400));
         }
 
-        // Read logo and convert to base64 data URI so Puppeteer can render it
-        // without needing to serve it over HTTP.
-        // NOTE: Use PNG instead of SVG — complex SVGs with Adobe Illustrator
-        // artifacts (Cyrillic gradient IDs, XML processing instructions) can
-        // fail to render in Puppeteer's headless Chrome.
-        let logoDataUri = '';
+        // Read logos and convert to base64 data URIs for Puppeteer rendering.
+        // Using PNGs for reliability — SVGs with Adobe Illustrator artifacts fail in headless Chrome.
+        let logoSymbolUri = '';
+        let logoTextUri = '';
         try {
-            // Try PNG first (most reliable in Puppeteer)
-            const pngPath = path.join(__dirname, '../../client/images/brand-symbol.png');
-            if (fs.existsSync(pngPath)) {
-                const logoRaw = fs.readFileSync(pngPath);
-                logoDataUri = `data:image/png;base64,${logoRaw.toString('base64')}`;
-            } else {
-                // Fallback to SVG
-                const svgPath = path.join(__dirname, '../../client/images/nabda-invoice-logo.svg');
-                const logoRaw = fs.readFileSync(svgPath);
-                logoDataUri = `data:image/svg+xml;base64,${logoRaw.toString('base64')}`;
+            const symbolPath = path.join(__dirname, '../../client/images/brand-symbol.png');
+            if (fs.existsSync(symbolPath)) {
+                logoSymbolUri = `data:image/png;base64,${fs.readFileSync(symbolPath).toString('base64')}`;
             }
-        } catch (e) {
-            console.warn('Could not read logo image:', e.message);
-        }
+        } catch (e) { console.warn('Could not read brand-symbol.png:', e.message); }
+        try {
+            const textPath = path.join(__dirname, '../../client/images/brand-text.png');
+            if (fs.existsSync(textPath)) {
+                logoTextUri = `data:image/png;base64,${fs.readFileSync(textPath).toString('base64')}`;
+            }
+        } catch (e) { console.warn('Could not read brand-text.png:', e.message); }
 
         const isInvoice = invoiceData.isInvoice !== false;
         const docTypeAr = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
@@ -276,12 +271,21 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
             </tr>
         `).join('');
 
+        // Build QR content (compact invoice summary — not the full URL)
+        const qrText = [
+            invoiceData.docNumber || 'INV',
+            invoiceData.clientName || '',
+            invoiceData.issueDate || '',
+            `${(Number(invoiceData.grandTotal) || 0).toFixed(2)} ${currency}`,
+        ].join('\\n');
+
         let htmlContent = `
         <!DOCTYPE html>
         <html dir="rtl" lang="ar">
         <head>
             <meta charset="UTF-8">
             <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
             <style>
                 * { box-sizing: border-box; margin: 0; padding: 0; }
                 body {
@@ -290,261 +294,262 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     color: #1a1a1a;
                     direction: rtl;
                     text-align: right;
-                    font-size: 13px;
-                    line-height: 1.5;
+                    font-size: 14px;
+                    line-height: 1.7;
                     padding: 0;
-                }
-
-                .inv-preview-body {
-                    padding: 24px 20px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 16px;
-                    color: #1a1a1a;
-                    background: #fff;
-                    direction: rtl;
-                }
-
-                /* ── Header: Logo + Company Info ── */
-                .inv-new-header {
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    padding: 12px 0;
-                    direction: rtl;
-                    gap: 0;
-                }
-                .inv-new-header-logo { flex-shrink: 0; }
-                .inv-new-logo {
-                    width: 80px; height: 80px;
-                    object-fit: contain;
-                }
-                .inv-new-header-info {
-                    flex: 1;
-                    text-align: center;
-                    padding: 0 16px;
-                }
-                .inv-company-name-ar {
-                    font-size: 1.1rem; font-weight: 700;
-                    color: #1a1a1a; line-height: 1.5;
-                }
-                .inv-company-name-en {
-                    font-size: 0.62rem; color: #888;
-                    letter-spacing: 0.03em; margin-top: 2px;
-                }
-
-                /* ── Document Type Badge ── */
-                .inv-doc-type-badge {
-                    text-align: center; padding: 6px 0;
-                    margin: 4px 0 10px 0;
-                    border-top: 2px solid #d4af37;
-                    border-bottom: 2px solid #d4af37;
-                    font-size: 0.85rem; font-weight: 700;
-                    color: #1a1a1a; letter-spacing: 0.03em;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }
-                .inv-doc-type-divider { margin: 0 10px; color: #ccc; font-weight: 300; }
-                .inv-doc-type-en { font-size: 0.78rem; letter-spacing: 0.08em; }
+                .page {
+                    padding: 28px 24px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                }
 
-                /* ── Document Meta ── */
-                .inv-new-meta {
-                    display: flex; flex-direction: column; gap: 6px;
-                    font-size: 0.78rem; padding: 10px 12px;
-                    background: #fafafa; border: 1px solid #eee;
+                /* ── Header ── */
+                .header {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    padding-bottom: 10px;
+                }
+                .header-logos {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    flex-shrink: 0;
+                }
+                .header-logos .symbol { width: 72px; height: 72px; object-fit: contain; }
+                .header-logos .text-logo { height: 32px; object-fit: contain; }
+                .header-info {
+                    flex: 1;
+                    text-align: center;
+                }
+                .company-ar {
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: #1a1a1a;
+                    line-height: 1.6;
+                    letter-spacing: 0.02em;
+                }
+                .company-en {
+                    font-size: 9px;
+                    color: #999;
+                    letter-spacing: 0.06em;
+                    margin-top: 3px;
+                    font-weight: 400;
+                }
+
+                /* ── Type Badge ── */
+                .type-badge {
+                    text-align: center;
+                    padding: 7px 0;
+                    border-top: 2.5px solid #d4af37;
+                    border-bottom: 2.5px solid #d4af37;
+                    font-size: 14px;
+                    font-weight: 800;
+                    color: #1a1a1a;
+                    letter-spacing: 0.04em;
+                }
+                .type-badge .divider { margin: 0 12px; color: #ccc; font-weight: 300; }
+                .type-badge .en { font-size: 11px; letter-spacing: 0.1em; font-weight: 700; }
+
+                /* ── Meta Box ── */
+                .meta-box {
+                    background: #fafafa;
+                    border: 1px solid #eee;
                     border-radius: 6px;
-                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                    padding: 12px 14px;
                 }
-                .inv-new-meta-row {
-                    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+                .meta-row {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 6px 16px;
+                    margin-bottom: 4px;
                 }
-                .inv-new-meta-item { display: flex; gap: 6px; align-items: baseline; }
-                .inv-meta-label { font-weight: 600; color: #333; white-space: nowrap; font-size: 0.75rem; }
-                .inv-meta-value { color: #555; font-size: 0.75rem; }
+                .meta-row:last-child { margin-bottom: 0; }
+                .meta-item { display: flex; gap: 6px; align-items: baseline; }
+                .meta-lbl {
+                    font-weight: 700;
+                    color: #333;
+                    white-space: nowrap;
+                    font-size: 12px;
+                }
+                .meta-val {
+                    color: #555;
+                    font-size: 12px;
+                    font-weight: 400;
+                }
 
                 /* ── Table ── */
-                .inv-new-table {
-                    width: 100%; border-collapse: collapse;
-                    border: 1px solid #bbb; font-size: 0.78rem;
+                .items-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    border: 1px solid #bbb;
+                    font-size: 12px;
                 }
-                .inv-new-table thead th {
-                    background: #f0f0f0; color: #1a1a1a;
-                    padding: 6px 8px; text-align: center;
-                    font-size: 0.72rem; font-weight: 700;
-                    border: 1px solid #bbb; white-space: nowrap;
-                    line-height: 1.3;
-                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                .items-table thead th {
+                    background: #f0f0f0;
+                    color: #1a1a1a;
+                    padding: 8px 10px;
+                    text-align: center;
+                    font-size: 11px;
+                    font-weight: 700;
+                    border: 1px solid #bbb;
+                    white-space: nowrap;
+                    line-height: 1.4;
                 }
-                .inv-new-table thead th small {
-                    display: block; font-weight: 400;
-                    font-size: 0.58rem; color: #888; margin-top: 1px;
+                .items-table thead th small {
+                    display: block;
+                    font-weight: 400;
+                    font-size: 9px;
+                    color: #999;
+                    margin-top: 2px;
                 }
-                .inv-th-num { width: 35px; }
-                .inv-th-qty { width: 55px; }
-                .inv-th-price { width: 70px; }
-                .inv-th-total { width: 75px; }
-                .inv-new-table tbody td {
-                    padding: 7px 10px; border: 1px solid #ccc;
-                    text-align: center; color: #333; font-size: 0.76rem;
+                .items-table tbody td {
+                    padding: 8px 10px;
+                    border: 1px solid #ccc;
+                    text-align: center;
+                    color: #333;
+                    font-size: 12px;
+                    line-height: 1.5;
                 }
-                .inv-new-table tbody tr:nth-child(even) {
-                    background: #fafafa;
-                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
-                }
+                .items-table tbody tr:nth-child(even) { background: #fafafa; }
+                .col-num  { width: 35px; }
+                .col-qty  { width: 55px; }
+                .col-price { width: 75px; }
+                .col-total { width: 80px; }
 
-                /* ── Bottom: QR + Summary ── */
-                .inv-new-bottom {
-                    display: grid; grid-template-columns: auto 1fr;
-                    gap: 16px; align-items: start;
-                    padding-top: 12px; border-top: 1px solid #ddd;
-                    direction: rtl;
+                /* ── Bottom Section ── */
+                .bottom {
+                    display: grid;
+                    grid-template-columns: auto 1fr;
+                    gap: 20px;
+                    align-items: start;
+                    padding-top: 14px;
+                    border-top: 1px solid #ddd;
                 }
-                .inv-new-qr {
-                    display: flex; align-items: flex-start;
-                    justify-content: center; order: 2;
+                .qr-box {
+                    order: 2;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 4px;
                 }
-                .inv-new-qr canvas, .inv-new-qr img {
-                    width: 110px; height: 110px;
-                    border: 1px solid #ddd; border-radius: 4px;
-                    background: #fff;
+                .qr-box canvas {
+                    width: 120px; height: 120px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
                 }
-                .inv-new-summary {
-                    display: flex; flex-direction: column;
-                    gap: 4px; order: 1;
+                .qr-hint { font-size: 8px; color: #bbb; text-align: center; }
+                .summary { order: 1; display: flex; flex-direction: column; gap: 5px; }
+                .sum-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 5px 14px;
+                    border-bottom: 1px solid #eee;
+                    font-size: 12px;
+                    line-height: 1.5;
                 }
-                .inv-new-summary-row {
-                    display: flex; justify-content: space-between;
-                    align-items: center; padding: 4px 12px;
-                    border-bottom: 1px solid #eee; font-size: 0.78rem;
-                }
-                .inv-new-summary-row small { font-size: 0.58rem; color: #999; margin-right: 4px; }
-                .inv-summary-lbl { font-weight: 600; color: #333; text-align: right; }
-                .inv-summary-val { font-weight: 500; color: #555; direction: ltr; text-align: left; }
-
-                .inv-summary-total {
+                .sum-row small { font-size: 9px; color: #aaa; margin-right: 5px; }
+                .sum-lbl { font-weight: 600; color: #333; }
+                .sum-val { font-weight: 500; color: #555; direction: ltr; }
+                .sum-row.total {
                     background: #f5f5f5; border: 1px solid #ccc;
-                    border-radius: 4px; font-size: 0.85rem; margin-top: 4px;
-                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                    border-radius: 4px; font-size: 14px; margin-top: 5px;
                 }
-                .inv-summary-total .inv-summary-lbl { font-weight: 800; color: #1a1a1a; }
-                .inv-summary-total .inv-summary-val { font-weight: 800; color: #1a1a1a; font-size: 0.9rem; }
-
-                .inv-summary-paid {
-                    background: #f0fdf4; border-radius: 3px;
-                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
-                }
-                .inv-summary-paid .inv-summary-val { color: #166534; font-weight: 600; }
-
-                .inv-summary-remaining {
-                    background: #fef2f2; border-radius: 3px; margin-top: 2px;
-                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
-                }
-                .inv-summary-remaining .inv-summary-val { color: #b91c1c; font-weight: 700; }
+                .sum-row.total .sum-lbl { font-weight: 800; color: #1a1a1a; }
+                .sum-row.total .sum-val { font-weight: 800; color: #1a1a1a; font-size: 14px; }
+                .sum-row.paid { background: #f0fdf4; border-radius: 3px; }
+                .sum-row.paid .sum-val { color: #166534; font-weight: 600; }
+                .sum-row.remaining { background: #fef2f2; border-radius: 3px; margin-top: 3px; }
+                .sum-row.remaining .sum-val { color: #b91c1c; font-weight: 700; }
 
                 /* ── Notes ── */
-                .inv-prev-notes-section {
-                    background: #fafafa; border: 1px solid #eee;
-                    border-radius: 4px; padding: 6px 8px;
-                    font-size: 0.75rem;
-                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                .notes-box {
+                    background: #fafafa;
+                    border: 1px solid #eee;
+                    border-radius: 4px;
+                    padding: 8px 10px;
+                    font-size: 11px;
+                    line-height: 1.6;
                 }
-                .inv-prev-notes-label { font-weight: 600; font-size: 0.7rem; color: #555; }
-                .inv-prev-notes-label small { color: #999; margin-right: 4px; }
-                .inv-prev-notes-text { color: #333; margin-top: 2px; }
+                .notes-title { font-weight: 700; font-size: 10px; color: #555; margin-bottom: 3px; }
+                .notes-title small { color: #aaa; margin-right: 4px; }
+                .notes-text { color: #333; }
 
                 /* ── Footer ── */
-                .inv-new-footer {
-                    text-align: center; padding-top: 12px;
+                .footer {
+                    text-align: center;
+                    padding-top: 12px;
                     border-top: 1px solid #ddd;
-                    display: flex; flex-direction: column; gap: 4px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
                 }
-                .inv-new-footer-page { font-size: 0.65rem; color: #999; }
-                .inv-new-footer-branch { font-size: 0.72rem; color: #555; font-weight: 500; }
+                .footer-page { font-size: 9px; color: #bbb; }
+                .footer-branch { font-size: 11px; color: #555; font-weight: 500; }
 
                 @media print {
-                    body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    body { -webkit-print-color-adjust: exact !important; }
                     tr { page-break-inside: avoid; }
                 }
             </style>
         </head>
         <body>
-            <div class="inv-preview-body">
+            <div class="page">
 
-                <!-- ── Header: Logo + Company Info ── -->
-                <div class="inv-new-header">
-                    <div class="inv-new-header-logo">
-                        ${logoDataUri
-                            ? `<img src="${logoDataUri}" alt="Nabda" class="inv-new-logo">`
-                            : `<div style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-weight:700;font-size:11px;">LOGO</div>`
-                        }
+                <!-- ── Header: Logos + Company ── -->
+                <div class="header">
+                    <div class="header-logos">
+                        ${logoSymbolUri ? `<img src="${logoSymbolUri}" class="symbol" alt="Logo">` : ''}
+                        ${logoTextUri ? `<img src="${logoTextUri}" class="text-logo" alt="Brand">` : ''}
                     </div>
-                    <div class="inv-new-header-info">
-                        <div class="inv-company-name-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
-                        <div class="inv-company-name-en">${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
+                    <div class="header-info">
+                        <div class="company-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
+                        <div class="company-en">${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
                     </div>
                 </div>
 
-                <!-- ── Document Type Badge ── -->
-                <div class="inv-doc-type-badge">
-                    <span class="inv-doc-type-ar">${docTypeAr}</span>
-                    <span class="inv-doc-type-divider">|</span>
-                    <span class="inv-doc-type-en">${docTypeEn}</span>
+                <!-- ── Type Badge ── -->
+                <div class="type-badge">
+                    <span>${docTypeAr}</span>
+                    <span class="divider">|</span>
+                    <span class="en">${docTypeEn}</span>
                 </div>
 
-                <!-- ── Document Meta ── -->
-                <div class="inv-new-meta">
-                    <div class="inv-new-meta-row">
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">التاريخ:</span>
-                            <span class="inv-meta-value">${invoiceData.issueDate || '—'}</span>
-                        </div>
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">رقم الفاتورة:</span>
-                            <span class="inv-meta-value">${invoiceData.docNumber || '—'}</span>
-                        </div>
+                <!-- ── Meta ── -->
+                <div class="meta-box">
+                    <div class="meta-row">
+                        <div class="meta-item"><span class="meta-lbl">التاريخ:</span><span class="meta-val">${invoiceData.issueDate || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">رقم الفاتورة:</span><span class="meta-val">${invoiceData.docNumber || '—'}</span></div>
                     </div>
-                    <div class="inv-new-meta-row">
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">اسم العميل:</span>
-                            <span class="inv-meta-value">${invoiceData.clientName || '—'}</span>
-                        </div>
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">التلفون:</span>
-                            <span class="inv-meta-value">${invoiceData.clientPhone || '—'}</span>
-                        </div>
+                    <div class="meta-row">
+                        <div class="meta-item"><span class="meta-lbl">اسم العميل:</span><span class="meta-val">${invoiceData.clientName || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">الهاتف:</span><span class="meta-val">${invoiceData.clientPhone || '—'}</span></div>
                     </div>
-                    <div class="inv-new-meta-row">
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">العنوان:</span>
-                            <span class="inv-meta-value">${invoiceData.clientAddress || '—'}</span>
-                        </div>
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">البريد:</span>
-                            <span class="inv-meta-value">${invoiceData.clientEmail || '—'}</span>
-                        </div>
+                    <div class="meta-row">
+                        <div class="meta-item"><span class="meta-lbl">العنوان:</span><span class="meta-val">${invoiceData.clientAddress || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">البريد:</span><span class="meta-val">${invoiceData.clientEmail || '—'}</span></div>
                     </div>
-                    <div class="inv-new-meta-row">
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">الرقم الضريبي:</span>
-                            <span class="inv-meta-value">${invoiceData.taxNumber || '—'}</span>
-                        </div>
-                        <div class="inv-new-meta-item">
-                            <span class="inv-meta-label">تاريخ الاستحقاق:</span>
-                            <span class="inv-meta-value">${invoiceData.dueDate || '—'}</span>
-                        </div>
+                    <div class="meta-row">
+                        <div class="meta-item"><span class="meta-lbl">الرقم الضريبي:</span><span class="meta-val">${invoiceData.taxNumber || '—'}</span></div>
+                        <div class="meta-item"><span class="meta-lbl">تاريخ الاستحقاق:</span><span class="meta-val">${invoiceData.dueDate || '—'}</span></div>
                     </div>
                 </div>
 
-                <!-- ── Line Items Table ── -->
-                <table class="inv-new-table">
+                <!-- ── Items Table ── -->
+                <table class="items-table">
                     <thead>
                         <tr>
-                            <th class="inv-th-num">م<br><small>No</small></th>
-                            <th class="inv-th-item">الصنف<br><small>Item</small></th>
-                            <th class="inv-th-desc">الوصف<br><small>Description</small></th>
-                            <th class="inv-th-qty">الكمية<br><small>Qty</small></th>
-                            <th class="inv-th-price">السعر<br><small>Price</small></th>
-                            <th class="inv-th-total">المبلغ<br><small>Amount</small></th>
+                            <th class="col-num">م<br><small>No</small></th>
+                            <th>الصنف<br><small>Item</small></th>
+                            <th>الوصف<br><small>Description</small></th>
+                            <th class="col-qty">الكمية<br><small>Qty</small></th>
+                            <th class="col-price">السعر<br><small>Price</small></th>
+                            <th class="col-total">المبلغ<br><small>Amount</small></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -553,61 +558,56 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 </table>
 
                 <!-- ── Bottom: QR + Summary ── -->
-                <div class="inv-new-bottom">
-                    <div class="inv-new-qr">
-                        <div style="width:110px;height:110px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px;">QR</div>
+                <div class="bottom">
+                    <div class="qr-box">
+                        <canvas id="qr" width="300" height="300"></canvas>
+                        <div class="qr-hint">امسح للاطلاع</div>
                     </div>
-                    <div class="inv-new-summary">
-                        <div class="inv-new-summary-row">
-                            <span class="inv-summary-val">${fmt(invoiceData.subtotal)}</span>
-                            <span class="inv-summary-lbl">الاجمالي <small>Subtotal</small></span>
-                        </div>
-                        <div class="inv-new-summary-row">
-                            <span class="inv-summary-val">${fmt(invoiceData.discountAmount)}</span>
-                            <span class="inv-summary-lbl">${discLabel}</span>
-                        </div>
-                        <div class="inv-new-summary-row">
-                            <span class="inv-summary-val">${fmt(invoiceData.taxAmount)}</span>
-                            <span class="inv-summary-lbl">القيمة المضافة ${invoiceData.taxPercent || 0}% <small>VAT</small></span>
-                        </div>
-                        <div class="inv-new-summary-row">
-                            <span class="inv-summary-val">${fmt(invoiceData.shippingCost || 0)}</span>
-                            <span class="inv-summary-lbl">الشحن <small>Shipping</small></span>
-                        </div>
-                        <div class="inv-new-summary-row inv-summary-total">
-                            <span class="inv-summary-val">${fmt(invoiceData.grandTotal)}</span>
-                            <span class="inv-summary-lbl">المستحق <small>Total Due</small></span>
-                        </div>
-                        <div class="inv-new-summary-row inv-summary-paid">
-                            <span class="inv-summary-val">${fmt(invoiceData.amountPaid || 0)}</span>
-                            <span class="inv-summary-lbl">المدفوع <small>Paid</small></span>
-                        </div>
-                        <div class="inv-new-summary-row inv-summary-remaining">
-                            <span class="inv-summary-val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</span>
-                            <span class="inv-summary-lbl">المتبقي <small>Remaining</small></span>
-                        </div>
+                    <div class="summary">
+                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.subtotal)}</span><span class="sum-lbl">الاجمالي <small>Subtotal</small></span></div>
+                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.discountAmount)}</span><span class="sum-lbl">${discLabel}</span></div>
+                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.taxAmount)}</span><span class="sum-lbl">القيمة المضافة ${invoiceData.taxPercent || 0}% <small>VAT</small></span></div>
+                        <div class="sum-row"><span class="sum-val">${fmt(invoiceData.shippingCost || 0)}</span><span class="sum-lbl">الشحن <small>Shipping</small></span></div>
+                        <div class="sum-row total"><span class="sum-val">${fmt(invoiceData.grandTotal)}</span><span class="sum-lbl">المستحق <small>Total Due</small></span></div>
+                        <div class="sum-row paid"><span class="sum-val">${fmt(invoiceData.amountPaid || 0)}</span><span class="sum-lbl">المدفوع <small>Paid</small></span></div>
+                        <div class="sum-row remaining"><span class="sum-val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</span><span class="sum-lbl">المتبقي <small>Remaining</small></span></div>
                     </div>
                 </div>
 
-                <!-- ── Notes & Terms ── -->
-                ${invoiceData.notes ? `
-                <div class="inv-prev-notes-section">
-                    <div class="inv-prev-notes-label">ملاحظات <small>Notes</small></div>
-                    <div class="inv-prev-notes-text">${invoiceData.notes.replace(/\n/g, '<br/>')}</div>
-                </div>` : ''}
-                ${invoiceData.terms ? `
-                <div class="inv-prev-notes-section">
-                    <div class="inv-prev-notes-label">الشروط <small>Terms</small></div>
-                    <div class="inv-prev-notes-text">${invoiceData.terms.replace(/\n/g, '<br/>')}</div>
-                </div>` : ''}
+                <!-- ── Notes ── -->
+                ${invoiceData.notes ? `<div class="notes-box"><div class="notes-title">ملاحظات <small>Notes</small></div><div class="notes-text">${invoiceData.notes.replace(/\n/g, '<br/>')}</div></div>` : ''}
+                ${invoiceData.terms ? `<div class="notes-box"><div class="notes-title">الشروط <small>Terms</small></div><div class="notes-text">${invoiceData.terms.replace(/\n/g, '<br/>')}</div></div>` : ''}
 
                 <!-- ── Footer ── -->
-                <div class="inv-new-footer">
-                    <div class="inv-new-footer-page">الصفحة 1 من 1 | Page 1 of 1</div>
-                    <div class="inv-new-footer-branch">${invoiceData.branchInfo || 'الفرع الرئيسي'}</div>
+                <div class="footer">
+                    <div class="footer-page">الصفحة 1 من 1 | Page 1 of 1</div>
+                    <div class="footer-branch">${invoiceData.branchInfo || 'الفرع الرئيسي'}</div>
                 </div>
-
             </div>
+
+            <!-- QR Code Generation -->
+            <script>
+            (function() {
+                try {
+                    var c = document.getElementById('qr');
+                    if (!c || typeof qrcode === 'undefined') return;
+                    var ctx = c.getContext('2d');
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, 300, 300);
+                    var q = qrcode(0, 'M');
+                    q.addData('${qrText.replace(/'/g, "\\'")}');
+                    q.make();
+                    var mc = q.getModuleCount();
+                    var cs = 300 / (mc + 4);
+                    var off = (300 - mc * cs) / 2;
+                    ctx.fillStyle = '#000';
+                    for (var r = 0; r < mc; r++)
+                        for (var co = 0; co < mc; co++)
+                            if (q.isDark(r, co))
+                                ctx.fillRect(off + co * cs, off + r * cs, cs + 0.5, cs + 0.5);
+                } catch(e) { console.warn('QR error:', e); }
+            })();
+            </script>
         </body>
         </html>
         `;
@@ -622,8 +622,8 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 30000 });
         // Wait for Google Fonts + embedded base64 images to fully render
         await page.evaluateHandle('document.fonts.ready');
-        // Small extra delay ensures base64 images finish rendering
-        await new Promise(r => setTimeout(r, 500));
+        // Extra delay ensures base64 images + QR canvas script finish rendering
+        await new Promise(r => setTimeout(r, 800));
 
         const pdfBuffer = await page.pdf({
             format: 'A4',
