@@ -98,6 +98,18 @@
   color: #1e293b;
 }
 
+/* ── Light Theme: Navbar Sign-In Button ── */
+[data-theme="light"] .nav-actions .btn-outline {
+  color: #1e293b !important;
+  border-color: rgba(30, 41, 59, 0.35) !important;
+  background: transparent !important;
+}
+[data-theme="light"] .nav-actions .btn-outline:hover {
+  color: #1e293b !important;
+  border-color: #1e293b !important;
+  background: rgba(30, 41, 59, 0.06) !important;
+}
+
 /* ── Light Theme: Hero ── */
 [data-theme="light"] .hero-badge {
   background: rgba(255, 255, 255, 0.85);

@@ -220,7 +220,17 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
     }
 
     try {
-        const invoiceData = req.body;
+        // Invoice data is passed as base64-encoded JSON in the 'd' query param
+        // This allows the browser to open the PDF URL directly (GET, no CSRF needed)
+        let invoiceData;
+        try {
+            const raw = req.query.d;
+            if (!raw) throw new Error('Missing invoice data');
+            const decoded = Buffer.from(raw, 'base64').toString('utf8');
+            invoiceData = JSON.parse(decoded);
+        } catch (e) {
+            return next(new AppError('Invalid or missing invoice payload. Please regenerate.', 400));
+        }
 
         // Read logo and convert to base64 data URI so Puppeteer can render it
         // without needing to serve it over HTTP
@@ -236,8 +246,9 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         const isInvoice = invoiceData.isInvoice !== false;
         const docTypeAr = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
         const docTypeEn = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
+        const currency = invoiceData.currency || 'SAR';
 
-        const fmt = (n) => (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const fmt = (n) => `${(Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
 
         const lineItemsHTML = (invoiceData.lineItems || []).filter(i => i.name).map((item, idx) => `
             <tr>

@@ -29,6 +29,7 @@ let invoiceState = {
     branchInfo: '',
     notes: '',
     terms: '',
+    currency: 'SAR', // NEW: default to Saudi Riyal
 };
 
 /* ── Catalog State ── */
@@ -390,6 +391,7 @@ function bindInvoiceFormEvents() {
         invBranchInfo: 'branchInfo',
         invNotes: 'notes',
         invTerms: 'terms',
+        invCurrency: 'currency', // NEW
     };
     Object.entries(fields).forEach(([elId, stateKey]) => {
         const el = document.getElementById(elId);
@@ -464,11 +466,17 @@ function getGrandTotal() {
 }
 
 function formatMoney(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-    }).format(amount);
+    const currency = invoiceState?.currency || 'SAR';
+    try {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: 2,
+        }).format(amount);
+    } catch (e) {
+        // Fallback if currency code is invalid
+        return `${currency} ${Number(amount).toFixed(2)}`;
+    }
 }
 
 /* ── Real-Time Preview ── */
@@ -788,60 +796,42 @@ function _getPreviewHTMLForExport() {
     return html;
 }
 
-/* ── PDF — Server-Side Rendering via Puppeteer ── */
+/* ── PDF — Server-Side Rendering via Puppeteer (GET + base64 payload) ── */
 async function invoiceDownloadPDF() {
     if (invoiceState.lineItems.length === 0 || (invoiceState.lineItems.length === 1 && !invoiceState.lineItems[0].name)) {
         Toast.error(_t('invItemRequired', 'At least one line item is required.'));
         return;
     }
 
-    Toast.info(_t('invPdfGenerating', 'Generating PDF securely...'));
     const btn = document.querySelector('[onclick="invoiceDownloadPDF()"]');
     if (btn) setLoading(btn, true);
 
     try {
+        // Get QR image from canvas
         const qrCanvas = document.getElementById('invQRCode');
         let qrImage = '';
         try { if (qrCanvas) qrImage = qrCanvas.toDataURL('image/png'); } catch(e){}
 
+        // Build full payload
         const payload = {
             ...invoiceState,
-            subtotal: getSubtotal(),
+            subtotal:       getSubtotal(),
             discountAmount: getDiscountAmount(),
-            taxAmount: getTaxAmount(),
-            grandTotal: getGrandTotal(),
-            isInvoice: invoiceState.mode === 'invoice',
-            qrImage: qrImage
+            taxAmount:      getTaxAmount(),
+            grandTotal:     getGrandTotal(),
+            isInvoice:      invoiceState.mode === 'invoice',
+            qrImage:        qrImage,
         };
 
-        const response = await fetch('/api/invoices/download-pdf', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': getCsrfToken(),
-          },
-          body: JSON.stringify(payload)
-        });
+        // Encode as base64 JSON and open directly in new tab
+        // The browser sends the HttpOnly auth cookie automatically on GET
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        const url = `/api/invoices/download-pdf?d=${encoded}`;
 
+        // Open in new tab — browser handles the PDF download
+        window.open(url, '_blank');
 
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.message || 'Failed to generate PDF');
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        const filename = `${invoiceState.docNumber || 'document'}_${new Date().toISOString().slice(0, 10)}.pdf`;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-
-        Toast.success(`${_t('invPdfDownloaded', 'PDF downloaded')}: ${filename}`);
+        Toast.success(_t('invPdfGenerating', 'جاري إنشاء PDF...'));
     } catch (err) {
         console.error('PDF generation error:', err);
         Toast.error(err.message || 'PDF generation failed.');
@@ -891,6 +881,7 @@ function invoiceReset() {
         branchInfo: '',
         notes: '',
         terms: '',
+        currency: invoiceState.currency || 'SAR', // preserve currency on reset
     };
     document.querySelectorAll('#invFormSection input, #invFormSection textarea, #invFormSection select').forEach(el => {
         if (el.type === 'select-one') el.selectedIndex = 0;

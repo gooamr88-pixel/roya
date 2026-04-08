@@ -466,6 +466,19 @@
                     <label>{{ t.admin.invAmountPaid | default('Amount Paid') }}</label>
                     <input class="form-input" type="number" id="invAmountPaid" min="0" step="0.01" value="0" placeholder="0.00">
                   </div>
+                  <div class="inv-form-group">
+                    <label style="display:flex;align-items:center;gap:6px;">
+                      <i class="fas fa-coins" style="color:var(--gold);"></i>
+                      {{ t.admin.invCurrency | default('العملة / Currency') }}
+                    </label>
+                    <select class="form-select" id="invCurrency" onchange="invoiceState.currency=this.value;updatePreview();">
+                      <option value="SAR" selected>🇸🇦 SAR — ريال سعودي</option>
+                      <option value="USD">🇺🇸 USD — US Dollar</option>
+                      <option value="EGP">🇪🇬 EGP — جنيه مصري</option>
+                      <option value="EUR">🇪🇺 EUR — Euro</option>
+                      <option value="AED">🇦🇪 AED — درهم إماراتي</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
