@@ -236,7 +236,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         let logo1Uri = '';
         let logo2Uri = '';
         try {
-            const logo1Path = path.join(__dirname, '../../client/images/nabda-text-ar.svg');
+            const logo1Path = path.join(__dirname, '../../client/images/logo-ar.svg');
             if (fs.existsSync(logo1Path)) {
                 logo1Uri = `data:image/svg+xml;base64,${fs.readFileSync(logo1Path).toString('base64')}`;
             }
@@ -310,35 +310,20 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 /* ── Header ── */
                 .header {
                     display: flex;
+                    justify-content: center;
                     align-items: center;
-                    gap: 16px;
-                    padding-bottom: 10px;
+                    padding-bottom: 20px;
                 }
                 .header-logos {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
-                    flex-shrink: 0;
+                    gap: 16px;
                 }
-                .header-logos .logo-1 { height: 42px; object-fit: contain; }
-                .header-logos .logo-2 { height: 50px; object-fit: contain; }
-                .header-info {
-                    flex: 1;
-                    text-align: center;
-                }
-                .company-ar {
-                    font-size: 16px;
-                    font-weight: 800;
-                    color: #1a1a1a;
-                    line-height: 1.6;
-                    letter-spacing: 0.02em;
-                }
-                .company-en {
-                    font-size: 9px;
-                    color: #999;
-                    letter-spacing: 0.06em;
-                    margin-top: 3px;
-                    font-weight: 400;
+                .logo-roya { height: 38px; object-fit: contain; }
+                .logo-nabda { height: 50px; object-fit: contain; }
+                .logo-divider {
+                    width: 1.5px; height: 35px;
+                    background-color: #d4af37; opacity: 0.4;
                 }
 
                 /* ── Type Badge ── */
@@ -501,15 +486,12 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         <body>
             <div class="page">
 
-                <!-- ── Header: Logos + Company ── -->
+                <!-- ── Header: Co-Branded Logos ── -->
                 <div class="header">
                     <div class="header-logos">
-                        ${logo1Uri ? `<img src="${logo1Uri}" class="logo-1" alt="Logo 1">` : ''}
-                        ${logo2Uri ? `<img src="${logo2Uri}" class="logo-2" alt="Logo 2">` : ''}
-                    </div>
-                    <div class="header-info">
-                        <div class="company-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
-                        <div class="company-en">${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
+                        ${logo1Uri ? `<img src="${logo1Uri}" class="logo-roya" alt="Roya">` : ''}
+                        ${logo1Uri && logo2Uri ? `<div class="logo-divider"></div>` : ''}
+                        ${logo2Uri ? `<img src="${logo2Uri}" class="logo-nabda" alt="Nabda">` : ''}
                     </div>
                 </div>
 
