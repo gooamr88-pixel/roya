@@ -232,22 +232,22 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
             return next(new AppError('Invalid or missing invoice payload. Please regenerate.', 400));
         }
 
-        // Read logos and convert to base64 data URIs for Puppeteer rendering.
-        // Using PNGs for reliability — SVGs with Adobe Illustrator artifacts fail in headless Chrome.
-        let logoSymbolUri = '';
-        let logoTextUri = '';
+        // Read the requested new logos ('nabda-text-ar.svg' and 'nabda-logo-horizontal-dark.svg')
+        let logo1Uri = '';
+        let logo2Uri = '';
         try {
-            const symbolPath = path.join(__dirname, '../../client/images/brand-symbol.png');
-            if (fs.existsSync(symbolPath)) {
-                logoSymbolUri = `data:image/png;base64,${fs.readFileSync(symbolPath).toString('base64')}`;
+            const logo1Path = path.join(__dirname, '../../client/images/nabda-text-ar.svg');
+            if (fs.existsSync(logo1Path)) {
+                logo1Uri = `data:image/svg+xml;base64,${fs.readFileSync(logo1Path).toString('base64')}`;
             }
-        } catch (e) { console.warn('Could not read brand-symbol.png:', e.message); }
+        } catch (e) { console.warn('Could not read nabda-text-ar.svg:', e.message); }
+        
         try {
-            const textPath = path.join(__dirname, '../../client/images/brand-text.png');
-            if (fs.existsSync(textPath)) {
-                logoTextUri = `data:image/png;base64,${fs.readFileSync(textPath).toString('base64')}`;
+            const logo2Path = path.join(__dirname, '../../client/images/nabda-logo-horizontal-dark.svg');
+            if (fs.existsSync(logo2Path)) {
+                logo2Uri = `data:image/svg+xml;base64,${fs.readFileSync(logo2Path).toString('base64')}`;
             }
-        } catch (e) { console.warn('Could not read brand-text.png:', e.message); }
+        } catch (e) { console.warn('Could not read nabda-logo-horizontal-dark.svg:', e.message); }
 
         const isInvoice = invoiceData.isInvoice !== false;
         const docTypeAr = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
@@ -320,8 +320,8 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                     gap: 10px;
                     flex-shrink: 0;
                 }
-                .header-logos .symbol { width: 72px; height: 72px; object-fit: contain; }
-                .header-logos .text-logo { height: 32px; object-fit: contain; }
+                .header-logos .logo-1 { height: 42px; object-fit: contain; }
+                .header-logos .logo-2 { height: 50px; object-fit: contain; }
                 .header-info {
                     flex: 1;
                     text-align: center;
@@ -504,8 +504,8 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 <!-- ── Header: Logos + Company ── -->
                 <div class="header">
                     <div class="header-logos">
-                        ${logoSymbolUri ? `<img src="${logoSymbolUri}" class="symbol" alt="Logo">` : ''}
-                        ${logoTextUri ? `<img src="${logoTextUri}" class="text-logo" alt="Brand">` : ''}
+                        ${logo1Uri ? `<img src="${logo1Uri}" class="logo-1" alt="Logo 1">` : ''}
+                        ${logo2Uri ? `<img src="${logo2Uri}" class="logo-2" alt="Logo 2">` : ''}
                     </div>
                     <div class="header-info">
                         <div class="company-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
