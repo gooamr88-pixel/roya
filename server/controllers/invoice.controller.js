@@ -80,11 +80,19 @@ const download = asyncHandler(async (req, res) => {
 
 /**
  * GET /api/invoices
+ * NOTE: This route is behind authorize('super_admin', 'admin'),
+ *       so req.user is ALWAYS an admin by the time we reach here.
  */
 const getAll = asyncHandler(async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    const isAdmin = ['super_admin', 'admin'].includes(req.user.role);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+
+    // This endpoint is already guarded by authorize('super_admin','admin'),
+    // so the user is always an admin. Extra-defensive check keeps the
+    // repo function reusable for future non-admin callers.
+    const isAdmin = ['super_admin', 'admin', 'supervisor'].includes(req.user.role);
+
+    console.log(`[InvoiceList] user=${req.user.id} role=${req.user.role} isAdmin=${isAdmin} page=${page} limit=${limit}`);
 
     const { rows, pagination } = await invoiceRepo.findAll({
         page, limit,

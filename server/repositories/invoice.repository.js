@@ -38,26 +38,57 @@ const findByIdWithOwner = async (id) => {
 
 const findAll = async ({ page, limit, userId, isAdmin }) => {
     const offset = (page - 1) * limit;
-    const listParams = isAdmin ? [limit, offset] : [limit, offset, userId];
-    const countParams = isAdmin ? [] : [userId];
-    const listWhere = isAdmin ? '' : 'WHERE o.user_id = $3';
-    const countWhere = isAdmin ? '' : 'WHERE o.user_id = $1';
+
+    let listQuery, countQuery, listParams, countParams;
+
+    if (isAdmin) {
+        // ── Admin: fetch ALL invoices, no filter ──
+        listQuery = `
+            SELECT i.id, i.invoice_number, i.total_amount, i.tax_amount,
+                   i.status, i.created_at, i.payload_json,
+                   o.service_title, u.name as client_name
+            FROM invoices i
+            LEFT JOIN orders o ON i.order_id = o.id
+            LEFT JOIN users u ON o.user_id = u.id
+            ORDER BY i.created_at DESC
+            LIMIT $1 OFFSET $2`;
+        listParams = [limit, offset];
+
+        countQuery = `SELECT COUNT(*) FROM invoices`;
+        countParams = [];
+    } else {
+        // ── Non-admin: only their own invoices ──
+        // Match via order owner OR via savedBy in payload_json (manual invoices)
+        listQuery = `
+            SELECT i.id, i.invoice_number, i.total_amount, i.tax_amount,
+                   i.status, i.created_at, i.payload_json,
+                   o.service_title, u.name as client_name
+            FROM invoices i
+            LEFT JOIN orders o ON i.order_id = o.id
+            LEFT JOIN users u ON o.user_id = u.id
+            WHERE o.user_id = $3
+               OR (i.order_id IS NULL AND i.payload_json->>'savedBy' = $3::text)
+            ORDER BY i.created_at DESC
+            LIMIT $1 OFFSET $2`;
+        listParams = [limit, offset, userId];
+
+        countQuery = `
+            SELECT COUNT(*) FROM invoices i
+            LEFT JOIN orders o ON i.order_id = o.id
+            WHERE o.user_id = $1
+               OR (i.order_id IS NULL AND i.payload_json->>'savedBy' = $1::text)`;
+        countParams = [userId];
+    }
 
     const [invoices, countResult] = await Promise.all([
-        query(
-            `SELECT i.id, i.invoice_number, i.total_amount, i.tax_amount, i.status, i.created_at, i.payload_json,
-                    o.service_title, u.name as client_name
-             FROM invoices i
-             LEFT JOIN orders o ON i.order_id = o.id
-             LEFT JOIN users u ON o.user_id = u.id
-             ${listWhere}
-             ORDER BY i.created_at DESC LIMIT $1 OFFSET $2`,
-            listParams
-        ),
-        query(`SELECT COUNT(*) FROM invoices i LEFT JOIN orders o ON i.order_id = o.id ${countWhere}`, countParams),
+        query(listQuery, listParams),
+        query(countQuery, countParams),
     ]);
 
     const total = parseInt(countResult.rows[0].count, 10);
+
+    console.log(`[InvoiceRepo] findAll: isAdmin=${isAdmin} total=${total} returned=${invoices.rows.length} page=${page} offset=${offset}`);
+
     return {
         rows: invoices.rows,
         pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
