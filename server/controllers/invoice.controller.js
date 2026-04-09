@@ -665,19 +665,64 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
     }
 
     try {
-        const { id } = req.params;
-        const db = require('../config/database');
-        const result = await db.query(
-            'SELECT payload_json FROM invoices WHERE invoice_number = $1 OR id::text = $1',
-            [id]
-        );
+        let invoiceData;
+        let preGeneratedPdf = null;
+        let invoiceNumber = 'document';
 
-        if (result.rows.length === 0) {
-            return next(new AppError('Invoice not found in database.', 404));
+        if (req.query.d) {
+            // 1. From UI Builder: payload passed as base64 in query param ?d=
+            try {
+                const decoded = Buffer.from(req.query.d, 'base64').toString('utf8');
+                invoiceData = JSON.parse(decoded);
+                invoiceNumber = invoiceData.docNumber || 'document';
+            } catch (e) {
+                return next(new AppError('Invalid builder payload data.', 400));
+            }
+        } else if (req.params.id) {
+            // 2. From Database: ID passed in URL path
+            const { id } = req.params;
+            const db = require('../config/database');
+            const result = await db.query(
+                'SELECT * FROM invoices WHERE invoice_number = $1 OR id::text = $1',
+                [id]
+            );
+
+            if (result.rows.length === 0) {
+                return next(new AppError('Invoice not found in database.', 404));
+            }
+
+            const inv = result.rows[0];
+            invoiceNumber = inv.invoice_number || id;
+            
+            if (inv.payload_json) {
+                const initData = typeof inv.payload_json === 'string' ? JSON.parse(inv.payload_json) : inv.payload_json;
+                invoiceData = { ...initData, _id: id, docNumber: initData.docNumber || invoiceNumber };
+            } else if (inv.pdf_data) {
+                // Auto-generated invoices store their PDF buffer in the database directly
+                preGeneratedPdf = Buffer.isBuffer(inv.pdf_data) ? inv.pdf_data : Buffer.from(inv.pdf_data);
+            } else {
+                // Fallback for missing payload_json and pdf_data
+                invoiceData = {
+                    _id: id,
+                    docNumber: invoiceNumber,
+                    clientName: inv.client_name || 'غير محدد',
+                    grandTotal: inv.total_amount || 0,
+                    taxAmount: inv.tax_amount || 0,
+                    issueDate: inv.created_at ? new Date(inv.created_at).toISOString().split('T')[0] : '',
+                    lineItems: [ { name: inv.service_title || 'خدمة / منتج', quantity: 1, unitPrice: inv.total_amount || 0 } ]
+                };
+            }
+        } else {
+            return next(new AppError('Missing invoice ID or payload.', 400));
         }
 
-        const initData = result.rows[0].payload_json;
-        const invoiceData = { ...initData, _id: id, docNumber: initData.docNumber || id };
+        // If we already have a generated PDF buffer in the DB, just serve it directly
+        if (preGeneratedPdf) {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${invoiceNumber}.pdf"`);
+            res.setHeader('Content-Length', preGeneratedPdf.length);
+            return res.end(preGeneratedPdf);
+        }
 
         const htmlContent = generateInvoiceHTML(invoiceData);
 
