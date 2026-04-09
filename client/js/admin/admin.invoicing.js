@@ -955,12 +955,18 @@ async function loadInvoicesHistory(page = 1) {
             return;
         }
         
-        // Robust extraction: Handle nested data objects and arrays natively
-        const payload = res.data?.data ? res.data.data : (res.data || res);
-        const invoicesList = payload.invoices || payload.items || payload.rows || (Array.isArray(payload) ? payload : []);
-        const paginationInfo = payload.pagination || {};
+        // Robust extraction: Extract the array using exact user logic
+        const invoicesArray = res.data?.invoices || res.data?.data || res.data;
+        
+        if (!Array.isArray(invoicesArray)) { 
+            console.error('Data is not an array:', res.data); 
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">خطأ: البيانات المستلمة ليست مصفوفة</td></tr>`;
+            return; 
+        }
 
-        if (!invoicesList || invoicesList.length === 0) {
+        const paginationInfo = res.data?.pagination || {};
+
+        if (invoicesArray.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:#999;"><i class="fas fa-inbox fa-3x" style="opacity:0.3;margin-bottom:10px;"></i><br>لا يوجد فواتير محفوظة</td></tr>`;
             if (pagination) pagination.innerHTML = '';
             return;
@@ -976,7 +982,7 @@ async function loadInvoicesHistory(page = 1) {
         };
         const safeEsc = typeof esc === 'function' ? esc : escapeHTML;
 
-        tbody.innerHTML = invoicesList.map(inv => {
+        tbody.innerHTML = invoicesArray.map(inv => {
             const dateStr = inv.created_at ? new Date(inv.created_at).toLocaleDateString('en-GB') : '—';
             const typeBadge = inv.mode === 'quote' 
                 ? '<span class="status-badge bg-blue/10 text-blue font-weight-bold">عرض سعر</span>' 
