@@ -12,6 +12,7 @@ const _t = (key, fallback) => (window.__t || {})[key] || fallback || key;
 /* ── State ── */
 let invoiceState = {
     mode: 'invoice', // 'invoice' | 'quote'
+    title: '',       // custom invoice name/label
     docNumber: '',
     issueDate: '',
     dueDate: '',
@@ -395,6 +396,7 @@ function updateLineItem(idx, field, value) {
 /* ── Bind all form events ── */
 function bindInvoiceFormEvents() {
     const fields = {
+        invTitle: 'title',
         invDocNumber: 'docNumber',
         invIssueDate: 'issueDate',
         invDueDate: 'dueDate',
@@ -748,6 +750,8 @@ async function invoiceSaveAndIssue() {
         Toast.success(invoiceState.mode === 'invoice'
             ? _t('invSavedInvoice', 'Invoice saved & issued!')
             : _t('invSavedQuote', 'Quotation saved successfully!'));
+        // Auto-switch to History tab so the user can see the saved invoice
+        setTimeout(() => switchInvoiceMode('history'), 600);
     } catch (err) {
         if (err.message?.includes('404') || err.message?.includes('Not Found')) {
             Toast.success(_t('invSavedLocal', 'Document saved locally. Backend route not configured yet.'));
@@ -889,6 +893,7 @@ function invoicePrint() {
 function invoiceReset() {
     invoiceState = {
         mode: invoiceState.mode,
+        title: '',
         docNumber: '',
         issueDate: '',
         dueDate: '',
@@ -930,7 +935,7 @@ async function loadInvoicesHistory(page = 1) {
     tbody.innerHTML = `<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--gold);margin:20px;"></i></td></tr>`;
     
     try {
-        const res = await API.get('/invoices', { page, limit: 10 });
+        const res = await API.get(`/invoices?page=${page}&limit=10`);
         const data = res.data;
         if (!data.invoices || data.invoices.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:#999;"><i class="fas fa-inbox fa-3x" style="opacity:0.3;margin-bottom:10px;"></i><br>لا يوجد فواتير محفوظة</td></tr>`;
@@ -943,12 +948,16 @@ async function loadInvoicesHistory(page = 1) {
             const typeBadge = inv.mode === 'quote' 
                 ? '<span class="status-badge bg-blue/10 text-blue font-weight-bold">عرض سعر</span>' 
                 : '<span class="status-badge bg-green/10 text-green font-weight-bold">فاتورة</span>';
+            const titleLabel = inv.title
+                ? `<div style="font-weight:800;color:var(--gold);font-size:0.82rem;margin-bottom:2px;">${esc(inv.title)}</div>`
+                : '';
                 
             return `
                 <tr>
                     <td style="font-family:monospace; font-size:0.85rem; color:#666;">${dateStr}</td>
                     <td dir="ltr" style="font-family:monospace; font-weight:600; color:#333;">${esc(inv.invoice_number)}</td>
                     <td style="font-weight:700;">
+                        ${titleLabel}
                         ${esc(inv.client_name)}
                         <br><small style="color:#777;font-weight:500;">${esc(inv.service_title)}</small>
                     </td>

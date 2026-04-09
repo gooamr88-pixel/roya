@@ -106,6 +106,7 @@ const getAll = asyncHandler(async (req, res) => {
             tax_amount: inv.tax_amount,
             status: inv.status,
             created_at: inv.created_at,
+            title: (payload && payload.title) || '',
             client_name: inv.client_name || (payload && payload.clientName) || 'غير محدد',
             service_title: inv.service_title || (payload && payload.docTypeAr) || (payload && payload.mode === 'quote' ? 'عرض سعر' : 'فاتورة ضريبية'),
             mode: (payload && payload.mode) || 'invoice'

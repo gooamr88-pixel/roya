@@ -361,6 +361,10 @@
               {# Document Details #}
               <div class="inv-section">
                 <div class="inv-section-title"><i class="fas fa-hashtag"></i> {{ t.admin.invDocDetails }}</div>
+                <div class="inv-form-group" style="margin-bottom:10px;">
+                  <label><i class="fas fa-tag" style="margin-inline-end:4px;color:var(--gold);"></i> {{ t.admin.invTitle | default('اسم الفاتورة / Invoice Name') }}</label>
+                  <input class="form-input" type="text" id="invTitle" placeholder="{{ t.admin.invTitlePlaceholder | default('e.g. عقد تصميم موقع شركة الأمل') }}" style="font-weight:600;">
+                </div>
                 <div class="inv-form-row-3">
                   <div class="inv-form-group">
                     <label>{{ t.admin.invDocNumber }}</label>
