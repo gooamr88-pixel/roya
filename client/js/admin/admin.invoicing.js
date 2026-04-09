@@ -982,7 +982,9 @@ async function loadInvoicesHistory(page = 1) {
         };
         const safeEsc = typeof esc === 'function' ? esc : escapeHTML;
 
-        tbody.innerHTML = invoicesArray.map(inv => {
+        console.log('Data to render:', invoicesArray);
+
+        const mappedRows = invoicesArray.map((inv, index) => {
             const dateStr = inv.created_at ? new Date(inv.created_at).toLocaleDateString('en-GB') : '—';
             const typeBadge = inv.mode === 'quote' 
                 ? '<span class="status-badge bg-blue/10 text-blue font-weight-bold">عرض سعر</span>' 
@@ -991,7 +993,7 @@ async function loadInvoicesHistory(page = 1) {
                 ? `<div style="font-weight:800;color:var(--gold);font-size:0.82rem;margin-bottom:2px;">${safeEsc(inv.title)}</div>`
                 : '';
                 
-            return `
+            const rowHTML = `
                 <tr>
                     <td style="font-family:monospace; font-size:0.85rem; color:#666;">${dateStr}</td>
                     <td dir="ltr" style="font-family:monospace; font-weight:600; color:#333;">${safeEsc(inv.invoice_number)}</td>
@@ -1014,7 +1016,19 @@ async function loadInvoicesHistory(page = 1) {
                     </td>
                 </tr>
             `;
-        }).join('');
+
+            if (index === 0) {
+                console.log('First mapped row:', rowHTML);
+            }
+            if (!rowHTML || typeof rowHTML !== 'string') {
+                console.error(`Row HTML for invoice index ${index} is invalid!`, rowHTML);
+            }
+
+            return rowHTML;
+        });
+
+        tbody.innerHTML = mappedRows.join('');
+        console.log('Final tbody innerHTML length:', tbody.innerHTML.length);
 
         // Pagination
         if (pagination) {
