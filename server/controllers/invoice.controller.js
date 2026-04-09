@@ -665,16 +665,19 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
     }
 
     try {
-        // Invoice data is passed as base64-encoded JSON in the 'd' query param
-        let invoiceData;
-        try {
-            const raw = req.query.d;
-            if (!raw) throw new Error('Missing invoice data');
-            const decoded = Buffer.from(raw, 'base64').toString('utf8');
-            invoiceData = JSON.parse(decoded);
-        } catch (e) {
-            return next(new AppError('Invalid or missing invoice payload. Please regenerate.', 400));
+        const { id } = req.params;
+        const db = require('../config/database');
+        const result = await db.query(
+            'SELECT payload_json FROM invoices WHERE invoice_number = $1 OR id::text = $1',
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return next(new AppError('Invoice not found in database.', 404));
         }
+
+        const initData = result.rows[0].payload_json;
+        const invoiceData = { ...initData, _id: id, docNumber: initData.docNumber || id };
 
         const htmlContent = generateInvoiceHTML(invoiceData);
 
