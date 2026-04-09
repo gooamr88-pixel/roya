@@ -944,6 +944,9 @@ async function loadInvoicesHistory(page = 1) {
     const pagination = document.getElementById('invHistoryPagination');
     if (!tbody) return;
 
+    // Trigger the fade-in animation for the container so it becomes visible
+    document.querySelector('#invHistorySection .fade-in')?.classList.add('visible');
+
     tbody.innerHTML = `<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--gold);margin:20px;"></i></td></tr>`;
     
     try {
