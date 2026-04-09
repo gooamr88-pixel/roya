@@ -515,6 +515,17 @@ function updatePreview() {
     if (docTypeAr) docTypeAr.textContent = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
     if (docTypeEn) docTypeEn.textContent = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
 
+    // Invoice title
+    const invTitleEl = document.getElementById('prevInvoiceTitle');
+    if (invTitleEl) {
+        if (invoiceState.title?.trim()) {
+            invTitleEl.textContent = invoiceState.title;
+            invTitleEl.style.display = 'block';
+        } else {
+            invTitleEl.style.display = 'none';
+        }
+    }
+
     const titleEl = document.getElementById('prevDocTitle');
     if (titleEl) titleEl.textContent = isInvoice
         ? (_t('invTaxInvoice', 'Tax Invoice')).toUpperCase()
@@ -777,6 +788,7 @@ function _getInvoiceCSS() {
         .inv-doc-type-badge { text-align: center; padding: 6px 0; margin: 4px 0 10px; border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37; font-weight: 700; font-size: 0.9rem; }
         .inv-doc-type-divider { margin: 0 10px; color: #ccc !important; font-weight: 300; }
         .inv-doc-type-en { font-size: 0.78rem; letter-spacing: 0.08em; }
+        #prevInvoiceTitle { text-align: center; font-size: 0.82rem; font-weight: 700; color: #8b7225 !important; padding: 5px 0 1px; }
         .inv-new-meta { background: #fafafa; border: 1px solid #eee; padding: 10px 12px; border-radius: 6px; direction: rtl; }
         .inv-new-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
         .inv-new-meta-item { display: flex; gap: 6px; align-items: baseline; }

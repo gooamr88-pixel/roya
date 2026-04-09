@@ -349,6 +349,16 @@ const generateInvoiceHTML = (invoiceData) => {
             .type-badge .divider { margin: 0 12px; color: #ccc; font-weight: 300; }
             .type-badge .en { font-size: 11px; letter-spacing: 0.1em; font-weight: 700; }
 
+            /* ── Invoice Title ── */
+            .invoice-title {
+                text-align: center;
+                font-size: 13px;
+                font-weight: 700;
+                color: #8b7225;
+                padding: 6px 0 2px;
+                letter-spacing: 0.02em;
+            }
+
             /* ── Meta Box ── */
             .meta-box {
                 background: #fafafa;
@@ -532,6 +542,8 @@ const generateInvoiceHTML = (invoiceData) => {
                 <span class="divider">|</span>
                 <span class="en">${docTypeEn}</span>
             </div>
+
+            ${invoiceData.title ? `<div class="invoice-title">${invoiceData.title}</div>` : ''}
 
             <!-- ── Meta ── -->
             <div class="meta-box">
