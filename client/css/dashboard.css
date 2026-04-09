@@ -4074,6 +4074,55 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
 }
 
 /* ═══════════════════════════════════════════
+   LIGHT THEME — DASHBOARD ROOT VARIABLE OVERRIDES
+   These override the dashboard-specific :root vars
+   so ALL elements (modals, sidebar, topbar, cards)
+   adapt automatically without individual selectors.
+   ═══════════════════════════════════════════ */
+[data-theme="light"] {
+    --body-bg: #F8F9FA;
+    --card-bg: #FFFFFF;
+    --card-hover: #F1F5F9;
+    --border: rgba(0, 0, 0, 0.1);
+    --border-light: rgba(0, 0, 0, 0.05);
+    --text-1: #1E293B;
+    --text-2: #475569;
+    --text-3: #94A3B8;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Topbar glassy background for light ── */
+[data-theme="light"] .topbar {
+    background: rgba(248, 249, 250, 0.85);
+}
+
+/* ── Sidebar seamless background for light ── */
+[data-theme="light"] .sidebar {
+    background: #FFFFFF;
+    border-right-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── ApexCharts: auto-adapt text colors for light theme ── */
+[data-theme="light"] .apexcharts-text,
+[data-theme="light"] .apexcharts-legend-text {
+    fill: #475569 !important;
+    color: #475569 !important;
+}
+
+[data-theme="light"] .apexcharts-tooltip {
+    background: #FFFFFF !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #1E293B !important;
+}
+
+[data-theme="light"] .apexcharts-tooltip .apexcharts-tooltip-title {
+    background: #F8F9FA !important;
+    border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ═══════════════════════════════════════════
    LIGHT THEME — EXTENDED COVERAGE
    Remaining elements not yet overridden
    ═══════════════════════════════════════════ */

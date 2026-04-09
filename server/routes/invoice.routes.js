@@ -16,7 +16,7 @@ router.get('/catalog', authorize('super_admin', 'admin', 'supervisor'), ctrl.get
 router.post('/save', authorize('super_admin', 'admin'), ctrl.save);
 
 // ── Legacy routes ──
-router.get('/', authorize('super_admin'), ctrl.getAll);
+router.get('/', authorize('super_admin', 'admin'), ctrl.getAll);
 router.post('/:orderId/generate', authorize('super_admin'), ctrl.generate);
 router.get('/:id/download', idParamValidation, ctrl.download);
 

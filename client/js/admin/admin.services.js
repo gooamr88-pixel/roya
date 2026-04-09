@@ -69,6 +69,9 @@ function openServiceModal(editData = null) {
         document.getElementById('svcPrice').value = editData.price || '';
         document.getElementById('svcCategory').value = editData.category || 'general';
         document.getElementById('svcActive').checked = editData.is_active !== false;
+        // Currency field
+        const currEl = document.getElementById('svcCurrency');
+        if (currEl) currEl.value = editData.currency || 'SAR';
         // i18n Arabic fields
         const titleArEl = document.getElementById('svcTitleAr');
         const descArEl = document.getElementById('svcDescriptionAr');
@@ -139,6 +142,7 @@ async function saveAdminService(e) {
     formData.append('title', title);
     formData.append('description', document.getElementById('svcDescription').value.trim());
     formData.append('price', document.getElementById('svcPrice').value || '0');
+    formData.append('currency', document.getElementById('svcCurrency')?.value || 'SAR');
     formData.append('category', document.getElementById('svcCategory').value);
     // B2 Fix: FormData converts booleans to strings — use '1'/'0' and parse on backend
     formData.append('is_active', document.getElementById('svcActive').checked ? '1' : '0');

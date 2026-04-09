@@ -58,6 +58,8 @@ async function loadAdminPortfolio() {
     }
 }
 
+let portfolioDropFiles = [];
+
 function openPortfolioModal(item = null) {
     editingPortfolioId = item ? item.id : null;
     const modal = document.getElementById('portfolioModal');
@@ -75,25 +77,30 @@ function openPortfolioModal(item = null) {
     if (titleArEl) titleArEl.value = item?.title_ar || '';
     if (descArEl) descArEl.value = item?.description_ar || '';
 
-    // Reset file input
+    // Reset file input and drop files
     const fileInput = document.getElementById('portfolioImages');
     if (fileInput) fileInput.value = '';
+    portfolioDropFiles = [];
 
-    // Show existing images
-    const preview = document.getElementById('portfolioImgPreview');
-    if (preview && item) {
-        const imgs = Array.isArray(item.images) ? item.images : (JSON.parse(item.images || '[]'));
-        preview.innerHTML = imgs.map(url => `<img src="${esc(url)}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color)">`).join('');
-    } else if (preview) {
-        preview.innerHTML = '';
+    // Show existing images in the preview grid
+    const grid = document.getElementById('portfolioPreviewGrid');
+    if (grid) {
+        grid.innerHTML = '';
+        if (item) {
+            const imgs = Array.isArray(item.images) ? item.images : (JSON.parse(item.images || '[]'));
+            if (imgs.length > 0) renderPortfolioPreviews(imgs);
+        }
     }
 
+    // Reset wizard to step 1
+    resetWizard('portfolioWizardForm');
     modal.classList.add('show');
 }
 
 function closePortfolioModal() {
     document.getElementById('portfolioModal')?.classList.remove('show');
     editingPortfolioId = null;
+    portfolioDropFiles = [];
 }
 
 async function editPortfolioItem(id) {
@@ -122,10 +129,8 @@ async function saveAdminPortfolio() {
     if (titleAr) formData.append('title_ar', titleAr);
     if (descAr) formData.append('description_ar', descAr);
 
-    const fileInput = document.getElementById('portfolioImages');
-    if (fileInput?.files?.length > 0) {
-        Array.from(fileInput.files).forEach(f => formData.append('images', f));
-    }
+    // Use collected drop zone files
+    portfolioDropFiles.forEach(f => formData.append('images', f));
 
     try {
         if (editingPortfolioId) {
@@ -194,25 +199,47 @@ function _checkPortfolioEmpty() {
     }
 }
 
-// Wire up portfolio images live preview
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('portfolioImages')?.addEventListener('change', (e) => {
-        const preview = document.getElementById('portfolioImgPreview');
-        if (!preview) return;
-        preview.innerHTML = '';
-        Array.from(e.target.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = ev => {
-                const img = document.createElement('img');
-                img.src = ev.target.result;
-                img.style.cssText = 'width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color)';
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
+// ── Professional Drop Zone for Portfolio ──
+function initPortfolioDropZone() {
+    const zone = document.getElementById('portfolioDropZone');
+    const input = document.getElementById('portfolioImages');
+    if (!zone || !input) return;
+
+    ['dragenter', 'dragover'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('drag-over'); }));
+    ['dragleave', 'drop'].forEach(e => zone.addEventListener(e, () => zone.classList.remove('drag-over')));
+    zone.addEventListener('drop', ev => { ev.preventDefault(); handlePortfolioFiles(ev.dataTransfer.files); });
+    input.addEventListener('change', () => handlePortfolioFiles(input.files));
+}
+
+function handlePortfolioFiles(files) {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    Array.from(files).forEach(file => {
+        if (!allowed.includes(file.type)) return;
+        if (file.size > 10 * 1024 * 1024) return; // 10MB limit
+        portfolioDropFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = (e) => renderPortfolioPreviews([e.target.result]);
+        reader.readAsDataURL(file);
     });
+}
+
+function renderPortfolioPreviews(sources) {
+    const grid = document.getElementById('portfolioPreviewGrid');
+    if (!grid) return;
+    sources.forEach((src) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'img-thumb';
+        thumb.innerHTML = `<img src="${esc(src)}" alt="preview"><button class="img-thumb-remove" onclick="this.parentNode.remove()" type="button"><i class="fas fa-times"></i></button>`;
+        grid.appendChild(thumb);
+    });
+}
+
+// Wire up drop zone and modal close
+document.addEventListener('DOMContentLoaded', () => {
+    initPortfolioDropZone();
 
     document.getElementById('portfolioModal')?.addEventListener('click', (e) => {
         if (e.target === document.getElementById('portfolioModal')) closePortfolioModal();
     });
 });
+

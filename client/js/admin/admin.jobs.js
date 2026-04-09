@@ -63,6 +63,9 @@ function openJobModal(job = null) {
     document.getElementById('jobType').value = job?.type || 'full_time';
     document.getElementById('jobSalary').value = job?.salary_range || '';
     document.getElementById('jobIsActive').checked = job ? !!job.is_active : true;
+    // Currency field
+    const currEl = document.getElementById('jobCurrency');
+    if (currEl) currEl.value = job?.currency || 'SAR';
 
     // i18n Arabic fields
     const titleArEl = document.getElementById('jobTitleAr');
@@ -96,6 +99,7 @@ async function saveAdminJob() {
         location: document.getElementById('jobLocation')?.value?.trim(),
         type: document.getElementById('jobType')?.value,
         salary_range: document.getElementById('jobSalary')?.value?.trim(),
+        currency: document.getElementById('jobCurrency')?.value || 'SAR',
         is_active: document.getElementById('jobIsActive')?.checked ? '1' : '0',
     };
 

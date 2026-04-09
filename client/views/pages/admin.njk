@@ -9,9 +9,7 @@
 {% block pageCss %}
   <link rel="stylesheet" href="/css/dashboard.css">
   {# ── CDN Libraries (SRI-hardened to prevent supply-chain attacks) ── #}
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"
-    integrity="sha384-d+JVPSxB4qHCRf+fci5rkY2+tgpL+o0BL5vjy1sQzyOS1scbfhKYCSXfKmwRc5cz"
-    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
     integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk"
     crossorigin="anonymous"></script>
@@ -871,11 +869,21 @@
               <input class="form-input" type="text" id="svcCategoryAr" maxlength="100" dir="rtl" placeholder="{{ t.admin.categoryArPlaceholder | default('التصنيف بالعربية') }}">
             </div>
           </div>
-          {# Responsive 2-col grid — collapses on mobile #}
+          {# Responsive 3-col grid — collapses on mobile #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
-              <label class="form-label">{{ t.admin.thPrice }} ($) <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipServicePrice | default('Set the base price for this service. Clients will see this amount when browsing.') }}</span></span></label>
+              <label class="form-label">{{ t.admin.thPrice }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipServicePrice | default('Set the base price for this service. Clients will see this amount when browsing.') }}</span></span></label>
               <input class="form-input" type="number" id="svcPrice" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-coins" style="color:var(--gold);"></i> {{ t.admin.invCurrency | default('العملة / Currency') }}</label>
+              <select class="form-select" id="svcCurrency">
+                <option value="SAR">🇸🇦 SAR</option>
+                <option value="USD">🇺🇸 USD</option>
+                <option value="EGP">🇪🇬 EGP</option>
+                <option value="EUR">🇪🇺 EUR</option>
+                <option value="AED">🇦🇪 AED</option>
+              </select>
             </div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.thCategory }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipCategory | default('Categorize this service so clients can filter and find it easily.') }}</span></span></label>
@@ -1168,8 +1176,20 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">{{ t.admin.jobSalary }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipJobSalary | default('Optional. Specify a range like "$3,000 – $5,000" to attract qualified candidates.') }}</span></span></label>
-              <input class="form-input" type="text" id="jobSalary" placeholder="{{ t.admin.jobSalaryPlaceholder | default('e.g. $3,000 – $5,000') }}">
+              <label class="form-label">{{ t.admin.jobSalary }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipJobSalary | default('Optional. Specify a range like "3,000 – 5,000" to attract qualified candidates.') }}</span></span></label>
+              <input class="form-input" type="text" id="jobSalary" placeholder="{{ t.admin.jobSalaryPlaceholder | default('e.g. 3,000 – 5,000') }}">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-coins" style="color:var(--gold);"></i> {{ t.admin.invCurrency | default('العملة / Currency') }}</label>
+              <select class="form-select" id="jobCurrency">
+                <option value="SAR">🇸🇦 SAR — ريال سعودي</option>
+                <option value="USD">🇺🇸 USD — US Dollar</option>
+                <option value="EGP">🇪🇬 EGP — جنيه مصري</option>
+                <option value="EUR">🇪🇺 EUR — Euro</option>
+                <option value="AED">🇦🇪 AED — درهم إماراتي</option>
+              </select>
             </div>
           </div>
           <div class="wizard-nav">
@@ -1253,11 +1273,14 @@
 
         {# Step 2: Media #}
         <div class="wizard-pane" data-wizard-pane="1">
-          <div class="form-group">
-            <label class="form-label">{{ t.admin.dropZoneTitle }}</label>
-            <input type="file" id="portfolioImages" accept="image/*" multiple class="form-input" style="padding:10px">
-            <div id="portfolioImgPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+          <div class="drop-zone" id="portfolioDropZone">
+            <input type="file" id="portfolioImages" accept="image/*" multiple>
+            <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="drop-zone-title">{{ t.admin.dropZoneTitle | default('Drag & Drop Images Here') }}</div>
+            <div class="drop-zone-sub">{{ t.admin.dropZoneSub | default('or click to browse your files') }}</div>
+            <span class="drop-zone-hint">{{ t.admin.dropZoneHint | default('JPG, PNG, WebP • Max 10MB each') }}</span>
           </div>
+          <div class="image-preview-grid" id="portfolioPreviewGrid"></div>
           <div class="wizard-nav">
             <button type="button" class="btn-wizard-back" onclick="wizardPrev('portfolioWizardForm')"><i class="fas fa-arrow-left"></i> <span>{{ t.admin.wizardBack | default('Back') }}</span></button>
             <button type="button" class="btn-wizard-next" onclick="wizardNext('portfolioWizardForm')"><span>{{ t.admin.wizardNext | default('Next') }}</span> <i class="fas fa-arrow-right"></i></button>
