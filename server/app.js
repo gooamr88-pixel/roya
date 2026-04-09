@@ -84,7 +84,6 @@ app.use(helmet({
             ],
             scriptSrcAttr: ["'unsafe-inline'"],
             frameSrc: [
-                "'none'",
                 "https://tr.snapchat.com",
                 "https://sc-static.net",
             ],

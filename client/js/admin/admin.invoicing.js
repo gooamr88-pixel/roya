@@ -949,37 +949,52 @@ async function loadInvoicesHistory(page = 1) {
     try {
         const res = await API.get(`/invoices?page=${page}&limit=10`);
         console.log('[InvoiceHistory] API response:', res);
-        if (!res || !res.data) {
+        if (!res || (!res.data && !res.invoices)) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:#c00;">فشل تحميل السجل — يرجى تسجيل الدخول مرة أخرى<br><small>Session expired</small></td></tr>`;
             if (pagination) pagination.innerHTML = '';
             return;
         }
-        const data = res.data;
-        if (!data.invoices || data.invoices.length === 0) {
+        
+        // Robust extraction: Handle nested data objects and arrays natively
+        const payload = res.data?.data ? res.data.data : (res.data || res);
+        const invoicesList = payload.invoices || payload.items || payload.rows || (Array.isArray(payload) ? payload : []);
+        const paginationInfo = payload.pagination || {};
+
+        if (!invoicesList || invoicesList.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:#999;"><i class="fas fa-inbox fa-3x" style="opacity:0.3;margin-bottom:10px;"></i><br>لا يوجد فواتير محفوظة</td></tr>`;
             if (pagination) pagination.innerHTML = '';
             return;
         }
 
-        tbody.innerHTML = data.invoices.map(inv => {
-            const dateStr = new Date(inv.created_at).toLocaleDateString('en-GB');
+        // Fallback for string escaping just in case global esc() is missing
+        const escapeHTML = (str) => {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, match => {
+                const escapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return escapeMap[match];
+            });
+        };
+        const safeEsc = typeof esc === 'function' ? esc : escapeHTML;
+
+        tbody.innerHTML = invoicesList.map(inv => {
+            const dateStr = inv.created_at ? new Date(inv.created_at).toLocaleDateString('en-GB') : '—';
             const typeBadge = inv.mode === 'quote' 
                 ? '<span class="status-badge bg-blue/10 text-blue font-weight-bold">عرض سعر</span>' 
                 : '<span class="status-badge bg-green/10 text-green font-weight-bold">فاتورة</span>';
             const titleLabel = inv.title
-                ? `<div style="font-weight:800;color:var(--gold);font-size:0.82rem;margin-bottom:2px;">${esc(inv.title)}</div>`
+                ? `<div style="font-weight:800;color:var(--gold);font-size:0.82rem;margin-bottom:2px;">${safeEsc(inv.title)}</div>`
                 : '';
                 
             return `
                 <tr>
                     <td style="font-family:monospace; font-size:0.85rem; color:#666;">${dateStr}</td>
-                    <td dir="ltr" style="font-family:monospace; font-weight:600; color:#333;">${esc(inv.invoice_number)}</td>
+                    <td dir="ltr" style="font-family:monospace; font-weight:600; color:#333;">${safeEsc(inv.invoice_number)}</td>
                     <td style="font-weight:700;">
                         ${titleLabel}
-                        ${esc(inv.client_name)}
-                        <br><small style="color:#777;font-weight:500;">${esc(inv.service_title)}</small>
+                        ${safeEsc(inv.client_name)}
+                        <br><small style="color:#777;font-weight:500;">${safeEsc(inv.service_title)}</small>
                     </td>
-                    <td dir="ltr" style="font-weight:800; color:#1a1a1a;">${Number(inv.total_amount).toFixed(2)} SAR</td>
+                    <td dir="ltr" style="font-weight:800; color:#1a1a1a;">${Number(inv.total_amount || 0).toFixed(2)} SAR</td>
                     <td>${typeBadge}</td>
                     <td>
                         <div class="action-buttons" style="justify-content:center;">
@@ -998,8 +1013,8 @@ async function loadInvoicesHistory(page = 1) {
         // Pagination
         if (pagination) {
             let pHTML = '';
-            const p = data.pagination;
-            if (p.totalPages > 1) {
+            const p = paginationInfo;
+            if (p && p.totalPages > 1) {
                 if (p.page > 1) pHTML += `<button class="page-btn" onclick="loadInvoicesHistory(${p.page - 1})"><i class="fas fa-chevron-right"></i></button>`;
                 pHTML += `<span class="page-info">صفحة ${p.page} من ${p.totalPages}</span>`;
                 if (p.page < p.totalPages) pHTML += `<button class="page-btn" onclick="loadInvoicesHistory(${p.page + 1})"><i class="fas fa-chevron-left"></i></button>`;
