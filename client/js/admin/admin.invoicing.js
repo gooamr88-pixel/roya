@@ -948,6 +948,12 @@ async function loadInvoicesHistory(page = 1) {
     
     try {
         const res = await API.get(`/invoices?page=${page}&limit=10`);
+        console.log('[InvoiceHistory] API response:', res);
+        if (!res || !res.data) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:#c00;">فشل تحميل السجل — يرجى تسجيل الدخول مرة أخرى<br><small>Session expired</small></td></tr>`;
+            if (pagination) pagination.innerHTML = '';
+            return;
+        }
         const data = res.data;
         if (!data.invoices || data.invoices.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding:40px;color:#999;"><i class="fas fa-inbox fa-3x" style="opacity:0.3;margin-bottom:10px;"></i><br>لا يوجد فواتير محفوظة</td></tr>`;
