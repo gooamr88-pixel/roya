@@ -206,16 +206,19 @@ const getCatalog = asyncHandler(async (req, res) => {
  */
 const save = asyncHandler(async (req, res) => {
     const {
-        mode, docNumber, issueDate, dueDate,
-        clientName, clientEmail, clientAddress, clientPhone,
+        mode, title, docNumber, issueDate, dueDate,
+        clientName, clientEmail, clientAddress, clientPhone, taxNumber,
         lineItems, taxPercent, discountType, discountValue,
-        shippingCost, notes, terms, currency,
+        shippingCost, amountPaid, branchInfo, notes, terms, currency,
         subtotal, discountAmount, taxAmount, grandTotal,
     } = req.body;
 
     if (!clientName?.trim()) throw new AppError('Client name is required.', 400);
     if (!lineItems?.length || lineItems.every(li => !li.name?.trim()))
         throw new AppError('At least one line item is required.', 400);
+
+    const docTypeAr = mode === 'quote' ? 'عرض سعر' : 'فاتورة ضريبية';
+    const docTypeEn = mode === 'quote' ? 'QUOTATION' : 'TAX INVOICE';
 
     const result = await query(
         `INSERT INTO invoices
@@ -227,10 +230,11 @@ const save = asyncHandler(async (req, res) => {
             parseFloat(grandTotal) || 0,
             parseFloat(taxAmount)  || 0,
             JSON.stringify({
-                mode, docNumber, issueDate, dueDate,
-                clientName, clientEmail, clientAddress, clientPhone,
+                mode, title, docNumber, issueDate, dueDate,
+                docTypeAr, docTypeEn,
+                clientName, clientEmail, clientAddress, clientPhone, taxNumber,
                 lineItems, taxPercent, discountType, discountValue,
-                shippingCost, notes, terms, currency,
+                shippingCost, amountPaid, branchInfo, notes, terms, currency,
                 subtotal, discountAmount, taxAmount, grandTotal,
                 savedBy: req.user.id,
                 savedAt: new Date().toISOString(),
