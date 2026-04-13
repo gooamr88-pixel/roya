@@ -74,6 +74,7 @@ app.use(helmet({
             ],
             connectSrc: [
                 "'self'",
+                "https://connect.facebook.net",
                 "https://www.facebook.com",
                 "https://tr.snapchat.com",
                 "https://*.snapchat.com",
@@ -84,6 +85,7 @@ app.use(helmet({
             ],
             scriptSrcAttr: ["'unsafe-inline'"],
             frameSrc: [
+                "https://www.facebook.com",
                 "https://tr.snapchat.com",
                 "https://sc-static.net",
             ],
