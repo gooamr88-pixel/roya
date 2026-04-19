@@ -185,16 +185,38 @@ const loginUser = async ({ email, password, rememberMe, ip, userAgent }) => {
 
 /**
  * Logout user
+ * FIX (C5): Uses proper JWT verify options (algorithm, issuer, audience)
+ * instead of raw jwt.verify with no options. Also handles expired tokens
+ * gracefully — a user logging out with an expired access token is normal.
  */
 const logoutUser = async (token) => {
     if (token) {
         try {
             const jwt = require('jsonwebtoken');
-            const decoded = jwt.verify(token, config.jwt.accessSecret);
-            await tokenService.invalidateRefreshToken(decoded.userId);
-            await loginLogRepo.logLogout(decoded.userId);
+            // Try strict verification first
+            let decoded;
+            try {
+                decoded = jwt.verify(token, config.jwt.accessSecret, {
+                    algorithms: ['HS256'],
+                    issuer: 'roya-platform',
+                    audience: 'roya-api',
+                });
+            } catch (verifyErr) {
+                // If expired, still decode to get userId for cleanup
+                if (verifyErr.name === 'TokenExpiredError') {
+                    decoded = jwt.decode(token);
+                } else {
+                    // Invalid/tampered token — nothing to clean up
+                    return;
+                }
+            }
+            if (decoded?.userId) {
+                await tokenService.invalidateRefreshToken(decoded.userId);
+                await loginLogRepo.logLogout(decoded.userId);
+            }
         } catch (e) {
-            // Token might be expired, that's OK
+            // Swallow — logout should never fail
+            logger.warn('Logout cleanup failed', { error: e.message });
         }
     }
 };

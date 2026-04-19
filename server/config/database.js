@@ -17,15 +17,17 @@ const buildSslConfig = () => {
     return { rejectUnauthorized: false };
 };
 
-// In serverless (Vercel), every function invocation gets its own process and pool.
-// A high `max` (e.g. 20) × many concurrent invocations instantly saturates the
-// managed DB's connection limit → "MaxClientsInSession" / "too many clients" errors.
-// Keep pool tiny in production; local dev can use a larger pool.
-const isServerless = !config.isDev;
+// FIX (A4): Pool sizing — configurable via POOL_MAX env var.
+// Previous code assumed production = serverless (max 2), but the platform
+// runs on a VPS where max:2 causes severe bottlenecks under load.
+// POOL_MAX=2 for Vercel serverless, POOL_MAX=10+ for VPS, auto-detect otherwise.
+const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const poolMax = parseInt(process.env.POOL_MAX, 10)
+    || (isServerless ? 2 : (config.isDev ? 20 : 10));
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    max: isServerless ? 2 : 20,
+    max: poolMax,
     idleTimeoutMillis: isServerless ? 1000 : 10000,
     connectionTimeoutMillis: 10000,
     allowExitOnIdle: true,

@@ -12,6 +12,7 @@ const { randomBytes } = require('crypto');
 const invoiceRepo = require('../repositories/invoice.repository');
 const pdfService = require('../services/pdf.service');
 const winstonLogger = require('../utils/logger');
+const config = require('../config');
 
 /**
  * POST /api/orders
@@ -102,7 +103,7 @@ const updateStatus = asyncHandler(async (req, res) => {
             if (fullOrder) {
                 const invNumber = fullOrder.invoice_number || `INV-${Date.now()}`;
                 const subtotal = parseFloat(fullOrder.price);
-                const tax = subtotal * 0.15;
+                const tax = subtotal * config.tax.defaultRate;
                 const total = subtotal + tax;
 
                 const pdfBuffer = await pdfService.generateInvoicePDF({

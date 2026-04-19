@@ -13,6 +13,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const config = require('../config');
 const userRepo = require('../repositories/user.repository');
+const { query: dbQuery } = require('../config/database');
 
 // ── JWT signing options ──
 const JWT_OPTIONS = {
@@ -74,8 +75,7 @@ const verifyRefreshToken = (token) => {
  */
 const storeRefreshToken = async (userId, refreshToken) => {
     const hash = await bcrypt.hash(refreshToken, 10);
-    const { query } = require('../config/database');
-    await query(
+    await dbQuery(
         'UPDATE users SET refresh_token_hash = $1 WHERE id = $2',
         [hash, userId]
     );
@@ -95,8 +95,7 @@ const validateStoredRefreshToken = async (userId, refreshToken) => {
  * Nullifies the stored hash so the token can't be reused.
  */
 const invalidateRefreshToken = async (userId) => {
-    const { query } = require('../config/database');
-    await query(
+    await dbQuery(
         'UPDATE users SET refresh_token_hash = NULL WHERE id = $1',
         [userId]
     );
@@ -127,6 +126,24 @@ const generateResetToken = () => {
  * - domain: production cookie domain from config
  * - path-scoped refresh token — only sent to /api/auth/refresh
  */
+/**
+ * Parse a duration string like '15m', '7d', '1h' into milliseconds.
+ * Used to align cookie maxAge with JWT expiry from config.
+ */
+function parseExpiryToMs(expiry) {
+    const match = String(expiry).match(/^(\d+)([smhd])$/);
+    if (!match) return 15 * 60 * 1000; // fallback: 15 minutes
+    const num = parseInt(match[1], 10);
+    const unit = match[2];
+    switch (unit) {
+        case 's': return num * 1000;
+        case 'm': return num * 60 * 1000;
+        case 'h': return num * 60 * 60 * 1000;
+        case 'd': return num * 24 * 60 * 60 * 1000;
+        default:  return 15 * 60 * 1000;
+    }
+}
+
 const setAuthCookies = (res, accessToken, refreshToken, rememberMe = false) => {
     const isProduction = !config.isDev;
 
@@ -136,20 +153,27 @@ const setAuthCookies = (res, accessToken, refreshToken, rememberMe = false) => {
         sameSite: 'lax',
     };
 
+    // FIX (C2): Align cookie maxAge with actual JWT expiry to prevent
+    // the auth redirect loop caused by cookies carrying expired JWTs.
+    // Previously: cookie lived 24h but JWT expired in 15m → 23h45m of broken state.
+    const accessMaxAge = rememberMe
+        ? 24 * 60 * 60 * 1000  // 24h if "remember me" (refresh will renew)
+        : parseExpiryToMs(config.jwt.accessExpiry);  // Match JWT lifetime
+
+    const refreshMaxAge = parseExpiryToMs(config.jwt.refreshExpiry);
+
     // Access token cookie
     res.cookie('access_token', accessToken, {
         ...baseCookieOptions,
         path: '/',
-        maxAge: rememberMe
-            ? 30 * 24 * 60 * 60 * 1000  // 30 days if "remember me"
-            : 24 * 60 * 60 * 1000,       // 1 day otherwise
+        maxAge: accessMaxAge,
     });
 
     // Refresh token — path-scoped to /api/auth/refresh
     res.cookie('refresh_token', refreshToken, {
         ...baseCookieOptions,
         path: '/api/auth/refresh',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // Always 30 days
+        maxAge: refreshMaxAge,
     });
 };
 

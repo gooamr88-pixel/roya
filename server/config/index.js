@@ -74,6 +74,13 @@ module.exports = {
     phone: process.env.SUPER_ADMIN_PHONE || '+966500000000',
     password: process.env.SUPER_ADMIN_PASSWORD || 'Admin@123456',
   },
+
+  // FIX (C7): Tax rate — externalized from hardcoded 0.15
+  // Saudi VAT: 0.15, Egypt: 0.14, UAE: 0.05
+  tax: {
+    defaultRate: parseFloat(process.env.TAX_RATE) || 0.15,
+    label: process.env.TAX_LABEL || 'VAT (15%)',
+  },
 };
 
 // ═══════════════════════════════════════════════

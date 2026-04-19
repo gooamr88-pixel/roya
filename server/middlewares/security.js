@@ -10,6 +10,7 @@
 // ═══════════════════════════════════════════════
 const crypto = require('crypto');
 const { AppError } = require('./errorHandler');
+const logger = require('../utils/logger');
 
 // ── Constants ──
 const MAX_SANITIZE_DEPTH = 10; // Prevents stack overflow via deeply nested payloads
@@ -87,19 +88,20 @@ function extractStrings(obj, depth = 0, result = []) {
 
 /**
  * SQL injection pattern detection — defense-in-depth layer.
- * SECURITY FIX: Now scans req.body in addition to query params and URL.
- * Parameterized queries remain the primary defense; this catches
- * obvious attack patterns at the perimeter before they reach handlers.
  *
- * Patterns are tuned to reduce false positives on legitimate content
- * (e.g., the word "select" followed by "from" in natural language).
+ * FIX (C6): Removed req.body scanning. Body values are always used via
+ * parameterized queries ($1, $2...) so SQL injection is impossible there.
+ * Scanning the body caused false positives — e.g., admin replying with
+ * "please delete from the list" or "insert into our calendar" got blocked.
+ *
+ * We only scan req.originalUrl and req.query, which is where actual
+ * SQL injection attacks occur (query string manipulation, URL tampering).
  */
 const sqlInjectionGuard = (req, res, next) => {
-    // ── Collect all string values from query, URL, AND body ──
+    // FIX (C6): Only scan URL and query params, NOT body
     const targets = [
         req.originalUrl,
         ...extractStrings(req.query),
-        ...extractStrings(req.body),
     ];
 
     // SQL injection patterns — ordered by severity, tuned for low false-positives
@@ -124,12 +126,14 @@ const sqlInjectionGuard = (req, res, next) => {
     for (const target of targets) {
         for (const pattern of patterns) {
             if (pattern.test(target)) {
-                console.warn(
-                    `🚨 [SQLi BLOCKED] IP: ${req.ip} | ` +
-                    `Path: ${req.method} ${req.originalUrl} | ` +
-                    `ReqID: ${req.id || 'none'} | ` +
-                    `Match: ${pattern.source}`
-                );
+                // FIX (C8): Use structured logger instead of console.warn
+                logger.warn('SQLi pattern blocked', {
+                    ip: req.ip,
+                    method: req.method,
+                    path: req.originalUrl,
+                    reqId: req.id || 'none',
+                    pattern: pattern.source,
+                });
                 return next(new AppError('Malicious request detected.', 403, 'SECURITY_VIOLATION'));
             }
         }

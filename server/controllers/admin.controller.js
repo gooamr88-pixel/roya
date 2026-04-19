@@ -13,6 +13,7 @@
 const adminService = require('../services/admin.service');
 const contactCtrl = require('./contact.controller');
 const { asyncHandler } = require('../utils/helpers');
+const logger = require('../utils/logger');
 
 // ── Pagination defaults and caps ──
 const DEFAULT_PAGE = 1;
@@ -97,10 +98,12 @@ const getLogs = asyncHandler(async (req, res) => {
  */
 const clearLogs = asyncHandler(async (req, res) => {
     // Audit: record the destructive action before executing it
-    console.warn(
-        `🗑️ [AUDIT] Login logs cleared by User ${req.user.id} (${req.user.role}) | ` +
-        `IP: ${req.ip} | ReqID: ${req.id || 'none'}`
-    );
+    logger.warn('Login logs cleared', {
+        userId: req.user.id,
+        role: req.user.role,
+        ip: req.ip,
+        reqId: req.id || 'none',
+    });
     await adminService.clearLogs();
     res.json({ success: true, message: 'All login logs cleared successfully.' });
 });
@@ -149,10 +152,13 @@ const updateMessageNote = asyncHandler(async (req, res, next) => {
  */
 const deleteMessage = asyncHandler(async (req, res) => {
     // Audit: record the destructive action
-    console.warn(
-        `🗑️ [AUDIT] Message ${req.params.id} deleted by User ${req.user.id} (${req.user.role}) | ` +
-        `IP: ${req.ip} | ReqID: ${req.id || 'none'}`
-    );
+    logger.warn('Message deleted', {
+        messageId: req.params.id,
+        userId: req.user.id,
+        role: req.user.role,
+        ip: req.ip,
+        reqId: req.id || 'none',
+    });
     await adminService.deleteMessage(req.params.id);
     res.json({ success: true, message: 'Message deleted successfully.' });
 });

@@ -19,6 +19,7 @@ const { i18nMiddleware } = require('./middlewares/i18n');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const { requestId, sanitizeInput, sqlInjectionGuard, hppProtection } = require('./middlewares/security');
 const { maintenanceMiddleware } = require('./middlewares/maintenance');
+const { csrfToken, csrfProtection } = require('./middlewares/csrf');
 const winstonLogger = require('./utils/logger');
 
 const app = express();
@@ -201,6 +202,20 @@ app.use(i18nMiddleware);
 // ═══════════════════════════════════════════════
 app.use('/api', apiLimiter);
 
+// ── FIX (C9): CSRF Protection for all mutating API routes ──
+// Validates the double-submit cookie token on POST/PUT/DELETE/PATCH.
+// Auth routes are excluded because login/register happen before a CSRF cookie exists.
+app.use('/api', (req, res, next) => {
+    const method = req.method.toUpperCase();
+    const isMutating = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method);
+    const isAuthRoute = req.path.startsWith('/auth');
+    const isHealthRoute = req.path === '/health';
+    if (isMutating && !isAuthRoute && !isHealthRoute) {
+        return csrfProtection(req, res, next);
+    }
+    next();
+});
+
 app.use('/api/auth',          require('./routes/auth.routes'));
 app.use('/api/users',         require('./routes/user.routes'));
 app.use('/api/services',      require('./routes/service.routes'));
@@ -271,6 +286,8 @@ app.get('/api/locales/:lang', (req, res) => {
 // ═══════════════════════════════════════════════
 // SEO & Frontend Page Routes
 // ═══════════════════════════════════════════════
+// ── FIX (C9): Set CSRF token cookie on all page renders ──
+app.use(csrfToken);
 app.use(require('./routes/seo.routes'));
 app.use(require('./routes/page.routes'));
 

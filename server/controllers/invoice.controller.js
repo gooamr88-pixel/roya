@@ -6,6 +6,7 @@ const pdfService = require('../services/pdf.service');
 const emailService = require('../services/email.service');
 const invoiceRepo = require('../repositories/invoice.repository');
 const { query } = require('../config/database');
+const config = require('../config');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,7 +19,7 @@ const generate = asyncHandler(async (req, res) => {
 
     const invoiceNumber = order.invoice_number || `INV-${Date.now()}`;
     const subtotal = parseFloat(order.price);
-    const tax = subtotal * 0.15;
+    const tax = subtotal * config.tax.defaultRate;
     const total = subtotal + tax;
 
     // Generate PDF
@@ -680,6 +681,32 @@ const generateInvoiceHTML = (invoiceData) => {
     `;
 };
 
+// ── Puppeteer concurrency guard ──
+// FIX (C1): Prevents OOM by limiting concurrent Chromium instances.
+// Without this, N concurrent PDF requests = N × 300MB Chromium processes.
+const PDF_MAX_CONCURRENT = 2;
+let _pdfActiveCount = 0;
+const _pdfQueue = [];
+
+function acquirePdfSlot() {
+    return new Promise((resolve) => {
+        if (_pdfActiveCount < PDF_MAX_CONCURRENT) {
+            _pdfActiveCount++;
+            resolve();
+        } else {
+            _pdfQueue.push(resolve);
+        }
+    });
+}
+
+function releasePdfSlot() {
+    _pdfActiveCount--;
+    if (_pdfQueue.length > 0) {
+        _pdfActiveCount++;
+        _pdfQueue.shift()();
+    }
+}
+
 const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
     let browser = null;
     let puppeteer;
@@ -706,8 +733,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         } else if (req.params.id) {
             // 2. From Database: ID passed in URL path
             const { id } = req.params;
-            const db = require('../config/database');
-            const result = await db.query(
+            const result = await query(
                 'SELECT * FROM invoices WHERE invoice_number = $1 OR id::text = $1',
                 [id]
             );
@@ -751,32 +777,54 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
 
         const htmlContent = generateInvoiceHTML(invoiceData);
 
-        browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-zygote']
-        });
+        // FIX (C1): Acquire concurrency slot before launching Chromium
+        await acquirePdfSlot();
 
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 30000 });
-        await page.evaluateHandle('document.fonts.ready');
-        await new Promise(r => setTimeout(r, 800));
+        // FIX (C1): Safety timeout — kill zombie browsers after 60s
+        const safetyTimer = setTimeout(() => {
+            if (browser) {
+                browser.close().catch(() => {});
+                browser = null;
+            }
+        }, 60000);
 
-        const pdfBuffer = await page.pdf({
-            format: 'A4',
-            printBackground: true,
-            margin: { top: '12mm', right: '14mm', bottom: '12mm', left: '14mm' },
-            displayHeaderFooter: false,
-        });
+        try {
+            browser = await puppeteer.launch({
+                headless: 'new',
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-zygote']
+            });
 
-        await browser.close();
+            const page = await browser.newPage();
+            await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 30000 });
+            await page.evaluateHandle('document.fonts.ready');
+            await new Promise(r => setTimeout(r, 800));
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${invoiceData.docNumber || 'document'}.pdf"`);
-        res.setHeader('Content-Length', pdfBuffer.length);
+            const pdfBuffer = await page.pdf({
+                format: 'A4',
+                printBackground: true,
+                margin: { top: '12mm', right: '14mm', bottom: '12mm', left: '14mm' },
+                displayHeaderFooter: false,
+            });
 
-        return res.end(pdfBuffer);
+            // FIX (C1): Explicitly close page before browser to free resources
+            await page.close();
+            await browser.close();
+            browser = null;
+            clearTimeout(safetyTimer);
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${invoiceData.docNumber || 'document'}.pdf"`);
+            res.setHeader('Content-Length', pdfBuffer.length);
+
+            return res.end(pdfBuffer);
+        } finally {
+            clearTimeout(safetyTimer);
+            if (browser) {
+                await browser.close().catch(() => {});
+            }
+            releasePdfSlot();
+        }
     } catch (err) {
-        if (browser) await browser.close();
         console.error('[PDF Generator Error]:', err);
         return next(new AppError('Failed to generate PDF. Reason: ' + (err.message || 'Unknown'), 500));
     }

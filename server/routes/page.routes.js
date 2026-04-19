@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════
 const router = require('express').Router();
 const config = require('../config');
+const jwt = require('jsonwebtoken');
 
 /**
  * SEO helper — renders a Nunjucks page with proper meta tags
@@ -34,13 +35,37 @@ const seo = (pagePath, descKey) => (req, res) => {
     });
 };
 
+/**
+ * FIX (C10): Server-side auth guard for protected page routes.
+ * Prevents serving the full admin/dashboard HTML to unauthenticated visitors.
+ * Uses lightweight JWT cookie check (no DB hit) — the full auth check still
+ * happens client-side via API.get('/auth/me') for role verification.
+ */
+const requireAuthPage = (req, res, next) => {
+    const token = req.cookies?.access_token;
+    if (!token) {
+        return res.redirect('/login');
+    }
+    try {
+        jwt.verify(token, config.jwt.accessSecret, {
+            algorithms: ['HS256'],
+            issuer: 'roya-platform',
+            audience: 'roya-api',
+        });
+        next();
+    } catch {
+        // Token expired or invalid — redirect to login
+        return res.redirect('/login');
+    }
+};
+
 // ── Frontend Pages ──
 router.get('/',               seo('index',          'meta.description'));
 router.get('/login',          seo('login',          'login.welcomeDesc'));
 router.get('/register',       seo('register',       'register.welcomeDesc'));
 router.get('/reset-password', seo('reset-password', 'resetPassword.welcomeDesc'));
-router.get('/dashboard',      seo('dashboard',      'meta.description'));
-router.get('/admin',          seo('admin',          'meta.description'));
+router.get('/dashboard',      requireAuthPage, seo('dashboard', 'meta.description'));
+router.get('/admin',          requireAuthPage, seo('admin',     'meta.description'));
 router.get('/services',       seo('services',       'servicesPage.desc'));
 router.get('/jobs',           seo('jobs',           'jobsPage.desc'));
 router.get('/properties',     seo('properties',     'propertiesPage.desc'));

@@ -17,6 +17,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const userRepo = require('../repositories/user.repository');
 const { AppError } = require('./errorHandler');
+const logger = require('../utils/logger');
 
 // ── Hierarchical Role Weights ──
 // Higher weight = more privileges. authorizeRole(minRole) checks user.weight >= min.
@@ -163,11 +164,13 @@ const authenticate = async (req, res, next) => {
         // ── Security event: log failed authentication ──
         if (err.statusCode === 401 || err.statusCode === 403) {
             const ip = req.ip || req.connection?.remoteAddress;
-            console.warn(
-                `🔒 [AUTH FAIL] ${err.code || 'UNKNOWN'} | IP: ${ip} | ` +
-                `Path: ${req.method} ${req.originalUrl} | ` +
-                `ReqID: ${req.id || 'none'}`
-            );
+            logger.warn('Auth failure', {
+                code: err.code || 'UNKNOWN',
+                ip,
+                method: req.method,
+                path: req.originalUrl,
+                reqId: req.id || 'none',
+            });
         }
         next(err);
     }
@@ -191,11 +194,12 @@ const authorize = (...roles) => {
         }
 
         if (!roles.includes(req.user.role)) {
-            console.warn(
-                `🔒 [RBAC DENIED] User ${req.user.id} (${req.user.role}) ` +
-                `tried to access ${req.method} ${req.originalUrl} | ` +
-                `Required: ${roles.join(', ')}`
-            );
+            logger.warn('RBAC denied', {
+                userId: req.user.id,
+                role: req.user.role,
+                path: `${req.method} ${req.originalUrl}`,
+                required: roles.join(', '),
+            });
             return next(new AppError(
                 'You do not have permission to perform this action.',
                 403, 'FORBIDDEN'
@@ -225,10 +229,11 @@ const checkPermission = (permission) => {
         }
 
         if (!perms.includes(permission)) {
-            console.warn(
-                `🔒 [PERMISSION DENIED] User ${req.user.id} missing "${permission}" | ` +
-                `Has: [${perms.join(', ')}]`
-            );
+            logger.warn('Permission denied', {
+                userId: req.user.id,
+                missing: permission,
+                has: perms,
+            });
             return next(new AppError(
                 'Insufficient permissions.',
                 403, 'INSUFFICIENT_PERMISSIONS'
@@ -257,10 +262,14 @@ const authorizeRole = (minRole) => {
         if (userWeight >= minWeight) {
             return next();
         }
-        console.warn(
-            `🔒 [RBAC LEVEL] User ${req.user.id} (${req.user.role}, weight ${userWeight}) ` +
-            `denied access to ${req.method} ${req.originalUrl} | Required: ${minRole} (weight ${minWeight})`
-        );
+        logger.warn('RBAC level denied', {
+            userId: req.user.id,
+            role: req.user.role,
+            weight: userWeight,
+            path: `${req.method} ${req.originalUrl}`,
+            required: minRole,
+            requiredWeight: minWeight,
+        });
         return next(new AppError(
             'Insufficient role privileges.',
             403, 'ROLE_INSUFFICIENT'

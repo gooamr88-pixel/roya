@@ -134,8 +134,12 @@ const API = {
           }
           return retryData;
         }
-        // Refresh failed — redirect to login
-        window.location.href = "/login";
+        // FIX (C2): Redirect loop protection — don't redirect to /login
+        // if we're already on /login or related auth pages
+        const authPages = ['/login', '/register', '/reset-password'];
+        if (!authPages.includes(window.location.pathname)) {
+          window.location.href = '/login';
+        }
         return null;
       }
 

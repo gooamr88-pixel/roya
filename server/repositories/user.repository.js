@@ -94,7 +94,7 @@ const updateResetToken = async (id, resetOTP, resetExpires) => {
 
 const findByResetToken = async (email, otp) => {
     const result = await query(
-        'SELECT id FROM users WHERE email = $1 AND reset_token = $2 AND reset_token_expires_at > CURRENT_TIMESTAMP',
+        'SELECT id, password_hash FROM users WHERE email = $1 AND reset_token = $2 AND reset_token_expires_at > CURRENT_TIMESTAMP',
         [email, otp]
     );
     return result.rows[0] || null;

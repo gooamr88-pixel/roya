@@ -2,6 +2,7 @@
 // PDF Service — Invoice Generation (PDFKit Streams)
 // ═══════════════════════════════════════════════
 const PDFDocument = require('pdfkit');
+const config = require('../config');
 
 /**
  * Generate an invoice PDF as a Buffer
@@ -106,7 +107,7 @@ const generateInvoicePDF = (data) => {
             // ── Totals ──
             const totalsY = rowY + 40;
             const subtotal = parseFloat(data.price || 0);
-            const tax = parseFloat(data.taxAmount || subtotal * 0.15);
+            const tax = parseFloat(data.taxAmount || subtotal * config.tax.defaultRate);
             const total = subtotal + tax;
 
             doc
@@ -118,7 +119,7 @@ const generateInvoicePDF = (data) => {
 
             doc
                 .fillColor('#666')
-                .text('Tax (15%):', 380, totalsY + 20, { width: 80, align: 'right' })
+                .text(`${config.tax.label || 'Tax (15%)'}:`, 380, totalsY + 20, { width: 80, align: 'right' })
                 .fillColor('#333')
                 .text(`$${tax.toFixed(2)}`, 470, totalsY + 20, { width: 75, align: 'right' });
 

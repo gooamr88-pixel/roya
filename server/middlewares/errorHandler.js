@@ -10,6 +10,7 @@
 // ✅ Multer file size errors → 413
 // ═══════════════════════════════════════════════
 const config = require('../config');
+const logger = require('../utils/logger');
 
 /**
  * Custom application error with HTTP status and error code.
@@ -120,8 +121,13 @@ const errorHandler = (err, req, res, _next) => {
     const dbError = sanitizeDatabaseError(err);
     if (dbError) {
         // Log the real error for debugging but send sanitized version to client
-        console.error(`💥 [${new Date().toISOString()}] DB Error | ReqID: ${req.id || 'none'} | ${req.method} ${req.originalUrl}`);
-        console.error(`   Code: ${err.code} | Detail: ${err.detail || err.message}`);
+        logger.error('Database error', {
+            reqId: req.id || 'none',
+            method: req.method,
+            path: req.originalUrl,
+            code: err.code,
+            detail: err.detail || err.message,
+        });
         return res.status(dbError.statusCode).json({
             success: false,
             error: {
@@ -137,9 +143,14 @@ const errorHandler = (err, req, res, _next) => {
 
     // Log server errors (5xx) with full details
     if (statusCode >= 500) {
-        console.error(`💥 [${new Date().toISOString()}] ${req.method} ${req.originalUrl} | ReqID: ${req.id || 'none'}`);
-        console.error(`   Status: ${statusCode} | Code: ${code}`);
-        console.error(err.stack || err.message);
+        logger.error('Server error', {
+            method: req.method,
+            path: req.originalUrl,
+            reqId: req.id || 'none',
+            status: statusCode,
+            code,
+            stack: err.stack || err.message,
+        });
     }
 
     // ── Build safe response ──

@@ -43,14 +43,17 @@ function toBool(val) {
 
 /**
  * Get dashboard stats
+ * FIX (A2): Parallelize independent queries for faster dashboard load
  */
 const getDashboardStats = async () => {
-    const stats = await adminRepo.getStats();
+    const [stats, recentOrders] = await Promise.all([
+        adminRepo.getStats(),
+        orderRepo.getRecentOrders(5),
+    ]);
+
     const conversionRate = stats.totalUsers > 0
         ? Math.round((stats.totalUsersWithOrders / stats.totalUsers) * 100)
         : 0;
-
-    const recentOrders = await orderRepo.getRecentOrders(5);
 
     return {
         stats: {

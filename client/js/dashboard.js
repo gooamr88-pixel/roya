@@ -5,7 +5,27 @@
 // ═══════════════════════════════════════════════
 
 let currentUser = null;
-const _cache = {};
+
+// FIX (F3): TTL-based cache — entries expire after 60s to prevent stale data
+const _cache = {
+    _store: {},
+    set(key, data, ttlMs = 60000) {
+        this._store[key] = { data, expires: Date.now() + ttlMs };
+    },
+    get(key) {
+        const entry = this._store[key];
+        if (!entry) return null;
+        if (Date.now() > entry.expires) {
+            delete this._store[key];
+            return null;
+        }
+        return entry.data;
+    },
+    invalidate(key) {
+        delete this._store[key];
+    },
+};
+
 const VIEW_KEYS = ['overview', 'orders', 'services', 'exhibitions', 'notifications', 'invoices', 'profile'];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,14 +57,28 @@ function getGreeting(name) {
 }
 
 // ── Auth Check ──
+// FIX (F2): Differentiate between auth errors and network errors.
+// Previously, any error (including server outage) hard-redirected to /login.
 async function initAuth() {
     try {
         const data = await API.get('/auth/me');
         currentUser = data.data.user;
         updateUserUI();
         loadOverview();
-    } catch {
-        window.location.href = '/login';
+    } catch (err) {
+        // Only redirect to login for actual auth failures, not network errors
+        if (err.message && (
+            err.message.includes('Session expired') ||
+            err.message.includes('No token') ||
+            err.message.includes('Invalid token')
+        )) {
+            window.location.href = '/login';
+        } else if (err.message && err.message.includes('Network error')) {
+            Toast.error(err.message);
+        } else {
+            // Default: redirect to login for unknown auth issues
+            window.location.href = '/login';
+        }
     }
 }
 
@@ -246,10 +280,10 @@ function initLogout() {
 async function loadOverview() {
     try {
         const [ordersData, notifData] = await Promise.all([
-            _cache.orders50 || API.get('/orders?limit=50'),
+            _cache.get('orders50') || API.get('/orders?limit=50'),
             API.get('/notifications?limit=1'),
         ]);
-        _cache.orders50 = ordersData;
+        _cache.set('orders50', ordersData);
 
         const orders = ordersData.data.orders;
         const activeOrders = orders.filter(o => ['pending', 'in_progress', 'confirmed'].includes(o.status));
@@ -427,7 +461,7 @@ async function cancelOrder(orderId, invoiceNumber) {
     try {
         await API.put(`/orders/${orderId}/cancel`);
         Toast.success((window.__dt||{}).orderCancelled||'Order cancelled successfully.');
-        _cache.orders50 = null;
+        _cache.invalidate('orders50');
         loadOrders();
     } catch (err) { Toast.error(err.message || (window.__dt||{}).failedCancelOrder||'Failed to cancel order.'); }
 }
@@ -574,7 +608,7 @@ async function requestService(serviceId) {
     try {
         await API.post('/orders', { service_id: serviceId });
         Toast.success((window.__dt||{}).orderPlaced||'Order placed successfully!');
-        _cache.orders50 = null; // Invalidate cache
+        _cache.invalidate('orders50'); // Invalidate cache
         switchView('orders');
     } catch (err) { Toast.error(err.message); }
 }
