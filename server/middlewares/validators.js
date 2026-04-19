@@ -63,7 +63,9 @@ const resetPasswordValidation = [
 const serviceValidation = [
     body('title').trim().notEmpty().withMessage('Title is required').isLength({ max: 200 }),
     body('description').optional().trim(),
-    body('price').optional().isFloat({ min: 0 }).withMessage('Price must be a positive number'),
+    body('price').optional().toFloat(),
+    body('price_type').optional().isIn(['fixed', 'range']).withMessage('price_type must be fixed or range'),
+    body('price_max').optional({ values: 'falsy' }).toFloat(),
     body('category').optional().trim().isLength({ max: 100 }),
     validate,
 ];

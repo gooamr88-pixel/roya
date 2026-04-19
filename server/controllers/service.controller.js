@@ -55,9 +55,14 @@ const update = asyncHandler(async (req, res) => {
 
     if (title !== undefined)          { updates.push(`title = $${i++}`);          values.push(title); }
     if (description !== undefined)    { updates.push(`description = $${i++}`);    values.push(description); }
-    if (price !== undefined)          { updates.push(`price = $${i++}`);          values.push(parseFloat(price)); }
+    if (price !== undefined)          { updates.push(`price = $${i++}`);          values.push(parseFloat(price) || 0); }
     if (price_type !== undefined)      { updates.push(`price_type = $${i++}`);      values.push(price_type); }
-    if (price_max !== undefined)       { updates.push(`price_max = $${i++}`);       values.push(price_max ? parseFloat(price_max) : null); }
+    // Always process price_max when sent (even empty string) to allow clearing
+    if (price_max !== undefined)       {
+        updates.push(`price_max = $${i++}`);
+        const parsed = parseFloat(price_max);
+        values.push(!isNaN(parsed) && parsed > 0 ? parsed : null);
+    }
     if (currency !== undefined)       { updates.push(`currency = $${i++}`);       values.push(currency); }
     if (category !== undefined)       { updates.push(`category = $${i++}`);       values.push(category); }
     if (is_active !== undefined)      { updates.push(`is_active = $${i++}`);      values.push(parseBool(is_active)); }

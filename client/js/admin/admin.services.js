@@ -189,8 +189,10 @@ async function saveAdminService(e) {
     formData.append('description', document.getElementById('svcDescription').value.trim());
     formData.append('price', document.getElementById('svcPrice').value || '0');
     formData.append('price_type', document.getElementById('svcPriceType')?.value || 'fixed');
+    // Always send price_max — send empty string when not range so backend can clear it
+    const priceType = document.getElementById('svcPriceType')?.value || 'fixed';
     const priceMaxVal = document.getElementById('svcPriceMax')?.value;
-    if (priceMaxVal) formData.append('price_max', priceMaxVal);
+    formData.append('price_max', (priceType === 'range' && priceMaxVal) ? priceMaxVal : '');
     formData.append('currency', document.getElementById('svcCurrency')?.value || 'SAR');
     formData.append('category', document.getElementById('svcCategory').value);
     // B2 Fix: FormData converts booleans to strings — use '1'/'0' and parse on backend
