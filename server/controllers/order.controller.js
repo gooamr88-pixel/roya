@@ -29,6 +29,7 @@ const create = asyncHandler(async (req, res) => {
         serviceId: service.id,
         serviceTitle: service.title,
         price: service.price,
+        currency: service.currency,
         notes,
         invoiceNumber,
     });

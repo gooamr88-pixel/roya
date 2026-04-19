@@ -19,7 +19,7 @@ const findAll = async ({ page, limit, category }) => {
 
     const [services, countResult] = await Promise.all([
         query(
-            `SELECT id, title, title_ar, description, description_ar, price, images, category, category_ar, created_at
+            `SELECT id, title, title_ar, description, description_ar, price, price_type, price_max, currency, images, category, category_ar, created_at
              FROM services ${whereClause}
              ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
             params
@@ -41,17 +41,17 @@ const findById = async (id) => {
 
 const findActiveById = async (id) => {
     const result = await query(
-        'SELECT id, title, price FROM services WHERE id = $1 AND is_active = TRUE',
+        'SELECT id, title, price, currency FROM services WHERE id = $1 AND is_active = TRUE',
         [id]
     );
     return result.rows[0] || null;
 };
 
-const create = async ({ title, description, price, images, category, title_ar, description_ar, category_ar }) => {
+const create = async ({ title, description, price, price_type, price_max, currency, images, category, title_ar, description_ar, category_ar }) => {
     const result = await query(
-        `INSERT INTO services (title, description, price, images, category, title_ar, description_ar, category_ar)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-        [title, description || '', parseFloat(price) || 0, JSON.stringify(images), category || 'general', title_ar || null, description_ar || null, category_ar || null]
+        `INSERT INTO services (title, description, price, price_type, price_max, currency, images, category, title_ar, description_ar, category_ar)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+        [title, description || '', parseFloat(price) || 0, price_type || 'fixed', price_max ? parseFloat(price_max) : null, currency || 'SAR', JSON.stringify(images), category || 'general', title_ar || null, description_ar || null, category_ar || null]
     );
     return result.rows[0];
 };

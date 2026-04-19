@@ -20,7 +20,7 @@ async function loadAdminOrders(page = 1) {
                     <td data-label="Invoice" style="font-weight:600">${esc(o.invoice_number || '—')}</td>
                     <td data-label="Client">${esc(o.client_name || '—')}</td>
                     <td data-label="Service">${esc(o.service_title)}</td>
-                    <td data-label="Amount">${Utils.formatCurrency(o.price)}</td>
+                    <td data-label="Amount">${Utils.formatCurrency(o.price, o.currency)}</td>
                     <td data-label="Status">
                         <select class="role-select" onchange="updateOrderStatus(${o.id}, this.value)">
                             ${['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'].map(s =>

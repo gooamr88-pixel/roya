@@ -876,11 +876,29 @@
               <input class="form-input" type="text" id="svcCategoryAr" maxlength="100" dir="rtl" placeholder="{{ t.admin.categoryArPlaceholder | default('التصنيف بالعربية') }}">
             </div>
           </div>
-          {# Responsive 3-col grid — collapses on mobile #}
+          {# Responsive grid — Price type toggle + pricing fields #}
+          <div style="margin-bottom:12px">
+            <label class="form-label" style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+              <i class="fas fa-money-bill-wave" style="color:var(--gold);"></i> {{ t.admin.priceType | default('نوع السعر / Price Type') }}
+            </label>
+            <div style="display:flex;gap:4px;background:var(--surface-2);border-radius:10px;padding:3px;width:fit-content">
+              <button type="button" class="btn btn-sm svc-price-type-btn active" id="svcPriceTypeFixed" onclick="setSvcPriceType('fixed')" style="border-radius:8px;padding:6px 16px;font-size:0.82rem">
+                <i class="fas fa-tag"></i> {{ t.admin.priceFixed | default('ثابت / Fixed') }}
+              </button>
+              <button type="button" class="btn btn-sm svc-price-type-btn" id="svcPriceTypeRange" onclick="setSvcPriceType('range')" style="border-radius:8px;padding:6px 16px;font-size:0.82rem">
+                <i class="fas fa-arrows-left-right"></i> {{ t.admin.priceRange | default('نطاق / Range') }}
+              </button>
+            </div>
+            <input type="hidden" id="svcPriceType" value="fixed">
+          </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
-              <label class="form-label">{{ t.admin.thPrice }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipServicePrice | default('Set the base price for this service. Clients will see this amount when browsing.') }}</span></span></label>
+              <label class="form-label" id="svcPriceLabel">{{ t.admin.thPrice }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipServicePrice | default('Set the base price for this service. Clients will see this amount when browsing.') }}</span></span></label>
               <input class="form-input" type="number" id="svcPrice" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group" id="svcPriceMaxGroup" style="display:none">
+              <label class="form-label">{{ t.admin.priceMax | default('الحد الأقصى / Max Price') }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipPriceMax | default('The maximum price in the range. Leave empty to show only the minimum.') }}</span></span></label>
+              <input class="form-input" type="number" id="svcPriceMax" min="0" step="0.01" placeholder="0.00">
             </div>
             <div class="form-group">
               <label class="form-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-coins" style="color:var(--gold);"></i> {{ t.admin.invCurrency | default('العملة / Currency') }}</label>

@@ -283,7 +283,7 @@ async function openServiceDetailModal(service) {
                 <p class="glass-modal-desc">${esc(localize(service, 'description') || i18n.t('Professional service tailored to your specific business needs. Our team delivers high-quality results with attention to detail.', 'خدمة احترافية مصممة خصيصاً لاحتياجات عملك. فريقنا يقدم نتائج عالية الجودة مع الاهتمام بالتفاصيل.'))}</p>
                 <div class="glass-modal-price">
                     <span class="label">${i18n.t('Service Price', 'سعر الخدمة')}</span>
-                    <span class="value">${fmtPrice(service.price)}</span>
+                    <span class="value">${fmtServicePrice(service)}</span>
                 </div>
                 <div class="glass-modal-actions">
                     <button class="btn btn-primary btn-lg" onclick="confirmServiceRequest('${service.id}')">
@@ -358,7 +358,7 @@ async function loadLandingServices() {
             <div class="pro-card-overlay">
               <span class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> ${i18n.t('View Details', 'عرض التفاصيل')}</span>
             </div>
-            <span class="pro-price-badge">${fmtPrice(s.price)}</span>
+            <span class="pro-price-badge">${fmtServicePrice(s)}</span>
           </div>
           <div class="pro-card-body">
             <h3>${esc(localize(s, 'title'))}</h3>

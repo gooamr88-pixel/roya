@@ -2696,6 +2696,37 @@ html[dir="rtl"] .exhibition-card .exhibition-meta i {
     animation: fadeIn 0.2s ease;
 }
 
+/* ── Price Type Toggle (Fixed / Range) ── */
+.svc-price-type-btn {
+    background: transparent;
+    color: var(--text-3);
+    border: 1px solid transparent;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.svc-price-type-btn:hover {
+    color: var(--text-1);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.svc-price-type-btn.active {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
+    color: var(--gold);
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
+}
+
+[data-theme="light"] .svc-price-type-btn.active {
+    background: linear-gradient(135deg, rgba(180, 140, 20, 0.12), rgba(180, 140, 20, 0.06));
+    color: #8b6914;
+    border-color: rgba(180, 140, 20, 0.25);
+}
+
 .tab-icon {
     margin-right: 6px;
     font-size: 0.8rem;

@@ -61,14 +61,37 @@ function setLoading(btn, loading, text) {
 }
 
 /**
- * Format a numeric amount as USD currency.
+ * Format a numeric amount with the given currency.
  * @param {number} amount
+ * @param {string} [currency='SAR']
  * @returns {string}
  */
-function fmtPrice(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency', currency: 'USD', maximumFractionDigits: 0,
-    }).format(amount);
+function fmtPrice(amount, currency = 'SAR') {
+    const cur = currency || 'SAR';
+    try {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency', currency: cur, maximumFractionDigits: 0,
+        }).format(amount);
+    } catch {
+        return `${cur} ${Number(amount || 0).toFixed(0)}`;
+    }
+}
+
+/**
+ * Format a service price — supports fixed price and price range.
+ * @param {object} service - Service object with price, price_type, price_max, currency
+ * @returns {string}
+ */
+function fmtServicePrice(service) {
+    if (!service) return '';
+    const cur = service.currency || 'SAR';
+    const price = parseFloat(service.price) || 0;
+    const priceMax = parseFloat(service.price_max) || 0;
+
+    if (service.price_type === 'range' && priceMax > 0) {
+        return `${fmtPrice(price, cur)} – ${fmtPrice(priceMax, cur)}`;
+    }
+    return fmtPrice(price, cur);
 }
 
 /**

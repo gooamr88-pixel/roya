@@ -289,11 +289,16 @@ const Toast = {
 
 // ── Utility ──
 const Utils = {
-  formatCurrency(amount) {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+  formatCurrency(amount, currency = 'SAR') {
+    const cur = currency || 'SAR';
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: cur,
+      }).format(amount);
+    } catch {
+      return `${cur} ${Number(amount || 0).toFixed(2)}`;
+    }
   },
 
   formatDate(date) {

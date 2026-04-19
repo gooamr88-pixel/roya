@@ -19,7 +19,7 @@ async function loadAdminProperties(page = 1) {
                     <td><input type="checkbox" class="prop-checkbox" value="${p.id}" onchange="toggleBulkSelect('prop', '${p.id}', this.checked)"></td>
                     <td data-label="Title" style="font-weight:600">${esc(p.title)}</td>
                     <td data-label="Location">${esc(p.location || '—')}</td>
-                    <td data-label="Price">${Utils.formatCurrency(p.price)}</td>
+                    <td data-label="Price">${Utils.formatCurrency(p.price, p.currency)}</td>
                     <td data-label="Type">${esc(p.property_type)}</td>
                     <td data-label="Featured">
                         <i class="fas fa-star featured-star ${p.is_featured ? 'active' : 'inactive'}" 

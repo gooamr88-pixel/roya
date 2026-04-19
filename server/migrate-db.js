@@ -403,6 +403,35 @@ const migrations = [
     },
 
     // ══════════════════════════════════════════
+    //  10.35. CURRENCY COLUMNS — Per-item currency support
+    //  Adds currency column to services, jobs, orders
+    // ══════════════════════════════════════════
+    {
+        name: 'Add currency to services',
+        sql: `ALTER TABLE services ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'SAR'`
+    },
+    {
+        name: 'Add currency to jobs',
+        sql: `ALTER TABLE jobs ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'SAR'`
+    },
+    {
+        name: 'Add currency to orders',
+        sql: `ALTER TABLE orders ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'SAR'`
+    },
+
+    // ══════════════════════════════════════════
+    //  10.36. PRICE RANGE — Fixed vs Range pricing for services
+    // ══════════════════════════════════════════
+    {
+        name: 'Add price_type to services',
+        sql: `ALTER TABLE services ADD COLUMN IF NOT EXISTS price_type VARCHAR(10) DEFAULT 'fixed'`
+    },
+    {
+        name: 'Add price_max to services',
+        sql: `ALTER TABLE services ADD COLUMN IF NOT EXISTS price_max DECIMAL(12,2) DEFAULT NULL`
+    },
+
+    // ══════════════════════════════════════════
     //  10.5. i18n — Bilingual category columns
     // ══════════════════════════════════════════
     {

@@ -260,7 +260,7 @@ async function loadOverview() {
         // Animated counters
         animateCounter(document.getElementById('statOrders'), activeOrders.length);
         animateCounter(document.getElementById('statCompleted'), completed);
-        animateCounter(document.getElementById('statSpent'), totalSpent, '$');
+        animateCounter(document.getElementById('statSpent'), totalSpent, '﷼');
         animateCounter(document.getElementById('statNotifications'), unread);
         updateNotifCount(unread);
 
@@ -279,7 +279,7 @@ async function loadOverview() {
                 <tr>
                     <td data-label="Invoice" style="font-weight:600">${esc(o.invoice_number || '—')}</td>
                     <td data-label="Service">${esc(o.service_title)}</td>
-                    <td data-label="Amount">${Utils.formatCurrency(o.price)}</td>
+                    <td data-label="Amount">${Utils.formatCurrency(o.price, o.currency)}</td>
                     <td data-label="Status"><span class="badge badge-${statusColor(o.status)}">${o.status.replace(/_/g, ' ')}</span></td>
                     <td data-label="Date">${relativeTime(o.created_at)}</td>
                 </tr>
@@ -398,7 +398,7 @@ async function loadOrders(page = 1) {
                         <span class="badge badge-${statusColor(o.status)}">${o.status.replace(/_/g,' ')}</span>
                     </div>
                     <div class="order-card-meta">
-                        <span class="order-card-price">${Utils.formatCurrency(o.price)}</span>
+                        <span class="order-card-price">${Utils.formatCurrency(o.price, o.currency)}</span>
                         <span class="order-card-date"><i class="fas fa-clock" style="margin-right:4px"></i>${relativeTime(o.created_at)}</span>
                     </div>
                     <div class="order-card-actions">
@@ -457,7 +457,7 @@ async function loadServices() {
                         <h3>${esc(s.title)}</h3>
                         <p>${esc(s.description || '')}</p>
                         <div class="service-card-footer">
-                            <span class="service-price">${Utils.formatCurrency(s.price)}</span>
+                            <span class="service-price">${s.price_type === 'range' && s.price_max ? Utils.formatCurrency(s.price, s.currency) + ' – ' + Utils.formatCurrency(s.price_max, s.currency) : Utils.formatCurrency(s.price, s.currency)}</span>
                             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
                                 <button class="ai-sparkle-btn" onclick="showAiPrompt('${s.id}', '${esc(s.title)}')" title="${(window.__dt||{}).aiTooltip||'Let AI write a professional description for you'}">
                                     <i class="fas fa-wand-magic-sparkles sparkle-icon"></i> ${(window.__dt||{}).aiGenerate||'✨ AI'}
@@ -544,7 +544,7 @@ async function loadInvoices(page = 1) {
                 <tr>
                     <td data-label="Invoice" style="font-weight:600">${esc(i.invoice_number)}</td>
                     <td data-label="Service">${esc(i.service_title || '—')}</td>
-                    <td data-label="Total">${Utils.formatCurrency(i.total_amount)}</td>
+                    <td data-label="Total">${Utils.formatCurrency(i.total_amount, i.currency)}</td>
                     <td data-label="Status"><span class="badge badge-${i.status === 'generated' ? 'success' : 'info'}">${i.status}</span></td>
                     <td data-label="Date">${relativeTime(i.created_at)}</td>
                     <td data-label="Actions"><a href="/api/invoices/${i.id}/download" class="btn btn-ghost btn-sm" target="_blank"><i class="fas fa-download"></i></a></td>

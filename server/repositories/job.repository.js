@@ -19,7 +19,7 @@ const findAll = async ({ page, limit, type }) => {
 
     const [jobs, countResult] = await Promise.all([
         query(
-            `SELECT id, title, title_ar, description, description_ar, company, location, type, salary_range, is_active, created_at
+            `SELECT id, title, title_ar, description, description_ar, company, location, type, salary_range, currency, is_active, created_at
              FROM jobs ${whereClause}
              ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
             params
@@ -39,11 +39,11 @@ const findById = async (id) => {
     return result.rows[0] || null;
 };
 
-const create = async ({ title, description, company, location, type, salaryRange }) => {
+const create = async ({ title, description, company, location, type, salaryRange, currency }) => {
     const result = await query(
-        `INSERT INTO jobs (title, description, company, location, type, salary_range)
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [title, description || '', company || '', location || '', type || 'full_time', salaryRange || '']
+        `INSERT INTO jobs (title, description, company, location, type, salary_range, currency)
+         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        [title, description || '', company || '', location || '', type || 'full_time', salaryRange || '', currency || 'SAR']
     );
     return result.rows[0];
 };

@@ -10,7 +10,7 @@ async function loadStats() {
         const el = (id) => document.getElementById(id);
 
         // Executive metrics with animated counters
-        animateAdminCounter(el('execRevenue'), s.totalRevenue, '$');
+        animateAdminCounter(el('execRevenue'), s.totalRevenue, '﷼');
         animateAdminCounter(el('execConversion'), s.conversionRate, '', '%');
         animateAdminCounter(el('execContent'), s.totalServices + s.totalProperties);
         animateAdminCounter(el('execSupport'), s.unansweredMessages);
@@ -179,7 +179,7 @@ async function loadStats() {
                     <td data-label="Invoice" style="font-weight:600">${esc(o.invoice_number || '—')}</td>
                     <td data-label="Client">${esc(o.client_name || '—')}</td>
                     <td data-label="Service">${esc(o.service_title)}</td>
-                    <td data-label="Amount">${Utils.formatCurrency(o.price)}</td>
+                    <td data-label="Amount">${Utils.formatCurrency(o.price, o.currency)}</td>
                     <td data-label="Status"><span class="badge badge-${statusColor(o.status)}">${o.status.replace(/_/g, ' ')}</span></td>
                     <td data-label="Date">${Utils.formatDate(o.created_at)}</td>
                 </tr>

@@ -3,6 +3,36 @@
 // Depends on: api.js, utils.js, admin.init.js (selectedSvc)
 // ═══════════════════════════════════════════════
 
+// ── Price Type Toggle ──
+function setSvcPriceType(type) {
+    document.getElementById('svcPriceType').value = type;
+    const fixedBtn = document.getElementById('svcPriceTypeFixed');
+    const rangeBtn = document.getElementById('svcPriceTypeRange');
+    const maxGroup = document.getElementById('svcPriceMaxGroup');
+    const priceLabel = document.getElementById('svcPriceLabel');
+    if (type === 'range') {
+        fixedBtn.classList.remove('active');
+        rangeBtn.classList.add('active');
+        if (maxGroup) maxGroup.style.display = '';
+        if (priceLabel) priceLabel.innerHTML = (__t?.priceMin || 'الحد الأدنى / Min Price') + ' <span class="help-tooltip">?<span class="tooltip-text">' + (__t?.tooltipPriceMin || 'The starting price in the range') + '</span></span>';
+    } else {
+        rangeBtn.classList.remove('active');
+        fixedBtn.classList.add('active');
+        if (maxGroup) maxGroup.style.display = 'none';
+        if (priceLabel) priceLabel.innerHTML = (__t?.thPrice || 'السعر / Price') + ' <span class="help-tooltip">?<span class="tooltip-text">' + (__t?.tooltipServicePrice || 'Set the base price for this service.') + '</span></span>';
+    }
+    updateServicePreview();
+}
+
+// ── Shared helper: format service price (fixed or range) ──
+function _fmtSvcPrice(s) {
+    const cur = s.currency || 'SAR';
+    if (s.price_type === 'range' && s.price_max) {
+        return `${Utils.formatCurrency(s.price, cur)} – ${Utils.formatCurrency(s.price_max, cur)}`;
+    }
+    return Utils.formatCurrency(s.price, cur);
+}
+
 async function loadAdminServices(page = 1) {
     try {
         const data = await API.get(`/services?page=${page}&limit=20`);
@@ -18,7 +48,7 @@ async function loadAdminServices(page = 1) {
                 <tr>
                     <td><input type="checkbox" class="svc-checkbox" value="${s.id}" onchange="toggleBulkSelect('svc', '${s.id}', this.checked)"></td>
                     <td data-label="Title" style="font-weight:600">${esc(document.documentElement.lang === 'ar' && s.title_ar ? s.title_ar : s.title)}</td>
-                    <td data-label="Price">${Utils.formatCurrency(s.price)}</td>
+                    <td data-label="Price">${_fmtSvcPrice(s)}</td>
                     <td data-label="Featured">
                         <i class="fas fa-star featured-star ${s.is_featured ? 'active' : 'inactive'}" 
                            onclick="toggleFeatured('services', '${s.id}', ${!s.is_featured})" 
@@ -43,10 +73,17 @@ function updateServicePreview() {
     const title = document.getElementById('svcTitle').value || 'Service Title';
     const desc = document.getElementById('svcDescription').value || 'Description will appear here...';
     const price = parseFloat(document.getElementById('svcPrice').value) || 0;
+    const priceType = document.getElementById('svcPriceType')?.value || 'fixed';
+    const priceMax = parseFloat(document.getElementById('svcPriceMax')?.value) || 0;
+    const currency = document.getElementById('svcCurrency')?.value || 'SAR';
+    let priceDisplay = Utils.formatCurrency(price, currency);
+    if (priceType === 'range' && priceMax > 0) {
+        priceDisplay = `${priceDisplay} – ${Utils.formatCurrency(priceMax, currency)}`;
+    }
     preview.innerHTML = `
         <strong style="font-size:1.05rem">${esc(title)}</strong>
         <p style="color:var(--text-muted);margin:6px 0;font-size:0.85rem">${esc(desc)}</p>
-        <span style="background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;font-size:1.1rem">${Utils.formatCurrency(price)}</span>
+        <span style="background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;font-size:1.1rem">${priceDisplay}</span>
     `;
 }
 
@@ -63,12 +100,21 @@ function openServiceModal(editData = null) {
     document.getElementById('serviceEditId').value = editData ? editData.id : '';
     document.getElementById('svcPreviewGrid').innerHTML = '';
 
+    // Reset price type to fixed by default
+    setSvcPriceType('fixed');
+    document.getElementById('svcPriceMax').value = '';
+
     if (editData) {
         document.getElementById('svcTitle').value = editData.title || '';
         document.getElementById('svcDescription').value = editData.description || '';
         document.getElementById('svcPrice').value = editData.price || '';
         document.getElementById('svcCategory').value = editData.category || 'general';
         document.getElementById('svcActive').checked = editData.is_active !== false;
+        // Price type + max
+        if (editData.price_type === 'range') {
+            setSvcPriceType('range');
+            document.getElementById('svcPriceMax').value = editData.price_max || '';
+        }
         // Currency field
         const currEl = document.getElementById('svcCurrency');
         if (currEl) currEl.value = editData.currency || 'SAR';
@@ -142,6 +188,9 @@ async function saveAdminService(e) {
     formData.append('title', title);
     formData.append('description', document.getElementById('svcDescription').value.trim());
     formData.append('price', document.getElementById('svcPrice').value || '0');
+    formData.append('price_type', document.getElementById('svcPriceType')?.value || 'fixed');
+    const priceMaxVal = document.getElementById('svcPriceMax')?.value;
+    if (priceMaxVal) formData.append('price_max', priceMaxVal);
     formData.append('currency', document.getElementById('svcCurrency')?.value || 'SAR');
     formData.append('category', document.getElementById('svcCategory').value);
     // B2 Fix: FormData converts booleans to strings — use '1'/'0' and parse on backend

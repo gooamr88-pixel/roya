@@ -3,11 +3,11 @@
 // ═══════════════════════════════════════════════
 const { query } = require('../config/database');
 
-const create = async ({ userId, serviceId, serviceTitle, price, notes, invoiceNumber }) => {
+const create = async ({ userId, serviceId, serviceTitle, price, currency, notes, invoiceNumber }) => {
     const result = await query(
-        `INSERT INTO orders (user_id, service_id, service_title, price, status, notes, invoice_number)
-         VALUES ($1, $2, $3, $4, 'pending', $5, $6) RETURNING *`,
-        [userId, serviceId, serviceTitle, price, notes || null, invoiceNumber]
+        `INSERT INTO orders (user_id, service_id, service_title, price, currency, status, notes, invoice_number)
+         VALUES ($1, $2, $3, $4, $5, 'pending', $6, $7) RETURNING *`,
+        [userId, serviceId, serviceTitle, price, currency || 'SAR', notes || null, invoiceNumber]
     );
     return result.rows[0];
 };
@@ -95,7 +95,7 @@ const deleteById = async (id) => {
 
 const getRecentOrders = async (limit = 5) => {
     const result = await query(
-        `SELECT o.id, o.invoice_number, o.service_title, o.price, o.status, o.created_at,
+        `SELECT o.id, o.invoice_number, o.service_title, o.price, o.currency, o.status, o.created_at,
                 u.name as client_name
          FROM orders o LEFT JOIN users u ON o.user_id = u.id
          ORDER BY o.created_at DESC LIMIT $1`,

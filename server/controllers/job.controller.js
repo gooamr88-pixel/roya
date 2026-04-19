@@ -30,11 +30,11 @@ const getById = asyncHandler(async (req, res) => {
  * POST /api/jobs
  */
 const create = asyncHandler(async (req, res) => {
-    const { title, description, company, location, type, salary_range } = req.body;
+    const { title, description, company, location, type, salary_range, currency } = req.body;
     if (!title) throw new AppError('Title is required.', 400);
 
     const job = await jobRepo.create({
-        title, description, company, location, type, salaryRange: salary_range,
+        title, description, company, location, type, salaryRange: salary_range, currency,
     });
     res.status(201).json({ success: true, data: { job } });
 });
@@ -43,7 +43,7 @@ const create = asyncHandler(async (req, res) => {
  * PUT /api/jobs/:id
  */
 const update = asyncHandler(async (req, res) => {
-    const { title, description, company, location, type, salary_range, is_active } = req.body;
+    const { title, description, company, location, type, salary_range, currency, is_active } = req.body;
     const updates = []; const values = []; let i = 1;
 
     if (title !== undefined)        { updates.push(`title = $${i++}`);        values.push(title); }
@@ -52,6 +52,7 @@ const update = asyncHandler(async (req, res) => {
     if (location !== undefined)     { updates.push(`location = $${i++}`);     values.push(location); }
     if (type !== undefined)         { updates.push(`type = $${i++}`);         values.push(type); }
     if (salary_range !== undefined) { updates.push(`salary_range = $${i++}`); values.push(salary_range); }
+    if (currency !== undefined)     { updates.push(`currency = $${i++}`);     values.push(currency); }
     if (is_active !== undefined)    { updates.push(`is_active = $${i++}`);    values.push(parseBool(is_active)); }
 
     if (updates.length === 0) throw new AppError('No fields to update.', 400);
