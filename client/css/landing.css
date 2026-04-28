@@ -1787,29 +1787,7 @@
   letter-spacing: 0.02em;
 }
 
-.footer-credit {
-  width: 100%;
-  text-align: center;
-  margin-top: 14px;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
 
-.footer-credit-link {
-  color: var(--accent-primary);
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s ease, text-shadow 0.2s ease;
-}
-
-.footer-credit-link:hover {
-  color: #f3e5ab;
-  text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
-}
 
 /* ── Responsive ── */
 @media (max-width: 1024px) {
