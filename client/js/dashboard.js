@@ -269,7 +269,11 @@ function initLogout() {
         const dt = window.__dt || {};
         const ok = await glassConfirm(dt.logOut || 'Log Out', dt.logOutConfirm || 'Are you sure you want to log out?', 'warning');
         if (!ok) return;
-        try { await API.post('/auth/logout'); } catch { }
+        try { 
+            await API.post('/auth/logout'); 
+        } catch (err) { 
+            console.error('Logout error:', err); 
+        }
         window.location.href = '/login';
     });
 }
@@ -319,7 +323,10 @@ async function loadOverview() {
                 </tr>
             `).join('');
         }
-    } catch (err) { console.error('Overview error:', err); }
+    } catch (err) { 
+        console.error('Overview error:', err); 
+        Toast.error((window.__dt||{}).failedLoadOrders||'Failed to load overview data.');
+    }
 }
 
 // ══════════════════════════════════════════
@@ -439,7 +446,7 @@ async function loadOrders(page = 1) {
                         <button class="btn btn-ghost btn-sm" onclick="viewOrderTimeline(${o.id},'${esc(o.service_title)}','${esc(o.invoice_number || '')}','${o.status}')" data-tooltip="${(window.__dt||{}).viewTimeline||'View Timeline'}">
                             <i class="fas fa-route"></i> ${(window.__dt||{}).timeline||'Timeline'}
                         </button>
-                        ${canCancel ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder(${o.id},'${esc(o.invoice_number || '')}')">
+                        ${canCancel ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder(${o.id},'${esc(o.invoice_number || '')}', this)">
                             <i class="fas fa-times-circle"></i> ${(window.__dt||{}).cancel||'Cancel'}
                         </button>` : ''}
                     </div>
@@ -450,7 +457,7 @@ async function loadOrders(page = 1) {
     } catch (err) { Toast.error((window.__dt||{}).failedLoadOrders||'Failed to load orders.'); }
 }
 
-async function cancelOrder(orderId, invoiceNumber) {
+async function cancelOrder(orderId, invoiceNumber, btn) {
     const dt = window.__dt||{};
     const ok = await glassConfirm(
         dt.cancelOrder||'Cancel Order',
@@ -458,12 +465,14 @@ async function cancelOrder(orderId, invoiceNumber) {
         'danger'
     );
     if (!ok) return;
+    if (btn) setLoading(btn, true, dt.updating || 'Updating...');
     try {
         await API.put(`/orders/${orderId}/cancel`);
         Toast.success((window.__dt||{}).orderCancelled||'Order cancelled successfully.');
         _cache.invalidate('orders50');
         loadOrders();
     } catch (err) { Toast.error(err.message || (window.__dt||{}).failedCancelOrder||'Failed to cancel order.'); }
+    finally { if (btn) setLoading(btn, false); }
 }
 
 function viewOrderTimeline(id, title, invoice, status) {
@@ -496,7 +505,7 @@ async function loadServices() {
                                 <button class="ai-sparkle-btn" onclick="showAiPrompt('${s.id}', '${esc(s.title)}')" title="${(window.__dt||{}).aiTooltip||'Let AI write a professional description for you'}">
                                     <i class="fas fa-wand-magic-sparkles sparkle-icon"></i> ${(window.__dt||{}).aiGenerate||'✨ AI'}
                                 </button>
-                                <button class="btn btn-primary btn-sm" onclick="requestService('${s.id}')"><i class="fas fa-plus"></i> ${(window.__dt||{}).request||'Request'}</button>
+                                <button class="btn btn-primary btn-sm" onclick="requestService('${s.id}', this)"><i class="fas fa-plus"></i> ${(window.__dt||{}).request||'Request'}</button>
                             </div>
                         </div>
                     </div>
@@ -604,13 +613,15 @@ function updateNotifCount(count) {
     }
 }
 
-async function requestService(serviceId) {
+async function requestService(serviceId, btn) {
+    if (btn) setLoading(btn, true, (window.__dt||{}).saving || 'Saving...');
     try {
         await API.post('/orders', { service_id: serviceId });
         Toast.success((window.__dt||{}).orderPlaced||'Order placed successfully!');
         _cache.invalidate('orders50'); // Invalidate cache
         switchView('orders');
     } catch (err) { Toast.error(err.message); }
+    finally { if (btn) setLoading(btn, false); }
 }
 
 async function markNotifRead(id) {
@@ -679,12 +690,12 @@ async function aiGenerate() {
             // Copy to clipboard for easy pasting
             if (navigator.clipboard) {
                 await navigator.clipboard.writeText(text);
-                Toast.info('📋 Generated text copied to clipboard!');
+                Toast.info(dt.aiCopiedToast || '📋 Generated text copied to clipboard!');
             }
             // Also show in a temporary overlay
             showAiResult(text);
         } else {
-            Toast.warning('AI returned empty content. Please try a different idea.');
+            Toast.warning(dt.aiEmptyToast || 'AI returned empty content. Please try a different idea.');
         }
     } catch (err) {
         const msg = err.message || dt.aiError || 'AI is currently resting. Please type manually.';
@@ -702,6 +713,7 @@ async function aiGenerate() {
 }
 
 function showAiResult(text) {
+    const dt = window.__dt || {};
     // Create a temporary result overlay
     const existing = document.getElementById('aiResultOverlay');
     if (existing) existing.remove();
@@ -712,15 +724,15 @@ function showAiResult(text) {
     overlay.innerHTML = `
         <div class="ai-modal">
             <div class="ai-modal-header">
-                <h3><i class="fas fa-wand-magic-sparkles"></i> Generated Content</h3>
+                <h3><i class="fas fa-wand-magic-sparkles"></i> ${dt.aiGeneratedContent || 'Generated Content'}</h3>
                 <button class="ai-modal-close" onclick="document.getElementById('aiResultOverlay')?.remove()">&times;</button>
             </div>
             <div class="ai-modal-body">
                 <textarea id="aiResultText" rows="6" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;background:var(--surface-2);color:var(--text-1);font-size:0.88rem;font-family:inherit;resize:vertical">${esc(text)}</textarea>
                 <div class="ai-modal-actions" style="margin-top:12px">
-                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('aiResultOverlay')?.remove()">Close</button>
-                    <button class="btn-ai-generate" onclick="navigator.clipboard?.writeText(document.getElementById('aiResultText')?.value||'');Toast.success('Copied!');document.getElementById('aiResultOverlay')?.remove()">
-                        <span class="btn-text"><i class="fas fa-copy"></i> Copy & Close</span>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('aiResultOverlay')?.remove()">${dt.close || 'Close'}</button>
+                    <button class="btn-ai-generate" onclick="navigator.clipboard?.writeText(document.getElementById('aiResultText')?.value||'');Toast.success('${dt.copied || 'Copied!'}');document.getElementById('aiResultOverlay')?.remove()">
+                        <span class="btn-text"><i class="fas fa-copy"></i> ${dt.copyAndClose || 'Copy & Close'}</span>
                     </button>
                 </div>
             </div>
@@ -733,44 +745,47 @@ function showAiResult(text) {
 // ══════════════════════════════════════════
 //  SMART RECOMMENDATIONS
 // ══════════════════════════════════════════
-const SERVICE_RECOMMENDATIONS = {
-    advertising: [
-        { icon: 'fa-hashtag', title: 'Social Media Management', desc: 'Amplify your ad campaigns with consistent social media content and community management.' },
-        { icon: 'fa-bullhorn', title: 'Brand Strategy', desc: 'Build a cohesive brand identity that makes your advertising campaigns more effective.' },
-    ],
-    marketing: [
-        { icon: 'fa-chart-line', title: 'Digital Analytics', desc: 'Track your marketing ROI with comprehensive analytics and data-driven insights.' },
-        { icon: 'fa-envelope', title: 'Email Marketing', desc: 'Convert leads into customers with targeted email campaigns and automation.' },
-    ],
-    exhibitions: [
-        { icon: 'fa-camera', title: 'Event Photography', desc: 'Capture every moment of your exhibition with professional photography services.' },
-        { icon: 'fa-video', title: 'Video Production', desc: 'Create compelling event highlight reels and promotional videos.' },
-    ],
-    real_estate: [
-        { icon: 'fa-vr-cardboard', title: 'Virtual Tours', desc: 'Offer immersive 360° virtual tours of your properties to remote buyers.' },
-        { icon: 'fa-drafting-compass', title: 'Interior Design', desc: 'Stage your properties with professional interior design for maximum appeal.' },
-    ],
-    general: [
-        { icon: 'fa-bullhorn', title: 'Digital Advertising', desc: 'Reach your target audience with data-driven digital advertising campaigns.' },
-        { icon: 'fa-palette', title: 'Brand Identity', desc: 'Create a memorable brand that stands out from the competition.' },
-    ],
-};
+function getServiceRecommendations() {
+    const dt = window.__dt || {};
+    return {
+        advertising: [
+            { icon: 'fa-hashtag', title: dt.recSocialTitle || 'Social Media Management', desc: dt.recSocialDesc || 'Amplify your ad campaigns with consistent social media content and community management.' },
+            { icon: 'fa-bullhorn', title: dt.recBrandTitle || 'Brand Strategy', desc: dt.recBrandDesc || 'Build a cohesive brand identity that makes your advertising campaigns more effective.' },
+        ],
+        marketing: [
+            { icon: 'fa-chart-line', title: dt.recAnalyticsTitle || 'Digital Analytics', desc: dt.recAnalyticsDesc || 'Track your marketing ROI with comprehensive analytics and data-driven insights.' },
+            { icon: 'fa-envelope', title: dt.recEmailTitle || 'Email Marketing', desc: dt.recEmailDesc || 'Convert leads into customers with targeted email campaigns and automation.' },
+        ],
+        exhibitions: [
+            { icon: 'fa-camera', title: dt.recPhotoTitle || 'Event Photography', desc: dt.recPhotoDesc || 'Capture every moment of your exhibition with professional photography services.' },
+            { icon: 'fa-video', title: dt.recVideoTitle || 'Video Production', desc: dt.recVideoDesc || 'Create compelling event highlight reels and promotional videos.' },
+        ],
+        real_estate: [
+            { icon: 'fa-vr-cardboard', title: dt.recVirtualTitle || 'Virtual Tours', desc: dt.recVirtualDesc || 'Offer immersive 360° virtual tours of your properties to remote buyers.' },
+            { icon: 'fa-drafting-compass', title: dt.recInteriorTitle || 'Interior Design', desc: dt.recInteriorDesc || 'Stage your properties with professional interior design for maximum appeal.' },
+        ],
+        general: [
+            { icon: 'fa-bullhorn', title: dt.recAdsTitle || 'Digital Advertising', desc: dt.recAdsDesc || 'Reach your target audience with data-driven digital advertising campaigns.' },
+            { icon: 'fa-palette', title: dt.recBrandIdTitle || 'Brand Identity', desc: dt.recBrandIdDesc || 'Create a memorable brand that stands out from the competition.' },
+        ],
+    };
+}
 
 function loadRecommendations(orders) {
     const dt = window.__dt || {};
     const container = document.getElementById('aiRecommendations');
     if (!container) return;
 
-    // Determine category from latest order
+    const recsData = getServiceRecommendations();
     let category = 'general';
     if (orders && orders.length > 0) {
         const latestCategory = (orders[0].service_category || orders[0].category || '').toLowerCase();
-        if (SERVICE_RECOMMENDATIONS[latestCategory]) {
+        if (recsData[latestCategory]) {
             category = latestCategory;
         }
     }
 
-    const recs = SERVICE_RECOMMENDATIONS[category] || SERVICE_RECOMMENDATIONS.general;
+    const recs = recsData[category] || recsData.general;
 
     container.style.display = 'block';
     container.innerHTML = `
@@ -778,7 +793,7 @@ function loadRecommendations(orders) {
             <h3>
                 <i class="fas fa-lightbulb" style="color:var(--gold)"></i>
                 ${esc(dt.recommendedForYou || 'Recommended For You')}
-                <span class="ai-badge"><i class="fas fa-wand-magic-sparkles"></i> Smart</span>
+                <span class="ai-badge"><i class="fas fa-wand-magic-sparkles"></i> ${esc(dt.smart || 'Smart')}</span>
             </h3>
         </div>
         <div class="recommendations-grid">

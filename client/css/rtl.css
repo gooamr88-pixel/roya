@@ -249,26 +249,17 @@ body {
 
 /* ── Sidebar navigation links ──
    ICONS STAY ON THE PHYSICAL LEFT (user request).
-   DO NOT use flex-direction: row-reverse — that moves icons to the right.
-   Instead keep the default flex row, override text-align, and push the
-   kbd-hint shortcut number to the far right using margin-inline-start:auto. */
+   Use row-reverse in RTL so items flow Left-to-Right visually. */
 [dir="rtl"] .sidebar-link {
-    flex-direction: row;          /* icon LEFT · label · kbd-hint RIGHT */
-    text-align: right;            /* Arabic label text reads right-to-left */
+    flex-direction: row-reverse;
+    text-align: right;
 }
 
-/* kbd-hint shortcut numbers pushed to far right */
-[dir="rtl"] .sidebar-link .kbd-hint {
-    margin-right: 0;
-    margin-left: 0;
-    margin-inline-start: auto;
-}
-
-/* Badge count (unread messages) pushed to far right */
+/* Push hints and badges to the far right physical edge */
+[dir="rtl"] .sidebar-link .kbd-hint,
 [dir="rtl"] .sidebar-link .badge-count {
     margin-right: 0;
-    margin-left: 0;
-    margin-inline-start: auto;
+    margin-left: auto;
 }
 
 /* Section group labels right-aligned */
@@ -279,7 +270,7 @@ body {
 
 /* Sidebar user row: keep natural LTR order (avatar · name) but text right */
 [dir="rtl"] .sidebar-user {
-    flex-direction: row;
+    flex-direction: row-reverse;
     text-align: right;
 }
 
@@ -287,15 +278,15 @@ body {
 
 /* ── Topbar RTL ── */
 [dir="rtl"] .topbar {
-    flex-direction: row-reverse;
+    flex-direction: row;
 }
 
 [dir="rtl"] .topbar-left {
-    flex-direction: row-reverse;
+    flex-direction: row;
 }
 
 [dir="rtl"] .topbar-right {
-    flex-direction: row-reverse;
+    flex-direction: row;
 }
 
 [dir="rtl"] .topbar-title {
@@ -309,7 +300,6 @@ body {
 
 /* ── Stats Grid RTL ── */
 [dir="rtl"] .stat-card {
-    flex-direction: row-reverse;
     text-align: right;
 }
 
@@ -333,7 +323,7 @@ body {
 
 /* ── Filters Bar RTL ── */
 [dir="rtl"] .filters-bar {
-    flex-direction: row-reverse;
+    flex-direction: row;
 }
 
 [dir="rtl"] .filters-bar .form-select,
@@ -343,7 +333,7 @@ body {
 
 /* ── Dashboard Cards RTL ── */
 [dir="rtl"] .dashboard-card .card-header {
-    flex-direction: row-reverse;
+    flex-direction: row;
 }
 
 [dir="rtl"] .card-header h3 {
@@ -352,13 +342,13 @@ body {
 
 /* ── Profile RTL ── */
 [dir="rtl"] .profile-header {
-    flex-direction: row-reverse;
+    flex-direction: row;
     text-align: right;
 }
 
 /* ── Modal RTL ── */
 [dir="rtl"] .modal-header {
-    flex-direction: row-reverse;
+    flex-direction: row;
 }
 
 [dir="rtl"] .modal-header h3 {
