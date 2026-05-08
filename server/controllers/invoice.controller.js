@@ -256,7 +256,26 @@ const save = asyncHandler(async (req, res) => {
 
 
 // ── Puppeteer Server-Side PDF Rendering HTML Generator ──
-const generateInvoiceHTML = (invoiceData) => {
+const generateInvoiceHTML = (rawInvoiceData) => {
+    const escapeHTML = (str) => {
+        if (typeof str !== 'string') return str;
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    };
+    
+    // Recursively sanitize all strings in the payload before rendering
+    const sanitizePayload = (obj) => {
+        if (typeof obj === 'string') return escapeHTML(obj);
+        if (Array.isArray(obj)) return obj.map(sanitizePayload);
+        if (obj && typeof obj === 'object') {
+            const safeObj = {};
+            for (const key in obj) safeObj[key] = sanitizePayload(obj[key]);
+            return safeObj;
+        }
+        return obj;
+    };
+    
+    const invoiceData = sanitizePayload(rawInvoiceData);
+
     let logo1Uri = '';
     let logo2Uri = '';
     try {
@@ -795,16 +814,26 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
             });
 
             const page = await browser.newPage();
-            await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 30000 });
-            await page.evaluateHandle('document.fonts.ready');
-            await new Promise(r => setTimeout(r, 800));
 
-            const pdfBuffer = await page.pdf({
-                format: 'A4',
-                printBackground: true,
-                margin: { top: '12mm', right: '14mm', bottom: '12mm', left: '14mm' },
-                displayHeaderFooter: false,
-            });
+            // Promise.race prevents complete Chromium freezing
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Puppeteer execution timed out')), 25000)
+            );
+
+            const pdfBuffer = await Promise.race([
+                (async () => {
+                    await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 20000 });
+                    await page.evaluateHandle('document.fonts.ready');
+                    await new Promise(r => setTimeout(r, 800));
+                    return await page.pdf({
+                        format: 'A4',
+                        printBackground: true,
+                        margin: { top: '12mm', right: '14mm', bottom: '12mm', left: '14mm' },
+                        displayHeaderFooter: false,
+                    });
+                })(),
+                timeoutPromise
+            ]);
 
             // FIX (C1): Explicitly close page before browser to free resources
             await page.close();

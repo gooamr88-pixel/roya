@@ -125,6 +125,13 @@ const authenticate = async (req, res, next) => {
             throw new AppError('User not found.', 401, 'USER_NOT_FOUND');
         }
 
+        // ── TOKEN REVOCATION CHECK (Stateless Alternative) ──
+        // When a user logs out, the DB clears their refresh_token_hash.
+        // If it's missing, we forcefully revoke all active Access Tokens.
+        if (!user.refresh_token_hash) {
+            throw new AppError('Session has been terminated. Please log in again.', 401, 'TOKEN_REVOKED');
+        }
+
         // ── Ban Check ──
         if (!user.is_active) {
             if (user.ban_type === 'permanent') {

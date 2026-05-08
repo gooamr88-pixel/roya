@@ -84,11 +84,10 @@ const i18n = {
 };
 
 // ── CSRF Token Reader ──
-// SECURITY: Reads the CSRF token from a <meta name="csrf-token"> tag.
-// Falls back to fetching from the CSRF endpoint if the meta tag is missing.
+// SECURITY: Reads the CSRF token from the roya_csrf cookie.
 function getCsrfToken() {
-  const meta = document.querySelector('meta[name="csrf-token"]');
-  return meta ? meta.getAttribute('content') : '';
+  const match = document.cookie.match(new RegExp('(^| )roya_csrf=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : '';
 }
 
 const API = {

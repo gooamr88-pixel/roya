@@ -208,9 +208,10 @@ app.use('/api', apiLimiter);
 app.use('/api', (req, res, next) => {
     const method = req.method.toUpperCase();
     const isMutating = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method);
-    const isAuthRoute = req.path.startsWith('/auth');
     const isHealthRoute = req.path === '/health';
-    if (isMutating && !isAuthRoute && !isHealthRoute) {
+    
+    // Auth routes are now protected to prevent Login CSRF
+    if (isMutating && !isHealthRoute) {
         return csrfProtection(req, res, next);
     }
     next();
