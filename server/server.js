@@ -12,7 +12,7 @@ const logger = require('./utils/logger');
 const PORT = config.port;
 
 const server = app.listen(PORT, () => {
-    logger.info(`ROYA Platform server running on port ${PORT} [${config.nodeEnv}]`);
+    logger.info(`Nabda Platform server running on port ${PORT} [${config.nodeEnv}]`);
 });
 
 const gracefulShutdown = async (signal) => {

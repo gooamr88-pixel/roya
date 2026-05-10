@@ -51,7 +51,7 @@ const sendOrderConfirmation = async (phone, orderDetails) => {
         `💰 Amount: $${orderDetails.price}`,
         `📅 Date: ${new Date().toLocaleDateString()}`,
         ``,
-        `Thank you for choosing ROYA Platform!`,
+        `Thank you for choosing Nabda Capital Group!`,
     ].join('\n');
 
     return sendMessage(phone, message);
@@ -75,7 +75,7 @@ const sendStatusUpdate = async (phone, orderDetails) => {
         `📋 Order #${orderDetails.invoice_number || orderDetails.id}`,
         `📌 Status: ${orderDetails.status.replace(/_/g, ' ').toUpperCase()}`,
         ``,
-        `ROYA Platform`,
+        `Nabda Capital Group`,
     ].join('\n');
 
     return sendMessage(phone, message);

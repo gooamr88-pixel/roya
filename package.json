@@ -1,7 +1,7 @@
 {
-  "name": "roya-platform",
+  "name": "nabda-capital-group",
   "version": "1.0.0",
-  "description": "Roya Platform — Advertising, Marketing, Real Estate, Exhibitions",
+  "description": "Nabda Capital Group — Advertising, Marketing, Real Estate, Exhibitions",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",

@@ -303,7 +303,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
         ? `الخصم (${invoiceData.discountValue || 0}%) <small>Discount</small>`
         : `الخصم <small>Discount</small>`;
 
-    const baseUrl = process.env.BASE_URL || 'https://roya-advertising.com';
+    const baseUrl = process.env.BASE_URL || 'https://nabda-capital-group.com';
     const qrText = `${baseUrl}/invoice/${invoiceData._id || invoiceData.id || invoiceData.docNumber}`;
 
     return `

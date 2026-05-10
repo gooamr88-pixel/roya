@@ -73,7 +73,7 @@ function baseLayout(content, direction = 'ltr') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roya Platform</title>
+  <title>Nabda Capital Group</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;direction:${direction};">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:32px 16px;">
@@ -85,7 +85,7 @@ function baseLayout(content, direction = 'ltr') {
           <td style="background:linear-gradient(135deg, ${BRAND_COLOR} 0%, #2d4a7a 100%);padding:32px 40px;text-align:center;">
             ${LOGO_URL
       ? `<img src="${LOGO_URL}" alt="Roya" style="height:48px;margin-bottom:12px;">`
-      : `<div style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:2px;">ROYA</div>`
+      : `<div style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:2px;">NABDA</div>`
     }
             <div style="color:${ACCENT_COLOR};font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-top:6px;">Professional Business Solutions</div>
           </td>
@@ -109,8 +109,8 @@ function baseLayout(content, direction = 'ltr') {
                     <a href="#" style="display:inline-block;width:32px;height:32px;background:${BRAND_COLOR};color:#fff;border-radius:50%;text-align:center;line-height:32px;text-decoration:none;margin:0 4px;font-size:14px;">in</a>
                     <a href="#" style="display:inline-block;width:32px;height:32px;background:${BRAND_COLOR};color:#fff;border-radius:50%;text-align:center;line-height:32px;text-decoration:none;margin:0 4px;font-size:14px;">ig</a>
                   </div>
-                  <p style="margin:0;font-size:12px;color:#8895a7;">© ${new Date().getFullYear()} Roya Platform. All rights reserved.</p>
-                  <p style="margin:6px 0 0;font-size:11px;color:#a0aec0;">Badr City, Cairo Governorate, Egypt | support@roya.com</p>
+                  <p style="margin:0;font-size:12px;color:#8895a7;">© ${new Date().getFullYear()} Nabda Capital Group. All rights reserved.</p>
+                  <p style="margin:6px 0 0;font-size:11px;color:#a0aec0;">Badr City, Cairo Governorate, Egypt | support@nabda-capital-group.com</p>
                 </td>
               </tr>
             </table>
@@ -155,7 +155,7 @@ const sendOTP = async (to, name, otp) => {
 
       <div style="text-align:center;margin-top:28px;">
         <div style="display:inline-block;border-top:1px solid #e2e8f0;padding-top:16px;">
-          <p style="font-size:12px;color:#a0aec0;margin:0;">Need help? Contact us at <a href="mailto:support@roya.com" style="color:${BRAND_COLOR};text-decoration:none;">support@roya.com</a></p>
+          <p style="font-size:12px;color:#a0aec0;margin:0;">Need help? Contact us at <a href="mailto:support@nabda-capital-group.com" style="color:${BRAND_COLOR};text-decoration:none;">support@nabda-capital-group.com</a></p>
         </div>
       </div>
     `;
@@ -163,7 +163,7 @@ const sendOTP = async (to, name, otp) => {
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: '🔐 Roya — Email Verification Code',
+      subject: '🔐 Nabda — Email Verification Code',
       html: baseLayout(content),
     });
     return true;
@@ -204,7 +204,7 @@ const sendPasswordReset = async (to, name, otp) => {
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: '🔑 Roya — Password Reset Request',
+      subject: '🔑 Nabda — Password Reset Request',
       html: baseLayout(content),
     });
     return true;
@@ -240,14 +240,14 @@ const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
       </div>
 
       <div style="text-align:center;">
-        <p style="font-size:13px;color:#94a3b8;">Thank you for choosing <strong style="color:${BRAND_COLOR};">Roya Platform</strong>.</p>
+        <p style="font-size:13px;color:#94a3b8;">Thank you for choosing <strong style="color:${BRAND_COLOR};">Nabda Capital Group</strong>.</p>
       </div>
     `;
 
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: `📄 Roya — Invoice #${safeInvoice}`,
+      subject: `📄 Nabda — Invoice #${safeInvoice}`,
       html: baseLayout(content),
       attachments: pdfBuffer ? [{
         filename: safeFilename,
@@ -287,7 +287,7 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
 
   const content = `
     <div style="text-align:center;margin-bottom:28px;">
-      <h1 style="margin:0;font-size:22px;color:#1a202c;font-weight:700;">Official Response from Roya</h1>
+      <h1 style="margin:0;font-size:22px;color:#1a202c;font-weight:700;">Official Response from Nabda</h1>
       <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Regarding: <em>${safeSubject}</em></p>
     </div>
 
@@ -315,7 +315,7 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
   await transporter.sendMail({
     from: config.email.from,
     to: safeTo,
-    subject: `📩 Re: ${safeSubjectHeader} — Roya Platform`,
+    subject: `📩 Re: ${safeSubjectHeader} — Nabda Capital Group`,
     html: baseLayout(content, dir),
     replyTo: config.email.from,
   });
@@ -356,14 +356,14 @@ const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reas
       </div>` : ''}
 
       <div style="text-align:center;margin-top:28px;">
-        <p style="font-size:13px;color:#64748b;">If you have any questions, please contact us at <a href="mailto:support@roya.com" style="color:${BRAND_COLOR};text-decoration:none;">support@roya.com</a></p>
+        <p style="font-size:13px;color:#64748b;">If you have any questions, please contact us at <a href="mailto:support@nabda-capital-group.com" style="color:${BRAND_COLOR};text-decoration:none;">support@nabda-capital-group.com</a></p>
       </div>
     `;
 
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: `⚠️ Roya — Order #${sanitizeEmailHeader(invoiceNumber)} Removed`,
+      subject: `⚠️ Nabda — Order #${sanitizeEmailHeader(invoiceNumber)} Removed`,
       html: baseLayout(content),
     });
     return true;

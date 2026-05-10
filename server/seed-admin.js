@@ -19,7 +19,7 @@ const config = {
 
 const admin = {
     name: (process.env.SUPER_ADMIN_NAME || 'Super Admin').trim(),
-    email: (process.env.SUPER_ADMIN_EMAIL || 'admin@roya.com').trim(),
+    email: (process.env.SUPER_ADMIN_EMAIL || 'admin@nabda-capital-group.com').trim(),
     phone: (process.env.SUPER_ADMIN_PHONE || '+966500000000').trim(),
     password: (process.env.SUPER_ADMIN_PASSWORD || 'Admin@123456').trim(),
 };

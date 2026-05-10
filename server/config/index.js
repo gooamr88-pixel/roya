@@ -33,7 +33,7 @@ module.exports = {
     port: parseInt(process.env.SMTP_PORT, 10) || 587,
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
-    from: process.env.EMAIL_FROM || 'ROYA Platform <noreply@ROYA.com>',
+    from: process.env.EMAIL_FROM || 'Nabda Capital Group <noreply@nabda-capital-group.com>',
   },
 
   // Cloudinary
@@ -64,13 +64,13 @@ module.exports = {
   security: {
     csrfSecret: process.env.CSRF_SECRET || 'dev_csrf_secret',
     cookieDomain: process.env.COOKIE_DOMAIN || '',
-    allowedOrigins: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,https://roya-advertising.com').split(','),
+    allowedOrigins: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,https://nabda-capital-group.com').split(','),
   },
 
   // Super Admin Seed
   superAdmin: {
     name: process.env.SUPER_ADMIN_NAME || 'Super Admin',
-    email: process.env.SUPER_ADMIN_EMAIL || 'admin@ROYA.com',
+    email: process.env.SUPER_ADMIN_EMAIL || 'admin@nabda-capital-group.com',
     phone: process.env.SUPER_ADMIN_PHONE || '+966500000000',
     password: process.env.SUPER_ADMIN_PASSWORD || 'Admin@123456',
   },

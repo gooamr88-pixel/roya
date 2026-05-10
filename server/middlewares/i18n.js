@@ -49,7 +49,7 @@ const i18nMiddleware = (req, res, next) => {
     const host = req.get('host');
     res.locals.baseUrl = host.includes('localhost') || host.includes('127.0.0.1')
         ? `${proto}://${host}`
-        : 'https://roya-advertising.com';
+        : 'https://nabda-capital-group.com';
 
     next();
 };

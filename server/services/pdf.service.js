@@ -33,7 +33,7 @@ const generateInvoicePDF = (data) => {
             doc
                 .fontSize(10)
                 .fillColor('#666')
-                .text('ROYA Platform', { align: 'right' })
+                .text('Nabda Capital Group', { align: 'right' })
                 .text('Professional Business Solutions', { align: 'right' })
                 .moveDown(1);
 
@@ -149,7 +149,7 @@ const generateInvoicePDF = (data) => {
                 )
                 
             .text(
-                    'ROYA Platform — Professional Business Solutions',
+                    'Nabda Capital Group — Professional Business Solutions',
                     50,
                     doc.page.height - 60,
                     { align: 'center', width: 495 }

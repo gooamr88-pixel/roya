@@ -5,7 +5,7 @@ const router = require('express').Router();
 const config = require('../config');
 
 router.get('/robots.txt', (req, res) => {
-    const siteUrl = config.baseUrl || 'https://roya-advertising.com';
+    const siteUrl = config.baseUrl || 'https://nabda-capital-group.com';
     res.type('text/plain').send(
         `User-agent: *
 Allow: /
@@ -19,7 +19,7 @@ Sitemap: ${siteUrl}/sitemap.xml`
 });
 
 router.get('/sitemap.xml', (req, res) => {
-    const base = config.baseUrl || 'https://roya-advertising.com';
+    const base = config.baseUrl || 'https://nabda-capital-group.com';
     const pages = [
         { path: '/', priority: '1.0', freq: 'weekly' },
         { path: '/services', priority: '0.9', freq: 'weekly' },
