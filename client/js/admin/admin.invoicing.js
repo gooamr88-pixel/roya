@@ -1012,8 +1012,8 @@ async function loadInvoicesHistory(page = 1) {
                             <a href="/api/invoices/${inv.id}/download-pdf" target="_blank" class="action-btn view-btn" title="PDF">
                                 <i class="fas fa-file-pdf"></i>
                             </a>
-                            <button onclick="deleteInvoiceHistory(${inv.id})" class="action-btn delete-btn" title="حذف">
-                                <i class="fas fa-trash-alt"></i>
+                            <button onclick="deleteInvoiceHistory(${inv.id})" class="action-btn delete-btn" title="حذف" style="background-color: #ef4444; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#dc2626'" onmouseout="this.style.backgroundColor='#ef4444'">
+                                <i class="fas fa-trash-alt" style="margin-left: 4px;"></i> حذف
                             </button>
                         </div>
                     </td>
@@ -1050,6 +1050,7 @@ async function loadInvoicesHistory(page = 1) {
 }
 
 async function deleteInvoiceHistory(id) {
+    console.log('Delete button clicked for invoice id:', id);
     const confirmed = await glassConfirm(
         'هل أنت متأكد؟',
         'سيتم حذف الفاتورة نهائياً ولن يمكنك استعادتها!',
