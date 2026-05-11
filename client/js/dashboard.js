@@ -298,7 +298,7 @@ async function loadOverview() {
         // Animated counters
         animateCounter(document.getElementById('statOrders'), activeOrders.length);
         animateCounter(document.getElementById('statCompleted'), completed);
-        animateCounter(document.getElementById('statSpent'), totalSpent, '﷼');
+        animateCounter(document.getElementById('statSpent'), totalSpent);
         animateCounter(document.getElementById('statNotifications'), unread);
         updateNotifCount(unread);
 

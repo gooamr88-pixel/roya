@@ -10,7 +10,7 @@ async function loadStats() {
         const el = (id) => document.getElementById(id);
 
         // Executive metrics with animated counters
-        animateAdminCounter(el('execRevenue'), s.totalRevenue, '﷼');
+        animateAdminCounter(el('execRevenue'), s.totalRevenue);
         animateAdminCounter(el('execConversion'), s.conversionRate, '', '%');
         animateAdminCounter(el('execContent'), s.totalServices + s.totalProperties);
         animateAdminCounter(el('execSupport'), s.unansweredMessages);
