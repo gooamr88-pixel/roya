@@ -1,5 +1,5 @@
-// Invoice Controller — Thin HTTP layer
-// ═══════════════════════════════════════════════
+﻿// Invoice Controller â€” Thin HTTP layer
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const { AppError } = require('../middlewares/errorHandler');
 const { asyncHandler } = require('../utils/helpers');
 const pdfService = require('../services/pdf.service');
@@ -116,8 +116,8 @@ const getAll = asyncHandler(async (req, res) => {
             status: inv.status,
             created_at: inv.created_at,
             title: (payload && payload.title) || '',
-            client_name: inv.client_name || (payload && payload.clientName) || 'غير محدد',
-            service_title: inv.service_title || (payload && payload.docTypeAr) || (payload && payload.mode === 'quote' ? 'عرض سعر' : 'فاتورة ضريبية'),
+            client_name: inv.client_name || (payload && payload.clientName) || 'ØºÙŠØ± Ù…Ø­Ø¯Ø¯',
+            service_title: inv.service_title || (payload && payload.docTypeAr) || (payload && payload.mode === 'quote' ? 'Ø¹Ø±Ø¶ Ø³Ø¹Ø±' : 'ÙØ§ØªÙˆØ±Ø© Ø¶Ø±ÙŠØ¨ÙŠØ©'),
             mode: (payload && payload.mode) || 'invoice'
         };
     });
@@ -234,7 +234,7 @@ const save = asyncHandler(async (req, res) => {
     if (!lineItems?.length || lineItems.every(li => !li.name?.trim()))
         throw new AppError('At least one line item is required.', 400);
 
-    const docTypeAr = mode === 'quote' ? 'عرض سعر' : 'فاتورة ضريبية';
+    const docTypeAr = mode === 'quote' ? 'Ø¹Ø±Ø¶ Ø³Ø¹Ø±' : 'ÙØ§ØªÙˆØ±Ø© Ø¶Ø±ÙŠØ¨ÙŠØ©';
     const docTypeEn = mode === 'quote' ? 'QUOTATION' : 'TAX INVOICE';
 
     const result = await query(
@@ -263,7 +263,7 @@ const save = asyncHandler(async (req, res) => {
 });
 
 
-// ── Puppeteer Server-Side PDF Rendering HTML Generator ──
+// â”€â”€ Puppeteer Server-Side PDF Rendering HTML Generator â”€â”€
 const generateInvoiceHTML = (rawInvoiceData) => {
     const escapeHTML = (str) => {
         if (typeof str !== 'string') return str;
@@ -301,15 +301,15 @@ const generateInvoiceHTML = (rawInvoiceData) => {
     } catch (e) { console.warn('Could not read nabda-text-ar.svg:', e.message); }
 
     const isInvoice = invoiceData.isInvoice !== false;
-    const docTypeAr = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
+    const docTypeAr = isInvoice ? 'ÙØ§ØªÙˆØ±Ø© Ø¶Ø±ÙŠØ¨ÙŠØ©' : 'Ø¹Ø±Ø¶ Ø³Ø¹Ø±';
     const docTypeEn = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
     const currency = invoiceData.currency || 'SAR';
 
     const fmt = (n) => `${(Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
 
     const discLabel = invoiceData.discountType === 'percent'
-        ? `الخصم (${invoiceData.discountValue || 0}%) <small>Discount</small>`
-        : `الخصم <small>Discount</small>`;
+        ? `Ø§Ù„Ø®ØµÙ… (${invoiceData.discountValue || 0}%) <small>Discount</small>`
+        : `Ø§Ù„Ø®ØµÙ… <small>Discount</small>`;
 
     const baseUrl = process.env.BASE_URL || 'https://nabda-capital-group.com';
     const qrText = `${baseUrl}/invoice/${invoiceData._id || invoiceData.id || invoiceData.docNumber}`;
@@ -342,7 +342,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
                 gap: 14px;
             }
 
-            /* ── Header ── */
+            /* â”€â”€ Header â”€â”€ */
             .header {
                 display: flex;
                 align-items: center;
@@ -375,7 +375,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
                 font-weight: 600;
             }
 
-            /* ── Type Badge ── */
+            /* â”€â”€ Type Badge â”€â”€ */
             .type-badge {
                 text-align: center;
                 padding: 7px 0;
@@ -389,7 +389,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
             .type-badge .divider { margin: 0 12px; color: #ccc; font-weight: 300; }
             .type-badge .en { font-size: 11px; letter-spacing: 0.1em; font-weight: 700; }
 
-            /* ── Invoice Title ── */
+            /* â”€â”€ Invoice Title â”€â”€ */
             .invoice-title {
                 text-align: center;
                 font-size: 13px;
@@ -399,7 +399,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
                 letter-spacing: 0.02em;
             }
 
-            /* ── Meta Box ── */
+            /* â”€â”€ Meta Box â”€â”€ */
             .meta-box {
                 background: #fafafa;
                 border: 1px solid #eee;
@@ -426,7 +426,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
                 font-weight: 600;
             }
 
-            /* ── Table ── */
+            /* â”€â”€ Table â”€â”€ */
             .items-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -469,7 +469,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
             /* Keep LTR formatting for prices inside table */
             .ltr-td { direction: ltr; unicode-bidi: isolate; }
 
-            /* ── Bottom Section ── */
+            /* â”€â”€ Bottom Section â”€â”€ */
             .bottom {
                 display: grid;
                 grid-template-columns: auto 1fr;
@@ -530,7 +530,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
             .sum-row.remaining { background: #fef2f2; border-radius: 3px; margin-top: 3px; }
             .sum-row.remaining .sum-val { color: #b91c1c; }
 
-            /* ── Notes ── */
+            /* â”€â”€ Notes â”€â”€ */
             .notes-box {
                 background: #fafafa;
                 border: 1px solid #eee;
@@ -543,7 +543,7 @@ const generateInvoiceHTML = (rawInvoiceData) => {
             .notes-title small { color: #aaa; font-weight: 600; margin-right: 4px; }
             .notes-text { color: #333; font-weight: 600; }
 
-            /* ── Footer ── */
+            /* â”€â”€ Footer â”€â”€ */
             .footer {
                 text-align: center;
                 padding-top: 12px;
@@ -564,19 +564,19 @@ const generateInvoiceHTML = (rawInvoiceData) => {
     </head>
     <body>
         <div class="page">
-            <!-- ── Header: Logos + Company ── -->
+            <!-- â”€â”€ Header: Logos + Company â”€â”€ -->
             <div class="header">
                 <div class="header-logos">
                     ${logo1Uri ? `<img src="${logo1Uri}" class="logo-1" alt="Logo">` : ''}
                     ${logo2Uri ? `<img src="${logo2Uri}" class="logo-2" alt="Brand">` : ''}
                 </div>
                 <div class="header-info">
-                    <div class="company-ar">${invoiceData.companyNameAr || 'نبضة للدعاية والإعلان والتسويق'}</div>
-                    <div class="company-en">${invoiceData.companyNameEn || 'Nabda for Advertising, Publicity &amp; Marketing'}</div>
+                    <div class="company-ar">${invoiceData.companyNameAr || 'Ù†Ø¨Ø¶Ø© Ù„Ù„Ø¯Ø¹Ø§ÙŠØ© ÙˆØ§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙˆØ§Ù„ØªØ³ÙˆÙŠÙ‚'}</div>
+                    <div class="company-en">${invoiceData.companyNameEn || 'Nabda Capital Group for Advertising, Publicity &amp; Marketing'}</div>
                 </div>
             </div>
 
-            <!-- ── Type Badge ── -->
+            <!-- â”€â”€ Type Badge â”€â”€ -->
             <div class="type-badge">
                 <span>${docTypeAr}</span>
                 <span class="divider">|</span>
@@ -585,61 +585,61 @@ const generateInvoiceHTML = (rawInvoiceData) => {
 
             ${invoiceData.title ? `<div class="invoice-title">${invoiceData.title}</div>` : ''}
 
-            <!-- ── Meta ── -->
+            <!-- â”€â”€ Meta â”€â”€ -->
             <div class="meta-box">
                 <div class="meta-row">
-                    <div class="meta-item"><span class="meta-lbl">التاريخ:</span><span class="meta-val">${invoiceData.issueDate || '—'}</span></div>
-                    <div class="meta-item"><span class="meta-lbl">رقم الفاتورة:</span><span class="meta-val" dir="ltr">${invoiceData.docNumber || '—'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">Ø§Ù„ØªØ§Ø±ÙŠØ®:</span><span class="meta-val">${invoiceData.issueDate || 'â€”'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">Ø±Ù‚Ù… Ø§Ù„ÙØ§ØªÙˆØ±Ø©:</span><span class="meta-val" dir="ltr">${invoiceData.docNumber || 'â€”'}</span></div>
                 </div>
                 <div class="meta-row">
-                    <div class="meta-item"><span class="meta-lbl">اسم العميل:</span><span class="meta-val">${invoiceData.clientName || '—'}</span></div>
-                    <div class="meta-item"><span class="meta-lbl">الهاتف:</span><span class="meta-val" dir="ltr">${invoiceData.clientPhone || '—'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">Ø§Ø³Ù… Ø§Ù„Ø¹Ù…ÙŠÙ„:</span><span class="meta-val">${invoiceData.clientName || 'â€”'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">Ø§Ù„Ù‡Ø§ØªÙ:</span><span class="meta-val" dir="ltr">${invoiceData.clientPhone || 'â€”'}</span></div>
                 </div>
                 <div class="meta-row">
-                    <div class="meta-item"><span class="meta-lbl">العنوان:</span><span class="meta-val">${invoiceData.clientAddress || '—'}</span></div>
-                    <div class="meta-item"><span class="meta-lbl">البريد:</span><span class="meta-val" dir="ltr">${invoiceData.clientEmail || '—'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">Ø§Ù„Ø¹Ù†ÙˆØ§Ù†:</span><span class="meta-val">${invoiceData.clientAddress || 'â€”'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">Ø§Ù„Ø¨Ø±ÙŠØ¯:</span><span class="meta-val" dir="ltr">${invoiceData.clientEmail || 'â€”'}</span></div>
                 </div>
                 <div class="meta-row">
-                    <div class="meta-item"><span class="meta-lbl">الرقم الضريبي:</span><span class="meta-val" dir="ltr">${invoiceData.taxNumber || '—'}</span></div>
-                    <div class="meta-item"><span class="meta-lbl">تاريخ الاستحقاق:</span><span class="meta-val">${invoiceData.dueDate || '—'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ø¶Ø±ÙŠØ¨ÙŠ:</span><span class="meta-val" dir="ltr">${invoiceData.taxNumber || 'â€”'}</span></div>
+                    <div class="meta-item"><span class="meta-lbl">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø§Ø³ØªØ­Ù‚Ø§Ù‚:</span><span class="meta-val">${invoiceData.dueDate || 'â€”'}</span></div>
                 </div>
             </div>
 
-            <!-- ── Items Table ── -->
+            <!-- â”€â”€ Items Table â”€â”€ -->
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th class="col-num">م<br><small>No</small></th>
-                        <th>الصنف<br><small>Item</small></th>
-                        <th>الوصف<br><small>Description</small></th>
-                        <th class="col-qty">الكمية<br><small>Qty</small></th>
-                        <th class="col-price">السعر<br><small>Price</small></th>
-                        <th class="col-total">المبلغ<br><small>Amount</small></th>
+                        <th class="col-num">Ù…<br><small>No</small></th>
+                        <th>Ø§Ù„ØµÙ†Ù<br><small>Item</small></th>
+                        <th>Ø§Ù„ÙˆØµÙ<br><small>Description</small></th>
+                        <th class="col-qty">Ø§Ù„ÙƒÙ…ÙŠØ©<br><small>Qty</small></th>
+                        <th class="col-price">Ø§Ù„Ø³Ø¹Ø±<br><small>Price</small></th>
+                        <th class="col-total">Ø§Ù„Ù…Ø¨Ù„Øº<br><small>Amount</small></th>
                     </tr>
                 </thead>
                 <tbody>
                     ${(invoiceData.lineItems || []).filter(i => i.name).map((item, idx) => `
                         <tr>
                             <td>${idx + 1}</td>
-                            <td style="text-align:right">${item.name || '—'}</td>
+                            <td style="text-align:right">${item.name || 'â€”'}</td>
                             <td style="text-align:right;font-size:11px;color:#666">${item.description || ''}</td>
                             <td>${item.quantity || 0}</td>
                             <td class="ltr-td">${fmt(item.unitPrice)}</td>
                             <td class="ltr-td">${fmt((Number(item.quantity) || 0) * (Number(item.unitPrice) || 0))}</td>
                         </tr>
-                    `).join('') || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">لا توجد بنود</td></tr>'}
+                    `).join('') || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¨Ù†ÙˆØ¯</td></tr>'}
                 </tbody>
             </table>
 
-            <!-- ── Bottom: QR + Summary ── -->
+            <!-- â”€â”€ Bottom: QR + Summary â”€â”€ -->
             <div class="bottom">
                 <div class="qr-box">
                     <canvas id="qr" width="300" height="300"></canvas>
-                    <div class="qr-hint">امسح لفتح الفاتورة<br>Scan to View</div>
+                    <div class="qr-hint">Ø§Ù…Ø³Ø­ Ù„ÙØªØ­ Ø§Ù„ÙØ§ØªÙˆØ±Ø©<br>Scan to View</div>
                 </div>
                 <div class="summary">
                     <div class="sum-row">
-                        <div class="sum-lbl">الاجمالي <small>Subtotal</small></div>
+                        <div class="sum-lbl">Ø§Ù„Ø§Ø¬Ù…Ø§Ù„ÙŠ <small>Subtotal</small></div>
                         <div class="sum-val">${fmt(invoiceData.subtotal)}</div>
                     </div>
                     <div class="sum-row">
@@ -647,36 +647,36 @@ const generateInvoiceHTML = (rawInvoiceData) => {
                         <div class="sum-val">${fmt(invoiceData.discountAmount)}</div>
                     </div>
                     <div class="sum-row">
-                        <div class="sum-lbl">القيمة المضافة ${invoiceData.taxPercent || 0}% <small>VAT</small></div>
+                        <div class="sum-lbl">Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„Ù…Ø¶Ø§ÙØ© ${invoiceData.taxPercent || 0}% <small>VAT</small></div>
                         <div class="sum-val">${fmt(invoiceData.taxAmount)}</div>
                     </div>
                     <div class="sum-row">
-                        <div class="sum-lbl">الشحن <small>Shipping</small></div>
+                        <div class="sum-lbl">Ø§Ù„Ø´Ø­Ù† <small>Shipping</small></div>
                         <div class="sum-val">${fmt(invoiceData.shippingCost || 0)}</div>
                     </div>
                     <div class="sum-row total">
-                        <div class="sum-lbl">المستحق <small>Total Due</small></div>
+                        <div class="sum-lbl">Ø§Ù„Ù…Ø³ØªØ­Ù‚ <small>Total Due</small></div>
                         <div class="sum-val">${fmt(invoiceData.grandTotal)}</div>
                     </div>
                     <div class="sum-row paid">
-                        <div class="sum-lbl">المدفوع <small>Paid</small></div>
+                        <div class="sum-lbl">Ø§Ù„Ù…Ø¯ÙÙˆØ¹ <small>Paid</small></div>
                         <div class="sum-val">${fmt(invoiceData.amountPaid || 0)}</div>
                     </div>
                     <div class="sum-row remaining">
-                        <div class="sum-lbl">المتبقي <small>Remaining</small></div>
+                        <div class="sum-lbl">Ø§Ù„Ù…ØªØ¨Ù‚ÙŠ <small>Remaining</small></div>
                         <div class="sum-val">${fmt(Math.max(0, (Number(invoiceData.grandTotal)||0) - (Number(invoiceData.amountPaid)||0)))}</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ── Notes ── -->
-            ${invoiceData.notes ? `<div class="notes-box"><div class="notes-title">ملاحظات <small>Notes</small></div><div class="notes-text">${invoiceData.notes.replace(/\\n/g, '<br/>')}</div></div>` : ''}
-            ${invoiceData.terms ? `<div class="notes-box"><div class="notes-title">الشروط <small>Terms</small></div><div class="notes-text">${invoiceData.terms.replace(/\\n/g, '<br/>')}</div></div>` : ''}
+            <!-- â”€â”€ Notes â”€â”€ -->
+            ${invoiceData.notes ? `<div class="notes-box"><div class="notes-title">Ù…Ù„Ø§Ø­Ø¸Ø§Øª <small>Notes</small></div><div class="notes-text">${invoiceData.notes.replace(/\\n/g, '<br/>')}</div></div>` : ''}
+            ${invoiceData.terms ? `<div class="notes-box"><div class="notes-title">Ø§Ù„Ø´Ø±ÙˆØ· <small>Terms</small></div><div class="notes-text">${invoiceData.terms.replace(/\\n/g, '<br/>')}</div></div>` : ''}
 
-            <!-- ── Footer ── -->
+            <!-- â”€â”€ Footer â”€â”€ -->
             <div class="footer">
-                <div class="footer-page">الصفحة 1 من 1 | Page 1 of 1</div>
-                <div class="footer-branch">${invoiceData.branchInfo || 'الفرع الرئيسي'}</div>
+                <div class="footer-page">Ø§Ù„ØµÙØ­Ø© 1 Ù…Ù† 1 | Page 1 of 1</div>
+                <div class="footer-branch">${invoiceData.branchInfo || 'Ø§Ù„ÙØ±Ø¹ Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ'}</div>
             </div>
         </div>
 
@@ -708,9 +708,9 @@ const generateInvoiceHTML = (rawInvoiceData) => {
     `;
 };
 
-// ── Puppeteer concurrency guard ──
+// â”€â”€ Puppeteer concurrency guard â”€â”€
 // FIX (C1): Prevents OOM by limiting concurrent Chromium instances.
-// Without this, N concurrent PDF requests = N × 300MB Chromium processes.
+// Without this, N concurrent PDF requests = N Ã— 300MB Chromium processes.
 const PDF_MAX_CONCURRENT = 2;
 let _pdfActiveCount = 0;
 const _pdfQueue = [];
@@ -783,11 +783,11 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
                 invoiceData = {
                     _id: id,
                     docNumber: invoiceNumber,
-                    clientName: inv.client_name || 'غير محدد',
+                    clientName: inv.client_name || 'ØºÙŠØ± Ù…Ø­Ø¯Ø¯',
                     grandTotal: inv.total_amount || 0,
                     taxAmount: inv.tax_amount || 0,
                     issueDate: inv.created_at ? new Date(inv.created_at).toISOString().split('T')[0] : '',
-                    lineItems: [ { name: inv.service_title || 'خدمة / منتج', quantity: 1, unitPrice: inv.total_amount || 0 } ]
+                    lineItems: [ { name: inv.service_title || 'Ø®Ø¯Ù…Ø© / Ù…Ù†ØªØ¬', quantity: 1, unitPrice: inv.total_amount || 0 } ]
                 };
             }
         } else {
@@ -807,7 +807,7 @@ const downloadInvoicePDF = asyncHandler(async (req, res, next) => {
         // FIX (C1): Acquire concurrency slot before launching Chromium
         await acquirePdfSlot();
 
-        // FIX (C1): Safety timeout — kill zombie browsers after 60s
+        // FIX (C1): Safety timeout â€” kill zombie browsers after 60s
         const safetyTimer = setTimeout(() => {
             if (browser) {
                 browser.close().catch(() => {});
@@ -889,3 +889,4 @@ const viewInvoicePublic = asyncHandler(async (req, res, next) => {
 });
 
 module.exports = { generate, download, getAll, getCatalog, save, downloadInvoicePDF, viewInvoicePublic, removeInvoice, removeAllInvoices };
+

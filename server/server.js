@@ -1,9 +1,9 @@
-// ═══════════════════════════════════════════════
-// Server Entry Point — Listen & Graceful Shutdown
+﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Server Entry Point â€” Listen & Graceful Shutdown
 //
 // Imports the configured Express app from app.js
 // and starts the HTTP server with graceful shutdown handlers.
-// ═══════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const app = require('./app');
 const config = require('./config');
 const { pool } = require('./config/database');
@@ -12,7 +12,7 @@ const logger = require('./utils/logger');
 const PORT = config.port;
 
 const server = app.listen(PORT, () => {
-    logger.info(`Nabda Platform server running on port ${PORT} [${config.nodeEnv}]`);
+    logger.info(`Nabda Capital Group Platform server running on port ${PORT} [${config.nodeEnv}]`);
 });
 
 const gracefulShutdown = async (signal) => {
@@ -46,3 +46,4 @@ process.on('unhandledRejection', (reason) => {
 });
 
 module.exports = app;
+

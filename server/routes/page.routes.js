@@ -1,12 +1,12 @@
-// ═══════════════════════════════════════════════
-// Page Routes — Nunjucks frontend page rendering
-// ═══════════════════════════════════════════════
+﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Page Routes â€” Nunjucks frontend page rendering
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const router = require('express').Router();
 const config = require('../config');
 const jwt = require('jsonwebtoken');
 
 /**
- * SEO helper — renders a Nunjucks page with proper meta tags
+ * SEO helper â€” renders a Nunjucks page with proper meta tags
  */
 const seo = (pagePath, descKey) => (req, res) => {
     const t = res.locals.t;
@@ -17,8 +17,8 @@ const seo = (pagePath, descKey) => (req, res) => {
 
     // Dynamic SEO matching user request
     const pageTitle = lang === 'ar'
-        ? 'منصة نبضة | للحلول الرقمية والعقارات'
-        : 'Nabda Platform | Digital & Real Estate Solutions';
+        ? 'Ù…Ù†ØµØ© Ù†Ø¨Ø¶Ø© | Ù„Ù„Ø­Ù„ÙˆÙ„ Ø§Ù„Ø±Ù‚Ù…ÙŠØ© ÙˆØ§Ù„Ø¹Ù‚Ø§Ø±Ø§Øª'
+        : 'Nabda Capital Group Platform | Digital & Real Estate Solutions';
 
     // Vercel sits behind a reverse proxy, so req.protocol is 'http' by default.
     const protocol = req.headers['x-forwarded-proto'] || req.protocol;
@@ -38,7 +38,7 @@ const seo = (pagePath, descKey) => (req, res) => {
 /**
  * FIX (C10): Server-side auth guard for protected page routes.
  * Prevents serving the full admin/dashboard HTML to unauthenticated visitors.
- * Uses lightweight JWT cookie check (no DB hit) — the full auth check still
+ * Uses lightweight JWT cookie check (no DB hit) â€” the full auth check still
  * happens client-side via API.get('/auth/me') for role verification.
  */
 const requireAuthPage = (req, res, next) => {
@@ -54,12 +54,12 @@ const requireAuthPage = (req, res, next) => {
         });
         next();
     } catch {
-        // Token expired or invalid — redirect to login
+        // Token expired or invalid â€” redirect to login
         return res.redirect('/login');
     }
 };
 
-// ── Frontend Pages ──
+// â”€â”€ Frontend Pages â”€â”€
 router.get('/',               seo('index',          'meta.description'));
 router.get('/login',          seo('login',          'login.welcomeDesc'));
 router.get('/register',       seo('register',       'register.welcomeDesc'));
@@ -73,7 +73,7 @@ router.get('/exhibitions',    seo('exhibitions',    'exhibitionsPage.desc'));
 router.get('/portfolio',      seo('portfolio',      'portfolio.desc'));
 router.get('/banned',         seo('banned',         'meta.description'));
 
-// ── Arabic shortcut ──
+// â”€â”€ Arabic shortcut â”€â”€
 router.get('/ar', (req, res) => {
     res.cookie('nabda_lang', 'ar', {
         maxAge: 365 * 24 * 60 * 60 * 1000,
@@ -86,3 +86,4 @@ router.get('/ar', (req, res) => {
 });
 
 module.exports = router;
+

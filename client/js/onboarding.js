@@ -1,8 +1,8 @@
-// ═══════════════════════════════════════════════
-// NABDA ONBOARDING TOUR — Lightweight, Custom
+﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// NABDA CAPITAL GROUP ONBOARDING TOUR â€” Lightweight, Custom
 // Uses localStorage to track completion.
 // Auto-starts on first dashboard visit.
-// ═══════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 (function () {
     'use strict';
@@ -90,8 +90,8 @@
         welcomeEl.className = 'tour-welcome';
         welcomeEl.innerHTML = `
             <div class="tour-welcome-card">
-                <span class="tour-welcome-emoji">👋</span>
-                <div class="tour-welcome-title">${esc(dt.tourWelcomeTitle || 'Welcome to Nabda!')}</div>
+                <span class="tour-welcome-emoji">ðŸ‘‹</span>
+                <div class="tour-welcome-title">${esc(dt.tourWelcomeTitle || 'Welcome to Nabda Capital Group!')}</div>
                 <div class="tour-welcome-desc">${esc(dt.tourWelcomeDesc || 'Let us give you a quick tour of your dashboard.')}</div>
                 <div class="tour-welcome-actions">
                     <button class="tour-btn-next" id="tourStartBtn">
@@ -208,10 +208,11 @@
         }
     }
 
-    // ── Kick off on DOMContentLoaded ──
+    // â”€â”€ Kick off on DOMContentLoaded â”€â”€
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
 })();
+

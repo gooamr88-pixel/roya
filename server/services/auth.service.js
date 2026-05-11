@@ -1,6 +1,6 @@
-// ═══════════════════════════════════════════════
-// Auth Service — Business logic for authentication
-// ═══════════════════════════════════════════════
+﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Auth Service â€” Business logic for authentication
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const bcrypt = require('bcryptjs');
 const config = require('../config');
 const { AppError } = require('../middlewares/errorHandler');
@@ -76,7 +76,7 @@ const verifyOTP = async (email, otp) => {
     await notificationService.createNotification(
         user.id,
         'Welcome!',
-        'Your email has been verified. Welcome to Nabda Platform!',
+        'Your email has been verified. Welcome to Nabda Capital Group Platform!',
         'success'
     );
 };
@@ -112,7 +112,7 @@ const resendOTP = async (email) => {
 };
 
 /**
- * Login user — returns tokens and user data
+ * Login user â€” returns tokens and user data
  */
 const loginUser = async ({ email, password, rememberMe, ip, userAgent }) => {
     const user = await userRepo.findByEmailWithRole(email);
@@ -150,7 +150,7 @@ const loginUser = async ({ email, password, rememberMe, ip, userAgent }) => {
                 const expiresAt = new Date(user.ban_expires_at).toLocaleDateString();
                 throw new AppError(`Your account is temporarily suspended until ${expiresAt}.`, 403, 'ACCOUNT_BANNED_TEMP');
             } else {
-                // Temp ban expired — auto-unban
+                // Temp ban expired â€” auto-unban
                 await userRepo.clearBan(user.id);
             }
         } else {
@@ -187,7 +187,7 @@ const loginUser = async ({ email, password, rememberMe, ip, userAgent }) => {
  * Logout user
  * FIX (C5): Uses proper JWT verify options (algorithm, issuer, audience)
  * instead of raw jwt.verify with no options. Also handles expired tokens
- * gracefully — a user logging out with an expired access token is normal.
+ * gracefully â€” a user logging out with an expired access token is normal.
  */
 const logoutUser = async (token) => {
     if (token) {
@@ -206,7 +206,7 @@ const logoutUser = async (token) => {
                 if (verifyErr.name === 'TokenExpiredError') {
                     decoded = jwt.decode(token);
                 } else {
-                    // Invalid/tampered token — nothing to clean up
+                    // Invalid/tampered token â€” nothing to clean up
                     return;
                 }
             }
@@ -215,7 +215,7 @@ const logoutUser = async (token) => {
                 await loginLogRepo.logLogout(decoded.userId);
             }
         } catch (e) {
-            // Swallow — logout should never fail
+            // Swallow â€” logout should never fail
             logger.warn('Logout cleanup failed', { error: e.message });
         }
     }
@@ -259,12 +259,12 @@ const refreshTokens = async (refreshTokenCookie) => {
 };
 
 /**
- * Forgot password — send reset OTP
+ * Forgot password â€” send reset OTP
  */
 const forgotPassword = async (email) => {
     const user = await userRepo.findByEmail(email);
 
-    // Always return success — prevent email enumeration
+    // Always return success â€” prevent email enumeration
     if (!user) return;
 
     const resetOTP = tokenService.generateOTP();
@@ -303,3 +303,4 @@ module.exports = {
     forgotPassword,
     resetPassword,
 };
+
