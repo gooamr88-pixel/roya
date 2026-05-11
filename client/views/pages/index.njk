@@ -1,6 +1,6 @@
-﻿{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
+{# ═══════════════════════════════════════════════ #}
 {# Home Page (index)                                #}
-{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
+{# ═══════════════════════════════════════════════ #}
 {% extends "layouts/landing.njk" %}
 
 {% block pageCss %}
@@ -9,7 +9,7 @@
 
 {% block content %}
     <div class="landing-views-container">
-      {# â•â•â•â•â•â•â•â•â•â•â•â• HERO (HOME) â•â•â•â•â•â•â•â•â•â•â•â• #}
+      {# ════════════ HERO (HOME) ════════════ #}
       <section class="landing-view active" id="home">
         <div class="hero-wrapper">
     <div class="hero-slideshow">
@@ -72,7 +72,7 @@
        
   </section>
 
-      {# â•â•â•â•â•â•â•â•â•â•â•â• ABOUT â•â•â•â•â•â•â•â•â•â•â•â• #}
+      {# ════════════ ABOUT ════════════ #}
       <section class="landing-view" id="about">
     <div class="container">
       <div class="about-grid">
@@ -122,7 +122,7 @@
     </div>
   </section>
 
-      {# â•â•â•â•â•â•â•â•â•â•â•â• SERVICES â•â•â•â•â•â•â•â•â•â•â•â• #}
+      {# ════════════ SERVICES ════════════ #}
       <section class="landing-view" id="services">
     <div class="container">
       <div class="text-center fade-in">
@@ -153,7 +153,7 @@
     </div>
   </section>
 
-      {# â•â•â•â•â•â•â•â•â•â•â•â• EXHIBITIONS â•â•â•â•â•â•â•â•â•â•â•â• #}
+      {# ════════════ EXHIBITIONS ════════════ #}
       <section class="landing-view" id="exhibitions">
     <div class="container">
       <div class="text-center fade-in">
@@ -170,7 +170,7 @@
     </div>
   </section>
 
-      {# â•â•â•â•â•â•â•â•â•â•â•â• JOBS â•â•â•â•â•â•â•â•â•â•â•â• #}
+      {# ════════════ JOBS ════════════ #}
       <section class="landing-view" id="jobs">
     <div class="container">
       <div class="text-center fade-in">
@@ -187,7 +187,7 @@
     </div>
   </section>
 
-      {# â•â•â•â•â•â•â•â•â•â•â•â• PORTFOLIO â•â•â•â•â•â•â•â•â•â•â•â• #}
+      {# ════════════ PORTFOLIO ════════════ #}
       <section class="landing-view" id="portfolio">
     <div class="container">
       <div class="text-center fade-in">
@@ -281,7 +281,7 @@
     </div>
       </section>
 
-      {# â•â•â•â•â•â•â•â•â•â•â•â• COMPANY LOCATION â•â•â•â•â•â•â•â•â•â•â•â• #}
+      {# ════════════ COMPANY LOCATION ════════════ #}
       <section class="landing-view" id="location">
     <div class="container">
       <div class="text-center fade-in">
@@ -315,7 +315,7 @@
              class="btn btn-primary btn-lg location-btn"
              data-i18n="location.openInMaps">
             <i class="fas fa-map-marker-alt"></i>
-            {{ t.location.openInMaps | default('ðŸ“ Ø§ÙØªØ­ Ø§Ù„Ù…ÙˆÙ‚Ø¹ ÙÙŠ Ø®Ø±Ø§Ø¦Ø· Ø¬ÙˆØ¬Ù„') }}
+            {{ t.location.openInMaps | default('📍 افتح الموقع في خرائط جوجل') }}
           </a>
         </div>
       </div>
@@ -327,4 +327,3 @@
 {% block pageScripts %}
   <script src="/js/landing.js?v=5" defer></script>
 {% endblock %}
-

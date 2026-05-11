@@ -1,7 +1,7 @@
-﻿{
+{
     "meta": {
-        "title": "Nabda Capital Group Platform â€” Professional Business Solutions",
-        "description": "Nabda Capital Group Platform â€” Professional solutions in Advertising, Marketing, Real Estate, and Exhibitions.",
+        "title": "Nabda Capital Group Platform — Professional Business Solutions",
+        "description": "Nabda Capital Group Platform — Professional solutions in Advertising, Marketing, Real Estate, and Exhibitions.",
         "keywords": "Nabda Capital Group, services, advertising, marketing, real estate, exhibitions"
     },
     "nav": {
@@ -101,21 +101,21 @@
         "seeMore": "See More Exhibitions",
         "items": [
             {
-                "emoji": "ðŸ¢",
+                "emoji": "🏢",
                 "title": "International Trade Expo",
                 "desc": "A premier business exhibition featuring industry leaders and innovative solutions.",
                 "location": "Riyadh, KSA",
                 "date": "Mar 2026"
             },
             {
-                "emoji": "ðŸ—ï¸",
+                "emoji": "🏗️",
                 "title": "Real Estate Summit",
                 "desc": "Showcasing the latest in property development and investment opportunities.",
                 "location": "Dubai, UAE",
                 "date": "Apr 2026"
             },
             {
-                "emoji": "ðŸ“±",
+                "emoji": "📱",
                 "title": "Digital Marketing Forum",
                 "desc": "Explore cutting-edge digital strategies and connect with marketing pioneers.",
                 "location": "Cairo, Egypt",
@@ -168,7 +168,7 @@
         "title_before": "Company",
         "title_highlight": "Headquarters",
         "desc": "Visit us at our office or find us on the map.",
-        "openInMaps": "ðŸ“ Open Location in Google Maps"
+        "openInMaps": "📍 Open Location in Google Maps"
     },
     "footer": {
         "brand_desc": "Professional business solutions in Advertising, Marketing, Real Estate, and Exhibition Management.",
@@ -178,11 +178,11 @@
         "signIn": "Sign In",
         "register": "Register",
         "dashboard": "Dashboard",
-        "copyright": "Â© 2026 Nabda Capital Group Platform â€” All rights reserved.",
+        "copyright": "© 2026 Nabda Capital Group Platform — All rights reserved.",
         "viewOnMap": "View on Google Maps"
     },
     "login": {
-        "title": "Sign In â€” Nabda Capital Group Platform",
+        "title": "Sign In — Nabda Capital Group Platform",
         "welcome": "Welcome Back",
         "welcomeDesc": "Sign in to access your dashboard, manage orders, and stay connected with our services.",
         "feature_secure": "Secure Authentication",
@@ -203,7 +203,7 @@
         "createOne": "Create one"
     },
     "register": {
-        "title": "Register â€” Nabda Capital Group Platform",
+        "title": "Register — Nabda Capital Group Platform",
         "welcome": "Join Our Platform",
         "welcomeDesc": "Create your account to access premium services, request projects, and manage your business needs.",
         "feature_otp": "Email OTP Verification",
@@ -233,7 +233,7 @@
         "signIn": "Sign In"
     },
     "resetPassword": {
-        "title": "Reset Password â€” Nabda Capital Group Platform",
+        "title": "Reset Password — Nabda Capital Group Platform",
         "welcome": "Password Recovery",
         "welcomeDesc": "We'll help you get back into your account securely.",
         "backToLogin": "Back to Sign In",
@@ -253,7 +253,7 @@
         "signIn": "Sign In"
     },
     "servicesPage": {
-        "title": "All Services â€” Nabda Capital Group Platform",
+        "title": "All Services — Nabda Capital Group Platform",
         "label": "Our Services",
         "headingBefore": "All",
         "headingHighlight": "Services",
@@ -265,7 +265,7 @@
         "failedLoad": "Failed to load"
     },
     "jobsPage": {
-        "title": "Jobs â€” Nabda Capital Group Platform",
+        "title": "Jobs — Nabda Capital Group Platform",
         "label": "Career Opportunities",
         "headingBefore": "All",
         "headingHighlight": "Jobs",
@@ -277,7 +277,7 @@
         "failedLoad": "Failed to load jobs"
     },
     "exhibitionsPage": {
-        "title": "All Exhibitions â€” Nabda Capital Group Platform",
+        "title": "All Exhibitions — Nabda Capital Group Platform",
         "label": "Exhibitions",
         "headingBefore": "Upcoming",
         "headingHighlight": "Events",
@@ -288,7 +288,7 @@
         "failedLoad": "Failed to load exhibitions"
     },
     "dashboard": {
-        "title": "Dashboard â€” Nabda Capital Group Platform",
+        "title": "Dashboard — Nabda Capital Group Platform",
         "navMain": "Main",
         "overview": "Overview",
         "myOrders": "My Orders",
@@ -339,7 +339,7 @@
         "updatePassword": "Update Password"
     },
     "admin": {
-        "title": "Admin Command Center â€” Nabda Capital Group",
+        "title": "Admin Command Center — Nabda Capital Group",
         "commandCenter": "Admin Command Center",
         "executiveInsights": "Executive Insights",
         "orders": "Orders",
@@ -420,7 +420,7 @@
         "livePreview": "Live Preview",
         "serviceDescPlaceholder": "Service description...",
         "propertyDescPlaceholder": "Property description...",
-        "areaLabel": "Area (mÂ²)",
+        "areaLabel": "Area (m²)",
         "bedroomsLabel": "Bedrooms",
         "bathroomsLabel": "Bathrooms",
         "propertyType": "Property Type",
@@ -437,7 +437,7 @@
         "activeVisible": "Active / Visible to users",
         "dropZoneTitle": "Drag & Drop Images Here",
         "dropZoneSub": "or click to browse your files",
-        "dropZoneHint": "JPG, PNG, WebP â€” Max 10MB each",
+        "dropZoneHint": "JPG, PNG, WebP — Max 10MB each",
         "catGeneral": "General",
         "catAdvertising": "Advertising",
         "catMarketing": "Marketing",
@@ -479,7 +479,7 @@
         "confirmMessage": "This action cannot be undone.",
         "cancelBtn": "Cancel",
         "confirmBtn": "Confirm",
-        "cmdPlaceholder": "Type a command or searchâ€¦",
+        "cmdPlaceholder": "Type a command or search…",
         "cmdNavigate": "Navigate",
         "cmdSelect": "Select",
         "cmdClose": "Close",
@@ -541,7 +541,7 @@
         "tooltipStartDate": "The opening date of the exhibition. This will be shown publicly.",
         "tooltipEndDate": "The closing date. Leave empty for single-day events.",
         "tooltipJobType": "Select the employment type. This helps candidates filter relevant listings.",
-        "tooltipJobSalary": "Optional. Specify a range like \"$3,000 â€“ $5,000\" to attract qualified candidates.",
+        "tooltipJobSalary": "Optional. Specify a range like \"$3,000 – $5,000\" to attract qualified candidates.",
         "wizardBasics": "Basics",
         "wizardDetails": "Details",
         "wizardPublish": "Publish",
@@ -579,10 +579,10 @@
         "invoicingNav": "Invoicing",
         "invTaxInvoice": "Tax Invoice",
         "invQuotation": "Quotation",
-        "invTaxInvoiceAr": "ÙØ§ØªÙˆØ±Ø©",
-        "invQuotationAr": "Ø¹Ø±Ø¶ Ø³Ø¹Ø±",
-        "invBadgeInvoice": "Tax Invoice â€” ÙØ§ØªÙˆØ±Ø© Ø¶Ø±ÙŠØ¨ÙŠØ©",
-        "invBadgeQuote": "Quotation â€” Ø¹Ø±Ø¶ Ø³Ø¹Ø±",
+        "invTaxInvoiceAr": "فاتورة",
+        "invQuotationAr": "عرض سعر",
+        "invBadgeInvoice": "Tax Invoice — فاتورة ضريبية",
+        "invBadgeQuote": "Quotation — عرض سعر",
         "invDocDetails": "Document Details",
         "invDocNumber": "Document #",
         "invIssueDate": "Issue Date",
@@ -628,7 +628,7 @@
         "invBillTo": "Bill To",
         "invPreviewPlaceholder": "Add line items to see them here",
         "invValidUntil": "Valid Until",
-        "invGeneratedBy": "Generated by Nabda Capital Group Platform Â· nabda.com",
+        "invGeneratedBy": "Generated by Nabda Capital Group Platform · nabda.com",
         "invRequired": "required",
         "invClientRequired": "Client name is required.",
         "invItemRequired": "At least one line item is required.",
@@ -649,7 +649,7 @@
         "invPageInfo": "Page 1 of 1",
         "invDueDateLabel": "Due Date",
         "invCompanyName": "Nabda Capital Group for Advertising, Publicity & Marketing",
-        "invCompanyNameAr": "Ù†Ø¨Ø¶Ø© Ù„Ù„Ø¯Ø¹Ø§ÙŠØ© ÙˆØ§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙˆØ§Ù„ØªØ³ÙˆÙŠÙ‚"
+        "invCompanyNameAr": "نبضة كابيتال جروب للدعاية والإعلان والتسويق"
     },
     "onboarding": {
         "welcomeTitle": "Welcome to Nabda Capital Group!",
@@ -669,8 +669,8 @@
         "finish": "Get Started!"
     },
     "langToggle": {
-        "text": "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©",
-        "label": "Ø¹Ø±Ø¨ÙŠ",
+        "text": "العربية",
+        "label": "عربي",
         "switchTo": "ar"
     }
 }

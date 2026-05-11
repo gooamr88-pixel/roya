@@ -1,9 +1,9 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// Maintenance Mode Middleware â€” Admin Bypass via Cookie
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════
+// Maintenance Mode Middleware — Admin Bypass via Cookie
+// ═══════════════════════════════════════════════
 // Activates when MAINTENANCE_MODE=true in .env
 // Bypass: visit /?dev_bypass=YOUR_SECRET_KEY to set cookie
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════
 
 const BYPASS_COOKIE = 'nabda_dev_bypass';
 const BYPASS_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -28,17 +28,17 @@ const PASSTHROUGH_PREFIXES = [
  * To deactivate: Set MAINTENANCE_MODE=false (or remove it)
  */
 const maintenanceMiddleware = (req, res, next) => {
-    // â”€â”€ 1. Check if maintenance mode is enabled â”€â”€
+    // ── 1. Check if maintenance mode is enabled ──
     const isMaintenanceOn = process.env.MAINTENANCE_MODE === 'true';
     if (!isMaintenanceOn) return next();
 
-    // â”€â”€ 2. Allow static assets & health check through â”€â”€
+    // ── 2. Allow static assets & health check through ──
     const isPassthrough = PASSTHROUGH_PREFIXES.some(prefix =>
         req.path.startsWith(prefix) || req.path === '/favicon.ico'
     );
     if (isPassthrough) return next();
 
-    // â”€â”€ 3. Handle bypass activation via query parameter â”€â”€
+    // ── 3. Handle bypass activation via query parameter ──
     const bypassSecret = process.env.MAINTENANCE_BYPASS_KEY;
     if (bypassSecret && req.query.dev_bypass === bypassSecret) {
         res.cookie(BYPASS_COOKIE, bypassSecret, {
@@ -53,12 +53,12 @@ const maintenanceMiddleware = (req, res, next) => {
         return res.redirect(cleanUrl);
     }
 
-    // â”€â”€ 4. Check if bypass cookie is present & valid â”€â”€
+    // ── 4. Check if bypass cookie is present & valid ──
     if (bypassSecret && req.cookies?.[BYPASS_COOKIE] === bypassSecret) {
-        return next(); // Developer bypass â€” let through
+        return next(); // Developer bypass — let through
     }
 
-    // â”€â”€ 5. Block all other traffic â”€â”€
+    // ── 5. Block all other traffic ──
     if (req.path.startsWith('/api')) {
         return res.status(503).json({
             success: false,
@@ -77,4 +77,3 @@ const maintenanceMiddleware = (req, res, next) => {
 };
 
 module.exports = { maintenanceMiddleware, BYPASS_COOKIE };
-

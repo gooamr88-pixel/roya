@@ -1,9 +1,9 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// Server Entry Point â€” Listen & Graceful Shutdown
+// ═══════════════════════════════════════════════
+// Server Entry Point — Listen & Graceful Shutdown
 //
 // Imports the configured Express app from app.js
 // and starts the HTTP server with graceful shutdown handlers.
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════
 const app = require('./app');
 const config = require('./config');
 const { pool } = require('./config/database');
@@ -46,4 +46,3 @@ process.on('unhandledRejection', (reason) => {
 });
 
 module.exports = app;
-

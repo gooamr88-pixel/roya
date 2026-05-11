@@ -1,8 +1,8 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// NABDA CAPITAL GROUP AI CHATBOT â€” Landing Page Virtual Assistant
+// ═══════════════════════════════════════════════
+// NABDA CAPITAL GROUP AI CHATBOT — Landing Page Virtual Assistant
 // Uses /api/ai/generate with context 'website_chatbot'
 // Works for both authenticated and guest users
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════
 
 (function () {
     const chatFab = document.getElementById('chatbotFab');
@@ -15,17 +15,17 @@
     let isOpen = false;
     let isLoading = false;
 
-    // â”€â”€ i18n helpers â”€â”€
+    // ── i18n helpers ──
     const lang = document.documentElement.lang || 'en';
     const i18n = {
         greeting: lang === 'ar'
-            ? 'Ù…Ø±Ø­Ø¨Ø§Ù‹! ðŸ‘‹ Ø£Ù†Ø§ Ø§Ù„Ù…Ø³Ø§Ø¹Ø¯ Ø§Ù„Ø°ÙƒÙŠ Ù„Ù…Ù†ØµØ© Ù†ÙŽØ¨Ø¶ÙŽØ©. ÙƒÙŠÙ ÙŠÙ…ÙƒÙ†Ù†ÙŠ Ù…Ø³Ø§Ø¹Ø¯ØªÙƒ Ø§Ù„ÙŠÙˆÙ…ØŸ'
-            : 'Hello! ðŸ‘‹ I\'m Nabda Capital Group\'s AI assistant. How can I help you today?',
-        placeholder: lang === 'ar' ? 'Ø§ÙƒØªØ¨ Ø±Ø³Ø§Ù„ØªÙƒ...' : 'Type your message...',
+            ? 'مرحباً! 👋 أنا المساعد الذكي لمنصة نَبضَة. كيف يمكنني مساعدتك اليوم؟'
+            : 'Hello! 👋 I\'m Nabda Capital Group\'s AI assistant. How can I help you today?',
+        placeholder: lang === 'ar' ? 'اكتب رسالتك...' : 'Type your message...',
         error: lang === 'ar'
-            ? 'Ø¹Ø°Ø±Ø§Ù‹ØŒ Ù„Ù… Ø£ØªÙ…ÙƒÙ† Ù…Ù† Ø§Ù„Ø±Ø¯ Ø§Ù„Ø¢Ù†. Ø­Ø§ÙˆÙ„ Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.'
+            ? 'عذراً، لم أتمكن من الرد الآن. حاول مرة أخرى.'
             : 'Sorry, I couldn\'t respond right now. Please try again.',
-        online: lang === 'ar' ? 'Ù…ØªØµÙ„ Ø§Ù„Ø¢Ù†' : 'Online now',
+        online: lang === 'ar' ? 'متصل الآن' : 'Online now',
     };
 
     // Set dynamic placeholder
@@ -35,7 +35,7 @@
     const onlineEl = document.getElementById('chatbotOnline');
     if (onlineEl) onlineEl.textContent = i18n.online;
 
-    // â”€â”€ Toggle chat â”€â”€
+    // ── Toggle chat ──
     chatFab.addEventListener('click', () => {
         isOpen = !isOpen;
         chatWindow.classList.toggle('open', isOpen);
@@ -49,7 +49,7 @@
         }
     });
 
-    // â”€â”€ Send message â”€â”€
+    // ── Send message ──
     chatSend?.addEventListener('click', sendMessage);
     chatInput?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -80,9 +80,9 @@
 
             if (res.status === 429) {
                 const retryMsg = lang === 'ar'
-                    ? 'Ø£Ù†Øª ØªØ±Ø³Ù„ Ø±Ø³Ø§Ø¦Ù„ Ø¨Ø³Ø±Ø¹Ø© ÙƒØ¨ÙŠØ±Ø©. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø± Ù„Ø­Ø¸Ø© ÙˆØ§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.'
+                    ? 'أنت ترسل رسائل بسرعة كبيرة. يرجى الانتظار لحظة والمحاولة مرة أخرى.'
                     : 'You\'re sending messages too fast. Please wait a moment and try again.';
-                addBotMessage('â³ ' + retryMsg);
+                addBotMessage('⏳ ' + retryMsg);
                 // Cooldown: disable input for 30 seconds on rate-limit
                 chatInput.disabled = true;
                 chatInput.classList.add('chatbot-cooldown');
@@ -112,7 +112,7 @@
         }
     }
 
-    // â”€â”€ Message Helpers â”€â”€
+    // ── Message Helpers ──
     function addUserMessage(text) {
         const div = document.createElement('div');
         div.className = 'chatbot-msg user';
@@ -149,4 +149,3 @@
         });
     }
 })();
-

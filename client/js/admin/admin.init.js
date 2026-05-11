@@ -1,20 +1,20 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// Admin V2.0 â€” Init, Auth, Navigation, Sidebar,
+// ═══════════════════════════════════════════════
+// Admin V2.0 — Init, Auth, Navigation, Sidebar,
 // Search, Command Palette, Live Clock, Confirm Dialog,
 // Shared Utilities (Form Tabs, Featured, Bulk Actions)
 // Depends on: api.js, utils.js
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════════════
 
-// â”€â”€ Global `esc()` is now provided by utils.js (loaded first). â”€â”€
+// ── Global `esc()` is now provided by utils.js (loaded first). ──
 // We do NOT re-declare it here. If you see a ReferenceError for esc(),
-// it means utils.js failed to load â€” check the network tab.
+// it means utils.js failed to load — check the network tab.
 
 let adminUser = null;
 let selectedSvc = new Set();
 let selectedProp = new Set();
 
-// â”€â”€ Hierarchical RBAC: role weight map (MUST mirror backend ROLE_HIERARCHY in auth.js) â”€â”€
-// SECURITY FIX: Removed viewer/client â€” they are NOT admin roles.
+// ── Hierarchical RBAC: role weight map (MUST mirror backend ROLE_HIERARCHY in auth.js) ──
+// SECURITY FIX: Removed viewer/client — they are NOT admin roles.
 // Keeping them here would let the UI show admin elements to non-admin users.
 const ROLE_WEIGHT = { supervisor: 1, editor: 2, admin: 3, super_admin: 4 };
 function hasMinRole(minRole) {
@@ -34,9 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initLiveClock();
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  AUTH CHECK
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 async function initAdminAuth() {
     try {
         const data = await API.get('/auth/me');
@@ -70,7 +70,7 @@ function updateAdminUI() {
 }
 
 /**
- * applyRoleGating â€” hides/shows UI elements based on data-min-role attribute.
+ * applyRoleGating — hides/shows UI elements based on data-min-role attribute.
  * Any element with data-min-role="admin" will be hidden if the user's role
  * weight is less than admin (3).
  */
@@ -85,9 +85,9 @@ function applyRoleGating() {
     });
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  NAVIGATION
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 const adminViewTitles = {
     stats: document.querySelector('[data-view="stats"]')?.textContent?.trim() || 'Executive Insights',
     orders: document.querySelector('[data-view="orders"]')?.textContent?.trim() || 'Orders',
@@ -151,9 +151,9 @@ function initAdminLogout() {
     });
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  KEYBOARD SHORTCUTS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function initKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
         if (e.target.matches('input, textarea, select')) return;
@@ -179,9 +179,9 @@ function initKeyboardShortcuts() {
     });
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  LIVE CLOCK
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function initLiveClock() {
     const clockEl = document.getElementById('liveClock');
     if (!clockEl) return;
@@ -193,10 +193,10 @@ function initLiveClock() {
     setInterval(tick, 1000);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  FROSTED GLASS CONFIRMATION DIALOG (V2.0)
 //  Replaces native confirm() and all old modal confirmations
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 let _glassResolve = null;
 
 function glassConfirm(title, message, type = 'warning') {
@@ -233,12 +233,12 @@ function closeConfirmModal() {
     if (_glassResolve) { _glassResolve(false); _glassResolve = null; }
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  FORM TAB SWITCHING (Shared by all modals)
 //  FIX (F1): This function was called in every tabbed modal
 //  (Services, Properties, Exhibitions) but NEVER DEFINED,
 //  causing a ReferenceError and breaking all modal tab navigation.
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 /**
  * switchFormTab(activeTabBtnId, formId)
  *
@@ -272,10 +272,10 @@ function switchFormTab(activeTabBtnId, formId) {
     }
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  WIZARD MULTI-STEP NAVIGATION
 //  Used by Job and Portfolio modals
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function wizardNext(formId) {
     const form = document.getElementById(formId);
     if (!form) return;
@@ -334,11 +334,11 @@ function resetWizard(formId) {
     updateWizardSteps(stepsContainer, 0);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  FEATURED TOGGLE (Shared by Services + Properties)
 //  FIX (F4): Moved here from admin.properties.js so all
 //  modules can use it without depending on properties loading first.
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 async function toggleFeatured(type, id, featured) {
     try {
         // Must use FormData + putForm because the PUT route passes through Multer
@@ -353,10 +353,10 @@ async function toggleFeatured(type, id, featured) {
     }
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  BULK SELECT & DELETE (Shared by Services + Properties)
 //  FIX (F4): Moved here from admin.properties.js
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function toggleBulkSelect(prefix, id, checked) {
     const set = prefix === 'svc' ? selectedSvc : selectedProp;
     if (checked) set.add(id); else set.delete(id);
@@ -384,7 +384,7 @@ function updateBulkInfo(prefix) {
     } else {
         const type = prefix === 'svc' ? 'services' : 'properties';
         el.innerHTML = `
-            <strong>${set.size} ${__t?.selected || 'selected'}</strong> â€”
+            <strong>${set.size} ${__t?.selected || 'selected'}</strong> —
             <button class="btn btn-ghost btn-sm" onclick="bulkDelete('${type}', '${prefix}')" style="color:var(--danger)"><i class="fas fa-trash"></i> ${__t?.deleteSelected || 'Delete Selected'}</button>
         `;
     }
@@ -406,9 +406,9 @@ async function bulkDelete(type, prefix) {
     else loadAdminProperties();
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  COMMAND PALETTE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function initCommandPalette() {
     const overlay = document.getElementById('commandPalette');
     const input = document.getElementById('cmdInput');
@@ -471,9 +471,9 @@ function closeCommandPalette() {
     document.getElementById('commandPalette')?.classList.remove('show');
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  CSV EXPORT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function exportTableCSV(tableId, filename) {
     const table = document.getElementById(tableId);
     if (!table) return;
@@ -494,9 +494,9 @@ function exportTableCSV(tableId, filename) {
     Toast.success(`${filename} ${__t?.exported || 'exported!'}`);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  PDF EXPORT (jsPDF + autoTable)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function exportTablePDF(tableId, filename) {
     const table = document.getElementById(tableId);
     if (!table) return;
@@ -508,7 +508,7 @@ function exportTablePDF(tableId, filename) {
     // Header
     doc.setFontSize(16);
     doc.setTextColor(40);
-    doc.text(`Nabda Capital Group Platform â€” ${filename}`, 14, 18);
+    doc.text(`Nabda Capital Group Platform — ${filename}`, 14, 18);
     doc.setFontSize(9);
     doc.setTextColor(130);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 24);
@@ -526,9 +526,9 @@ function exportTablePDF(tableId, filename) {
     Toast.success(`${filename} ${__t?.exported || 'exported as PDF!'}`);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  EXCEL EXPORT (SheetJS / XLSX)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function exportTableExcel(tableId, filename) {
     const table = document.getElementById(tableId);
     if (!table) return;
@@ -541,9 +541,9 @@ function exportTableExcel(tableId, filename) {
     Toast.success(`${filename} ${__t?.exported || 'exported as Excel!'}`);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-//  WORD EXPORT (HTML â†’ .doc)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
+//  WORD EXPORT (HTML → .doc)
+// ══════════════════════════════════════════
 function exportTableWord(tableId, filename) {
     const table = document.getElementById(tableId);
     if (!table) return;
@@ -561,7 +561,7 @@ function exportTableWord(tableId, filename) {
             h2 { font-family: Arial; color: #333; }
         </style></head>
         <body>
-            <h2>Nabda Capital Group Platform â€” ${esc(filename)}</h2>
+            <h2>Nabda Capital Group Platform — ${esc(filename)}</h2>
             <p style='color:#888;font-size:10px'>Generated: ${new Date().toLocaleString()}</p>
             ${table.outerHTML}
         </body></html>`;
@@ -575,9 +575,9 @@ function exportTableWord(tableId, filename) {
     Toast.success(`${filename} ${__t?.exported || 'exported as Word!'}`);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  GLOBAL SEARCH
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function initGlobalSearch() {
     const input = document.getElementById('globalSearchInput');
     const results = document.getElementById('searchResults');
@@ -603,7 +603,7 @@ function initGlobalSearch() {
                         <div class="search-result-item" data-type="${esc(item.type)}" data-id="${esc(String(item.id))}">
                             <i class="fas ${typeIcons[item.type] || 'fa-circle'}" style="color:${typeColors[item.type]};width:20px;text-align:center"></i>
                             <div style="flex:1">
-                                <div style="font-weight:600">${esc(item.name || item.title || item.invoice_number || 'â€”')}</div>
+                                <div style="font-weight:600">${esc(item.name || item.title || item.invoice_number || '—')}</div>
                                 ${item.email ? `<div style="font-size:0.75rem;color:var(--text-3)">${esc(item.email)}</div>` : ''}
                                 ${item.location ? `<div style="font-size:0.75rem;color:var(--text-3)">${esc(item.location)}</div>` : ''}
                             </div>
@@ -632,9 +632,9 @@ function navigateSearchResult(type, id) {
     switchAdminView(viewMap[type] || 'stats');
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  ANIMATED COUNTER (shared for admin)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 function animateAdminCounter(el, target, prefix = '', suffix = '', duration = 800) {
     if (!el) return;
     const startTime = performance.now();
@@ -649,4 +649,3 @@ function animateAdminCounter(el, target, prefix = '', suffix = '', duration = 80
     }
     requestAnimationFrame(tick);
 }
-

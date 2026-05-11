@@ -1,13 +1,13 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// Email Service â€” Professional HTML Templates
+// ═══════════════════════════════════════════════
+// Email Service — Professional HTML Templates
 //
 // PHASE 3 HARDENING:
-// âœ… CRLF injection protection on all email fields (to, subject)
-// âœ… All functions throw on failure (no silent null returns)
-// âœ… Consistent error propagation for caller error handling
-// âœ… All user-supplied content escaped with escapeHtml()
-// âœ… Sanitized attachment filenames
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ✅ CRLF injection protection on all email fields (to, subject)
+// ✅ All functions throw on failure (no silent null returns)
+// ✅ Consistent error propagation for caller error handling
+// ✅ All user-supplied content escaped with escapeHtml()
+// ✅ Sanitized attachment filenames
+// ═══════════════════════════════════════════════
 const nodemailer = require('nodemailer');
 const config = require('../config');
 const { escapeHtml } = require('../utils/helpers');
@@ -23,9 +23,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  SECURITY UTILITIES
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 
 /**
  * Strip CRLF characters from email header fields (to, subject, from, replyTo).
@@ -59,12 +59,12 @@ function sanitizeFilename(filename) {
     .trim() || 'attachment';
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  SHARED TEMPLATE COMPONENTS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 const BRAND_COLOR = '#1a365d'; // Deep professional blue
 const ACCENT_COLOR = '#d4af37'; // Roya gold
-const LOGO_URL = ''; // Placeholder â€” replace with actual hosted logo URL
+const LOGO_URL = ''; // Placeholder — replace with actual hosted logo URL
 
 function baseLayout(content, direction = 'ltr') {
   return `
@@ -105,11 +105,11 @@ function baseLayout(content, direction = 'ltr') {
               <tr>
                 <td style="text-align:center;">
                   <div style="margin-bottom:12px;">
-                    <a href="#" style="display:inline-block;width:32px;height:32px;background:${BRAND_COLOR};color:#fff;border-radius:50%;text-align:center;line-height:32px;text-decoration:none;margin:0 4px;font-size:14px;">ð•</a>
+                    <a href="#" style="display:inline-block;width:32px;height:32px;background:${BRAND_COLOR};color:#fff;border-radius:50%;text-align:center;line-height:32px;text-decoration:none;margin:0 4px;font-size:14px;">𝕏</a>
                     <a href="#" style="display:inline-block;width:32px;height:32px;background:${BRAND_COLOR};color:#fff;border-radius:50%;text-align:center;line-height:32px;text-decoration:none;margin:0 4px;font-size:14px;">in</a>
                     <a href="#" style="display:inline-block;width:32px;height:32px;background:${BRAND_COLOR};color:#fff;border-radius:50%;text-align:center;line-height:32px;text-decoration:none;margin:0 4px;font-size:14px;">ig</a>
                   </div>
-                  <p style="margin:0;font-size:12px;color:#8895a7;">Â© ${new Date().getFullYear()} Nabda Capital Group. All rights reserved.</p>
+                  <p style="margin:0;font-size:12px;color:#8895a7;">© ${new Date().getFullYear()} Nabda Capital Group. All rights reserved.</p>
                   <p style="margin:6px 0 0;font-size:11px;color:#a0aec0;">Badr City, Cairo Governorate, Egypt | support@nabda-capital-group.com</p>
                 </td>
               </tr>
@@ -124,9 +124,9 @@ function baseLayout(content, direction = 'ltr') {
 </html>`;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  OTP VERIFICATION EMAIL
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 const sendOTP = async (to, name, otp) => {
   try {
     // SECURITY: Sanitize email header + escape HTML content
@@ -137,7 +137,7 @@ const sendOTP = async (to, name, otp) => {
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, ${BRAND_COLOR}, #2d4a7a);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:28px;">ðŸ”</span>
+          <span style="font-size:28px;">🔐</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Verify Your Email</h1>
         <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, enter the code below to verify your account.</p>
@@ -163,7 +163,7 @@ const sendOTP = async (to, name, otp) => {
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: 'ðŸ” Nabda Capital Group â€” Email Verification Code',
+      subject: '🔐 Nabda Capital Group — Email Verification Code',
       html: baseLayout(content),
     });
     return true;
@@ -173,9 +173,9 @@ const sendOTP = async (to, name, otp) => {
   }
 };
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  PASSWORD RESET EMAIL
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 const sendPasswordReset = async (to, name, otp) => {
   try {
     const safeTo = sanitizeEmailHeader(to);
@@ -185,7 +185,7 @@ const sendPasswordReset = async (to, name, otp) => {
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #e53e3e, #c53030);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:28px;">ðŸ”‘</span>
+          <span style="font-size:28px;">🔑</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Reset Your Password</h1>
         <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, we received a request to reset your password.</p>
@@ -197,14 +197,14 @@ const sendPasswordReset = async (to, name, otp) => {
       </div>
 
       <div style="background:#fff5f5;border-left:4px solid #e53e3e;border-radius:6px;padding:14px 18px;margin:24px 0;">
-        <p style="margin:0;font-size:13px;color:#c53030;">âš ï¸ This code expires in <strong>10 minutes</strong>. If you didn't request a reset, please ignore this email and your password will remain unchanged.</p>
+        <p style="margin:0;font-size:13px;color:#c53030;">⚠️ This code expires in <strong>10 minutes</strong>. If you didn't request a reset, please ignore this email and your password will remain unchanged.</p>
       </div>
     `;
 
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: 'ðŸ”‘ Nabda Capital Group â€” Password Reset Request',
+      subject: '🔑 Nabda Capital Group — Password Reset Request',
       html: baseLayout(content),
     });
     return true;
@@ -214,9 +214,9 @@ const sendPasswordReset = async (to, name, otp) => {
   }
 };
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  INVOICE EMAIL
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
   try {
     const safeTo = sanitizeEmailHeader(to);
@@ -228,14 +228,14 @@ const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #38a169, #2f855a);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:28px;">ðŸ“„</span>
+          <span style="font-size:28px;">📄</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Invoice Ready</h1>
         <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, your invoice <strong>#${safeInvoice}</strong> is attached.</p>
       </div>
 
       <div style="background:#f0fff4;border:1px solid #c6f6d5;border-radius:10px;padding:20px;text-align:center;margin:24px 0;">
-        <div style="font-size:13px;color:#38a169;font-weight:600;">âœ“ Invoice #${safeInvoice}</div>
+        <div style="font-size:13px;color:#38a169;font-weight:600;">✓ Invoice #${safeInvoice}</div>
         <p style="font-size:12px;color:#68d391;margin:4px 0 0;">Please find your invoice attached as a PDF document.</p>
       </div>
 
@@ -247,7 +247,7 @@ const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: `ðŸ“„ Nabda Capital Group â€” Invoice #${safeInvoice}`,
+      subject: `📄 Nabda Capital Group — Invoice #${safeInvoice}`,
       html: baseLayout(content),
       attachments: pdfBuffer ? [{
         filename: safeFilename,
@@ -264,9 +264,9 @@ const sendInvoice = async (to, name, invoiceNumber, pdfBuffer) => {
   }
 };
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-//  ADMIN REPLY TO CONTACT â€” RTL SUPPORT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
+//  ADMIN REPLY TO CONTACT — RTL SUPPORT
+// ══════════════════════════════════════════
 const sendContactReply = async ({ to, name, originalSubject, originalMessage, replyMessage }) => {
   // SECURITY: Sanitize email header fields to prevent CRLF injection
   const safeTo = sanitizeEmailHeader(to);
@@ -293,13 +293,13 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
 
     <!-- ADMIN REPLY -->
     <div style="background:#f0f4ff;border-left:4px solid ${BRAND_COLOR};border-radius:8px;padding:20px 24px;margin:20px 0;direction:${dir};text-align:${textAlign};">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:${BRAND_COLOR};font-weight:700;margin-bottom:10px;">ðŸ“© Official Response</div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:${BRAND_COLOR};font-weight:700;margin-bottom:10px;">📩 Official Response</div>
       <p style="margin:0;font-size:15px;line-height:1.7;color:#2d3748;">${safeReply.replace(/\n/g, '<br>')}</p>
     </div>
 
     <!-- ORIGINAL MESSAGE -->
     <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:18px 22px;margin:20px 0;">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;font-weight:600;margin-bottom:8px;">ðŸ’¬ Your Original Message</div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;font-weight:600;margin-bottom:8px;">💬 Your Original Message</div>
       <p style="margin:0;font-size:13px;line-height:1.6;color:#718096;font-style:italic;">${safeOriginal.replace(/\n/g, '<br>')}</p>
     </div>
 
@@ -309,22 +309,22 @@ const sendContactReply = async ({ to, name, originalSubject, originalMessage, re
     </div>
   `;
 
-  // SECURITY FIX: No try/catch â€” let errors propagate to the caller.
+  // SECURITY FIX: No try/catch — let errors propagate to the caller.
   // The contact controller wraps this in try/catch and handles failures
   // by marking the email as failed and informing the admin.
   await transporter.sendMail({
     from: config.email.from,
     to: safeTo,
-    subject: `ðŸ“© Re: ${safeSubjectHeader} â€” Nabda Capital Group`,
+    subject: `📩 Re: ${safeSubjectHeader} — Nabda Capital Group`,
     html: baseLayout(content, dir),
     replyTo: config.email.from,
   });
   return true;
 };
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  ORDER CANCELLATION / DELETION EMAIL
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reason) => {
   try {
     const safeTo = sanitizeEmailHeader(to);
@@ -336,7 +336,7 @@ const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reas
     const content = `
       <div style="text-align:center;margin-bottom:28px;">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #e53e3e, #c53030);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:28px;">âš ï¸</span>
+          <span style="font-size:28px;">⚠️</span>
         </div>
         <h1 style="margin:0;font-size:24px;color:#1a202c;font-weight:700;">Order Removed</h1>
         <p style="margin:8px 0 0;font-size:15px;color:#64748b;">Hello <strong>${safeName || 'there'}</strong>, your order has been removed by an administrator.</p>
@@ -363,7 +363,7 @@ const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reas
     await transporter.sendMail({
       from: config.email.from,
       to: safeTo,
-      subject: `âš ï¸ Nabda Capital Group â€” Order #${sanitizeEmailHeader(invoiceNumber)} Removed`,
+      subject: `⚠️ Nabda Capital Group — Order #${sanitizeEmailHeader(invoiceNumber)} Removed`,
       html: baseLayout(content),
     });
     return true;
@@ -375,4 +375,3 @@ const sendOrderCancellation = async (to, name, invoiceNumber, serviceTitle, reas
 };
 
 module.exports = { sendOTP, sendPasswordReset, sendInvoice, sendContactReply, sendOrderCancellation };
-
