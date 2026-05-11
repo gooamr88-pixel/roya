@@ -675,6 +675,11 @@
 
           {# ═══ INVOICE HISTORY PANEL ═══ #}
           <div class="inv-history-panel" id="invHistorySection" style="display:none; margin-top:20px;">
+            <div style="display:flex; justify-content:flex-end; margin-bottom: 12px;">
+              <button class="btn btn-danger btn-sm" onclick="deleteAllInvoicesHistory()">
+                <i class="fas fa-trash-alt"></i> مسح جميع الفواتير
+              </button>
+            </div>
             <div class="table-container fade-in">
               <table class="data-table">
                 <thead>

@@ -1012,8 +1012,8 @@ async function loadInvoicesHistory(page = 1) {
                             <a href="/api/invoices/${inv.id}/download-pdf" target="_blank" class="action-btn view-btn" title="PDF">
                                 <i class="fas fa-file-pdf"></i>
                             </a>
-                            <button onclick="deleteInvoiceHistory(${inv.id})" class="action-btn delete-btn" title="حذف" style="background-color: #ef4444; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#dc2626'" onmouseout="this.style.backgroundColor='#ef4444'">
-                                <i class="fas fa-trash-alt" style="margin-left: 4px;"></i> حذف
+                            <button onclick="deleteInvoiceHistory(${inv.id})" class="btn btn-danger btn-sm" title="حذف" style="padding: 4px 10px; border-radius: 6px;">
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
                     </td>
@@ -1064,6 +1064,24 @@ async function deleteInvoiceHistory(id) {
             loadInvoicesHistory(1); // Reload table
         } catch (err) {
             Toast.error(err.message || 'حدث خطأ أثناء الحذف');
+        }
+    }
+}
+
+async function deleteAllInvoicesHistory() {
+    const confirmed = await glassConfirm(
+        'حذف جميع الفواتير؟',
+        'سيتم مسح كل الفواتير نهائياً ولا يمكن استعادتها. هل أنت متأكد؟',
+        'danger'
+    );
+
+    if (confirmed) {
+        try {
+            await API.delete('/invoices/all');
+            Toast.success('تم مسح جميع الفواتير بنجاح!');
+            loadInvoicesHistory(1);
+        } catch (err) {
+            Toast.error(err.message || 'حدث خطأ أثناء المسح');
         }
     }
 }

@@ -109,4 +109,9 @@ const remove = async (id) => {
     return result.rows[0] || null;
 };
 
-module.exports = { findByOrderId, create, update, findByIdWithOwner, findAll, getOrderWithClient, remove };
+const removeAll = async () => {
+    const result = await query('DELETE FROM invoices RETURNING id');
+    return result.rows.length;
+};
+
+module.exports = { findByOrderId, create, update, findByIdWithOwner, findAll, getOrderWithClient, remove, removeAll };

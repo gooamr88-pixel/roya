@@ -138,6 +138,14 @@ const removeInvoice = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * DELETE /api/invoices/all
+ */
+const removeAllInvoices = asyncHandler(async (req, res, next) => {
+    const count = await invoiceRepo.removeAll();
+    res.json({ success: true, message: `Successfully deleted ${count} invoices.` });
+});
+
+/**
  * GET /api/invoices/catalog
  * Returns a unified list of services, jobs, and portfolio items
  * so the invoice builder can auto-fill name + price from the DB.
@@ -880,4 +888,4 @@ const viewInvoicePublic = asyncHandler(async (req, res, next) => {
     res.send(htmlContent);
 });
 
-module.exports = { generate, download, getAll, getCatalog, save, downloadInvoicePDF, viewInvoicePublic, removeInvoice };
+module.exports = { generate, download, getAll, getCatalog, save, downloadInvoicePDF, viewInvoicePublic, removeInvoice, removeAllInvoices };
