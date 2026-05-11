@@ -1050,24 +1050,19 @@ async function loadInvoicesHistory(page = 1) {
 }
 
 async function deleteInvoiceHistory(id) {
-    const confirmation = await Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: 'سيتم حذف الفاتورة نهائياً ولن يمكنك استعادتها!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        cancelButtonColor: '#71717a',
-        confirmButtonText: 'نعم، احذف',
-        cancelButtonText: 'تراجع'
-    });
+    const confirmed = await glassConfirm(
+        'هل أنت متأكد؟',
+        'سيتم حذف الفاتورة نهائياً ولن يمكنك استعادتها!',
+        'danger'
+    );
 
-    if (confirmation.isConfirmed) {
+    if (confirmed) {
         try {
             await API.delete('/invoices/' + id);
             Toast.success('تم حذف الفاتورة بنجاح!');
             loadInvoicesHistory(1); // Reload table
         } catch (err) {
-            Toast.error(err.message || 'حدث خطأ أثناء החذف');
+            Toast.error(err.message || 'حدث خطأ أثناء الحذف');
         }
     }
 }
