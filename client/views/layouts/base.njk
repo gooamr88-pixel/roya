@@ -1,11 +1,11 @@
-{# ═══════════════════════════════════════════════ #}
-{# Base Layout — Shared by ALL pages              #}
+﻿{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
+{# Base Layout â€” Shared by ALL pages              #}
 {# Variables injected by i18n middleware:          #}
 {#   lang, dir, isRTL, t, logoSrc, logoAlt,       #}
 {#   langToggle, baseUrl                           #}
 {# Each page sets: pageTitle, pageDescription,     #}
 {#   pageImage, pageCss, pageScripts               #}
-{# ═══════════════════════════════════════════════ #}
+{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 {# Rule 4: dir attribute is ALWAYS present so the browser never defaults wrong #}
 <!DOCTYPE html>
 <html lang="{{ lang }}" dir="{{ dir }}">
@@ -13,7 +13,7 @@
 <head>
   <meta charset="UTF-8">
 
-  {# ── Meta Pixel (Facebook) ── #}
+  {# â”€â”€ Meta Pixel (Facebook) â”€â”€ #}
   <script>
   !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -31,20 +31,20 @@
   <title>{{ pageTitle or t.meta.title }}</title>
   <meta name="description" content="{{ pageDescription or t.meta.description }}">
   <meta name="keywords" content="{{ t.meta.keywords }}">
-  <link rel="icon" type="image/svg+xml" href="/images/nabda-logo-transparent.svg">
+  <link rel="icon" type="image/svg+xml" href="/images/nabda-new-logo.png">
 
-  {# ── CSRF Token (read by api.js for all mutating requests) ── #}
+  {# â”€â”€ CSRF Token (read by api.js for all mutating requests) â”€â”€ #}
   {% if csrfToken %}
   <meta name="csrf-token" content="{{ csrfToken }}">
   {% endif %}
 
-  {# ── Canonical & hreflang (bilingual SEO) ── #}
+  {# â”€â”€ Canonical & hreflang (bilingual SEO) â”€â”€ #}
   <link rel="canonical" href="{{ baseUrl }}{{ currentPath }}">
   <link rel="alternate" hreflang="en" href="{{ baseUrl }}{{ currentPath }}">
   <link rel="alternate" hreflang="ar" href="{{ baseUrl }}{{ currentPath }}">
   <link rel="alternate" hreflang="x-default" href="{{ baseUrl }}{{ currentPath }}">
 
-  {# ── OpenGraph (Facebook, LinkedIn, WhatsApp) ── #}
+  {# â”€â”€ OpenGraph (Facebook, LinkedIn, WhatsApp) â”€â”€ #}
   <meta property="og:site_name" content="Nabda Platform">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="{{ 'ar_SA' if isRTL else 'en_US' }}">
@@ -59,20 +59,20 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
-  {# ── Twitter Card ── #}
+  {# â”€â”€ Twitter Card â”€â”€ #}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ pageTitle or t.meta.title }}">
   <meta name="twitter:description" content="{{ pageDescription or t.meta.description }}">
   <meta name="twitter:image" content="{{ pageImage or (baseUrl + '/images/og-default.jpg') }}">
 
-  {# ── JSON-LD Structured Data ── #}
+  {# â”€â”€ JSON-LD Structured Data â”€â”€ #}
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     "name": "Nabda Platform",
     "url": "{{ baseUrl }}",
-    "logo": "{{ baseUrl }}/images/nabda-logo-transparent.svg",
+    "logo": "{{ baseUrl }}/images/nabda-new-logo.png",
     "description": "{{ t.meta.description }}",
     "address": {
       "@type": "PostalAddress",
@@ -86,7 +86,7 @@
   }
   </script>
 
-  {# ── Fonts: Cairo for RTL, Inter for LTR ── #}
+  {# â”€â”€ Fonts: Cairo for RTL, Inter for LTR â”€â”€ #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   {% if isRTL %}
@@ -97,49 +97,49 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   {% endif %}
 
-  {# ── Icons ── #}
+  {# â”€â”€ Icons â”€â”€ #}
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  {# ── Core Styles ── #}
+  {# â”€â”€ Core Styles â”€â”€ #}
   <link rel="stylesheet" href="/css/main.css?v=5">
 
-  {# ── Page-specific CSS ── #}
+  {# â”€â”€ Page-specific CSS â”€â”€ #}
   {% block pageCss %}{% endblock %}
 
-  {# ── RTL Styles (auto-loaded for Arabic) ── #}
+  {# â”€â”€ RTL Styles (auto-loaded for Arabic) â”€â”€ #}
   {% if isRTL %}
   <link rel="stylesheet" href="/css/rtl.css?v=3">
   {% endif %}
 
 
 
-  {# ── Extra head content ── #}
+  {# â”€â”€ Extra head content â”€â”€ #}
   {% block headExtra %}{% endblock %}
 </head>
 
 <body>
-  {# ── Meta Pixel noscript fallback ── #}
+  {# â”€â”€ Meta Pixel noscript fallback â”€â”€ #}
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=3946935715602952&ev=PageView&noscript=1"
   /></noscript>
 
 
-  {# ── Page Content ── #}
+  {# â”€â”€ Page Content â”€â”€ #}
   {% block body %}{% endblock %}
 
-  {# ── Toast Container ── #}
+  {# â”€â”€ Toast Container â”€â”€ #}
   <div class="toast-container" id="toastContainer"></div>
 
-  {# ── Core Scripts ── #}
+  {# â”€â”€ Core Scripts â”€â”€ #}
   <script src="/js/api.js?v=20260409" defer></script>
   <script src="/js/utils.js?v=3" defer></script>
   <script src="/js/i18n-switcher.js?v=4" defer></script>
 
-  {# ── Page-specific Scripts ── #}
+  {# â”€â”€ Page-specific Scripts â”€â”€ #}
   {% block pageScripts %}{% endblock %}
 
-  {# ── AI Chatbot Widget (HOME PAGE ONLY) ── #}
+  {# â”€â”€ AI Chatbot Widget (HOME PAGE ONLY) â”€â”€ #}
   {% if isHomePage %}
   <link rel="stylesheet" href="/css/chatbot.css">
 
@@ -168,3 +168,4 @@
 </body>
 
 </html>
+

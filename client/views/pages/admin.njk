@@ -1,14 +1,14 @@
-{# ═══════════════════════════════════════════════ #}
+﻿{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 {# Admin Command Center V2.0                       #}
 {# Uses base layout (own sidebar, no shared navbar) #}
-{# ═══════════════════════════════════════════════ #}
+{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 {% extends "layouts/base.njk" %}
 
 {% set pageTitle = t.admin.title %}
 
 {% block pageCss %}
   <link rel="stylesheet" href="/css/dashboard.css">
-  {# ── CDN Libraries (SRI-hardened to prevent supply-chain attacks) ── #}
+  {# â”€â”€ CDN Libraries (SRI-hardened to prevent supply-chain attacks) â”€â”€ #}
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
     integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk"
@@ -25,18 +25,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
     integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"
     crossorigin="anonymous"></script>
-  {# FIX (F5): All admin styles moved to dashboard.css — no more inline <style> #}
+  {# FIX (F5): All admin styles moved to dashboard.css â€” no more inline <style> #}
 {% endblock %}
 
 {% block body %}
   <div class="dashboard-layout">
 
-    {# ════════════ SIDEBAR ════════════ #}
+    {# â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â•â•â• #}
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <a href="/" class="sidebar-logo">
-          <img class="logo-for-dark" src="/images/nabda-logo-transparent.svg" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
-          <img class="logo-for-light" src="/images/nabda-logo-dark.svg" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
+          <img class="logo-for-dark" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
+          <img class="logo-for-light" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
           {% if brandNameIsImage %}
             <img src="{{ brandNameSrc }}" alt="{{ logoAlt }}" class="brand-name-img" style="height:24px;width:auto;">
           {% else %}
@@ -122,7 +122,7 @@
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    {# ════════════ MAIN ════════════ #}
+    {# â•â•â•â•â•â•â•â•â•â•â•â• MAIN â•â•â•â•â•â•â•â•â•â•â•â• #}
     <div class="main-content">
       <div class="topbar">
         <div class="topbar-left">
@@ -158,7 +158,7 @@
 
       <div class="content-area">
 
-        {# ── EXECUTIVE INSIGHTS ── #}
+        {# â”€â”€ EXECUTIVE INSIGHTS â”€â”€ #}
         <div class="view-section active" id="view-stats">
           <div class="exec-grid" id="execGrid">
             <div class="exec-card">
@@ -241,7 +241,7 @@
           </div>
         </div>
 
-        {# ── ORDERS ── #}
+        {# â”€â”€ ORDERS â”€â”€ #}
         <div class="view-section" id="view-orders">
           <div class="filters-bar">
             <select class="form-select" id="adminOrderStatus" onchange="loadAdminOrders()">
@@ -260,7 +260,7 @@
           <div class="pagination" id="adminOrdersPagination"></div>
         </div>
 
-        {# ── SERVICES ── #}
+        {# â”€â”€ SERVICES â”€â”€ #}
         <div class="view-section" id="view-services">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="font-size:0.85rem;color:var(--text-2)" id="svcBulkInfo"></span></div>
@@ -269,7 +269,7 @@
           <div class="table-container"><table class="data-table"><thead><tr><th style="width:30px"><input type="checkbox" id="svcSelectAll" onchange="toggleAllCheckboxes('svc')"></th><th>{{ t.admin.thTitle }}</th><th>{{ t.admin.thPrice }}</th><th>{{ t.admin.thFeatured }}</th><th>{{ t.admin.thActive }}</th><th>{{ t.admin.thCreated }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminServicesTable"></tbody></table></div>
         </div>
 
-        {# ── EXHIBITIONS ── #}
+        {# â”€â”€ EXHIBITIONS â”€â”€ #}
         <div class="view-section" id="view-exhibitions">
         <div style="display:flex;justify-content:flex-end;margin-bottom:20px;gap:8px">
             <button class="btn btn-primary btn-sm" onclick="openExhibitionModal()">
@@ -283,7 +283,7 @@
           </div>
         </div>
 
-        {# ── PROPERTIES ── #}
+        {# â”€â”€ PROPERTIES â”€â”€ #}
         <div class="view-section" id="view-properties">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <span style="font-size:0.85rem;color:var(--text-2)" id="propBulkInfo"></span>
@@ -295,7 +295,7 @@
           <div class="table-container"><table class="data-table"><thead><tr><th style="width:30px"><input type="checkbox" id="propSelectAll" onchange="toggleAllCheckboxes('prop')"></th><th>{{ t.admin.thTitle }}</th><th>{{ t.admin.thLocation }}</th><th>{{ t.admin.thPrice }}</th><th>{{ t.admin.thType }}</th><th>{{ t.admin.thFeatured }}</th><th>{{ t.admin.thActive }}</th><th>{{ t.admin.thActions }}</th></tr></thead><tbody id="adminPropertiesTable"></tbody></table></div>
         </div>
 
-        {# ── JOBS ── #}
+        {# â”€â”€ JOBS â”€â”€ #}
         <div class="view-section" id="view-jobs">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <span style="font-size:0.85rem;color:var(--text-2)">{{ t.admin.jobsNav }}</span>
@@ -316,7 +316,7 @@
           </div>
         </div>
 
-        {# ── PORTFOLIO ── #}
+        {# â”€â”€ PORTFOLIO â”€â”€ #}
         <div class="view-section" id="view-portfolio">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
             <span style="font-size:0.85rem;color:var(--text-2)">{{ t.admin.portfolioNav }}</span>
@@ -336,34 +336,34 @@
           </div>
         </div>
 
-        {# ── INVOICING & QUOTATION ── #}
+        {# â”€â”€ INVOICING & QUOTATION â”€â”€ #}
         <div class="view-section" id="view-invoicing">
 
           {# Mode Tabs #}
           <div class="inv-mode-tabs">
             <button type="button" class="inv-mode-tab active" data-mode="invoice" onclick="switchInvoiceMode('invoice')">
-              <i class="fas fa-file-invoice-dollar"></i> {{ t.admin.invTaxInvoice }} · {{ t.admin.invTaxInvoiceAr }}
+              <i class="fas fa-file-invoice-dollar"></i> {{ t.admin.invTaxInvoice }} Â· {{ t.admin.invTaxInvoiceAr }}
             </button>
             <button type="button" class="inv-mode-tab" data-mode="quote" onclick="switchInvoiceMode('quote')">
-              <i class="fas fa-file-signature"></i> {{ t.admin.invQuotation }} · {{ t.admin.invQuotationAr }}
+              <i class="fas fa-file-signature"></i> {{ t.admin.invQuotation }} Â· {{ t.admin.invQuotationAr }}
             </button>
             <button type="button" class="inv-mode-tab" data-mode="history" onclick="switchInvoiceMode('history')">
-              <i class="fas fa-history"></i> سجل الفواتير · History
+              <i class="fas fa-history"></i> Ø³Ø¬Ù„ Ø§Ù„ÙÙˆØ§ØªÙŠØ± Â· History
             </button>
           </div>
 
           <div class="inv-mode-badge invoice" id="invModeBadge">{{ t.admin.invBadgeInvoice }}</div>
 
           <div class="inv-layout">
-            {# ═══ LEFT: FORM PANEL ═══ #}
+            {# â•â•â• LEFT: FORM PANEL â•â•â• #}
             <div class="inv-form-panel" id="invFormSection">
 
               {# Document Details #}
               <div class="inv-section">
                 <div class="inv-section-title"><i class="fas fa-hashtag"></i> {{ t.admin.invDocDetails }}</div>
                 <div class="inv-form-group" style="margin-bottom:10px;">
-                  <label><i class="fas fa-tag" style="margin-inline-end:4px;color:var(--gold);"></i> {{ t.admin.invTitle | default('اسم الفاتورة / Invoice Name') }}</label>
-                  <input class="form-input" type="text" id="invTitle" placeholder="{{ t.admin.invTitlePlaceholder | default('e.g. عقد تصميم موقع شركة الأمل') }}" style="font-weight:600;">
+                  <label><i class="fas fa-tag" style="margin-inline-end:4px;color:var(--gold);"></i> {{ t.admin.invTitle | default('Ø§Ø³Ù… Ø§Ù„ÙØ§ØªÙˆØ±Ø© / Invoice Name') }}</label>
+                  <input class="form-input" type="text" id="invTitle" placeholder="{{ t.admin.invTitlePlaceholder | default('e.g. Ø¹Ù‚Ø¯ ØªØµÙ…ÙŠÙ… Ù…ÙˆÙ‚Ø¹ Ø´Ø±ÙƒØ© Ø§Ù„Ø£Ù…Ù„') }}" style="font-weight:600;">
                 </div>
                 <div class="inv-form-row-3">
                   <div class="inv-form-group">
@@ -424,7 +424,7 @@
                     <thead>
                       <tr>
                         <th style="width:32px">#</th>
-                        <th>{{ t.admin.invItem }} <span style="font-size:0.7rem;color:var(--text-3);font-weight:400">({{ t.admin.invPickHint | default('اختر من الكتالوج أو اكتب يدوياً') }})</span></th>
+                        <th>{{ t.admin.invItem }} <span style="font-size:0.7rem;color:var(--text-3);font-weight:400">({{ t.admin.invPickHint | default('Ø§Ø®ØªØ± Ù…Ù† Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬ Ø£Ùˆ Ø§ÙƒØªØ¨ ÙŠØ¯ÙˆÙŠØ§Ù‹') }})</span></th>
                         <th>{{ t.admin.invDescription }}</th>
                         <th>{{ t.admin.invQty }}</th>
                         <th>{{ t.admin.invUnitPrice }}</th>
@@ -474,14 +474,14 @@
                   <div class="inv-form-group">
                     <label style="display:flex;align-items:center;gap:6px;">
                       <i class="fas fa-coins" style="color:var(--gold);"></i>
-                      {{ t.admin.invCurrency | default('العملة / Currency') }}
+                      {{ t.admin.invCurrency | default('Ø§Ù„Ø¹Ù…Ù„Ø© / Currency') }}
                     </label>
                     <select class="form-select" id="invCurrency" onchange="invoiceState.currency=this.value;updatePreview();">
-                      <option value="SAR" selected>🇸🇦 SAR — ريال سعودي</option>
-                      <option value="USD">🇺🇸 USD — US Dollar</option>
-                      <option value="EGP">🇪🇬 EGP — جنيه مصري</option>
-                      <option value="EUR">🇪🇺 EUR — Euro</option>
-                      <option value="AED">🇦🇪 AED — درهم إماراتي</option>
+                      <option value="SAR" selected>ðŸ‡¸ðŸ‡¦ SAR â€” Ø±ÙŠØ§Ù„ Ø³Ø¹ÙˆØ¯ÙŠ</option>
+                      <option value="USD">ðŸ‡ºðŸ‡¸ USD â€” US Dollar</option>
+                      <option value="EGP">ðŸ‡ªðŸ‡¬ EGP â€” Ø¬Ù†ÙŠÙ‡ Ù…ØµØ±ÙŠ</option>
+                      <option value="EUR">ðŸ‡ªðŸ‡º EUR â€” Euro</option>
+                      <option value="AED">ðŸ‡¦ðŸ‡ª AED â€” Ø¯Ø±Ù‡Ù… Ø¥Ù…Ø§Ø±Ø§ØªÙŠ</option>
                     </select>
                   </div>
                 </div>
@@ -523,86 +523,86 @@
               </div>
             </div>
 
-            {# ═══ RIGHT: LIVE PREVIEW PANEL ═══ #}
+            {# â•â•â• RIGHT: LIVE PREVIEW PANEL â•â•â• #}
             <div class="inv-preview-panel">
               <div class="inv-preview-card" id="invPreviewCard">
                 <div class="inv-preview-body inv-rtl-layout">
 
-                  {# ── Invoice Header: Logo + Company Info ── #}
+                  {# â”€â”€ Invoice Header: Logo + Company Info â”€â”€ #}
                   <div class="inv-new-header">
                     <div class="inv-new-header-logo">
-                      <img src="/images/nabda-logo-dark.svg" alt="Nabda" class="inv-new-logo">
+                      <img src="/images/nabda-new-logo.png" alt="Nabda" class="inv-new-logo">
                     </div>
                     <div class="inv-new-header-info">
-                      <div class="inv-company-name-ar">{{ t.admin.invCompanyNameAr | default('نبضة للدعاية والإعلان والتسويق') }}</div>
+                      <div class="inv-company-name-ar">{{ t.admin.invCompanyNameAr | default('Ù†Ø¨Ø¶Ø© Ù„Ù„Ø¯Ø¹Ø§ÙŠØ© ÙˆØ§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙˆØ§Ù„ØªØ³ÙˆÙŠÙ‚') }}</div>
                       <div class="inv-company-name-en">{{ t.admin.invCompanyName | default('Nabda for Advertising, Publicity & Marketing') }}</div>
                     </div>
                   </div>
 
-                  {# ── Document Type Badge ── #}
+                  {# â”€â”€ Document Type Badge â”€â”€ #}
                   <div class="inv-doc-type-badge" id="prevDocTypeBadge">
-                    <span class="inv-doc-type-ar" id="prevDocTypeAr">فاتورة ضريبية</span>
+                    <span class="inv-doc-type-ar" id="prevDocTypeAr">ÙØ§ØªÙˆØ±Ø© Ø¶Ø±ÙŠØ¨ÙŠØ©</span>
                     <span class="inv-doc-type-divider">|</span>
                     <span class="inv-doc-type-en" id="prevDocTypeEn">TAX INVOICE</span>
                   </div>
 
-                  {# ── Invoice Title (shown when filled) ── #}
+                  {# â”€â”€ Invoice Title (shown when filled) â”€â”€ #}
                   <div id="prevInvoiceTitle" style="text-align:center;font-size:0.82rem;font-weight:700;color:#8b7225;padding:5px 0 1px;display:none;"></div>
 
-                  {# ── Document Meta Row ── #}
+                  {# â”€â”€ Document Meta Row â”€â”€ #}
                   <div class="inv-new-meta">
                     <div class="inv-new-meta-row">
                       <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invIssueDate | default('التاريخ') }}:</span>
-                        <span class="inv-meta-value" id="prevIssueDate">—</span>
+                        <span class="inv-meta-label">{{ t.admin.invIssueDate | default('Ø§Ù„ØªØ§Ø±ÙŠØ®') }}:</span>
+                        <span class="inv-meta-value" id="prevIssueDate">â€”</span>
                       </div>
                       <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invDocNumber | default('رقم الفاتورة') }}:</span>
-                        <span class="inv-meta-value" id="prevDocNumber">—</span>
-                      </div>
-                    </div>
-                    <div class="inv-new-meta-row">
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invClientName | default('اسم العميل') }}:</span>
-                        <span class="inv-meta-value" id="prevClientName">—</span>
-                      </div>
-                      <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invPhone | default('التلفون') }}:</span>
-                        <span class="inv-meta-value" id="prevClientPhone">—</span>
+                        <span class="inv-meta-label">{{ t.admin.invDocNumber | default('Ø±Ù‚Ù… Ø§Ù„ÙØ§ØªÙˆØ±Ø©') }}:</span>
+                        <span class="inv-meta-value" id="prevDocNumber">â€”</span>
                       </div>
                     </div>
                     <div class="inv-new-meta-row">
                       <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invAddress | default('العنوان') }}:</span>
-                        <span class="inv-meta-value" id="prevClientAddress">—</span>
+                        <span class="inv-meta-label">{{ t.admin.invClientName | default('Ø§Ø³Ù… Ø§Ù„Ø¹Ù…ÙŠÙ„') }}:</span>
+                        <span class="inv-meta-value" id="prevClientName">â€”</span>
                       </div>
                       <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invEmail | default('البريد') }}:</span>
-                        <span class="inv-meta-value" id="prevClientEmail">—</span>
+                        <span class="inv-meta-label">{{ t.admin.invPhone | default('Ø§Ù„ØªÙ„ÙÙˆÙ†') }}:</span>
+                        <span class="inv-meta-value" id="prevClientPhone">â€”</span>
                       </div>
                     </div>
                     <div class="inv-new-meta-row">
                       <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invTaxNumber | default('الرقم الضريبي') }}:</span>
-                        <span class="inv-meta-value" id="prevTaxNumber">—</span>
+                        <span class="inv-meta-label">{{ t.admin.invAddress | default('Ø§Ù„Ø¹Ù†ÙˆØ§Ù†') }}:</span>
+                        <span class="inv-meta-value" id="prevClientAddress">â€”</span>
                       </div>
                       <div class="inv-new-meta-item">
-                        <span class="inv-meta-label">{{ t.admin.invDueDateLabel | default('تاريخ الاستحقاق') }}:</span>
-                        <span class="inv-meta-value" id="prevDueDate">—</span>
+                        <span class="inv-meta-label">{{ t.admin.invEmail | default('Ø§Ù„Ø¨Ø±ÙŠØ¯') }}:</span>
+                        <span class="inv-meta-value" id="prevClientEmail">â€”</span>
+                      </div>
+                    </div>
+                    <div class="inv-new-meta-row">
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invTaxNumber | default('Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ø¶Ø±ÙŠØ¨ÙŠ') }}:</span>
+                        <span class="inv-meta-value" id="prevTaxNumber">â€”</span>
+                      </div>
+                      <div class="inv-new-meta-item">
+                        <span class="inv-meta-label">{{ t.admin.invDueDateLabel | default('ØªØ§Ø±ÙŠØ® Ø§Ù„Ø§Ø³ØªØ­Ù‚Ø§Ù‚') }}:</span>
+                        <span class="inv-meta-value" id="prevDueDate">â€”</span>
                       </div>
                     </div>
                   </div>
 
-                  {# ── Line Items Table (Bilingual) ── #}
+                  {# â”€â”€ Line Items Table (Bilingual) â”€â”€ #}
                   <table class="inv-prev-table inv-new-table">
                     <thead>
                       <tr>
-                        <th class="inv-th-num">م<br><small>No</small></th>
-                        <th class="inv-th-item">الصنف<br><small>Item</small></th>
-                        <th class="inv-th-desc">الوصف<br><small>Description</small></th>
-                        <th class="inv-th-qty">الكمية<br><small>Qty</small></th>
-                        <th class="inv-th-price">السعر<br><small>Price</small></th>
-                        <th class="inv-th-total">المبلغ<br><small>Amount</small></th>
+                        <th class="inv-th-num">Ù…<br><small>No</small></th>
+                        <th class="inv-th-item">Ø§Ù„ØµÙ†Ù<br><small>Item</small></th>
+                        <th class="inv-th-desc">Ø§Ù„ÙˆØµÙ<br><small>Description</small></th>
+                        <th class="inv-th-qty">Ø§Ù„ÙƒÙ…ÙŠØ©<br><small>Qty</small></th>
+                        <th class="inv-th-price">Ø§Ù„Ø³Ø¹Ø±<br><small>Price</small></th>
+                        <th class="inv-th-total">Ø§Ù„Ù…Ø¨Ù„Øº<br><small>Amount</small></th>
                       </tr>
                     </thead>
                     <tbody id="prevLineItems">
@@ -610,7 +610,7 @@
                     </tbody>
                   </table>
 
-                  {# ── Bottom Section: QR + Summary ── #}
+                  {# â”€â”€ Bottom Section: QR + Summary â”€â”€ #}
                   <div class="inv-new-bottom">
                     <div class="inv-new-qr">
                       <canvas id="invQRCode" width="150" height="150"></canvas>
@@ -618,31 +618,31 @@
                     <div class="inv-new-summary">
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevSubtotal">0.00</span>
-                        <span class="inv-summary-lbl">الاجمالي <small>Subtotal</small></span>
+                        <span class="inv-summary-lbl">Ø§Ù„Ø§Ø¬Ù…Ø§Ù„ÙŠ <small>Subtotal</small></span>
                       </div>
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevDiscount">0.00</span>
-                        <span class="inv-summary-lbl" id="prevDiscountLabel">الخصم <small>Discount</small></span>
+                        <span class="inv-summary-lbl" id="prevDiscountLabel">Ø§Ù„Ø®ØµÙ… <small>Discount</small></span>
                       </div>
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevTax">0.00</span>
-                        <span class="inv-summary-lbl" id="prevTaxLabel">القيمة المضافة <small>VAT</small></span>
+                        <span class="inv-summary-lbl" id="prevTaxLabel">Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„Ù…Ø¶Ø§ÙØ© <small>VAT</small></span>
                       </div>
                       <div class="inv-new-summary-row">
                         <span class="inv-summary-val" id="prevShipping">0.00</span>
-                        <span class="inv-summary-lbl">الشحن <small>Shipping</small></span>
+                        <span class="inv-summary-lbl">Ø§Ù„Ø´Ø­Ù† <small>Shipping</small></span>
                       </div>
                       <div class="inv-new-summary-row inv-summary-total">
                         <span class="inv-summary-val" id="prevGrandTotal">0.00</span>
-                        <span class="inv-summary-lbl">المستحق <small>Total Due</small></span>
+                        <span class="inv-summary-lbl">Ø§Ù„Ù…Ø³ØªØ­Ù‚ <small>Total Due</small></span>
                       </div>
                       <div class="inv-new-summary-row inv-summary-paid">
                         <span class="inv-summary-val" id="prevAmountPaid">0.00</span>
-                        <span class="inv-summary-lbl">المدفوع <small>Paid</small></span>
+                        <span class="inv-summary-lbl">Ø§Ù„Ù…Ø¯ÙÙˆØ¹ <small>Paid</small></span>
                       </div>
                       <div class="inv-new-summary-row inv-summary-remaining">
                         <span class="inv-summary-val" id="prevRemaining">0.00</span>
-                        <span class="inv-summary-lbl">المتبقي <small>Remaining</small></span>
+                        <span class="inv-summary-lbl">Ø§Ù„Ù…ØªØ¨Ù‚ÙŠ <small>Remaining</small></span>
                       </div>
                     </div>
                   </div>
@@ -664,8 +664,8 @@
 
                   {# Footer #}
                   <div class="inv-new-footer">
-                    <div class="inv-new-footer-page" id="prevPageInfo">{{ t.admin.invPageInfo | default('الصفحة 1 من 1') }}</div>
-                    <div class="inv-new-footer-branch" id="prevBranchInfo">{{ t.admin.invBranchInfoPlaceholder | default('الفرع الرئيسي') }}</div>
+                    <div class="inv-new-footer-page" id="prevPageInfo">{{ t.admin.invPageInfo | default('Ø§Ù„ØµÙØ­Ø© 1 Ù…Ù† 1') }}</div>
+                    <div class="inv-new-footer-branch" id="prevBranchInfo">{{ t.admin.invBranchInfoPlaceholder | default('Ø§Ù„ÙØ±Ø¹ Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ') }}</div>
                   </div>
                 </div>
               </div>
@@ -673,23 +673,23 @@
 
           </div>
 
-          {# ═══ INVOICE HISTORY PANEL ═══ #}
+          {# â•â•â• INVOICE HISTORY PANEL â•â•â• #}
           <div class="inv-history-panel" id="invHistorySection" style="display:none; margin-top:20px;">
             <div style="display:flex; justify-content:flex-end; margin-bottom: 12px;">
               <button class="btn btn-danger btn-sm" onclick="deleteAllInvoicesHistory()">
-                <i class="fas fa-trash-alt"></i> مسح جميع الفواتير
+                <i class="fas fa-trash-alt"></i> Ù…Ø³Ø­ Ø¬Ù…ÙŠØ¹ Ø§Ù„ÙÙˆØ§ØªÙŠØ±
               </button>
             </div>
             <div class="table-container fade-in">
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>تاريخ الإنشاء<br><small>Date</small></th>
-                    <th>رقم المستند<br><small>Doc Number</small></th>
-                    <th>العميل / الخدمة<br><small>Client / Target</small></th>
-                    <th>التكلفة<br><small>Amount</small></th>
-                    <th>النوع<br><small>Type</small></th>
-                    <th style="width:120px">إجراء<br><small>Actions</small></th>
+                    <th>ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡<br><small>Date</small></th>
+                    <th>Ø±Ù‚Ù… Ø§Ù„Ù…Ø³ØªÙ†Ø¯<br><small>Doc Number</small></th>
+                    <th>Ø§Ù„Ø¹Ù…ÙŠÙ„ / Ø§Ù„Ø®Ø¯Ù…Ø©<br><small>Client / Target</small></th>
+                    <th>Ø§Ù„ØªÙƒÙ„ÙØ©<br><small>Amount</small></th>
+                    <th>Ø§Ù„Ù†ÙˆØ¹<br><small>Type</small></th>
+                    <th style="width:120px">Ø¥Ø¬Ø±Ø§Ø¡<br><small>Actions</small></th>
                   </tr>
                 </thead>
                 <tbody id="invoicesHistoryTableBody">
@@ -701,7 +701,7 @@
           </div>
         </div>
 
-        {# ── TICKET CENTER ── #}
+        {# â”€â”€ TICKET CENTER â”€â”€ #}
         <div class="view-section" id="view-messages">
           <div class="filters-bar">
             <select class="form-select" id="msgStatusFilter" onchange="loadAdminMessages()">
@@ -714,7 +714,7 @@
           <div class="pagination" id="adminMsgPagination"></div>
         </div>
 
-        {# ── USERS ── #}
+        {# â”€â”€ USERS â”€â”€ #}
         <div class="view-section" id="view-users">
           <div class="filters-bar">
             <input class="form-input search-input" type="text" id="userSearch" placeholder="{{ t.admin.userSearchPlaceholder }}" onkeyup="loadAdminUsers()">
@@ -724,12 +724,12 @@
           <div class="pagination" id="adminUsersPagination"></div>
         </div>
 
-        {# ── ROLES ── #}
+        {# â”€â”€ ROLES â”€â”€ #}
         <div class="view-section" id="view-roles">
           <div class="table-container"><table class="data-table"><thead><tr><th>{{ t.admin.thRole }}</th><th>{{ t.admin.thDescription }}</th><th>{{ t.admin.thPermissions }}</th></tr></thead><tbody id="adminRolesTable"></tbody></table></div>
         </div>
 
-        {# ── LOGS ── #}
+        {# â”€â”€ LOGS â”€â”€ #}
         <div class="view-section" id="view-logs">
           <div class="filters-bar" style="justify-content: flex-end;">
             <button class="btn btn-danger btn-sm" id="clearLogsBtn" onclick="clearAdminLogs()" style="display:none;"><i class="fas fa-trash-alt"></i> {{ t.admin.clearAllLogs }}</button>
@@ -742,7 +742,7 @@
     </div>
   </div>
 
-  {# ══════ CONFIRMATION DIALOG ══════ #}
+  {# â•â•â•â•â•â• CONFIRMATION DIALOG â•â•â•â•â•â• #}
   <div class="modal-overlay" id="confirmModal">
     <div class="confirm-dialog">
       <div class="confirm-icon warning" id="confirmIcon"><i class="fas fa-exclamation-triangle"></i></div>
@@ -755,21 +755,21 @@
     </div>
   </div>
 
-  {# ══════ COMMAND PALETTE ══════ #}
+  {# â•â•â•â•â•â• COMMAND PALETTE â•â•â•â•â•â• #}
   <div class="command-palette-overlay" id="commandPalette">
     <div class="command-palette">
       <input type="text" class="command-palette-input" id="cmdInput" placeholder="{{ t.admin.cmdPlaceholder }}" autocomplete="off">
       <div class="command-palette-results" id="cmdResults"></div>
       <div class="command-palette-footer">
-        <span><kbd>↑↓</kbd> {{ t.admin.cmdNavigate }}</span>
-        <span><kbd>↵</kbd> {{ t.admin.cmdSelect }}</span>
+        <span><kbd>â†‘â†“</kbd> {{ t.admin.cmdNavigate }}</span>
+        <span><kbd>â†µ</kbd> {{ t.admin.cmdSelect }}</span>
         <span><kbd>Esc</kbd> {{ t.admin.cmdClose }}</span>
       </div>
     </div>
   </div>
 
-  {# ══════ SMART ITEM PICKER MODAL ══════ #}
-  {# Linked to Invoice builder — auto-fills name + price from DB #}
+  {# â•â•â•â•â•â• SMART ITEM PICKER MODAL â•â•â•â•â•â• #}
+  {# Linked to Invoice builder â€” auto-fills name + price from DB #}
   <div class="modal-overlay picker-modal-overlay" id="itemPickerModal" role="dialog" aria-modal="true" aria-labelledby="pickerModalTitle">
     <div class="picker-modal">
 
@@ -780,8 +780,8 @@
             <i class="fas fa-layer-group"></i>
           </div>
           <div>
-            <h3 class="picker-modal-title" id="pickerModalTitle">{{ t.admin.invPickTitle | default('اختر بنداً من الكتالوج') }}</h3>
-            <p class="picker-modal-sub">{{ t.admin.invPickSubtitle | default('سيُعبّأ الاسم والسعر تلقائياً في الفاتورة') }}</p>
+            <h3 class="picker-modal-title" id="pickerModalTitle">{{ t.admin.invPickTitle | default('Ø§Ø®ØªØ± Ø¨Ù†Ø¯Ø§Ù‹ Ù…Ù† Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬') }}</h3>
+            <p class="picker-modal-sub">{{ t.admin.invPickSubtitle | default('Ø³ÙŠÙØ¹Ø¨Ù‘Ø£ Ø§Ù„Ø§Ø³Ù… ÙˆØ§Ù„Ø³Ø¹Ø± ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ ÙÙŠ Ø§Ù„ÙØ§ØªÙˆØ±Ø©') }}</p>
           </div>
         </div>
         <button type="button" class="picker-modal-close" onclick="closeItemPicker()" aria-label="Close">
@@ -793,7 +793,7 @@
       <div class="picker-search-wrap">
         <i class="fas fa-search picker-search-icon"></i>
         <input type="text" id="pickerSearch" class="picker-search-input"
-               placeholder="{{ t.admin.invPickSearch | default('ابحث في الكتالوج...') }}"
+               placeholder="{{ t.admin.invPickSearch | default('Ø§Ø¨Ø­Ø« ÙÙŠ Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬...') }}"
                autocomplete="off" oninput="_pickerSearch(this.value)">
       </div>
 
@@ -802,19 +802,19 @@
         <button type="button" class="picker-tab active" data-tab="services"
                 onclick="_pickerSwitchTab('services')">
           <i class="fas fa-concierge-bell"></i>
-          {{ t.admin.services | default('الخدمات') }}
+          {{ t.admin.services | default('Ø§Ù„Ø®Ø¯Ù…Ø§Øª') }}
           <span class="picker-tab-count" id="pickerCountServices"></span>
         </button>
         <button type="button" class="picker-tab" data-tab="jobs"
                 onclick="_pickerSwitchTab('jobs')">
           <i class="fas fa-briefcase"></i>
-          {{ t.admin.jobsNav | default('الوظائف') }}
+          {{ t.admin.jobsNav | default('Ø§Ù„ÙˆØ¸Ø§Ø¦Ù') }}
           <span class="picker-tab-count" id="pickerCountJobs"></span>
         </button>
         <button type="button" class="picker-tab" data-tab="portfolio"
                 onclick="_pickerSwitchTab('portfolio')">
           <i class="fas fa-images"></i>
-          {{ t.admin.portfolioNav | default('المعارض') }}
+          {{ t.admin.portfolioNav | default('Ø§Ù„Ù…Ø¹Ø§Ø±Ø¶') }}
           <span class="picker-tab-count" id="pickerCountPortfolio"></span>
         </button>
       </div>
@@ -823,19 +823,19 @@
       <div class="picker-items-list" id="pickerItemsList">
         <div class="picker-empty">
           <i class="fas fa-spinner fa-spin" style="font-size:1.8rem;color:var(--gold);margin-bottom:12px"></i>
-          <div>{{ t.admin.loading | default('جاري التحميل...') }}</div>
+          <div>{{ t.admin.loading | default('Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...') }}</div>
         </div>
       </div>
 
       {# Footer hint #}
       <div class="picker-modal-footer">
-        <span><i class="fas fa-info-circle" style="color:var(--gold);margin-inline-end:6px"></i>{{ t.admin.invPickFooter | default('يمكنك تعديل السعر والكمية يدوياً بعد الاختيار') }}</span>
+        <span><i class="fas fa-info-circle" style="color:var(--gold);margin-inline-end:6px"></i>{{ t.admin.invPickFooter | default('ÙŠÙ…ÙƒÙ†Ùƒ ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ø³Ø¹Ø± ÙˆØ§Ù„ÙƒÙ…ÙŠØ© ÙŠØ¯ÙˆÙŠØ§Ù‹ Ø¨Ø¹Ø¯ Ø§Ù„Ø§Ø®ØªÙŠØ§Ø±') }}</span>
       </div>
 
     </div>
   </div>
 
-  {# ══════ SERVICE MODAL ══════ #}
+  {# â•â•â•â•â•â• SERVICE MODAL â•â•â•â•â•â• #}
   <div class="modal-overlay" id="serviceModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -845,7 +845,7 @@
       <form id="serviceForm" onsubmit="saveAdminService(event)" novalidate>
         <input type="hidden" id="serviceEditId">
         
-        {# ── Tabs ── #}
+        {# â”€â”€ Tabs â”€â”€ #}
         <div class="form-tabs">
           <button type="button" class="form-tab-btn active" id="svcTabGeneral" data-tab="svcPaneGeneral" onclick="switchFormTab('svcTabGeneral','serviceForm')">
             <i class="fas fa-info-circle tab-icon"></i> {{ t.admin.tabGeneralInfo }}
@@ -865,33 +865,33 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="svcDescription" rows="3" placeholder="{{ t.admin.serviceDescPlaceholder }}"></textarea>
           </div>
-          {# ── Arabic Content (i18n) ── #}
+          {# â”€â”€ Arabic Content (i18n) â”€â”€ #}
           <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
             <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
-              <input class="form-input" type="text" id="svcTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+              <input class="form-input" type="text" id="svcTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('Ø§Ù„Ø¹Ù†ÙˆØ§Ù† Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}">
             </div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
-              <textarea class="form-textarea" id="svcDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+              <textarea class="form-textarea" id="svcDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('Ø§Ù„ÙˆØµÙ Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}"></textarea>
             </div>
           <div class="form-group">
               <label class="form-label">{{ t.admin.categoryAr | default('Arabic Category') }}</label>
-              <input class="form-input" type="text" id="svcCategoryAr" maxlength="100" dir="rtl" placeholder="{{ t.admin.categoryArPlaceholder | default('التصنيف بالعربية') }}">
+              <input class="form-input" type="text" id="svcCategoryAr" maxlength="100" dir="rtl" placeholder="{{ t.admin.categoryArPlaceholder | default('Ø§Ù„ØªØµÙ†ÙŠÙ Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}">
             </div>
           </div>
-          {# Responsive grid — Price type toggle + pricing fields #}
+          {# Responsive grid â€” Price type toggle + pricing fields #}
           <div style="margin-bottom:12px">
             <label class="form-label" style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-              <i class="fas fa-money-bill-wave" style="color:var(--gold);"></i> {{ t.admin.priceType | default('نوع السعر / Price Type') }}
+              <i class="fas fa-money-bill-wave" style="color:var(--gold);"></i> {{ t.admin.priceType | default('Ù†ÙˆØ¹ Ø§Ù„Ø³Ø¹Ø± / Price Type') }}
             </label>
             <div style="display:flex;gap:4px;background:var(--surface-2);border-radius:10px;padding:3px;width:fit-content">
               <button type="button" class="btn btn-sm svc-price-type-btn active" id="svcPriceTypeFixed" onclick="setSvcPriceType('fixed')" style="border-radius:8px;padding:6px 16px;font-size:0.82rem">
-                <i class="fas fa-tag"></i> {{ t.admin.priceFixed | default('ثابت / Fixed') }}
+                <i class="fas fa-tag"></i> {{ t.admin.priceFixed | default('Ø«Ø§Ø¨Øª / Fixed') }}
               </button>
               <button type="button" class="btn btn-sm svc-price-type-btn" id="svcPriceTypeRange" onclick="setSvcPriceType('range')" style="border-radius:8px;padding:6px 16px;font-size:0.82rem">
-                <i class="fas fa-arrows-left-right"></i> {{ t.admin.priceRange | default('نطاق / Range') }}
+                <i class="fas fa-arrows-left-right"></i> {{ t.admin.priceRange | default('Ù†Ø·Ø§Ù‚ / Range') }}
               </button>
             </div>
             <input type="hidden" id="svcPriceType" value="fixed">
@@ -902,17 +902,17 @@
               <input class="form-input" type="number" id="svcPrice" min="0" step="0.01" placeholder="0.00">
             </div>
             <div class="form-group" id="svcPriceMaxGroup" style="display:none">
-              <label class="form-label">{{ t.admin.priceMax | default('الحد الأقصى / Max Price') }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipPriceMax | default('The maximum price in the range. Leave empty to show only the minimum.') }}</span></span></label>
+              <label class="form-label">{{ t.admin.priceMax | default('Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰ / Max Price') }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipPriceMax | default('The maximum price in the range. Leave empty to show only the minimum.') }}</span></span></label>
               <input class="form-input" type="number" id="svcPriceMax" min="0" step="0.01" placeholder="0.00">
             </div>
             <div class="form-group">
-              <label class="form-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-coins" style="color:var(--gold);"></i> {{ t.admin.invCurrency | default('العملة / Currency') }}</label>
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-coins" style="color:var(--gold);"></i> {{ t.admin.invCurrency | default('Ø§Ù„Ø¹Ù…Ù„Ø© / Currency') }}</label>
               <select class="form-select" id="svcCurrency">
-                <option value="SAR">🇸🇦 SAR</option>
-                <option value="USD">🇺🇸 USD</option>
-                <option value="EGP">🇪🇬 EGP</option>
-                <option value="EUR">🇪🇺 EUR</option>
-                <option value="AED">🇦🇪 AED</option>
+                <option value="SAR">ðŸ‡¸ðŸ‡¦ SAR</option>
+                <option value="USD">ðŸ‡ºðŸ‡¸ USD</option>
+                <option value="EGP">ðŸ‡ªðŸ‡¬ EGP</option>
+                <option value="EUR">ðŸ‡ªðŸ‡º EUR</option>
+                <option value="AED">ðŸ‡¦ðŸ‡ª AED</option>
               </select>
             </div>
             <div class="form-group">
@@ -940,7 +940,7 @@
             <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
             <div class="drop-zone-title">{{ t.admin.dropZoneTitle | default('Drag & Drop Images Here') }}</div>
             <div class="drop-zone-sub">{{ t.admin.dropZoneSub | default('or click to browse your files') }}</div>
-            <span class="drop-zone-hint">{{ t.admin.dropZoneHint | default('JPG, PNG, WebP • Max 10MB each') }}</span>
+            <span class="drop-zone-hint">{{ t.admin.dropZoneHint | default('JPG, PNG, WebP â€¢ Max 10MB each') }}</span>
           </div>
           <div class="image-preview-grid" id="svcPreviewGrid"></div>
         </div>
@@ -952,7 +952,7 @@
     </div>
   </div>
 
-  {# ══════ PROPERTY MODAL ══════ #}
+  {# â•â•â•â•â•â• PROPERTY MODAL â•â•â•â•â•â• #}
   <div class="modal-overlay" id="propertyModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -962,7 +962,7 @@
       <form id="propertyForm" onsubmit="saveAdminProperty(event)" novalidate>
         <input type="hidden" id="propEditId">
         
-        {# ── Tabs ── #}
+        {# â”€â”€ Tabs â”€â”€ #}
         <div class="form-tabs">
           <button type="button" class="form-tab-btn active" id="propTabGeneral" data-tab="propPaneGeneral" onclick="switchFormTab('propTabGeneral','propertyForm')">
             <i class="fas fa-info-circle tab-icon"></i> {{ t.admin.tabGeneral }}
@@ -979,13 +979,13 @@
         <div class="form-tab-pane active" id="propPaneGeneral">
           <div class="form-group">
             <label class="form-label">{{ t.admin.thTitle }} *</label>
-            <input class="form-input" type="text" id="propTitle" required maxlength="200" placeholder="{{ t.admin.propTitlePlaceholder | default('e.g. Luxury Villa — Al Olaya') }}">
+            <input class="form-input" type="text" id="propTitle" required maxlength="200" placeholder="{{ t.admin.propTitlePlaceholder | default('e.g. Luxury Villa â€” Al Olaya') }}">
           </div>
           <div class="form-group">
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="propDescription" rows="3" placeholder="{{ t.admin.propertyDescPlaceholder }}"></textarea>
           </div>
-          {# Responsive 2-col grid — collapses on mobile #}
+          {# Responsive 2-col grid â€” collapses on mobile #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
               <label class="form-label">{{ t.admin.thPrice }} ($) <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipPropertyPrice | default('The listing or asking price for this property in USD.') }}</span></span></label>
@@ -1004,7 +1004,7 @@
 
         {# Details Pane #}
         <div class="form-tab-pane" id="propPaneDetails">
-          {# Responsive 3-col grid — collapses to 1-col on small screens #}
+          {# Responsive 3-col grid â€” collapses to 1-col on small screens #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px">
             <div class="form-group">
               <label class="form-label">{{ t.admin.areaLabel }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipArea | default('Total built-up area of the property in square meters.') }}</span></span></label>
@@ -1049,7 +1049,7 @@
     </div>
   </div>
 
-  {# ══════ EXHIBITION MODAL ══════ #}
+  {# â•â•â•â•â•â• EXHIBITION MODAL â•â•â•â•â•â• #}
   <div class="modal-overlay" id="exhibitionModal" style="display:none">
     <div class="modal-content modal-lg" style="max-height:90vh;overflow-y:auto">
       <div class="modal-header">
@@ -1057,7 +1057,7 @@
         <button type="button" class="modal-close" onclick="closeExhibitionModal()" aria-label="Close Modal"><i class="fas fa-times" aria-hidden="true"></i></button>
       </div>
       <form id="exhibitionForm" onsubmit="saveExhibition(event)" novalidate>
-        {# ── Tabs ── #}
+        {# â”€â”€ Tabs â”€â”€ #}
         <div class="form-tabs">
           <button type="button" class="form-tab-btn active" id="exhTabGeneral" data-tab="exhPaneGeneral" onclick="switchFormTab('exhTabGeneral','exhibitionForm')">
             <i class="fas fa-info-circle tab-icon"></i> {{ t.admin.tabGeneralInfo }}
@@ -1077,7 +1077,7 @@
             <label class="form-label">{{ t.admin.thLocation }}</label>
             <input class="form-input" type="text" id="exhLocation" placeholder="{{ t.admin.exhLocationPlaceholder }}">
           </div>
-          {# Responsive 2-col grid — collapses on mobile #}
+          {# Responsive 2-col grid â€” collapses on mobile #}
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
             <div class="form-group">
               <label class="form-label">{{ t.admin.startDate }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipStartDate | default('The opening date of the exhibition. This will be shown publicly.') }}</span></span></label>
@@ -1092,16 +1092,16 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="exhDesc" rows="3" placeholder="{{ t.admin.exhDescPlaceholder }}"></textarea>
           </div>
-          {# ── Arabic Content (i18n) ── #}
+          {# â”€â”€ Arabic Content (i18n) â”€â”€ #}
           <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
             <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
-              <input class="form-input" type="text" id="exhTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+              <input class="form-input" type="text" id="exhTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('Ø§Ù„Ø¹Ù†ÙˆØ§Ù† Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}">
             </div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
-              <textarea class="form-textarea" id="exhDescAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+              <textarea class="form-textarea" id="exhDescAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('Ø§Ù„ÙˆØµÙ Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}"></textarea>
             </div>
           </div>
           <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
@@ -1129,7 +1129,7 @@
     </div>
   </div>
 
-  {# ══════ JOB MODAL (Wizard) ══════ #}
+  {# â•â•â•â•â•â• JOB MODAL (Wizard) â•â•â•â•â•â• #}
   <div class="modal-overlay" id="jobModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1165,16 +1165,16 @@
             <label class="form-label">{{ t.admin.thDescription }}</label>
             <textarea class="form-textarea" id="jobDescription" rows="3" placeholder="{{ t.admin.svcDescPlaceholder }}"></textarea>
           </div>
-          {# ── Arabic Content (i18n) ── #}
+          {# â”€â”€ Arabic Content (i18n) â”€â”€ #}
           <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
             <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
-              <input class="form-input" type="text" id="jobTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+              <input class="form-input" type="text" id="jobTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('Ø§Ù„Ø¹Ù†ÙˆØ§Ù† Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}">
             </div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
-              <textarea class="form-textarea" id="jobDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+              <textarea class="form-textarea" id="jobDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('Ø§Ù„ÙˆØµÙ Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}"></textarea>
             </div>
           </div>
           <div class="wizard-nav">
@@ -1206,19 +1206,19 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">{{ t.admin.jobSalary }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipJobSalary | default('Optional. Specify a range like "3,000 – 5,000" to attract qualified candidates.') }}</span></span></label>
-              <input class="form-input" type="text" id="jobSalary" placeholder="{{ t.admin.jobSalaryPlaceholder | default('e.g. 3,000 – 5,000') }}">
+              <label class="form-label">{{ t.admin.jobSalary }} <span class="help-tooltip">?<span class="tooltip-text">{{ t.admin.tooltipJobSalary | default('Optional. Specify a range like "3,000 â€“ 5,000" to attract qualified candidates.') }}</span></span></label>
+              <input class="form-input" type="text" id="jobSalary" placeholder="{{ t.admin.jobSalaryPlaceholder | default('e.g. 3,000 â€“ 5,000') }}">
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="form-group">
-              <label class="form-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-coins" style="color:var(--gold);"></i> {{ t.admin.invCurrency | default('العملة / Currency') }}</label>
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-coins" style="color:var(--gold);"></i> {{ t.admin.invCurrency | default('Ø§Ù„Ø¹Ù…Ù„Ø© / Currency') }}</label>
               <select class="form-select" id="jobCurrency">
-                <option value="SAR">🇸🇦 SAR — ريال سعودي</option>
-                <option value="USD">🇺🇸 USD — US Dollar</option>
-                <option value="EGP">🇪🇬 EGP — جنيه مصري</option>
-                <option value="EUR">🇪🇺 EUR — Euro</option>
-                <option value="AED">🇦🇪 AED — درهم إماراتي</option>
+                <option value="SAR">ðŸ‡¸ðŸ‡¦ SAR â€” Ø±ÙŠØ§Ù„ Ø³Ø¹ÙˆØ¯ÙŠ</option>
+                <option value="USD">ðŸ‡ºðŸ‡¸ USD â€” US Dollar</option>
+                <option value="EGP">ðŸ‡ªðŸ‡¬ EGP â€” Ø¬Ù†ÙŠÙ‡ Ù…ØµØ±ÙŠ</option>
+                <option value="EUR">ðŸ‡ªðŸ‡º EUR â€” Euro</option>
+                <option value="AED">ðŸ‡¦ðŸ‡ª AED â€” Ø¯Ø±Ù‡Ù… Ø¥Ù…Ø§Ø±Ø§ØªÙŠ</option>
               </select>
             </div>
           </div>
@@ -1243,7 +1243,7 @@
     </div>
   </div>
 
-  {# ══════ PORTFOLIO MODAL (Wizard) ══════ #}
+  {# â•â•â•â•â•â• PORTFOLIO MODAL (Wizard) â•â•â•â•â•â• #}
   <div class="modal-overlay" id="portfolioModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1283,16 +1283,16 @@
             <label class="form-label">{{ t.admin.portfolioCategory }}</label>
             <input class="form-input" type="text" id="portfolioCategory" placeholder="{{ t.admin.portfolioCatPlaceholder | default('e.g. branding, events, digital') }}">
           </div>
-          {# ── Arabic Content (i18n) ── #}
+          {# â”€â”€ Arabic Content (i18n) â”€â”€ #}
           <div style="border:1px dashed var(--border-color);border-radius:8px;padding:12px;margin-bottom:12px">
             <div style="font-size:0.8rem;color:var(--text-3);margin-bottom:8px"><i class="fas fa-language" style="margin-inline-end:4px"></i> {{ t.admin.arabicContent | default('Arabic Content') }}</div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.titleAr | default('Arabic Title') }}</label>
-              <input class="form-input" type="text" id="portfolioTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('العنوان بالعربية') }}">
+              <input class="form-input" type="text" id="portfolioTitleAr" maxlength="200" dir="rtl" placeholder="{{ t.admin.titleArPlaceholder | default('Ø§Ù„Ø¹Ù†ÙˆØ§Ù† Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}">
             </div>
             <div class="form-group">
               <label class="form-label">{{ t.admin.descriptionAr | default('Arabic Description') }}</label>
-              <textarea class="form-textarea" id="portfolioDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('الوصف بالعربية') }}"></textarea>
+              <textarea class="form-textarea" id="portfolioDescriptionAr" rows="2" dir="rtl" placeholder="{{ t.admin.descArPlaceholder | default('Ø§Ù„ÙˆØµÙ Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©') }}"></textarea>
             </div>
           </div>
           <div class="wizard-nav">
@@ -1308,7 +1308,7 @@
             <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
             <div class="drop-zone-title">{{ t.admin.dropZoneTitle | default('Drag & Drop Images Here') }}</div>
             <div class="drop-zone-sub">{{ t.admin.dropZoneSub | default('or click to browse your files') }}</div>
-            <span class="drop-zone-hint">{{ t.admin.dropZoneHint | default('JPG, PNG, WebP • Max 10MB each') }}</span>
+            <span class="drop-zone-hint">{{ t.admin.dropZoneHint | default('JPG, PNG, WebP â€¢ Max 10MB each') }}</span>
           </div>
           <div class="image-preview-grid" id="portfolioPreviewGrid"></div>
           <div class="wizard-nav">
@@ -1332,7 +1332,7 @@
     </div>
   </div>
 
-  {# ══════ FROSTED GLASS CONFIRMATION MODAL ══════ #}
+  {# â•â•â•â•â•â• FROSTED GLASS CONFIRMATION MODAL â•â•â•â•â•â• #}
   {# FIX (F7): Now uses shared partial instead of inline duplicate #}
   {% include "partials/glass-confirm.njk" %}
 
@@ -1423,11 +1423,11 @@
       selected:          {{ t.admin.selected          | default('selected')              | dump | safe }},
       deleteSelected:    {{ t.admin.deleteSelected    | default('Delete Selected')       | dump | safe }},
       deactivated:       {{ t.admin.deactivated       | default('deactivated.')          | dump | safe }},
-      aiSummarize:       {{ t.admin.aiSummarize       | default('✨ Summarize')           | dump | safe }},
+      aiSummarize:       {{ t.admin.aiSummarize       | default('âœ¨ Summarize')           | dump | safe }},
       aiDraft:           {{ t.admin.aiDraft           | default('Draft')                 | dump | safe }},
-      aiDraftReply:      {{ t.admin.aiDraftReply      | default('✨ AI Draft Reply')       | dump | safe }},
+      aiDraftReply:      {{ t.admin.aiDraftReply      | default('âœ¨ AI Draft Reply')       | dump | safe }},
       aiDrafting:        {{ t.admin.aiDrafting        | default('AI is drafting a reply...')| dump | safe }},
-      aiDraftSuccess:    {{ t.admin.aiDraftSuccess    | default('✨ Draft ready — review and send!') | dump | safe }},
+      aiDraftSuccess:    {{ t.admin.aiDraftSuccess    | default('âœ¨ Draft ready â€” review and send!') | dump | safe }},
       aiGenerating:      {{ t.admin.aiGenerating      | default('Generating summary...')  | dump | safe }},
       aiError:           {{ t.admin.aiError           | default('AI is currently resting. Please type manually.') | dump | safe }},
       aiPleaseWait:      {{ t.admin.aiPleaseWait      | default('Please wait for the current AI request to finish.') | dump | safe }},
@@ -1489,10 +1489,10 @@
       },
       invTaxInvoice:     {{ t.admin.invTaxInvoice     | default('Tax Invoice')       | dump | safe }},
       invQuotation:      {{ t.admin.invQuotation      | default('Quotation')          | dump | safe }},
-      invTaxInvoiceAr:   {{ t.admin.invTaxInvoiceAr   | default('فاتورة')             | dump | safe }},
-      invQuotationAr:    {{ t.admin.invQuotationAr    | default('عرض سعر')            | dump | safe }},
-      invBadgeInvoice:   {{ t.admin.invBadgeInvoice   | default('Tax Invoice — فاتورة ضريبية') | dump | safe }},
-      invBadgeQuote:     {{ t.admin.invBadgeQuote     | default('Quotation — عرض سعر')| dump | safe }},
+      invTaxInvoiceAr:   {{ t.admin.invTaxInvoiceAr   | default('ÙØ§ØªÙˆØ±Ø©')             | dump | safe }},
+      invQuotationAr:    {{ t.admin.invQuotationAr    | default('Ø¹Ø±Ø¶ Ø³Ø¹Ø±')            | dump | safe }},
+      invBadgeInvoice:   {{ t.admin.invBadgeInvoice   | default('Tax Invoice â€” ÙØ§ØªÙˆØ±Ø© Ø¶Ø±ÙŠØ¨ÙŠØ©') | dump | safe }},
+      invBadgeQuote:     {{ t.admin.invBadgeQuote     | default('Quotation â€” Ø¹Ø±Ø¶ Ø³Ø¹Ø±')| dump | safe }},
       invDocDetails:     {{ t.admin.invDocDetails     | default('Document Details')    | dump | safe }},
       invDocNumber:      {{ t.admin.invDocNumber      | default('Document #')          | dump | safe }},
       invIssueDate:      {{ t.admin.invIssueDate      | default('Issue Date')          | dump | safe }},
@@ -1538,7 +1538,7 @@
       invBillTo:         {{ t.admin.invBillTo         | default('Bill To')             | dump | safe }},
       invPreviewPlaceholder: {{ t.admin.invPreviewPlaceholder | default('Add line items to see them here') | dump | safe }},
       invValidUntil:     {{ t.admin.invValidUntil     | default('Valid Until')         | dump | safe }},
-      invGeneratedBy:    {{ t.admin.invGeneratedBy    | default('Generated by Nabda Platform · nabda.com') | dump | safe }},
+      invGeneratedBy:    {{ t.admin.invGeneratedBy    | default('Generated by Nabda Platform Â· nabda.com') | dump | safe }},
       invClientRequired: {{ t.admin.invClientRequired | default('Client name is required.') | dump | safe }},
       invItemRequired:   {{ t.admin.invItemRequired   | default('At least one line item is required.') | dump | safe }},
       invSavedInvoice:   {{ t.admin.invSavedInvoice   | default('Invoice saved & issued!') | dump | safe }},
@@ -1549,10 +1549,10 @@
       invPdfNotLoaded:   {{ t.admin.invPdfNotLoaded   | default('PDF library not loaded.') | dump | safe }},
       invFormReset:      {{ t.admin.invFormReset      | default('Form reset.') | dump | safe }},
       invLivePreview:    {{ t.admin.invLivePreview    | default('Live Preview') | dump | safe }},
-      invItemPicked:     {{ t.admin.invItemPicked     | default('تم إضافة البند بنجاح') | dump | safe }},
-      invPickTip:        {{ t.admin.invPickTip        | default('اختر من الكتالوج') | dump | safe }},
-      invPickTitle:      {{ t.admin.invPickTitle      | default('اختر بنداً من الكتالوج') | dump | safe }},
-      invPickHint:       {{ t.admin.invPickHint       | default('اختر من الكتالوج أو اكتب يدوياً') | dump | safe }},
+      invItemPicked:     {{ t.admin.invItemPicked     | default('ØªÙ… Ø¥Ø¶Ø§ÙØ© Ø§Ù„Ø¨Ù†Ø¯ Ø¨Ù†Ø¬Ø§Ø­') | dump | safe }},
+      invPickTip:        {{ t.admin.invPickTip        | default('Ø§Ø®ØªØ± Ù…Ù† Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬') | dump | safe }},
+      invPickTitle:      {{ t.admin.invPickTitle      | default('Ø§Ø®ØªØ± Ø¨Ù†Ø¯Ø§Ù‹ Ù…Ù† Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬') | dump | safe }},
+      invPickHint:       {{ t.admin.invPickHint       | default('Ø§Ø®ØªØ± Ù…Ù† Ø§Ù„ÙƒØªØ§Ù„ÙˆØ¬ Ø£Ùˆ Ø§ÙƒØªØ¨ ÙŠØ¯ÙˆÙŠØ§Ù‹') | dump | safe }},
     };
   </script>
   <script src="/js/admin/admin.init.js?v=20260409" defer></script>
@@ -1567,3 +1567,4 @@
   <script src="/js/admin/admin.portfolio.js?v=20260409" defer></script>
   <script src="/js/admin/admin.invoicing.js?v=20260409" defer></script>
 {% endblock %}
+

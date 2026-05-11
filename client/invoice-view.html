@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>فاتورة | Invoice</title>
+    <title>ÙØ§ØªÙˆØ±Ø© | Invoice</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -23,7 +23,7 @@
             padding: 20px;
         }
 
-        /* ── Toolbar ── */
+        /* â”€â”€ Toolbar â”€â”€ */
         .toolbar {
             display: flex;
             gap: 12px;
@@ -55,7 +55,7 @@
         }
         .btn-pdf:hover { background: #c4a030; transform: translateY(-1px); }
 
-        /* ── Invoice Container ── */
+        /* â”€â”€ Invoice Container â”€â”€ */
         .invoice-container {
             background: #fff;
             width: 210mm;
@@ -66,7 +66,7 @@
             direction: rtl;
         }
 
-        /* ── Header ── */
+        /* â”€â”€ Header â”€â”€ */
         .inv-header {
             display: flex;
             justify-content: flex-end;
@@ -82,7 +82,7 @@
         .inv-company-ar { font-size: 1.1rem; font-weight: 700; line-height: 1.5; }
         .inv-company-en { font-size: 0.62rem; color: #888; letter-spacing: 0.03em; margin-top: 2px; }
 
-        /* ── Doc Type Badge ── */
+        /* â”€â”€ Doc Type Badge â”€â”€ */
         .inv-type-badge {
             text-align: center; padding: 6px 0; margin: 4px 0 10px;
             border-top: 2px solid #d4af37; border-bottom: 2px solid #d4af37;
@@ -91,7 +91,7 @@
         .inv-type-divider { margin: 0 10px; color: #ccc; font-weight: 300; }
         .inv-type-en { font-size: 0.78rem; letter-spacing: 0.08em; }
 
-        /* ── Meta ── */
+        /* â”€â”€ Meta â”€â”€ */
         .inv-meta {
             background: #fafafa; border: 1px solid #eee;
             padding: 10px 12px; border-radius: 6px; margin: 10px 0;
@@ -101,7 +101,7 @@
         .inv-meta-lbl { font-weight: 600; font-size: 0.75rem; white-space: nowrap; color: #333; }
         .inv-meta-val { font-size: 0.75rem; color: #555; word-break: break-word; }
 
-        /* ── Table ── */
+        /* â”€â”€ Table â”€â”€ */
         .inv-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 10px 0; }
         .inv-table { width: 100%; border-collapse: collapse; border: 1px solid #bbb; font-size: 0.78rem; direction: rtl; min-width: 400px; }
         .inv-table thead th {
@@ -113,7 +113,7 @@
         .inv-table tbody td { padding: 7px 10px; border: 1px solid #ccc; text-align: center; color: #333; font-size: 0.76rem; }
         .inv-table tbody tr:nth-child(even) { background: #fafafa; }
 
-        /* ── Bottom (QR + Summary) ── */
+        /* â”€â”€ Bottom (QR + Summary) â”€â”€ */
         .inv-bottom {
             display: flex; flex-wrap: wrap; gap: 16px;
             align-items: flex-start; padding-top: 12px; border-top: 1px solid #ddd;
@@ -143,13 +143,13 @@
         .inv-summary-row.remaining { background: #fef2f2; border-radius: 3px; margin-top: 2px; }
         .inv-summary-row.remaining .val { color: #b91c1c; font-weight: 700; }
 
-        /* ── Notes ── */
+        /* â”€â”€ Notes â”€â”€ */
         .inv-notes { margin-top: 8px; padding: 6px 8px; border: 1px solid #eee; border-radius: 4px; font-size: 0.75rem; background: #fafafa; }
         .inv-notes-label { font-weight: 600; font-size: 0.7rem; color: #555; }
         .inv-notes-label small { color: #999; }
         .inv-notes-text { color: #333; margin-top: 2px; }
 
-        /* ── Footer ── */
+        /* â”€â”€ Footer â”€â”€ */
         .inv-footer {
             text-align: center; padding-top: 12px; border-top: 1px solid #ddd;
             margin-top: 12px; display: flex; flex-direction: column; gap: 4px;
@@ -157,10 +157,10 @@
         .inv-footer-page { font-size: 0.65rem; color: #999; }
         .inv-footer-branch { font-size: 0.72rem; color: #555; font-weight: 500; }
 
-        /* ── Loading ── */
+        /* â”€â”€ Loading â”€â”€ */
         .loading { text-align: center; padding: 60px 20px; color: #999; font-size: 1.2rem; }
 
-        /* ── Print ── */
+        /* â”€â”€ Print â”€â”€ */
         @media print {
             body { padding: 0; background: #fff; }
             .toolbar { display: none !important; }
@@ -168,7 +168,7 @@
             @page { margin: 12mm; }
         }
 
-        /* ── Mobile Responsive ── */
+        /* â”€â”€ Mobile Responsive â”€â”€ */
         @media (max-width: 768px) {
             body { padding: 12px 8px; }
             .toolbar { gap: 8px; width: 100%; }
@@ -254,11 +254,11 @@
     /></noscript>
 
     <div class="toolbar" id="toolbar">
-        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة Print</button>
-        <button class="btn-pdf" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> تحميل PDF</button>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Ø·Ø¨Ø§Ø¹Ø© Print</button>
+        <button class="btn-pdf" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> ØªØ­Ù…ÙŠÙ„ PDF</button>
     </div>
     <div class="invoice-container" id="invoiceContainer">
-        <div class="loading" id="loadingMsg">جاري تحميل الفاتورة...</div>
+        <div class="loading" id="loadingMsg">Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„ÙØ§ØªÙˆØ±Ø©...</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -267,7 +267,7 @@
         const params = new URLSearchParams(window.location.search);
         const dataParam = params.get('d');
         if (!dataParam) {
-            document.getElementById('loadingMsg').textContent = 'لا توجد بيانات فاتورة | No invoice data found';
+            document.getElementById('loadingMsg').textContent = 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¨ÙŠØ§Ù†Ø§Øª ÙØ§ØªÙˆØ±Ø© | No invoice data found';
             return;
         }
 
@@ -284,7 +284,7 @@
             inv = JSON.parse(utf8Decoded);
         } catch(e) {
             console.error('Decode Error:', e);
-            document.getElementById('loadingMsg').textContent = 'خطأ في بيانات الفاتورة | Invalid invoice data';
+            document.getElementById('loadingMsg').textContent = 'Ø®Ø·Ø£ ÙÙŠ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ÙØ§ØªÙˆØ±Ø© | Invalid invoice data';
             return;
         }
 
@@ -302,7 +302,7 @@
         const esc = (s) => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
         const isInvoice = inv.mode !== 'quote';
-        const typeAr = isInvoice ? 'فاتورة ضريبية' : 'عرض سعر';
+        const typeAr = isInvoice ? 'ÙØ§ØªÙˆØ±Ø© Ø¶Ø±ÙŠØ¨ÙŠØ©' : 'Ø¹Ø±Ø¶ Ø³Ø¹Ø±';
         const typeEn = isInvoice ? 'TAX INVOICE' : 'QUOTATION';
 
         const subtotal = (inv.lineItems||[]).reduce((s,i) => s + (i.quantity||0)*(i.unitPrice||0), 0);
@@ -312,8 +312,8 @@
         const remaining = Math.max(0, grandTotal - (inv.amountPaid||0));
 
         const discLabel = inv.discountType === 'percent'
-            ? `الخصم (${inv.discountValue}%) <small>Discount</small>`
-            : `الخصم <small>Discount</small>`;
+            ? `Ø§Ù„Ø®ØµÙ… (${inv.discountValue}%) <small>Discount</small>`
+            : `Ø§Ù„Ø®ØµÙ… <small>Discount</small>`;
 
         const itemRows = (inv.lineItems||[]).filter(i => i.name).map((item, idx) => `
             <tr>
@@ -330,10 +330,10 @@
         container.innerHTML = `
             <div class="inv-header">
                 <div class="inv-header-logo">
-                    <img src="/images/nabda-logo-dark.svg" alt="Nabda">
+                    <img src="/images/nabda-new-logo.png" alt="Nabda">
                 </div>
                 <div class="inv-header-info">
-                    <div class="inv-company-ar">${esc(inv.companyNameAr || 'نبضة للدعاية والإعلان والتسويق')}</div>
+                    <div class="inv-company-ar">${esc(inv.companyNameAr || 'Ù†Ø¨Ø¶Ø© Ù„Ù„Ø¯Ø¹Ø§ÙŠØ© ÙˆØ§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙˆØ§Ù„ØªØ³ÙˆÙŠÙ‚')}</div>
                     <div class="inv-company-en">${esc(inv.companyNameEn || 'Nabda for Advertising, Publicity & Marketing')}</div>
                 </div>
             </div>
@@ -346,20 +346,20 @@
 
             <div class="inv-meta">
                 <div class="inv-meta-row">
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">التاريخ:</span><span class="inv-meta-val">${esc(inv.issueDate||'—')}</span></div>
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">رقم الفاتورة:</span><span class="inv-meta-val">${esc(inv.docNumber||'—')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">Ø§Ù„ØªØ§Ø±ÙŠØ®:</span><span class="inv-meta-val">${esc(inv.issueDate||'â€”')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">Ø±Ù‚Ù… Ø§Ù„ÙØ§ØªÙˆØ±Ø©:</span><span class="inv-meta-val">${esc(inv.docNumber||'â€”')}</span></div>
                 </div>
                 <div class="inv-meta-row">
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">اسم العميل:</span><span class="inv-meta-val">${esc(inv.clientName||'—')}</span></div>
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">الهاتف:</span><span class="inv-meta-val">${esc(inv.clientPhone||'—')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">Ø§Ø³Ù… Ø§Ù„Ø¹Ù…ÙŠÙ„:</span><span class="inv-meta-val">${esc(inv.clientName||'â€”')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">Ø§Ù„Ù‡Ø§ØªÙ:</span><span class="inv-meta-val">${esc(inv.clientPhone||'â€”')}</span></div>
                 </div>
                 <div class="inv-meta-row">
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">العنوان:</span><span class="inv-meta-val">${esc(inv.clientAddress||'—')}</span></div>
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">البريد:</span><span class="inv-meta-val">${esc(inv.clientEmail||'—')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">Ø§Ù„Ø¹Ù†ÙˆØ§Ù†:</span><span class="inv-meta-val">${esc(inv.clientAddress||'â€”')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">Ø§Ù„Ø¨Ø±ÙŠØ¯:</span><span class="inv-meta-val">${esc(inv.clientEmail||'â€”')}</span></div>
                 </div>
                 <div class="inv-meta-row">
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">الرقم الضريبي:</span><span class="inv-meta-val">${esc(inv.taxNumber||'—')}</span></div>
-                    <div class="inv-meta-item"><span class="inv-meta-lbl">تاريخ الاستحقاق:</span><span class="inv-meta-val">${esc(inv.dueDate||'—')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ø¶Ø±ÙŠØ¨ÙŠ:</span><span class="inv-meta-val">${esc(inv.taxNumber||'â€”')}</span></div>
+                    <div class="inv-meta-item"><span class="inv-meta-lbl">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø§Ø³ØªØ­Ù‚Ø§Ù‚:</span><span class="inv-meta-val">${esc(inv.dueDate||'â€”')}</span></div>
                 </div>
             </div>
 
@@ -367,46 +367,46 @@
                 <table class="inv-table">
                     <thead>
                         <tr>
-                            <th style="width:35px">م<br><small>No</small></th>
-                            <th>الصنف<br><small>Item</small></th>
-                            <th>الوصف<br><small>Description</small></th>
-                            <th style="width:55px">الكمية<br><small>Qty</small></th>
-                            <th style="width:70px">السعر<br><small>Price</small></th>
-                            <th style="width:75px">المبلغ<br><small>Amount</small></th>
+                            <th style="width:35px">Ù…<br><small>No</small></th>
+                            <th>Ø§Ù„ØµÙ†Ù<br><small>Item</small></th>
+                            <th>Ø§Ù„ÙˆØµÙ<br><small>Description</small></th>
+                            <th style="width:55px">Ø§Ù„ÙƒÙ…ÙŠØ©<br><small>Qty</small></th>
+                            <th style="width:70px">Ø§Ù„Ø³Ø¹Ø±<br><small>Price</small></th>
+                            <th style="width:75px">Ø§Ù„Ù…Ø¨Ù„Øº<br><small>Amount</small></th>
                         </tr>
                     </thead>
-                    <tbody>${itemRows || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px">لا توجد بنود</td></tr>'}</tbody>
+                    <tbody>${itemRows || '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¨Ù†ÙˆØ¯</td></tr>'}</tbody>
                 </table>
             </div>
 
             <div class="inv-bottom">
                 <div class="inv-summary">
-                    <div class="inv-summary-row"><span class="val">${fmtCurrency(subtotal)}</span><span class="lbl">الاجمالي <small>Subtotal</small></span></div>
+                    <div class="inv-summary-row"><span class="val">${fmtCurrency(subtotal)}</span><span class="lbl">Ø§Ù„Ø§Ø¬Ù…Ø§Ù„ÙŠ <small>Subtotal</small></span></div>
                     <div class="inv-summary-row"><span class="val">${fmtCurrency(discountAmt)}</span><span class="lbl">${discLabel}</span></div>
-                    <div class="inv-summary-row"><span class="val">${fmtCurrency(taxAmt)}</span><span class="lbl">القيمة المضافة ${inv.taxPercent||0}% <small>VAT</small></span></div>
-                    ${(inv.shippingCost||0) > 0 ? `<div class="inv-summary-row"><span class="val">${fmtCurrency(inv.shippingCost)}</span><span class="lbl">الشحن <small>Shipping</small></span></div>` : ''}
-                    <div class="inv-summary-row total"><span class="val">${fmtCurrency(grandTotal)}</span><span class="lbl">المستحق <small>Total Due</small></span></div>
-                    <div class="inv-summary-row paid"><span class="val">${fmtCurrency(inv.amountPaid||0)}</span><span class="lbl">المدفوع <small>Paid</small></span></div>
-                    <div class="inv-summary-row remaining"><span class="val">${fmtCurrency(remaining)}</span><span class="lbl">المتبقي <small>Remaining</small></span></div>
+                    <div class="inv-summary-row"><span class="val">${fmtCurrency(taxAmt)}</span><span class="lbl">Ø§Ù„Ù‚ÙŠÙ…Ø© Ø§Ù„Ù…Ø¶Ø§ÙØ© ${inv.taxPercent||0}% <small>VAT</small></span></div>
+                    ${(inv.shippingCost||0) > 0 ? `<div class="inv-summary-row"><span class="val">${fmtCurrency(inv.shippingCost)}</span><span class="lbl">Ø§Ù„Ø´Ø­Ù† <small>Shipping</small></span></div>` : ''}
+                    <div class="inv-summary-row total"><span class="val">${fmtCurrency(grandTotal)}</span><span class="lbl">Ø§Ù„Ù…Ø³ØªØ­Ù‚ <small>Total Due</small></span></div>
+                    <div class="inv-summary-row paid"><span class="val">${fmtCurrency(inv.amountPaid||0)}</span><span class="lbl">Ø§Ù„Ù…Ø¯ÙÙˆØ¹ <small>Paid</small></span></div>
+                    <div class="inv-summary-row remaining"><span class="val">${fmtCurrency(remaining)}</span><span class="lbl">Ø§Ù„Ù…ØªØ¨Ù‚ÙŠ <small>Remaining</small></span></div>
                 </div>
                 <div class="inv-qr">
                     <canvas id="qrCanvas" width="300" height="300"></canvas>
-                    <div class="inv-qr-hint">امسح للاطلاع<br>Scan to view</div>
+                    <div class="inv-qr-hint">Ø§Ù…Ø³Ø­ Ù„Ù„Ø§Ø·Ù„Ø§Ø¹<br>Scan to view</div>
                 </div>
             </div>
 
-            ${inv.notes ? `<div class="inv-notes"><div class="inv-notes-label">ملاحظات <small>Notes</small></div><div class="inv-notes-text">${esc(inv.notes)}</div></div>` : ''}
-            ${inv.terms ? `<div class="inv-notes"><div class="inv-notes-label">الشروط <small>Terms</small></div><div class="inv-notes-text">${esc(inv.terms)}</div></div>` : ''}
+            ${inv.notes ? `<div class="inv-notes"><div class="inv-notes-label">Ù…Ù„Ø§Ø­Ø¸Ø§Øª <small>Notes</small></div><div class="inv-notes-text">${esc(inv.notes)}</div></div>` : ''}
+            ${inv.terms ? `<div class="inv-notes"><div class="inv-notes-label">Ø§Ù„Ø´Ø±ÙˆØ· <small>Terms</small></div><div class="inv-notes-text">${esc(inv.terms)}</div></div>` : ''}
 
             <div class="inv-footer">
-                <div class="inv-footer-page">الصفحة 1 من 1 | Page 1 of 1</div>
-                <div class="inv-footer-branch">${esc(inv.branchInfo || 'الفرع الرئيسي')}</div>
+                <div class="inv-footer-page">Ø§Ù„ØµÙØ­Ø© 1 Ù…Ù† 1 | Page 1 of 1</div>
+                <div class="inv-footer-branch">${esc(inv.branchInfo || 'Ø§Ù„ÙØ±Ø¹ Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ')}</div>
             </div>
         `;
 
-        document.title = `${inv.docNumber || 'Invoice'} — فاتورة`;
+        document.title = `${inv.docNumber || 'Invoice'} â€” ÙØ§ØªÙˆØ±Ø©`;
 
-        // ── QR Code: encode ONLY a short, clean URL ──
+        // â”€â”€ QR Code: encode ONLY a short, clean URL â”€â”€
         // Instead of the full base64 data URL (which is too long for QR),
         // encode just the current page URL (which already has the data).
         // If the URL is too long, encode a short reference URL instead.
@@ -419,7 +419,7 @@
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, w, h);
 
-                // Build a short QR content — just the essential invoice reference
+                // Build a short QR content â€” just the essential invoice reference
                 // A full URL with base64 data is too long for QR codes (>4000 chars)
                 const origin = window.location.origin;
                 const docNum = inv.docNumber || 'INV';
@@ -429,11 +429,11 @@
 
                 // Create compact QR content with key invoice details
                 const qrContent = [
-                    `📄 ${isInvoice ? 'فاتورة' : 'عرض سعر'} / ${typeEn}`,
-                    `رقم: ${docNum}`,
-                    `العميل: ${clientName}`,
-                    `التاريخ: ${dateStr}`,
-                    `المبلغ: ${totalStr} ${currency}`,
+                    `ðŸ“„ ${isInvoice ? 'ÙØ§ØªÙˆØ±Ø©' : 'Ø¹Ø±Ø¶ Ø³Ø¹Ø±'} / ${typeEn}`,
+                    `Ø±Ù‚Ù…: ${docNum}`,
+                    `Ø§Ù„Ø¹Ù…ÙŠÙ„: ${clientName}`,
+                    `Ø§Ù„ØªØ§Ø±ÙŠØ®: ${dateStr}`,
+                    `Ø§Ù„Ù…Ø¨Ù„Øº: ${totalStr} ${currency}`,
                     ``,
                     `${origin}`
                 ].join('\n');
@@ -468,7 +468,7 @@
     function downloadPDF() {
         const container = document.getElementById('invoiceContainer');
         if (!window.html2canvas || !window.jspdf) {
-            alert('جاري تحميل المكتبات...');
+            alert('Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…ÙƒØªØ¨Ø§Øª...');
             return;
         }
         html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
@@ -495,3 +495,4 @@
     </script>
 </body>
 </html>
+

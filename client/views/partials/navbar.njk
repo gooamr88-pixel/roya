@@ -1,11 +1,11 @@
-{# ═══════════════════════════════════════════════ #}
+﻿{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 {# Navbar Partial                                   #}
-{# ═══════════════════════════════════════════════ #}
+{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 <nav class="navbar" id="navbar">
   <div class="container">
     <a href="/" class="nav-logo" aria-label="Nabda Home">
-      <img class="logo-for-dark" src="/images/nabda-logo-transparent.svg" alt="{{ logoAlt }}" fetchpriority="high" style="height:44px;width:auto;object-fit:contain;">
-      <img class="logo-for-light" src="/images/nabda-logo-dark.svg" alt="{{ logoAlt }}" fetchpriority="high" style="height:44px;width:auto;object-fit:contain;">
+      <img class="logo-for-dark" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" fetchpriority="high" style="height:44px;width:auto;object-fit:contain;">
+      <img class="logo-for-light" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" fetchpriority="high" style="height:44px;width:auto;object-fit:contain;">
       {% if brandNameIsImage %}
         <img src="{{ brandNameSrc }}" alt="{{ logoAlt }}" class="brand-name-img" style="height:32px;width:auto;">
       {% else %}
@@ -24,7 +24,7 @@
     </ul>
 
     <div class="nav-actions">
-      {# Language Toggle — margin-inline-end flips automatically in RTL #}
+      {# Language Toggle â€” margin-inline-end flips automatically in RTL #}
       <a href="/api/set-lang?lang={{ langToggle.switchTo }}&redirect={{ currentPath or '/' }}"
          class="lang-toggle" title="{{ langToggle.text }}"
          style="margin-inline-end: 8px;">
@@ -46,7 +46,7 @@
   </div>
 </nav>
 
-{# ── Mobile Menu ── #}
+{# â”€â”€ Mobile Menu â”€â”€ #}
 <div class="mobile-menu" id="mobileMenu">
   <button type="button" class="close-btn" id="mobileClose" aria-label="Close mobile menu"><i class="fas fa-times" aria-hidden="true"></i></button>
   <a href="#home" data-i18n="nav.home">{{ t.nav.home }}</a>
@@ -59,3 +59,4 @@
   <a href="/login" class="btn btn-outline" data-i18n="nav.signIn">{{ t.nav.signIn }}</a>
   <a href="/register" class="btn btn-primary" data-i18n="nav.getStarted">{{ t.nav.getStarted }}</a>
 </div>
+

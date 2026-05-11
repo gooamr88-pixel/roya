@@ -1,7 +1,7 @@
-{# ═══════════════════════════════════════════════ #}
-{# Dashboard V2.0 — User Control Center           #}
+﻿{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
+{# Dashboard V2.0 â€” User Control Center           #}
 {# Uses base layout (own sidebar, no shared navbar) #}
-{# ═══════════════════════════════════════════════ #}
+{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 {% extends "layouts/base.njk" %}
 
 {% set pageTitle = t.dashboard.title %}
@@ -14,12 +14,12 @@
 {% block body %}
   <div class="dashboard-layout">
 
-    {# ════════════ SIDEBAR ════════════ #}
+    {# â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â•â•â• #}
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <a href="/" class="sidebar-logo">
-          <img class="logo-for-dark" src="/images/nabda-logo-transparent.svg" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
-          <img class="logo-for-light" src="/images/nabda-logo-dark.svg" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
+          <img class="logo-for-dark" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
+          <img class="logo-for-light" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:44px;width:auto;object-fit:contain;">
           {% if brandNameIsImage %}
             <img src="{{ brandNameSrc }}" alt="{{ logoAlt }}" class="brand-name-img" style="height:24px;width:auto;">
           {% else %}
@@ -87,7 +87,7 @@
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    {# ════════════ MAIN CONTENT ════════════ #}
+    {# â•â•â•â•â•â•â•â•â•â•â•â• MAIN CONTENT â•â•â•â•â•â•â•â•â•â•â•â• #}
     <div class="main-content">
       {# Top Bar #}
       <div class="topbar">
@@ -126,7 +126,7 @@
       {# Content Area #}
       <div class="content-area">
 
-        {# ── OVERVIEW ── #}
+        {# â”€â”€ OVERVIEW â”€â”€ #}
         <div class="view-section active" id="view-overview">
           <div class="stats-grid" id="statsGrid">
             <div class="stat-card">
@@ -171,7 +171,7 @@
             </button>
           </div>
 
-          {# ── Recommended For You ── #}
+          {# â”€â”€ Recommended For You â”€â”€ #}
           <div class="recommendations-section" id="aiRecommendations" style="display:none"></div>
 
           <div class="dashboard-card full-width" style="margin-bottom:32px">
@@ -226,7 +226,7 @@
           <div class="pagination" id="ordersPagination"></div>
         </div>
 
-        {# ── SERVICES ── #}
+        {# â”€â”€ SERVICES â”€â”€ #}
         <div class="view-section" id="view-services">
           <div class="services-grid" id="dashServicesGrid">
             <div class="skeleton skeleton-card"></div>
@@ -235,7 +235,7 @@
           </div>
         </div>
 
-        {# ── EXHIBITIONS ── #}
+        {# â”€â”€ EXHIBITIONS â”€â”€ #}
         <div class="view-section" id="view-exhibitions">
           <div class="exhibitions-grid" id="dashExhibitionsGrid">
             <div class="skeleton skeleton-card"></div>
@@ -243,7 +243,7 @@
           </div>
         </div>
 
-        {# ── NOTIFICATIONS ── #}
+        {# â”€â”€ NOTIFICATIONS â”€â”€ #}
         <div class="view-section" id="view-notifications">
           <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
             <button class="btn btn-ghost btn-sm" id="markAllReadBtn"><i class="fas fa-check-double"></i> {{ t.dashboard.markAllRead }}</button>
@@ -252,7 +252,7 @@
           <div class="pagination" id="notifPagination"></div>
         </div>
 
-        {# ── INVOICES ── #}
+        {# â”€â”€ INVOICES â”€â”€ #}
         <div class="view-section" id="view-invoices">
           <div class="table-container">
             <table class="data-table">
@@ -272,7 +272,7 @@
           <div class="pagination" id="invoicesPagination"></div>
         </div>
 
-        {# ── PROFILE ── #}
+        {# â”€â”€ PROFILE â”€â”€ #}
         <div class="view-section" id="view-profile">
           <div class="profile-header">
             <div class="profile-avatar" id="profileAvatar">U</div>
@@ -329,10 +329,10 @@
     </div>{# /.main-content #}
   </div>{# /.dashboard-layout #}
 
-  {# ═════ FROSTED GLASS CONFIRMATION MODAL ═════ #}
+  {# â•â•â•â•â• FROSTED GLASS CONFIRMATION MODAL â•â•â•â•â• #}
   {% include "partials/glass-confirm.njk" %}
 
-  {# ═════ AI PROMPT MODAL ═════ #}
+  {# â•â•â•â•â• AI PROMPT MODAL â•â•â•â•â• #}
   <div class="ai-modal-overlay" id="aiModalOverlay">
     <div class="ai-modal">
       <div class="ai-modal-header">
@@ -435,7 +435,7 @@
       tourNext:             '{{ t.onboarding.next | default("Next") }}',
       tourSkip:             '{{ t.onboarding.skip | default("Skip Tour") }}',
       tourFinish:           '{{ t.onboarding.finish | default("Get Started!") }}',
-      aiGenerate:           '{{ t.dashboard.aiGenerate | default("✨ AI Generate") }}',
+      aiGenerate:           '{{ t.dashboard.aiGenerate | default("âœ¨ AI Generate") }}',
       aiPromptTitle:        '{{ t.dashboard.aiPromptTitle | default("AI Content Assistant") }}',
       aiPromptPlaceholder:  '{{ t.dashboard.aiPromptPlaceholder | default("Describe your idea briefly, e.g. \"A social media campaign for a coffee brand\"") }}',
       aiPromptHint:         '{{ t.dashboard.aiPromptHint | default("AI will generate a professional description based on your idea.") }}',
@@ -444,15 +444,16 @@
       aiTooltip:            '{{ t.dashboard.aiTooltip | default("Let AI write a professional description for you") }}',
       recommendedForYou:    '{{ t.dashboard.recommendedForYou | default("Recommended For You") }}',
       recommendedDesc:      '{{ t.dashboard.recommendedDesc | default("Based on your activity") }}',
-      aiTourStep1Title:     '{{ t.dashboard.aiTourStep1Title | default("✍️ Describe Your Idea") }}',
+      aiTourStep1Title:     '{{ t.dashboard.aiTourStep1Title | default("âœï¸ Describe Your Idea") }}',
       aiTourStep1Desc:      '{{ t.dashboard.aiTourStep1Desc | default("Type a brief description of what you need. The more details, the better the AI output!") }}',
-      aiTourStep2Title:     '{{ t.dashboard.aiTourStep2Title | default("✨ Generate with AI") }}',
+      aiTourStep2Title:     '{{ t.dashboard.aiTourStep2Title | default("âœ¨ Generate with AI") }}',
       aiTourStep2Desc:      '{{ t.dashboard.aiTourStep2Desc | default("Click the sparkle button and the AI will craft a professional description for you instantly.") }}',
-      aiTourStep3Title:     '{{ t.dashboard.aiTourStep3Title | default("📋 Review & Use") }}',
+      aiTourStep3Title:     '{{ t.dashboard.aiTourStep3Title | default("ðŸ“‹ Review & Use") }}',
       aiTourStep3Desc:      '{{ t.dashboard.aiTourStep3Desc | default("Review the generated text, make any edits, then it auto-fills your service request form.") }}',
     };
   </script>
   <script src="/js/dashboard.js" defer></script>
   <script src="/js/onboarding.js" defer></script>
 {% endblock %}
+
 

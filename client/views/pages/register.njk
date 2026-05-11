@@ -1,6 +1,6 @@
-{# ═══════════════════════════════════════════════ #}
+﻿{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 {# Register Page                                    #}
-{# ═══════════════════════════════════════════════ #}
+{# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• #}
 {% extends "layouts/base.njk" %}
 
 {% set pageTitle = t.register.title %}
@@ -27,12 +27,12 @@
 
 {% block body %}
   <div class="auth-page">
-    {# ── Brand Side ── #}
+    {# â”€â”€ Brand Side â”€â”€ #}
     <div class="auth-brand">
       <div class="auth-brand-content">
         <div class="auth-brand-logo">
-          <img class="logo-for-dark" src="/images/nabda-logo-transparent.svg" alt="{{ logoAlt }}" style="height:56px;width:auto;object-fit:contain;">
-          <img class="logo-for-light" src="/images/nabda-logo-dark.svg" alt="{{ logoAlt }}" style="height:56px;width:auto;object-fit:contain;">
+          <img class="logo-for-dark" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:56px;width:auto;object-fit:contain;">
+          <img class="logo-for-light" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:56px;width:auto;object-fit:contain;">
           {% if brandNameIsImage %}
             <img src="{{ brandNameSrc }}" alt="{{ logoAlt }}" class="brand-name-img" style="height:36px;width:auto;">
           {% else %}
@@ -50,14 +50,14 @@
       </div>
     </div>
 
-    {# ── Form Side ── #}
+    {# â”€â”€ Form Side â”€â”€ #}
     <div class="auth-form-side">
       <div class="auth-form-wrapper">
         <a href="/" class="back-link"><i class="fas fa-arrow-left back-arrow-icon"></i> <span data-i18n="register.backToHome">{{ t.register.backToHome }}</span></a>
 
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-          <img class="logo-for-dark" src="/images/nabda-logo-transparent.svg" alt="{{ logoAlt }}" style="height:40px;width:auto;object-fit:contain;">
-          <img class="logo-for-light" src="/images/nabda-logo-dark.svg" alt="{{ logoAlt }}" style="height:40px;width:auto;object-fit:contain;">
+          <img class="logo-for-dark" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:40px;width:auto;object-fit:contain;">
+          <img class="logo-for-light" src="/images/nabda-new-logo.png" alt="{{ logoAlt }}" style="height:40px;width:auto;object-fit:contain;">
           {% if brandNameIsImage %}
             <img src="{{ brandNameSrc }}" alt="{{ logoAlt }}" class="brand-name-img" style="height:28px;width:auto;">
           {% else %}
@@ -164,3 +164,4 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js" defer></script>
   <script src="/js/auth.js?v=2" defer></script>
 {% endblock %}
+
